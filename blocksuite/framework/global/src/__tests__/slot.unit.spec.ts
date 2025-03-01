@@ -43,4 +43,13 @@ describe('slot', () => {
     slot.emit();
     expect(callback).toBeCalledTimes(0);
   });
+
+  test('cycle emit', () => {
+    const slot = new Slot<number>();
+    const callback = vi.fn(v => slot.emit(v + 1));
+    slot.on(callback);
+    slot.emit(0);
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith(0);
+  });
 });
