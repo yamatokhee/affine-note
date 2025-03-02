@@ -2,8 +2,6 @@ import { type Store, StoreExtension } from '@blocksuite/store';
 import { type Signal, signal } from '@preact/signals-core';
 
 export interface BlockSuiteFlags {
-  enable_synced_doc_block: boolean;
-  enable_pie_menu: boolean;
   enable_database_number_formatting: boolean;
   enable_database_attachment_note: boolean;
   enable_database_full_width: boolean;
@@ -24,8 +22,6 @@ export class FeatureFlagService extends StoreExtension {
   static override key = 'feature-flag-server';
 
   private readonly _flags: Signal<BlockSuiteFlags> = signal({
-    enable_synced_doc_block: true,
-    enable_pie_menu: false,
     enable_database_number_formatting: false,
     enable_database_attachment_note: false,
     enable_database_full_width: false,

@@ -53,16 +53,6 @@ export const AFFINE_FLAGS = {
       'com.affine.settings.workspace.experimental-features.enable-block-query.description',
     configurable: isCanaryBuild,
   },
-  enable_synced_doc_block: {
-    category: 'blocksuite',
-    bsFlag: 'enable_synced_doc_block',
-    displayName:
-      'com.affine.settings.workspace.experimental-features.enable-synced-doc-block.name',
-    description:
-      'com.affine.settings.workspace.experimental-features.enable-synced-doc-block.description',
-    configurable: false,
-    defaultState: true,
-  },
   enable_edgeless_text: {
     category: 'blocksuite',
     bsFlag: 'enable_edgeless_text',

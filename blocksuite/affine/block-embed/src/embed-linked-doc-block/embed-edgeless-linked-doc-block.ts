@@ -6,7 +6,6 @@ import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
-import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import {
   cloneReferenceInfoWithoutAliases,
   isNewTabTrigger,
@@ -22,14 +21,6 @@ export class EmbedEdgelessLinkedDocBlockComponent extends toEdgelessEmbedBlock(
 ) {
   override convertToEmbed = () => {
     const { id, doc, caption, xywh } = this.model;
-
-    // synced doc entry controlled by flag
-    const isSyncedDocEnabled = doc
-      .get(FeatureFlagService)
-      .getFlag('enable_synced_doc_block');
-    if (!isSyncedDocEnabled) {
-      return;
-    }
 
     const style = 'syncedDoc';
     const bound = Bound.deserialize(xywh);

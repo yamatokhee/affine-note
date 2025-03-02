@@ -43,7 +43,6 @@ import {
 import {
   EmbedOptionProvider,
   type EmbedOptions,
-  FeatureFlagService,
   GenerateDocUrlProvider,
   type GenerateDocUrlService,
   type LinkEventType,
@@ -418,16 +417,6 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
 
   private get _canConvertToEmbedView() {
     const block = this._blockComponent;
-
-    // synced doc entry controlled by awareness flag
-    if (!!block && isEmbedLinkedDocBlock(block.model)) {
-      const isSyncedDocEnabled = block.doc
-        .get(FeatureFlagService)
-        .getFlag('enable_synced_doc_block');
-      if (!isSyncedDocEnabled) {
-        return false;
-      }
-    }
 
     return (
       (block && 'convertToEmbed' in block) ||

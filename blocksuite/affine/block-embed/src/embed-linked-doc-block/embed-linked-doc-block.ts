@@ -14,7 +14,6 @@ import {
 import {
   DocDisplayMetaProvider,
   DocModeProvider,
-  FeatureFlagService,
   OpenDocExtensionIdentifier,
   type OpenDocMode,
   ThemeProvider,
@@ -130,14 +129,6 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
     if (this._referenceToNode) return;
 
     const { doc, caption } = this.model;
-
-    // synced doc entry controlled by flag
-    const isSyncedDocEnabled = doc
-      .get(FeatureFlagService)
-      .getFlag('enable_synced_doc_block');
-    if (!isSyncedDocEnabled) {
-      return;
-    }
 
     const parent = doc.getParent(this.model);
     if (!parent) {
