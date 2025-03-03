@@ -51,7 +51,7 @@ runs:
       # pass -D_BSD_SOURCE to clang to fix the tree-sitter build issue
       run: |
         echo "CC=clang -D_BSD_SOURCE" >> "$GITHUB_ENV"
-        echo "TARGET_CC=clang" >> "$GITHUB_ENV"
+        echo "TARGET_CC=clang -D_BSD_SOURCE" >> "$GITHUB_ENV"
 
     - name: Cache cargo
       uses: Swatinem/rust-cache@v2

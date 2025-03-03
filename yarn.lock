@@ -746,7 +746,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/native@workspace:packages/frontend/native"
   dependencies:
-    "@napi-rs/cli": "npm:3.0.0-alpha.72"
+    "@napi-rs/cli": "npm:3.0.0-alpha.73"
     "@napi-rs/whisper": "npm:^0.0.4"
     "@types/node": "npm:^22.0.0"
     ava: "npm:^6.2.0"
@@ -797,7 +797,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/server-native@workspace:packages/backend/native"
   dependencies:
-    "@napi-rs/cli": "npm:3.0.0-alpha.72"
+    "@napi-rs/cli": "npm:3.0.0-alpha.73"
     lib0: "npm:^0.2.99"
     tiktoken: "npm:^1.0.17"
     tinybench: "npm:^3.0.7"
@@ -6681,9 +6681,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@napi-rs/cli@npm:3.0.0-alpha.72":
-  version: 3.0.0-alpha.72
-  resolution: "@napi-rs/cli@npm:3.0.0-alpha.72"
+"@napi-rs/cli@npm:3.0.0-alpha.73":
+  version: 3.0.0-alpha.73
+  resolution: "@napi-rs/cli@npm:3.0.0-alpha.73"
   dependencies:
     "@inquirer/prompts": "npm:^7.0.0"
     "@napi-rs/cross-toolchain": "npm:^0.0.19"
@@ -6710,7 +6710,7 @@ __metadata:
   bin:
     napi: ./dist/cli.js
     napi-raw: ./cli.mjs
-  checksum: 10/8575e8eaab880bd3dd41dd3f7fc2e79ca7fcb3197038c4aedc41fcfe46ab10fa34f70b0370cb52325b07ca8ec6115c87f48b8bd7850ca10964933563718a6ede
+  checksum: 10/85d4d5e6bb177f68c60335dcb42ffd8b4130fe41abaf1f7fd4a2c645ff23b6acd19b8155333bcd0a1bdcdb42fb6dca8f4b4dc46a395c588ac1801388cd1d008e
   languageName: node
   linkType: hard
 
