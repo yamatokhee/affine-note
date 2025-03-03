@@ -194,6 +194,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
       'affine:code',
       'affine:list',
       'affine:divider',
+      'affine:latex',
     ].map(flavour => ({ flavour, viewType: 'display' })),
   };
 
