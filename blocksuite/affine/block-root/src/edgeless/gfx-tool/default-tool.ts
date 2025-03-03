@@ -27,7 +27,6 @@ import {
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
 import {
-  clamp,
   handleNativeRangeAtPoint,
   resetNativeSelection,
 } from '@blocksuite/affine-shared/utils';
@@ -52,6 +51,7 @@ import {
   Vec,
 } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
+import clamp from 'lodash-es/clamp';
 
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 import { prepareCloneData } from '../utils/clone-utils.js';

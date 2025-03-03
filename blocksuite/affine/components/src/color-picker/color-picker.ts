@@ -1,6 +1,6 @@
 import type { Color } from '@blocksuite/affine-model';
 import { on, once, stopPropagation } from '@blocksuite/affine-shared/utils';
-import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
+import { clamp, SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { batch, computed, signal } from '@preact/signals-core';
 import { html, LitElement } from 'lit';
 import { property, query } from 'lit/decorators.js';
@@ -24,7 +24,6 @@ import type {
 } from './types.js';
 import {
   bound01,
-  clamp,
   defaultHsva,
   eq,
   hsvaToHex8,
@@ -55,7 +54,7 @@ export class EdgelessColorPicker extends SignalWatcher(
     const orignalValue = target.value;
     let value = orignalValue.trim().replace(/[^0-9]/, '');
 
-    const alpha = clamp(0, Number(value), 100);
+    const alpha = clamp(Number(value), 0, 100);
     const a = bound01(alpha, 100);
     const hsva = this.hsva$.peek();
 

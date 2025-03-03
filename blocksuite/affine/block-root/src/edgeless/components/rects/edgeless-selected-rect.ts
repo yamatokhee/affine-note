@@ -35,7 +35,6 @@ import {
 import { EMBED_CARD_HEIGHT } from '@blocksuite/affine-shared/consts';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import {
-  clamp,
   getElementsWithoutGroup,
   getSelectedRect,
   requestThrottledConnectedFrame,
@@ -68,6 +67,7 @@ import { css, html, nothing } from 'lit';
 import { state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import clamp from 'lodash-es/clamp';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import {
