@@ -44,7 +44,7 @@ dependencies = [
  "sha3",
  "strum_macros",
  "text-splitter",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "tiktoken-rs",
  "tree-sitter",
  "tree-sitter-c",
