@@ -103,6 +103,16 @@ export const AFFINE_FLAGS = {
     configurable: false,
     defaultState: true,
   },
+  enable_block_meta: {
+    category: 'blocksuite',
+    bsFlag: 'enable_block_meta',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-block-meta.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-block-meta.description',
+    configurable: isCanaryBuild,
+    defaultState: false,
+  },
   enable_emoji_folder_icon: {
     category: 'affine',
     displayName:
