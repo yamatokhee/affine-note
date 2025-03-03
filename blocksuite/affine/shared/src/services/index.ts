@@ -18,4 +18,5 @@ export * from './quick-search-service';
 export * from './sidebar-service';
 export * from './telemetry-service';
 export * from './theme-service';
+export * from './user-service';
 export * from './virtual-keyboard-service';
