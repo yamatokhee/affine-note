@@ -1,6 +1,6 @@
+import { Bound } from '@blocksuite/global/gfx';
 import {
   assertType,
-  Bound,
   DisposableGroup,
   last,
   Slot,

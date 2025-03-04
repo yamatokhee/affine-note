@@ -1,4 +1,4 @@
-import { clamp } from '@blocksuite/global/utils';
+import { clamp } from '@blocksuite/global/gfx';
 
 export const BLOCK_CHILDREN_CONTAINER_PADDING_LEFT = 24;
 export const NOTE_MIN_WIDTH = 450 + 24 * 2;

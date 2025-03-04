@@ -32,7 +32,7 @@ import {
   ZOOM_STEP,
 } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import { Bound, getCommonBound } from '@blocksuite/global/utils';
+import { Bound, getCommonBound } from '@blocksuite/global/gfx';
 import { effect } from '@preact/signals-core';
 import clamp from 'lodash-es/clamp';
 

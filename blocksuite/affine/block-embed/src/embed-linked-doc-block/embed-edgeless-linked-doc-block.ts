@@ -11,7 +11,7 @@ import {
   isNewTabTrigger,
   isNewViewTrigger,
 } from '@blocksuite/affine-shared/utils';
-import { Bound } from '@blocksuite/global/utils';
+import { Bound } from '@blocksuite/global/gfx';
 
 import { toEdgelessEmbedBlock } from '../common/to-edgeless-embed-block.js';
 import { EmbedLinkedDocBlockComponent } from './embed-linked-doc-block.js';

@@ -1,7 +1,7 @@
 // https://www.w3.org/TR/css-color-4/
 
 import type { Color, ColorScheme } from '@blocksuite/affine-model';
-import { clamp } from '@blocksuite/global/utils';
+import { clamp } from '@blocksuite/global/gfx';
 
 import { COLORS, FIRST_COLOR } from './consts.js';
 import type {

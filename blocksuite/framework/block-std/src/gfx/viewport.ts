@@ -1,12 +1,11 @@
 import {
   Bound,
   clamp,
-  debounce,
   type IPoint,
   type IVec,
-  Slot,
   Vec,
-} from '@blocksuite/global/utils';
+} from '@blocksuite/global/gfx';
+import { debounce, Slot } from '@blocksuite/global/utils';
 import { signal } from '@preact/signals-core';
 
 import type { GfxViewportElement } from '.';

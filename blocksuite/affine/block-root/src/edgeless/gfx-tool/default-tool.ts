@@ -41,15 +41,9 @@ import {
   isGfxGroupCompatibleModel,
   type PointTestOptions,
 } from '@blocksuite/block-std/gfx';
-import type { IVec } from '@blocksuite/global/utils';
-import {
-  Bound,
-  DisposableGroup,
-  getCommonBoundWithRotation,
-  last,
-  noop,
-  Vec,
-} from '@blocksuite/global/utils';
+import type { IVec } from '@blocksuite/global/gfx';
+import { Bound, getCommonBoundWithRotation, Vec } from '@blocksuite/global/gfx';
+import { DisposableGroup, last, noop } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 import clamp from 'lodash-es/clamp';
 

@@ -49,20 +49,14 @@ import {
   type GfxModel,
   type GfxPrimitiveElementModel,
 } from '@blocksuite/block-std/gfx';
-import type {
-  Disposable,
-  IPoint,
-  IVec,
-  PointLocation,
-} from '@blocksuite/global/utils';
+import type { IPoint, IVec, PointLocation } from '@blocksuite/global/gfx';
 import {
-  assertType,
   Bound,
   deserializeXYWH,
   normalizeDegAngle,
-  pickValues,
-  Slot,
-} from '@blocksuite/global/utils';
+} from '@blocksuite/global/gfx';
+import type { Disposable } from '@blocksuite/global/utils';
+import { assertType, pickValues, Slot } from '@blocksuite/global/utils';
 import { css, html, nothing } from 'lit';
 import { state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';

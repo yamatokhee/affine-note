@@ -1,7 +1,7 @@
 import { Overlay } from '@blocksuite/affine-block-surface';
 import { ConnectorElementModel } from '@blocksuite/affine-model';
 import type { GfxModel } from '@blocksuite/block-std/gfx';
-import { almostEqual, Bound, Point } from '@blocksuite/global/utils';
+import { almostEqual, Bound, Point } from '@blocksuite/global/gfx';
 
 interface Distance {
   horiz?: {
