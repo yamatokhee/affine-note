@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 
-import { Slot } from '../utils.js';
+import { Slot } from '../utils/slot.js';
 
 describe('slot', () => {
   test('init', () => {

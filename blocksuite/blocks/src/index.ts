@@ -83,6 +83,7 @@ export {
   createDefaultDoc,
   createSignalFromObservable,
   findNoteBlockModel,
+  getFigmaSquircleSvgPath,
   getLastNoteBlock,
   getPageRootByElement,
   isInsideEdgelessEditor,
