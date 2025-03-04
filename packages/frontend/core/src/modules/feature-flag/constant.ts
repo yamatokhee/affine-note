@@ -238,6 +238,13 @@ export const AFFINE_FLAGS = {
     configurable: BUILD_CONFIG.isMobileEdition,
     defaultState: false,
   },
+  enable_turbo_renderer: {
+    category: 'affine',
+    displayName: 'Enable Turbo Renderer',
+    description: 'Enable experimental edgeless turbo renderer',
+    configurable: isCanaryBuild,
+    defaultState: false,
+  },
 } satisfies { [key in string]: FlagInfo };
 
 // oxlint-disable-next-line no-redeclare

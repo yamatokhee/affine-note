@@ -100,6 +100,10 @@ export {
   SpecProvider,
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
+export {
+  ViewportTurboRendererExtension,
+  ViewportTurboRendererIdentifier,
+} from '@blocksuite/affine-shared/viewport-renderer';
 export type { DragBlockPayload } from '@blocksuite/affine-widget-drag-handle';
 
 const env: Record<string, unknown> =

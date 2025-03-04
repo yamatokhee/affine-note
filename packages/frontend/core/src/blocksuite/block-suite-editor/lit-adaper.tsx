@@ -21,7 +21,11 @@ import { toURLSearchParams } from '@affine/core/modules/navigation';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import track from '@affine/track';
-import type { DocMode, DocTitle } from '@blocksuite/affine/blocks';
+import {
+  type DocMode,
+  type DocTitle,
+  ViewportTurboRendererExtension,
+} from '@blocksuite/affine/blocks';
 import type { Store } from '@blocksuite/affine/store';
 import {
   useFramework,
@@ -132,6 +136,10 @@ const usePatchSpecs = (mode: DocMode) => {
 
   const enableAI = useEnableAI();
 
+  const enableTurboRenderer = useLiveData(
+    featureFlagService.flags.enable_turbo_renderer.$
+  );
+
   const patchedSpecs = useMemo(() => {
     const builder = enableEditorExtension(framework, mode, enableAI);
 
@@ -147,6 +155,9 @@ const usePatchSpecs = (mode: DocMode) => {
         patchQuickSearchService(framework),
         patchSideBarService(framework),
         patchDocModeService(docService, docsService, editorService),
+        mode === 'edgeless' && enableTurboRenderer
+          ? [ViewportTurboRendererExtension]
+          : [],
       ].flat()
     );
 
@@ -173,6 +184,7 @@ const usePatchSpecs = (mode: DocMode) => {
     referenceRenderer,
     featureFlagService,
     enableAI,
+    enableTurboRenderer,
   ]);
 
   return [
