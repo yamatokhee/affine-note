@@ -13431,6 +13431,7 @@ __metadata:
     "@affine/templates": "workspace:*"
     "@datastructures-js/binary-search-tree": "npm:^5.3.2"
     "@emotion/react": "npm:^11.14.0"
+    "@preact/signals-core": "npm:^1.8.0"
     "@swc/core": "npm:^1.10.1"
     "@testing-library/dom": "npm:^10.4.0"
     "@testing-library/react": "npm:^16.1.0"

@@ -255,6 +255,8 @@ export default tseslint.config(
 
           types: {
             '^LiveData$': true,
+            '^Signal$': true,
+            '^ReadonlySignal$': true,
             '^Doc$': false,
             '^Awareness$': false,
             '^UndoManager$': false,
