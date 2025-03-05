@@ -7,11 +7,6 @@
   },
   "include": ["./src"],
   "references": [
-    { "path": "../block-callout" },
-    { "path": "../block-list" },
-    { "path": "../block-note" },
-    { "path": "../block-paragraph" },
-    { "path": "../block-surface" },
     { "path": "../components" },
     { "path": "../model" },
     { "path": "../shared" },
