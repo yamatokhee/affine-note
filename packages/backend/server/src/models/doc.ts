@@ -3,8 +3,9 @@ import { Transactional } from '@nestjs-cls/transactional';
 import type { Update } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
+import { DocIsNotPublic } from '../base/error';
 import { BaseModel } from './base';
-import { Doc, publicUserSelect } from './common';
+import { Doc, DocRole, PublicDocMode, publicUserSelect } from './common';
 
 export interface DocRecord extends Doc {}
 
@@ -342,6 +343,12 @@ export class DocModel extends BaseModel {
     })) as Prisma.WorkspaceDocGetPayload<{ select: Select }> | null;
   }
 
+  async setDefaultRole(workspaceId: string, docId: string, role: DocRole) {
+    return await this.upsertMeta(workspaceId, docId, {
+      defaultRole: role,
+    });
+  }
+
   /**
    * Find the workspace public doc metas.
    */
@@ -364,6 +371,52 @@ export class DocModel extends BaseModel {
         public: true,
       },
     });
+  }
+
+  /**
+   * Check if the workspace has any public docs.
+   */
+  async hasPublic(workspaceId: string) {
+    const count = await this.getPublicsCount(workspaceId);
+    return count > 0;
+  }
+
+  /**
+   * Publish a doc as public.
+   */
+  async publish(
+    workspaceId: string,
+    docId: string,
+    mode: PublicDocMode = PublicDocMode.Page
+  ) {
+    return await this.upsertMeta(workspaceId, docId, {
+      public: true,
+      mode,
+    });
+  }
+
+  @Transactional()
+  async unpublish(workspaceId: string, docId: string) {
+    const docMeta = await this.getMeta(workspaceId, docId);
+    if (!docMeta?.public) {
+      throw new DocIsNotPublic();
+    }
+
+    return await this.upsertMeta(workspaceId, docId, {
+      public: false,
+    });
+  }
+
+  /**
+   * Check if the doc is public.
+   */
+  async isPublic(workspaceId: string, docId: string) {
+    const docMeta = await this.getMeta(workspaceId, docId, {
+      select: {
+        public: true,
+      },
+    });
+    return docMeta?.public ?? false;
   }
   // #endregion
 }
