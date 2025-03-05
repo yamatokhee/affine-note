@@ -426,6 +426,7 @@ query getCopilotSessions($workspaceId: String!, $docId: String, $options: QueryC
     copilot(workspaceId: $workspaceId) {
       sessions(docId: $docId, options: $options) {
         id
+        parentSessionId
         promptName
       }
     }
@@ -1700,13 +1701,20 @@ export const getWorkspaceRolePermissionsQuery = {
 query getWorkspaceRolePermissions($id: String!) {
   workspaceRolePermissions(id: $id) {
     permissions {
+      Workspace_Adminitrators_Manage
+      Workspace_Blobs_List
+      Workspace_Blobs_Read
+      Workspace_Blobs_Write
+      Workspace_Copilot
       Workspace_CreateDoc
       Workspace_Delete
       Workspace_Organize_Read
+      Workspace_Payment_Manage
       Workspace_Properties_Create
       Workspace_Properties_Delete
       Workspace_Properties_Read
       Workspace_Properties_Update
+      Workspace_Read
       Workspace_Settings_Read
       Workspace_Settings_Update
       Workspace_Sync

@@ -401,7 +401,13 @@ export class ChatSessionService {
     workspaceId: string,
     docId?: string,
     options?: { action?: boolean }
-  ): Promise<Array<{ id: string; promptName: string }>> {
+  ): Promise<
+    Array<{
+      id: string;
+      parentSessionId?: string;
+      promptName: string;
+    }>
+  > {
     return await this.db.aiSession
       .findMany({
         where: {
@@ -415,12 +421,14 @@ export class ChatSessionService {
         },
         select: {
           id: true,
+          parentSessionId: true,
           promptName: true,
         },
       })
       .then(sessions =>
-        sessions.map(({ id, promptName }) => ({
+        sessions.map(({ id, parentSessionId, promptName }) => ({
           id,
+          parentSessionId: parentSessionId || undefined,
           promptName,
         }))
       );

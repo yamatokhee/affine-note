@@ -197,6 +197,7 @@ type CopilotQuota {
 
 type CopilotSessionType {
   id: ID!
+  parentSessionId: ID
   promptName: String!
 }
 
