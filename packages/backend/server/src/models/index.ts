@@ -10,7 +10,6 @@ import { ApplyType } from '../base';
 import { DocModel } from './doc';
 import { DocUserModel } from './doc-user';
 import { FeatureModel } from './feature';
-import { PageModel } from './page';
 import { MODELS_SYMBOL } from './provider';
 import { SessionModel } from './session';
 import { UserModel } from './user';
@@ -27,7 +26,6 @@ const MODELS = {
   verificationToken: VerificationTokenModel,
   feature: FeatureModel,
   workspace: WorkspaceModel,
-  page: PageModel,
   userFeature: UserFeatureModel,
   workspaceFeature: WorkspaceFeatureModel,
   doc: DocModel,
@@ -89,7 +87,6 @@ export * from './common';
 export * from './doc';
 export * from './doc-user';
 export * from './feature';
-export * from './page';
 export * from './session';
 export * from './user';
 export * from './user-doc';

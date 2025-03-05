@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import ava, { TestFn } from 'ava';
 
 import { Config } from '../../base/config';
+import { PublicDocMode } from '../../models';
 import { DocModel } from '../../models/doc';
 import { type User, UserModel } from '../../models/user';
 import { type Workspace, WorkspaceModel } from '../../models/workspace';
@@ -228,7 +229,7 @@ test('should upsert a doc', async t => {
   t.is(updatedSnapshot!.editorId, otherUser.id);
 });
 
-test('should get a doc meta', async t => {
+test('should get a doc authors', async t => {
   const snapshot = {
     spaceId: workspace.id,
     docId: randomUUID(),
@@ -237,7 +238,7 @@ test('should get a doc meta', async t => {
     editorId: user.id,
   };
   await t.context.doc.upsert(snapshot);
-  const meta = await t.context.doc.getMeta(snapshot.spaceId, snapshot.docId);
+  const meta = await t.context.doc.getAuthors(snapshot.spaceId, snapshot.docId);
   t.truthy(meta);
   t.deepEqual(meta!.createdByUser, {
     id: user.id,
@@ -262,7 +263,7 @@ test('should get a doc meta', async t => {
     timestamp: Date.now(),
   };
   await t.context.doc.upsert(newSnapshot);
-  const updatedSnapshotMeta = await t.context.doc.getMeta(
+  const updatedSnapshotMeta = await t.context.doc.getAuthors(
     snapshot.spaceId,
     snapshot.docId
   );
@@ -282,7 +283,7 @@ test('should get a doc meta', async t => {
   t.deepEqual(updatedSnapshotMeta!.updatedAt, new Date(newSnapshot.timestamp));
 
   // get null when doc not found
-  const notFoundMeta = await t.context.doc.getMeta(
+  const notFoundMeta = await t.context.doc.getAuthors(
     snapshot.spaceId,
     randomUUID()
   );
@@ -579,3 +580,93 @@ test('should detect doc exists on only updates exists', async t => {
   ]);
   t.true(await t.context.doc.exists(workspace.id, docId));
 });
+
+// #region DocMeta
+
+test('should create doc meta with default mode and public false', async t => {
+  const docId = randomUUID();
+  const meta = await t.context.doc.upsertMeta(workspace.id, docId);
+  t.is(meta.workspaceId, workspace.id);
+  t.is(meta.docId, docId);
+  t.is(meta.mode, PublicDocMode.Page);
+  t.is(meta.public, false);
+});
+
+test('should update doc meta', async t => {
+  const docId = randomUUID();
+  const meta = await t.context.doc.upsertMeta(workspace.id, docId);
+  const data = {
+    mode: PublicDocMode.Edgeless,
+    public: true,
+  };
+  await t.context.doc.upsertMeta(workspace.id, docId, data);
+  const doc1 = await t.context.doc.getMeta(workspace.id, docId);
+  t.deepEqual(doc1, {
+    ...meta,
+    ...data,
+  });
+
+  // set to private
+  await t.context.doc.upsertMeta(workspace.id, docId, {
+    public: false,
+  });
+  const doc2 = await t.context.doc.getMeta(workspace.id, docId);
+  t.deepEqual(doc2, {
+    ...meta,
+    ...data,
+    public: false,
+  });
+});
+
+test('should get null when doc meta not exists', async t => {
+  const doc = await t.context.doc.getMeta(workspace.id, randomUUID());
+  t.is(doc, null);
+});
+
+test('should get doc meta with select', async t => {
+  const docId = randomUUID();
+  await t.context.doc.upsertMeta(workspace.id, docId);
+  const doc = await t.context.doc.getMeta(workspace.id, docId, {
+    select: {
+      mode: true,
+    },
+  });
+  t.is(doc!.mode, PublicDocMode.Page);
+  // @ts-expect-error public is not in the select
+  t.is(doc!.public, undefined);
+});
+
+test('should get public doc count', async t => {
+  const docId1 = randomUUID();
+  const docId2 = randomUUID();
+  const docId3 = randomUUID();
+  await t.context.doc.upsertMeta(workspace.id, docId1, {
+    public: true,
+  });
+  await t.context.doc.upsertMeta(workspace.id, docId2, {
+    public: true,
+  });
+  await t.context.doc.upsertMeta(workspace.id, docId3);
+  const count = await t.context.doc.getPublicsCount(workspace.id);
+  t.is(count, 2);
+});
+
+test('should get public docs of a workspace', async t => {
+  const docId1 = `1-${randomUUID()}`;
+  const docId2 = `2-${randomUUID()}`;
+  const docId3 = `3-${randomUUID()}`;
+  await t.context.doc.upsertMeta(workspace.id, docId1, {
+    public: true,
+  });
+  await t.context.doc.upsertMeta(workspace.id, docId2, {
+    public: true,
+  });
+  await t.context.doc.upsertMeta(workspace.id, docId3, {
+    public: false,
+  });
+  const docs = await t.context.doc.findPublics(workspace.id);
+  t.is(docs.length, 2);
+  t.deepEqual(docs.map(d => d.docId).sort(), [docId1, docId2]);
+});
+
+// #endregion

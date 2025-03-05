@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@nestjs-cls/transactional';
 import type { Update } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 import { BaseModel } from './base';
 import type { Doc, DocEditor } from './common';
@@ -31,6 +32,11 @@ export interface DocHistoryFilter {
   take?: number;
 }
 
+export type DocMetaUpsertInput = Omit<
+  Prisma.WorkspaceDocUncheckedCreateInput,
+  'workspaceId' | 'docId'
+>;
+
 /**
  * Workspace Doc Model
  *
@@ -38,6 +44,7 @@ export interface DocHistoryFilter {
  *  - Updates: the changes made to the doc.
  *  - History: the doc history of the doc.
  *  - Doc: the doc itself.
+ *  - DocMeta: the doc meta.
  */
 @Injectable()
 export class DocModel extends BaseModel {
@@ -338,7 +345,7 @@ export class DocModel extends BaseModel {
     };
   }
 
-  async getMeta(workspaceId: string, docId: string) {
+  async getAuthors(workspaceId: string, docId: string) {
     return await this.db.snapshot.findUnique({
       where: {
         workspaceId_id: {
@@ -460,5 +467,79 @@ export class DocModel extends BaseModel {
     return result;
   }
 
+  // #endregion
+
+  // #region DocMeta
+
+  /**
+   * Create or update the doc meta.
+   */
+  async upsertMeta(
+    workspaceId: string,
+    docId: string,
+    data?: DocMetaUpsertInput
+  ) {
+    return await this.db.workspaceDoc.upsert({
+      where: {
+        workspaceId_docId: {
+          workspaceId,
+          docId,
+        },
+      },
+      update: {
+        ...data,
+      },
+      create: {
+        ...data,
+        workspaceId,
+        docId,
+      },
+    });
+  }
+
+  /**
+   * Get the doc meta.
+   */
+  async getMeta<Select extends Prisma.WorkspaceDocSelect>(
+    workspaceId: string,
+    docId: string,
+    options?: {
+      select?: Select;
+    }
+  ) {
+    return (await this.db.workspaceDoc.findUnique({
+      where: {
+        workspaceId_docId: {
+          workspaceId,
+          docId,
+        },
+      },
+      select: options?.select,
+    })) as Prisma.WorkspaceDocGetPayload<{ select: Select }> | null;
+  }
+
+  /**
+   * Find the workspace public doc metas.
+   */
+  async findPublics(workspaceId: string) {
+    return await this.db.workspaceDoc.findMany({
+      where: {
+        workspaceId,
+        public: true,
+      },
+    });
+  }
+
+  /**
+   * Get the workspace public docs count.
+   */
+  async getPublicsCount(workspaceId: string) {
+    return await this.db.workspaceDoc.count({
+      where: {
+        workspaceId,
+        public: true,
+      },
+    });
+  }
   // #endregion
 }
