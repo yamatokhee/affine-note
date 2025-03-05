@@ -439,6 +439,12 @@ export const USER_FRIENDLY_ERRORS = {
     message: ({ docId, action }) =>
       `You do not have permission to perform ${action} action on doc ${docId}.`,
   },
+  doc_update_blocked: {
+    type: 'action_forbidden',
+    args: { spaceId: 'string', docId: 'string' },
+    message: ({ spaceId, docId }) =>
+      `Doc ${docId} under Space ${spaceId} is blocked from updating.`,
+  },
   version_rejected: {
     type: 'action_forbidden',
     args: { version: 'string', serverVersion: 'string' },
