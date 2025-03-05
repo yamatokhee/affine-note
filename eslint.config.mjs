@@ -188,11 +188,6 @@ export default tseslint.config(
               message: "Don't import from src",
               allowTypeImports: false,
             },
-            {
-              group: ['@blocksuite/store'],
-              message: "Import from '@blocksuite/global/utils'",
-              importNames: ['assertEquals'],
-            },
           ],
         },
       ],
