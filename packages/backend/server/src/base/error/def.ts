@@ -301,6 +301,12 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'bad_request',
     message: 'Invalid callback state parameter.',
   },
+  invalid_oauth_callback_code: {
+    type: 'bad_request',
+    args: { status: 'number', body: 'string' },
+    message: ({ status, body }) =>
+      `Invalid callback code parameter, provider response status: ${status} and body: ${body}.`,
+  },
   missing_oauth_query_parameter: {
     type: 'bad_request',
     args: { name: 'string' },

@@ -324,7 +324,7 @@ type EditorType {
   name: String!
 }
 
-union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotContextFileNotSupportedDataType | CopilotDocNotFoundDataType | CopilotFailedToMatchContextDataType | CopilotFailedToModifyContextDataType | CopilotInvalidContextDataType | CopilotMessageNotFoundDataType | CopilotPromptNotFoundDataType | CopilotProviderSideErrorDataType | DocActionDeniedDataType | DocHistoryNotFoundDataType | DocNotFoundDataType | ExpectToGrantDocUserRolesDataType | ExpectToRevokeDocUserRolesDataType | ExpectToUpdateDocUserRoleDataType | GraphqlBadRequestDataType | InvalidEmailDataType | InvalidHistoryTimestampDataType | InvalidLicenseUpdateParamsDataType | InvalidPasswordLengthDataType | InvalidRuntimeConfigTypeDataType | MemberNotFoundInSpaceDataType | MissingOauthQueryParameterDataType | NotInSpaceDataType | QueryTooLongDataType | RuntimeConfigNotFoundDataType | SameSubscriptionRecurringDataType | SpaceAccessDeniedDataType | SpaceNotFoundDataType | SpaceOwnerNotFoundDataType | SpaceShouldHaveOnlyOneOwnerDataType | SubscriptionAlreadyExistsDataType | SubscriptionNotExistsDataType | SubscriptionPlanNotFoundDataType | UnknownOauthProviderDataType | UnsupportedClientVersionDataType | UnsupportedSubscriptionPlanDataType | VersionRejectedDataType | WorkspaceMembersExceedLimitToDowngradeDataType | WorkspacePermissionNotFoundDataType | WrongSignInCredentialsDataType
+union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotContextFileNotSupportedDataType | CopilotDocNotFoundDataType | CopilotFailedToMatchContextDataType | CopilotFailedToModifyContextDataType | CopilotInvalidContextDataType | CopilotMessageNotFoundDataType | CopilotPromptNotFoundDataType | CopilotProviderSideErrorDataType | DocActionDeniedDataType | DocHistoryNotFoundDataType | DocNotFoundDataType | ExpectToGrantDocUserRolesDataType | ExpectToRevokeDocUserRolesDataType | ExpectToUpdateDocUserRoleDataType | GraphqlBadRequestDataType | InvalidEmailDataType | InvalidHistoryTimestampDataType | InvalidLicenseUpdateParamsDataType | InvalidOauthCallbackCodeDataType | InvalidPasswordLengthDataType | InvalidRuntimeConfigTypeDataType | MemberNotFoundInSpaceDataType | MissingOauthQueryParameterDataType | NotInSpaceDataType | QueryTooLongDataType | RuntimeConfigNotFoundDataType | SameSubscriptionRecurringDataType | SpaceAccessDeniedDataType | SpaceNotFoundDataType | SpaceOwnerNotFoundDataType | SpaceShouldHaveOnlyOneOwnerDataType | SubscriptionAlreadyExistsDataType | SubscriptionNotExistsDataType | SubscriptionPlanNotFoundDataType | UnknownOauthProviderDataType | UnsupportedClientVersionDataType | UnsupportedSubscriptionPlanDataType | VersionRejectedDataType | WorkspaceMembersExceedLimitToDowngradeDataType | WorkspacePermissionNotFoundDataType | WrongSignInCredentialsDataType
 
 enum ErrorNames {
   ACCESS_DENIED
@@ -382,6 +382,7 @@ enum ErrorNames {
   INVALID_LICENSE_SESSION_ID
   INVALID_LICENSE_TO_ACTIVATE
   INVALID_LICENSE_UPDATE_PARAMS
+  INVALID_OAUTH_CALLBACK_CODE
   INVALID_OAUTH_CALLBACK_STATE
   INVALID_PASSWORD_LENGTH
   INVALID_RUNTIME_CONFIG_TYPE
@@ -501,6 +502,11 @@ type InvalidHistoryTimestampDataType {
 
 type InvalidLicenseUpdateParamsDataType {
   reason: String!
+}
+
+type InvalidOauthCallbackCodeDataType {
+  body: String!
+  status: Int!
 }
 
 type InvalidPasswordLengthDataType {
