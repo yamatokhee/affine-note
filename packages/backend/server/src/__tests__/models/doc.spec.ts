@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import ava, { TestFn } from 'ava';
 
 import { Config } from '../../base/config';
-import { PublicDocMode } from '../../models';
+import { HistoryModel, PublicDocMode } from '../../models';
 import { DocModel } from '../../models/doc';
 import { type User, UserModel } from '../../models/user';
 import { type Workspace, WorkspaceModel } from '../../models/workspace';
@@ -15,6 +15,7 @@ interface Context {
   user: UserModel;
   workspace: WorkspaceModel;
   doc: DocModel;
+  history: HistoryModel;
 }
 
 const test = ava as TestFn<Context>;
@@ -25,6 +26,7 @@ test.before(async t => {
   t.context.user = module.get(UserModel);
   t.context.workspace = module.get(WorkspaceModel);
   t.context.doc = module.get(DocModel);
+  t.context.history = module.get(HistoryModel);
   t.context.config = module.get(Config);
   t.context.module = module;
 });
@@ -290,136 +292,6 @@ test('should get a doc authors', async t => {
   t.is(notFoundMeta, null);
 });
 
-test('should create a history record', async t => {
-  const snapshot = {
-    spaceId: workspace.id,
-    docId: randomUUID(),
-    blob: Buffer.from('blob1'),
-    timestamp: Date.now(),
-    editorId: user.id,
-  };
-  await t.context.doc.upsert(snapshot);
-  const created = await t.context.doc.createHistory(snapshot, 1000);
-  t.truthy(created);
-  t.deepEqual(created.timestamp, snapshot.timestamp);
-  t.deepEqual(created.editor, {
-    id: user.id,
-    name: user.name,
-    avatarUrl: user.avatarUrl,
-  });
-  const history = await t.context.doc.getHistory(
-    snapshot.spaceId,
-    snapshot.docId,
-    snapshot.timestamp
-  );
-  t.deepEqual(history, {
-    ...created,
-    blob: snapshot.blob,
-  });
-});
-
-test('should return null when history timestamp not match', async t => {
-  const snapshot = {
-    spaceId: workspace.id,
-    docId: randomUUID(),
-    blob: Buffer.from('blob1'),
-    timestamp: Date.now(),
-    editorId: user.id,
-  };
-  await t.context.doc.upsert(snapshot);
-  await t.context.doc.createHistory(snapshot, 1000);
-  const history = await t.context.doc.getHistory(
-    snapshot.spaceId,
-    snapshot.docId,
-    snapshot.timestamp + 1
-  );
-  t.is(history, null);
-});
-
-test('should find history records', async t => {
-  const docId = randomUUID();
-  const snapshot1 = {
-    spaceId: workspace.id,
-    docId,
-    blob: Buffer.from('blob1'),
-    timestamp: Date.now() - 1000,
-    editorId: user.id,
-  };
-  const snapshot2 = {
-    spaceId: workspace.id,
-    docId,
-    blob: Buffer.from('blob2'),
-    timestamp: Date.now(),
-    editorId: user.id,
-  };
-  await t.context.doc.createHistory(snapshot1, 1000);
-  await t.context.doc.createHistory(snapshot2, 1000);
-  let histories = await t.context.doc.findHistories(workspace.id, docId);
-  t.is(histories.length, 2);
-  t.deepEqual(histories[0].timestamp, snapshot2.timestamp);
-  t.deepEqual(histories[0].editor, {
-    id: user.id,
-    name: user.name,
-    avatarUrl: user.avatarUrl,
-  });
-  t.deepEqual(histories[1].timestamp, snapshot1.timestamp);
-  t.deepEqual(histories[1].editor, {
-    id: user.id,
-    name: user.name,
-    avatarUrl: user.avatarUrl,
-  });
-  // only take 1 history, order by timestamp desc
-  histories = await t.context.doc.findHistories(workspace.id, docId, {
-    take: 1,
-  });
-  t.is(histories.length, 1);
-  t.deepEqual(histories[0].timestamp, snapshot2.timestamp);
-  t.deepEqual(histories[0].editor, {
-    id: user.id,
-    name: user.name,
-    avatarUrl: user.avatarUrl,
-  });
-  // get empty history
-  histories = await t.context.doc.findHistories(workspace.id, docId, {
-    before: Date.now() - 1000000,
-  });
-  t.is(histories.length, 0);
-});
-
-test('should get latest history', async t => {
-  const docId = randomUUID();
-  const snapshot1 = {
-    spaceId: workspace.id,
-    docId,
-    blob: Buffer.from('blob1'),
-    timestamp: Date.now() - 1000,
-    editorId: user.id,
-  };
-  const snapshot2 = {
-    spaceId: workspace.id,
-    docId,
-    blob: Buffer.from('blob2'),
-    timestamp: Date.now(),
-    editorId: user.id,
-  };
-  await t.context.doc.createHistory(snapshot1, 1000);
-  await t.context.doc.createHistory(snapshot2, 1000);
-  const history = await t.context.doc.getLatestHistory(workspace.id, docId);
-  t.truthy(history);
-  t.deepEqual(history!.timestamp, snapshot2.timestamp);
-  t.deepEqual(history!.editor, {
-    id: user.id,
-    name: user.name,
-    avatarUrl: user.avatarUrl,
-  });
-  // return null when no history
-  const emptyHistory = await t.context.doc.getLatestHistory(
-    workspace.id,
-    randomUUID()
-  );
-  t.is(emptyHistory, null);
-});
-
 test('should delete a doc, including histories, snapshots and updates', async t => {
   const docId = randomUUID();
   const snapshot = {
@@ -430,7 +302,7 @@ test('should delete a doc, including histories, snapshots and updates', async t 
     editorId: user.id,
   };
   await t.context.doc.upsert(snapshot);
-  await t.context.doc.createHistory(snapshot, 1000);
+  await t.context.history.create(snapshot, 1000);
   await t.context.doc.createUpdates([
     {
       spaceId: workspace.id,
@@ -443,10 +315,7 @@ test('should delete a doc, including histories, snapshots and updates', async t 
   await t.context.doc.delete(workspace.id, docId);
   const foundSnapshot = await t.context.doc.get(workspace.id, docId);
   t.is(foundSnapshot, null);
-  const foundHistory = await t.context.doc.getLatestHistory(
-    workspace.id,
-    docId
-  );
+  const foundHistory = await t.context.history.getLatest(workspace.id, docId);
   t.is(foundHistory, null);
   const foundUpdates = await t.context.doc.findUpdates(workspace.id, docId);
   t.is(foundUpdates.length, 0);
@@ -470,7 +339,7 @@ test('should delete all docs in a workspace', async t => {
     editorId: user.id,
   };
   await t.context.doc.upsert(snapshot1);
-  await t.context.doc.createHistory(snapshot1, 1000);
+  await t.context.history.create(snapshot1, 1000);
   await t.context.doc.createUpdates([
     {
       spaceId: workspace.id,
@@ -481,7 +350,7 @@ test('should delete all docs in a workspace', async t => {
     },
   ]);
   await t.context.doc.upsert(snapshot2);
-  await t.context.doc.createHistory(snapshot2, 1000);
+  await t.context.history.create(snapshot2, 1000);
   await t.context.doc.createUpdates([
     {
       spaceId: workspace.id,
@@ -495,19 +364,13 @@ test('should delete all docs in a workspace', async t => {
   t.is(deletedCount, 2);
   const foundSnapshot1 = await t.context.doc.get(workspace.id, docId1);
   t.is(foundSnapshot1, null);
-  const foundHistory1 = await t.context.doc.getLatestHistory(
-    workspace.id,
-    docId1
-  );
+  const foundHistory1 = await t.context.history.getLatest(workspace.id, docId1);
   t.is(foundHistory1, null);
   const foundUpdates1 = await t.context.doc.findUpdates(workspace.id, docId1);
   t.is(foundUpdates1.length, 0);
   const foundSnapshot2 = await t.context.doc.get(workspace.id, docId2);
   t.is(foundSnapshot2, null);
-  const foundHistory2 = await t.context.doc.getLatestHistory(
-    workspace.id,
-    docId2
-  );
+  const foundHistory2 = await t.context.history.getLatest(workspace.id, docId2);
   t.is(foundHistory2, null);
   const foundUpdates2 = await t.context.doc.findUpdates(workspace.id, docId2);
   t.is(foundUpdates2.length, 0);

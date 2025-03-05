@@ -10,6 +10,7 @@ import { ApplyType } from '../base';
 import { DocModel } from './doc';
 import { DocUserModel } from './doc-user';
 import { FeatureModel } from './feature';
+import { HistoryModel } from './history';
 import { MODELS_SYMBOL } from './provider';
 import { SessionModel } from './session';
 import { UserModel } from './user';
@@ -32,6 +33,7 @@ const MODELS = {
   userDoc: UserDocModel,
   workspaceUser: WorkspaceUserModel,
   docUser: DocUserModel,
+  history: HistoryModel,
 };
 
 type ModelsType = {
@@ -87,6 +89,7 @@ export * from './common';
 export * from './doc';
 export * from './doc-user';
 export * from './feature';
+export * from './history';
 export * from './session';
 export * from './user';
 export * from './user-doc';

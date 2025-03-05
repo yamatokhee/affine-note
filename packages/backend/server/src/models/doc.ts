@@ -4,33 +4,9 @@ import type { Update } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
 import { BaseModel } from './base';
-import type { Doc, DocEditor } from './common';
+import { Doc, publicUserSelect } from './common';
 
 export interface DocRecord extends Doc {}
-
-export interface DocHistorySimple {
-  timestamp: number;
-  editor: DocEditor | null;
-}
-
-export interface DocHistory {
-  blob: Buffer;
-  timestamp: number;
-  editor: DocEditor | null;
-}
-
-export interface DocHistoryFilter {
-  /**
-   * timestamp to filter histories before.
-   */
-  before?: number;
-  /**
-   * limit the number of histories to return.
-   *
-   * Default to `100`.
-   */
-  take?: number;
-}
 
 export type DocMetaUpsertInput = Omit<
   Prisma.WorkspaceDocUncheckedCreateInput,
@@ -68,16 +44,6 @@ export class DocModel extends BaseModel {
       createdAt: new Date(record.timestamp),
       createdBy: record.editorId || null,
       seq: null,
-    };
-  }
-
-  private get userSelectFields() {
-    return {
-      select: {
-        id: true,
-        name: true,
-        avatarUrl: true,
-      },
     };
   }
 
@@ -143,148 +109,6 @@ export class DocModel extends BaseModel {
     this.logger.log(
       `Deleted ${count} updates for workspace ${workspaceId} doc ${docId}`
     );
-    return count;
-  }
-
-  // #endregion
-
-  // #region History
-
-  /**
-   * Create a doc history with a max age.
-   */
-  async createHistory(
-    snapshot: Doc,
-    maxAge: number
-  ): Promise<DocHistorySimple> {
-    const row = await this.db.snapshotHistory.create({
-      select: {
-        timestamp: true,
-        createdByUser: this.userSelectFields,
-      },
-      data: {
-        workspaceId: snapshot.spaceId,
-        id: snapshot.docId,
-        timestamp: new Date(snapshot.timestamp),
-        blob: snapshot.blob,
-        createdBy: snapshot.editorId,
-        expiredAt: new Date(Date.now() + maxAge),
-      },
-    });
-    return {
-      timestamp: row.timestamp.getTime(),
-      editor: row.createdByUser,
-    };
-  }
-
-  /**
-   * Find doc history by workspaceId and docId.
-   *
-   * Only including timestamp, createdByUser
-   */
-  async findHistories(
-    workspaceId: string,
-    docId: string,
-    filter?: DocHistoryFilter
-  ): Promise<DocHistorySimple[]> {
-    const rows = await this.db.snapshotHistory.findMany({
-      select: {
-        timestamp: true,
-        createdByUser: this.userSelectFields,
-      },
-      where: {
-        workspaceId,
-        id: docId,
-        timestamp: {
-          lt: filter?.before ? new Date(filter.before) : new Date(),
-        },
-      },
-      orderBy: {
-        timestamp: 'desc',
-      },
-      take: filter?.take ?? 100,
-    });
-    return rows.map(r => ({
-      timestamp: r.timestamp.getTime(),
-      editor: r.createdByUser,
-    }));
-  }
-
-  /**
-   * Get the history of a doc at a specific timestamp.
-   *
-   * Including blob and createdByUser
-   */
-  async getHistory(
-    workspaceId: string,
-    docId: string,
-    timestamp: number
-  ): Promise<DocHistory | null> {
-    const row = await this.db.snapshotHistory.findUnique({
-      where: {
-        workspaceId_id_timestamp: {
-          workspaceId,
-          id: docId,
-          timestamp: new Date(timestamp),
-        },
-      },
-      include: {
-        createdByUser: this.userSelectFields,
-      },
-    });
-    if (!row) {
-      return null;
-    }
-    return {
-      blob: row.blob,
-      timestamp: row.timestamp.getTime(),
-      editor: row.createdByUser,
-    };
-  }
-
-  /**
-   * Get the latest history of a doc.
-   *
-   * Only including timestamp, createdByUser
-   */
-  async getLatestHistory(
-    workspaceId: string,
-    docId: string
-  ): Promise<DocHistorySimple | null> {
-    const row = await this.db.snapshotHistory.findFirst({
-      where: {
-        workspaceId,
-        id: docId,
-      },
-      select: {
-        timestamp: true,
-        createdByUser: this.userSelectFields,
-      },
-      orderBy: {
-        timestamp: 'desc',
-      },
-    });
-    if (!row) {
-      return null;
-    }
-    return {
-      timestamp: row.timestamp.getTime(),
-      editor: row.createdByUser,
-    };
-  }
-
-  /**
-   * Delete expired histories.
-   */
-  async deleteExpiredHistories() {
-    const { count } = await this.db.snapshotHistory.deleteMany({
-      where: {
-        expiredAt: {
-          lte: new Date(),
-        },
-      },
-    });
-    this.logger.log(`Deleted ${count} expired histories`);
     return count;
   }
 
@@ -356,8 +180,8 @@ export class DocModel extends BaseModel {
       select: {
         createdAt: true,
         updatedAt: true,
-        createdByUser: this.userSelectFields,
-        updatedByUser: this.userSelectFields,
+        createdByUser: { select: publicUserSelect },
+        updatedByUser: { select: publicUserSelect },
       },
     });
   }
