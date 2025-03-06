@@ -10,6 +10,7 @@ import { Clipboard } from '../clipboard/index.js';
 import { CommandManager } from '../command/index.js';
 import { UIEventDispatcher } from '../event/index.js';
 import { DndController } from '../extension/dnd/index.js';
+import { EditorLifeCycleExtension } from '../extension/editor-life-cycle.js';
 import { GfxController } from '../gfx/controller.js';
 import { GfxSelectionManager } from '../gfx/selection.js';
 import { SurfaceMiddlewareExtension } from '../gfx/surface-middleware.js';
@@ -41,6 +42,7 @@ const internalExtensions = [
   SurfaceMiddlewareExtension,
   ViewManager,
   DndController,
+  EditorLifeCycleExtension,
 ];
 
 export class BlockStdScope {
