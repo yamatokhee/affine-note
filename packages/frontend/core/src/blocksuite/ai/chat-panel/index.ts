@@ -10,6 +10,7 @@ import {
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/utils';
 import type { Store } from '@blocksuite/affine/store';
 import { HelpIcon, InformationIcon } from '@blocksuite/icons/lit';
+import { type Signal, signal } from '@preact/signals-core';
 import { css, html, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -271,6 +272,10 @@ export class ChatPanel extends SignalWatcher(
 
   private _chatContextId: string | null | undefined = null;
 
+  private _isOpen: Signal<boolean | undefined> = signal(false);
+
+  private _width: Signal<number | undefined> = signal(undefined);
+
   private readonly _scrollToEnd = () => {
     if (!this._wheelTriggered) {
       this._chatMessages.value?.scrollToEnd();
@@ -306,8 +311,7 @@ export class ChatPanel extends SignalWatcher(
 
   private readonly _initPanel = async () => {
     try {
-      const isOpen = !!this.appSidebarConfig.isOpen().signal.value;
-      if (!isOpen) return;
+      if (!this._isOpen.value) return;
 
       const userId = (await AIProvider.userInfo)?.id;
       if (!userId) return;
@@ -383,14 +387,6 @@ export class ChatPanel extends SignalWatcher(
         })
         .catch(console.error);
     }
-
-    this._disposables.add(
-      this.appSidebarConfig.isOpen().signal.subscribe(isOpen => {
-        if (isOpen && this.isLoading) {
-          this._initPanel().catch(console.error);
-        }
-      })
-    );
   }
 
   override connectedCallback() {
@@ -422,6 +418,22 @@ export class ChatPanel extends SignalWatcher(
         }
       })
     );
+
+    const isOpen = this.appSidebarConfig.isOpen();
+    this._isOpen = isOpen.signal;
+    this._disposables.add(isOpen.cleanup);
+
+    const width = this.appSidebarConfig.getWidth();
+    this._width = width.signal;
+    this._disposables.add(width.cleanup);
+
+    this._disposables.add(
+      this._isOpen.subscribe(isOpen => {
+        if (isOpen && this.isLoading) {
+          this._initPanel().catch(console.error);
+        }
+      })
+    );
   }
 
   updateContext = (context: Partial<ChatContextValue>) => {
@@ -440,10 +452,9 @@ export class ChatPanel extends SignalWatcher(
   };
 
   override render() {
-    const panelWidth = this.appSidebarConfig.getWidth().signal.value;
+    const width = this._width.value || 0;
     const style = styleMap({
-      padding:
-        panelWidth && panelWidth > 540 ? '8px 24px 0 24px' : '8px 12px 0 12px',
+      padding: width > 540 ? '8px 24px 0 24px' : '8px 12px 0 12px',
     });
 
     return html`<div class="chat-panel-container" style=${style}>
