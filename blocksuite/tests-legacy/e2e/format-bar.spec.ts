@@ -123,7 +123,7 @@ test('should format quick bar show when select text by keyboard', async ({
     throw new Error("formatBar doesn't exist");
   }
   let selectionRect = await getSelectionRect(page);
-  assertAlmostEqual(formatBarBox.x - selectionRect.x, -107, 3);
+  assertAlmostEqual(formatBarBox.x - selectionRect.x, -103, 3);
   assertAlmostEqual(
     formatBarBox.y + formatBarBox.height - selectionRect.top,
     -10,
@@ -150,7 +150,7 @@ test('should format quick bar show when select text by keyboard', async ({
   // The x position of the format quick bar depends on the font size
   // so there are slight differences in different environments
   selectionRect = await getSelectionRect(page);
-  assertAlmostEqual(formatBarBox.x - selectionRect.x, -107, 3);
+  assertAlmostEqual(formatBarBox.x - selectionRect.x, -103, 3);
   assertAlmostEqual(
     formatBarBox.y + formatBarBox.height - selectionRect.top,
     -10,

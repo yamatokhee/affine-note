@@ -21,7 +21,9 @@ import {
   autoUpdate,
   computePosition,
   flip,
+  hide,
   inline,
+  limitShift,
   offset,
   shift,
 } from '@floating-ui/dom';
@@ -62,7 +64,22 @@ export function autoUpdatePosition(
 
     const { x, y } = await computePosition(referenceElement, toolbar, {
       placement,
-      middleware: [offset(10), inline(), shift({ padding: 6 }), flip()],
+      middleware: [
+        offset(10),
+        inline(),
+        shift(state => ({
+          padding: {
+            top: 10,
+            right: 10,
+            bottom: 150,
+            left: 10,
+          },
+          crossAxis: state.placement.includes('bottom'),
+          limiter: limitShift(),
+        })),
+        flip({ padding: 10 }),
+        hide(),
+      ],
     });
 
     toolbar.style.transform = `translate3d(${x}px, ${y}px, 0)`;
