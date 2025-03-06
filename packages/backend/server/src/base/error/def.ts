@@ -265,6 +265,12 @@ export const USER_FRIENDLY_ERRORS = {
     message: ({ max }) => `Query is too long, max length is ${max}.`,
   },
 
+  validation_error: {
+    type: 'invalid_input',
+    args: { errors: 'string' },
+    message: ({ errors }) => `Validation error, errors: ${errors}`,
+  },
+
   // User Errors
   user_not_found: {
     type: 'resource_not_found',
