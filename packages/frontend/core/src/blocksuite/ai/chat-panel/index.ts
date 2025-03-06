@@ -9,13 +9,13 @@ import {
 } from '@blocksuite/affine/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/utils';
 import type { Store } from '@blocksuite/affine/store';
+import { HelpIcon, InformationIcon } from '@blocksuite/icons/lit';
 import { css, html, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { throttle } from 'lodash-es';
 
-import { AIHelpIcon, SmallHintIcon } from '../_common/icons';
 import { AIProvider } from '../provider';
 import { extractSelectedContent } from '../utils/extract';
 import {
@@ -86,6 +86,12 @@ export class ChatPanel extends SignalWatcher(
         justify-content: center;
         align-items: center;
         cursor: pointer;
+      }
+
+      svg {
+        width: 18px;
+        height: 18px;
+        color: var(--affine-text-secondary-color);
       }
     }
 
@@ -448,7 +454,7 @@ export class ChatPanel extends SignalWatcher(
             AIProvider.toggleGeneralAIOnboarding?.(true);
           }}
         >
-          ${AIHelpIcon}
+          ${HelpIcon()}
         </div>
       </div>
       <chat-panel-messages
@@ -477,7 +483,7 @@ export class ChatPanel extends SignalWatcher(
         .cleanupHistories=${this._cleanupHistories}
       ></chat-panel-input>
       <div class="chat-panel-footer">
-        ${SmallHintIcon}
+        ${InformationIcon()}
         <div>AI outputs can be misleading or wrong</div>
       </div>
     </div>`;
