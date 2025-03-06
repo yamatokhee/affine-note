@@ -29,7 +29,6 @@ import type {
   DocSearchMenuConfig,
 } from './chat-config';
 import type {
-  ChatAction,
   ChatContextValue,
   ChatItem,
   DocChip,
@@ -150,9 +149,10 @@ export class ChatPanel extends SignalWatcher(
 
     const items: ChatItem[] = actions ? [...actions] : [];
 
-    if (histories?.at(-1)) {
-      const history = histories.at(-1);
-      if (!history) return;
+    const history = histories?.find(
+      history => history.sessionId === this._chatSessionId
+    );
+    if (history) {
       items.push(...history.messages);
       AIProvider.LAST_ROOT_SESSION_ID = history.sessionId;
     }
@@ -286,13 +286,12 @@ export class ChatPanel extends SignalWatcher(
         cancelText: 'Cancel',
       })
     ) {
+      const actionIds = this.chatContextValue.items
+        .filter(item => 'sessionId' in item)
+        .map(item => item.sessionId);
       await AIProvider.histories?.cleanup(this.doc.workspace.id, this.doc.id, [
-        this._chatSessionId ?? '',
-        ...(
-          this.chatContextValue.items.filter(
-            item => 'sessionId' in item
-          ) as ChatAction[]
-        ).map(item => item.sessionId),
+        ...(this._chatSessionId ? [this._chatSessionId] : []),
+        ...(actionIds || []),
       ]);
       notification.toast('History cleared');
       await this._updateHistory();
@@ -308,12 +307,16 @@ export class ChatPanel extends SignalWatcher(
       if (!userId) return;
 
       this.isLoading = true;
-      const sessions = await AIProvider.session?.getSessions(
-        this.doc.workspace.id,
-        this.doc.id
-      );
-      if (sessions?.length) {
-        this._chatSessionId = sessions?.[0].id;
+      const sessions = (
+        (await AIProvider.session?.getSessions(
+          this.doc.workspace.id,
+          this.doc.id,
+          { action: false }
+        )) || []
+      ).filter(session => !session.parentSessionId);
+
+      if (sessions && sessions.length) {
+        this._chatSessionId = sessions.at(-1)?.id;
         await this._updateHistory();
       }
       this.isLoading = false;
