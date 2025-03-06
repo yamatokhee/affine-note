@@ -1,5 +1,4 @@
-import type { TemplateResult } from 'lit';
-
+import type { SlashMenuTooltip } from '../types';
 import { AttachmentTooltip } from './attachment';
 import { BoldTextTooltip } from './bold-text';
 import { BulletedListTooltip } from './bulleted-list';
@@ -39,11 +38,6 @@ import { TweetTooltip } from './tweet';
 import { UnderlineTooltip } from './underline';
 import { YesterdayTooltip } from './yesterday';
 import { YoutubeVideoTooltip } from './youtube-video';
-
-export type SlashMenuTooltip = {
-  figure: TemplateResult;
-  caption: string;
-};
 
 export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
   Text: {

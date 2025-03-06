@@ -55,9 +55,9 @@ import {
 } from '@blocksuite/affine-shared/services';
 import {
   createDefaultDoc,
+  findAncestorModel,
   openFileOrFiles,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockStdScope } from '@blocksuite/block-std';
 import { viewPresets } from '@blocksuite/data-view/view-presets';
 import {
   DualLinkIcon,
@@ -70,11 +70,10 @@ import {
   TeXIcon,
 } from '@blocksuite/icons/lit';
 import type { DeltaInsert } from '@blocksuite/inline';
-import type { BlockModel } from '@blocksuite/store';
 import { Slice, Text } from '@blocksuite/store';
-import type { TemplateResult } from 'lit';
 
-import { type SlashMenuTooltip, slashMenuToolTips } from './tooltips';
+import { slashMenuToolTips } from './tooltips';
+import type { SlashMenuActionItem, SlashMenuConfig } from './types';
 import {
   createConversionItem,
   createTextFormatItem,
@@ -84,102 +83,55 @@ import {
   tryRemoveEmptyLine,
 } from './utils';
 
-export type SlashMenuConfig = {
-  triggerKeys: string[];
-  ignoreBlockTypes: string[];
-  ignoreSelector: string;
-  items: SlashMenuItem[];
-  maxHeight: number;
-  tooltipTimeout: number;
-};
-
-export type SlashMenuStaticConfig = Omit<SlashMenuConfig, 'items'> & {
-  items: SlashMenuStaticItem[];
-};
-
-export type SlashMenuItem = SlashMenuStaticItem | SlashMenuItemGenerator;
-
-export type SlashMenuStaticItem =
-  | SlashMenuGroupDivider
-  | SlashMenuActionItem
-  | SlashSubMenu;
-
-export type SlashMenuGroupDivider = {
-  groupName: string;
-  showWhen?: (ctx: SlashMenuContext) => boolean;
-};
-
-export type SlashMenuActionItem = {
-  name: string;
-  description?: string;
-  icon?: TemplateResult;
-  tooltip?: SlashMenuTooltip;
-  alias?: string[];
-  showWhen?: (ctx: SlashMenuContext) => boolean;
-  action: (ctx: SlashMenuContext) => void | Promise<void>;
-
-  customTemplate?: TemplateResult<1>;
-};
-
-export type SlashSubMenu = {
-  name: string;
-  description?: string;
-  icon?: TemplateResult;
-  alias?: string[];
-  showWhen?: (ctx: SlashMenuContext) => boolean;
-  subMenu: SlashMenuStaticItem[];
-};
-
-export type SlashMenuItemGenerator = (
-  ctx: SlashMenuContext
-) => (SlashMenuGroupDivider | SlashMenuActionItem | SlashSubMenu)[];
-
-export type SlashMenuContext = {
-  std: BlockStdScope;
-  model: BlockModel;
-};
+// TODO(@L-Sun): This counter temporarily added variables for refactoring.
+let index = 0;
 
 export const defaultSlashMenuConfig: SlashMenuConfig = {
-  triggerKeys: ['/'],
-  ignoreBlockTypes: ['affine:code'],
-  ignoreSelector: 'affine-callout',
-  maxHeight: 344,
-  tooltipTimeout: 800,
+  disableWhen: ({ model }) => {
+    return (
+      ['affine:database', 'affine:code'].includes(model.flavour) ||
+      !!findAncestorModel(
+        model,
+        ancestor => ancestor.flavour === 'affine:callout'
+      )
+    );
+  },
   items: [
     // ---------------------------------------------------------
-    { groupName: 'Basic' },
     ...textConversionConfigs
       .filter(i => i.type && ['h1', 'h2', 'h3', 'text'].includes(i.type))
-      .map(createConversionItem),
+      .map(config => createConversionItem(config, `0_Basic@${index++}`)),
     {
       name: 'Other Headings',
       icon: HeadingIcon,
-      subMenu: [
-        { groupName: 'Headings' },
-        ...textConversionConfigs
-          .filter(i => i.type && ['h4', 'h5', 'h6'].includes(i.type))
-          .map<SlashMenuActionItem>(createConversionItem),
-      ],
+      group: `0_Basic@${index++}`,
+      subMenu: textConversionConfigs
+        .filter(i => i.type && ['h4', 'h5', 'h6'].includes(i.type))
+        .map(config => createConversionItem(config)),
     },
     ...textConversionConfigs
       .filter(i => i.flavour === 'affine:code')
-      .map<SlashMenuActionItem>(createConversionItem),
+      .map(config => createConversionItem(config, `0_Basic@${index++}`)),
 
     ...textConversionConfigs
       .filter(i => i.type && ['divider', 'quote'].includes(i.type))
-      .map<SlashMenuActionItem>(config => ({
-        ...createConversionItem(config),
-        showWhen: ({ model }) =>
-          model.doc.schema.flavourSchemaMap.has(config.flavour) &&
-          !insideEdgelessText(model),
-      })),
+      .map(
+        config =>
+          ({
+            ...createConversionItem(config, `0_Basic@${index++}`),
+            when: ({ model }) =>
+              model.doc.schema.flavourSchemaMap.has(config.flavour) &&
+              !insideEdgelessText(model),
+          }) satisfies SlashMenuActionItem
+      ),
 
     {
       name: 'Callout',
       description: 'Let your words stand out.',
       icon: FontIcon(),
-      alias: ['callout'],
-      showWhen: ({ model }) => {
+      searchAlias: ['callout'],
+      group: `0_Basic@${index++}`,
+      when: ({ model }) => {
         return model.doc.get(FeatureFlagService).getFlag('enable_callout');
       },
       action: ({ model, std }) => {
@@ -207,9 +159,10 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
 
     {
       name: 'Inline equation',
+      group: `0_Basic@${index++}`,
       description: 'Create a equation block.',
       icon: TeXIcon(),
-      alias: ['inlineMath, inlineEquation', 'inlineLatex'],
+      searchAlias: ['inlineMath, inlineEquation', 'inlineLatex'],
       action: ({ std }) => {
         std.command
           .chain()
@@ -220,29 +173,30 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     },
 
     // ---------------------------------------------------------
-    { groupName: 'List' },
+    // { groupName: 'List' },
     ...textConversionConfigs
       .filter(i => i.flavour === 'affine:list')
-      .map(createConversionItem),
+      .map(config => createConversionItem(config, `1_List@${index++}`)),
 
     // ---------------------------------------------------------
-    { groupName: 'Style' },
+    // { groupName: 'Style' },
     ...textFormatConfigs
       .filter(i => !['Code', 'Link'].includes(i.name))
-      .map<SlashMenuActionItem>(createTextFormatItem),
+      .map(config => createTextFormatItem(config, `2_Style@${index++}`)),
 
     // ---------------------------------------------------------
-    {
-      groupName: 'Page',
-      showWhen: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
-    },
+    // {
+    //   groupName: 'Page',
+    //   when: ({ model }) =>
+    //     model.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
+    // },
     {
       name: 'New Doc',
       description: 'Start a new document.',
       icon: NewDocIcon,
       tooltip: slashMenuToolTips['New Doc'],
-      showWhen: ({ model }) =>
+      group: `3_Page@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
       action: ({ std, model }) => {
         const newDoc = createDefaultDoc(std.host.doc.workspace);
@@ -259,8 +213,9 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Link to another document.',
       icon: LinkedDocIcon,
       tooltip: slashMenuToolTips['Linked Doc'],
-      alias: ['dual link'],
-      showWhen: ({ std, model }) => {
+      searchAlias: ['dual link'],
+      group: `3_Page@${index++}`,
+      when: ({ std, model }) => {
         const root = model.doc.root;
         if (!root) return false;
         const linkedDocWidget = std.view.getWidget(
@@ -296,13 +251,14 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     },
 
     // ---------------------------------------------------------
-    { groupName: 'Content & Media' },
+    // { groupName: 'Content & Media' },
     {
       name: 'Table',
       description: 'Create a simple table.',
       icon: TableIcon(),
       tooltip: slashMenuToolTips['Table View'],
-      showWhen: ({ model }) => !insideEdgelessText(model),
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) => !insideEdgelessText(model),
       action: ({ std }) => {
         std.command
           .chain()
@@ -327,16 +283,17 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Insert an image.',
       icon: ImageIcon(),
       tooltip: slashMenuToolTips['Image'],
-      showWhen: ({ model }) =>
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:image'),
-      action: async ({ std }) => {
+      action: ({ std }) => {
         const [success, ctx] = std.command
           .chain()
           .pipe(getSelectedModelsCommand)
           .pipe(insertImagesCommand, { removeEmptyLine: true })
           .run();
 
-        if (success) await ctx.insertedImageIds;
+        if (success) ctx.insertedImageIds.catch(console.error);
       },
     },
     {
@@ -344,22 +301,26 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Add a bookmark for reference.',
       icon: LinkIcon,
       tooltip: slashMenuToolTips['Link'],
-      showWhen: ({ model }) =>
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:bookmark'),
-      action: async ({ std, model }) => {
+      action: ({ std, model }) => {
         const { host } = std;
         const parentModel = host.doc.getParent(model);
         if (!parentModel) {
           return;
         }
         const index = parentModel.children.indexOf(model) + 1;
-        await toggleEmbedCardCreateModal(
+        toggleEmbedCardCreateModal(
           host,
           'Links',
           'The added link will be displayed as a card view.',
           { mode: 'page', parentModel, index }
-        );
-        tryRemoveEmptyLine(model);
+        )
+          .then(() => {
+            tryRemoveEmptyLine(model);
+          })
+          .catch(console.error);
       },
     },
     {
@@ -367,17 +328,23 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Attach a file to document.',
       icon: FileIcon,
       tooltip: slashMenuToolTips['Attachment'],
-      alias: ['file'],
-      showWhen: ({ model }) =>
+      searchAlias: ['file'],
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:attachment'),
-      action: async ({ std, model }) => {
-        const file = await openFileOrFiles();
-        if (!file) return;
-
-        const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
-
-        await addSiblingAttachmentBlocks(std.host, [file], maxFileSize, model);
-        tryRemoveEmptyLine(model);
+      action: ({ std, model }) => {
+        (async () => {
+          const file = await openFileOrFiles();
+          if (!file) return;
+          const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
+          await addSiblingAttachmentBlocks(
+            std.host,
+            [file],
+            maxFileSize,
+            model
+          );
+          tryRemoveEmptyLine(model);
+        })().catch(console.error);
       },
     },
     {
@@ -385,23 +352,26 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Upload a PDF to document.',
       icon: ExportToPdfIcon({ width: '20', height: '20' }),
       tooltip: slashMenuToolTips['PDF'],
-      showWhen: ({ model }) =>
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:attachment'),
-      action: async ({ std, model }) => {
-        const file = await openFileOrFiles();
-        if (!file) return;
+      action: ({ std, model }) => {
+        (async () => {
+          const file = await openFileOrFiles();
+          if (!file) return;
 
-        const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
+          const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
 
-        await addSiblingAttachmentBlocks(
-          std.host,
-          [file],
-          maxFileSize,
-          model,
-          'after',
-          true
-        );
-        tryRemoveEmptyLine(model);
+          await addSiblingAttachmentBlocks(
+            std.host,
+            [file],
+            maxFileSize,
+            model,
+            'after',
+            true
+          );
+          tryRemoveEmptyLine(model);
+        })().catch(console.error);
       },
     },
     {
@@ -409,22 +379,25 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Embed a YouTube video.',
       icon: YoutubeIcon,
       tooltip: slashMenuToolTips['YouTube'],
-      showWhen: ({ model }) =>
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-youtube'),
-      action: async ({ std, model }) => {
-        const { host } = std;
-        const parentModel = host.doc.getParent(model);
-        if (!parentModel) {
-          return;
-        }
-        const index = parentModel.children.indexOf(model) + 1;
-        await toggleEmbedCardCreateModal(
-          host,
-          'YouTube',
-          'The added YouTube video link will be displayed as an embed view.',
-          { mode: 'page', parentModel, index }
-        );
-        tryRemoveEmptyLine(model);
+      action: ({ std, model }) => {
+        (async () => {
+          const { host } = std;
+          const parentModel = host.doc.getParent(model);
+          if (!parentModel) {
+            return;
+          }
+          const index = parentModel.children.indexOf(model) + 1;
+          await toggleEmbedCardCreateModal(
+            host,
+            'YouTube',
+            'The added YouTube video link will be displayed as an embed view.',
+            { mode: 'page', parentModel, index }
+          );
+          tryRemoveEmptyLine(model);
+        })().catch(console.error);
       },
     },
     {
@@ -432,22 +405,25 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Link to a GitHub repository.',
       icon: GithubIcon,
       tooltip: slashMenuToolTips['Github'],
-      showWhen: ({ model }) =>
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-github'),
-      action: async ({ std, model }) => {
-        const { host } = std;
-        const parentModel = host.doc.getParent(model);
-        if (!parentModel) {
-          return;
-        }
-        const index = parentModel.children.indexOf(model) + 1;
-        await toggleEmbedCardCreateModal(
-          host,
-          'GitHub',
-          'The added GitHub issue or pull request link will be displayed as a card view.',
-          { mode: 'page', parentModel, index }
-        );
-        tryRemoveEmptyLine(model);
+      action: ({ std, model }) => {
+        (async () => {
+          const { host } = std;
+          const parentModel = host.doc.getParent(model);
+          if (!parentModel) {
+            return;
+          }
+          const index = parentModel.children.indexOf(model) + 1;
+          await toggleEmbedCardCreateModal(
+            host,
+            'GitHub',
+            'The added GitHub issue or pull request link will be displayed as a card view.',
+            { mode: 'page', parentModel, index }
+          );
+          tryRemoveEmptyLine(model);
+        })().catch(console.error);
       },
     },
     // TODO: X Twitter
@@ -457,44 +433,50 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Embed a Figma document.',
       icon: FigmaIcon,
       tooltip: slashMenuToolTips['Figma'],
-      showWhen: ({ model }) =>
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-figma'),
-      action: async ({ std, model }) => {
-        const { host } = std;
-        const parentModel = host.doc.getParent(model);
-        if (!parentModel) {
-          return;
-        }
-        const index = parentModel.children.indexOf(model) + 1;
-        await toggleEmbedCardCreateModal(
-          host,
-          'Figma',
-          'The added Figma link will be displayed as an embed view.',
-          { mode: 'page', parentModel, index }
-        );
-        tryRemoveEmptyLine(model);
+      action: ({ std, model }) => {
+        (async () => {
+          const { host } = std;
+          const parentModel = host.doc.getParent(model);
+          if (!parentModel) {
+            return;
+          }
+          const index = parentModel.children.indexOf(model) + 1;
+          await toggleEmbedCardCreateModal(
+            host,
+            'Figma',
+            'The added Figma link will be displayed as an embed view.',
+            { mode: 'page', parentModel, index }
+          );
+          tryRemoveEmptyLine(model);
+        })().catch(console.error);
       },
     },
 
     {
       name: 'Loom',
       icon: LoomIcon,
-      showWhen: ({ model }) =>
+      group: `4_Content & Media@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-loom'),
-      action: async ({ std, model }) => {
-        const { host } = std;
-        const parentModel = host.doc.getParent(model);
-        if (!parentModel) {
-          return;
-        }
-        const index = parentModel.children.indexOf(model) + 1;
-        await toggleEmbedCardCreateModal(
-          host,
-          'Loom',
-          'The added Loom video link will be displayed as an embed view.',
-          { mode: 'page', parentModel, index }
-        );
-        tryRemoveEmptyLine(model);
+      action: ({ std, model }) => {
+        (async () => {
+          const { host } = std;
+          const parentModel = host.doc.getParent(model);
+          if (!parentModel) {
+            return;
+          }
+          const index = parentModel.children.indexOf(model) + 1;
+          await toggleEmbedCardCreateModal(
+            host,
+            'Loom',
+            'The added Loom video link will be displayed as an embed view.',
+            { mode: 'page', parentModel, index }
+          );
+          tryRemoveEmptyLine(model);
+        })().catch(console.error);
       },
     },
 
@@ -502,7 +484,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       name: 'Equation',
       description: 'Create a equation block.',
       icon: TeXIcon(),
-      alias: ['mathBlock, equationBlock', 'latexBlock'],
+      searchAlias: ['mathBlock, equationBlock', 'latexBlock'],
+      group: `4_Content & Media@${index++}`,
       action: ({ std }) => {
         std.command
           .chain()
@@ -518,7 +501,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     // TODO(@L-Sun): Linear
 
     // ---------------------------------------------------------
-    ({ model, std }) => {
+    ({ std, model }) => {
       const { host } = std;
 
       const surfaceModel = getSurfaceBlock(host.doc);
@@ -534,6 +517,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       const frameItems = frameModels.map<SlashMenuActionItem>(frameModel => ({
         name: 'Frame: ' + frameModel.title,
         icon: FrameIcon(),
+        group: `5_Document Group & Frame@${index++}`,
         action: ({ std }) => {
           std.command
             .chain()
@@ -548,10 +532,11 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       }));
 
       const groupElements = surfaceModel.getElementsByType('group');
-      const groupItems = groupElements.map(group => ({
+      const groupItems = groupElements.map<SlashMenuActionItem>(group => ({
         name: 'Group: ' + group.title.toString(),
         icon: GroupingIcon(),
-        action: () => {
+        group: `5_Document Group & Frame@${index++}`,
+        action: ({ std }) => {
           std.command
             .chain()
             .pipe(getSelectedModelsCommand)
@@ -564,21 +549,10 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         },
       }));
 
-      const items = [...frameItems, ...groupItems];
-      if (items.length !== 0) {
-        return [
-          {
-            groupName: 'Document Group & Frame',
-          },
-          ...items,
-        ];
-      } else {
-        return [];
-      }
+      return [...frameItems, ...groupItems];
     },
 
     // ---------------------------------------------------------
-    { groupName: 'Date' },
     () => {
       const now = new Date();
       const tomorrow = new Date();
@@ -593,6 +567,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           icon: TodayIcon,
           tooltip: slashMenuToolTips['Today'],
           description: formatDate(now),
+          group: `6_Date@${index++}`,
           action: ({ std, model }) => {
             insertContent(std.host, model, formatDate(now));
           },
@@ -602,6 +577,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           icon: TomorrowIcon,
           tooltip: slashMenuToolTips['Tomorrow'],
           description: formatDate(tomorrow),
+          group: `6_Date@${index++}`,
           action: ({ std, model }) => {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
@@ -613,6 +589,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           icon: YesterdayIcon,
           tooltip: slashMenuToolTips['Yesterday'],
           description: formatDate(yesterday),
+          group: `6_Date@${index++}`,
           action: ({ std, model }) => {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
@@ -624,6 +601,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           icon: NowIcon,
           tooltip: slashMenuToolTips['Now'],
           description: formatTime(now),
+          group: `6_Date@${index++}`,
           action: ({ std, model }) => {
             insertContent(std.host, model, formatTime(now));
           },
@@ -632,14 +610,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     },
 
     // ---------------------------------------------------------
-    { groupName: 'Database' },
+    // { groupName: 'Database' },
     {
       name: 'Table View',
       description: 'Display items in a table format.',
-      alias: ['database'],
+      searchAlias: ['database'],
       icon: DatabaseTableViewIcon20,
       tooltip: slashMenuToolTips['Table View'],
-      showWhen: ({ model }) =>
+      group: `7_Database@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:database') &&
         !insideEdgelessText(model),
       action: ({ std }) => {
@@ -664,10 +643,11 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     },
     {
       name: 'Todo',
-      alias: ['todo view'],
+      searchAlias: ['todo view'],
       icon: DatabaseTableViewIcon20,
       tooltip: slashMenuToolTips['Todo'],
-      showWhen: ({ model }) =>
+      group: `7_Database@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:database') &&
         !insideEdgelessText(model) &&
         !!model.doc.get(FeatureFlagService).getFlag('enable_block_query'),
@@ -699,10 +679,11 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Kanban View',
       description: 'Visualize data in a dashboard.',
-      alias: ['database'],
+      searchAlias: ['database'],
       icon: DatabaseKanbanViewIcon20,
       tooltip: slashMenuToolTips['Kanban View'],
-      showWhen: ({ model }) =>
+      group: `7_Database@${index++}`,
+      when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:database') &&
         !insideEdgelessText(model),
       action: ({ std }) => {
@@ -727,12 +708,13 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     },
 
     // ---------------------------------------------------------
-    { groupName: 'Actions' },
+    // { groupName: 'Actions' },
     {
       name: 'Move Up',
       description: 'Shift this line up.',
       icon: ArrowUpBigIcon,
       tooltip: slashMenuToolTips['Move Up'],
+      group: `8_Actions@${index++}`,
       action: ({ std, model }) => {
         const { host } = std;
         const previousSiblingModel = host.doc.getPrev(model);
@@ -749,6 +731,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Shift this line down.',
       icon: ArrowDownBigIcon,
       tooltip: slashMenuToolTips['Move Down'],
+      group: `8_Actions@${index++}`,
       action: ({ std, model }) => {
         const { host } = std;
         const nextSiblingModel = host.doc.getNext(model);
@@ -765,6 +748,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Copy this line to clipboard.',
       icon: CopyIcon,
       tooltip: slashMenuToolTips['Copy'],
+      group: `8_Actions@${index++}`,
       action: ({ std, model }) => {
         const slice = Slice.fromModels(std.store, [model]);
 
@@ -783,6 +767,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Create a duplicate of this line.',
       icon: DualLinkIcon(),
       tooltip: slashMenuToolTips['Copy'],
+      group: `8_Actions@${index++}`,
       action: ({ std, model }) => {
         if (!model.text || !(model.text instanceof Text)) {
           console.error("Can't duplicate a block without text");
@@ -818,9 +803,10 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Delete',
       description: 'Remove this line permanently.',
-      alias: ['remove'],
+      searchAlias: ['remove'],
       icon: DeleteIcon,
       tooltip: slashMenuToolTips['Delete'],
+      group: `8_Actions@${index++}`,
       action: ({ std, model }) => {
         std.host.doc.deleteBlock(model);
       },

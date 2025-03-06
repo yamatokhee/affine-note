@@ -8,26 +8,11 @@ import { DisposableGroup } from '@blocksuite/global/slot';
 import { InlineEditor } from '@blocksuite/inline';
 import debounce from 'lodash-es/debounce';
 
-import {
-  defaultSlashMenuConfig,
-  type SlashMenuActionItem,
-  type SlashMenuContext,
-  type SlashMenuGroupDivider,
-  type SlashMenuItem,
-  type SlashMenuItemGenerator,
-  type SlashMenuStaticConfig,
-  type SlashSubMenu,
-} from './config';
+import { AFFINE_SLASH_MENU_TRIGGER_KEY } from './consts';
+import { SlashMenuExtension } from './extensions';
 import { SlashMenu } from './slash-menu-popover';
-import { filterEnabledSlashMenuItems } from './utils';
-
-export type AffineSlashMenuContext = SlashMenuContext;
-export type AffineSlashMenuItem = SlashMenuItem;
-export type AffineSlashMenuActionItem = SlashMenuActionItem;
-export type AffineSlashMenuItemGenerator = SlashMenuItemGenerator;
-export type AffineSlashSubMenu = SlashSubMenu;
-export type AffineSlashMenuGroupDivider = SlashMenuGroupDivider;
-
+import type { SlashMenuConfig, SlashMenuContext, SlashMenuItem } from './types';
+import { buildSlashMenuItems } from './utils';
 let globalAbortController = new AbortController();
 
 function closeSlashMenu() {
@@ -37,16 +22,16 @@ function closeSlashMenu() {
 const showSlashMenu = debounce(
   ({
     context,
+    config,
     container = document.body,
     abortController = new AbortController(),
-    config,
-    triggerKey,
+    configItemTransform,
   }: {
     context: SlashMenuContext;
+    config: SlashMenuConfig;
     container?: HTMLElement;
     abortController?: AbortController;
-    config: SlashMenuStaticConfig;
-    triggerKey: string;
+    configItemTransform: (item: SlashMenuItem) => SlashMenuItem;
   }) => {
     globalAbortController = abortController;
     const disposables = new DisposableGroup();
@@ -62,8 +47,18 @@ const showSlashMenu = debounce(
     const slashMenu = new SlashMenu(inlineEditor, abortController);
     disposables.add(() => slashMenu.remove());
     slashMenu.context = context;
-    slashMenu.config = config;
-    slashMenu.triggerKey = triggerKey;
+    slashMenu.items = buildSlashMenuItems(
+      config.items
+        .map(item => {
+          if (typeof item === 'function') {
+            return item(context);
+          }
+          return item;
+        })
+        .flat(),
+      context,
+      configItemTransform
+    );
 
     // FIXME(Flrande): It is not a best practice,
     // but merely a temporary measure for reusing previous components.
@@ -75,11 +70,7 @@ const showSlashMenu = debounce(
   { leading: true }
 );
 
-export const AFFINE_SLASH_MENU_WIDGET = 'affine-slash-menu-widget';
-
 export class AffineSlashMenuWidget extends WidgetComponent {
-  static DEFAULT_CONFIG = defaultSlashMenuConfig;
-
   private readonly _getInlineEditor = (
     evt: KeyboardEvent | CompositionEvent
   ) => {
@@ -126,9 +117,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
       if (!block) return;
       const model = block.model;
 
-      if (block.closest(this.config.ignoreSelector)) return;
-
-      if (this.config.ignoreBlockTypes.includes(block.flavour)) return;
+      if (this.config.disableWhen?.({ model, std: this.std })) return;
 
       const inlineRange = inlineEditor.getInlineRange();
       if (!inlineRange) return;
@@ -142,18 +131,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
         ? leafStart.textContent.slice(0, offsetStart)
         : '';
 
-      const matchedKey = this.config.triggerKeys.find(triggerKey =>
-        text.endsWith(triggerKey)
-      );
-      if (!matchedKey) return;
-
-      const config: SlashMenuStaticConfig = {
-        ...this.config,
-        items: filterEnabledSlashMenuItems(this.config.items, {
-          model,
-          std: this.std,
-        }),
-      };
+      if (!text.endsWith(AFFINE_SLASH_MENU_TRIGGER_KEY)) return;
 
       closeSlashMenu();
       showSlashMenu({
@@ -161,8 +139,8 @@ export class AffineSlashMenuWidget extends WidgetComponent {
           model,
           std: this.std,
         },
-        triggerKey: matchedKey,
-        config,
+        config: this.config,
+        configItemTransform: this.configItemTransform,
       });
     });
   };
@@ -170,12 +148,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
   private readonly _onCompositionEnd = (ctx: UIEventStateContext) => {
     const event = ctx.get('defaultState').event as CompositionEvent;
 
-    if (
-      !this.config.triggerKeys.some(triggerKey =>
-        triggerKey.includes(event.data)
-      )
-    )
-      return;
+    if (event.data !== AFFINE_SLASH_MENU_TRIGGER_KEY) return;
 
     const inlineEditor = this._getInlineEditor(event);
     if (!inlineEditor) return;
@@ -189,16 +162,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
 
     const key = event.key;
 
-    // check event is not composing
-    if (
-      key === undefined || // in mac os, the key may be undefined
-      key === 'Process' ||
-      event.isComposing
-    )
-      return;
-
-    if (!this.config.triggerKeys.some(triggerKey => triggerKey.includes(key)))
-      return;
+    if (event.isComposing || key !== AFFINE_SLASH_MENU_TRIGGER_KEY) return;
 
     const inlineEditor = this._getInlineEditor(event);
     if (!inlineEditor) return;
@@ -206,16 +170,18 @@ export class AffineSlashMenuWidget extends WidgetComponent {
     this._handleInput(inlineEditor, false);
   };
 
-  config = AffineSlashMenuWidget.DEFAULT_CONFIG;
+  get config() {
+    return this.std.get(SlashMenuExtension).config;
+  }
+
+  // TODO(@L-Sun): Remove this when moving each config item to corresponding blocks
+  // This is a temporary way for patching the slash menu config
+  configItemTransform: (item: SlashMenuItem) => SlashMenuItem = item => item;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    if (this.config.triggerKeys.some(key => key.length === 0)) {
-      console.error('Trigger key of slash menu should not be empty string');
-      return;
-    }
-
+    // this.handleEvent('beforeInput', this._onBeforeInput);
     this.handleEvent('keyDown', this._onKeyDown);
     this.handleEvent('compositionEnd', this._onCompositionEnd);
   }

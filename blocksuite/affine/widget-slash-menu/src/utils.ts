@@ -6,67 +6,72 @@ import {
 } from '@blocksuite/affine-components/rich-text';
 import { isInsideBlockByFlavour } from '@blocksuite/affine-shared/utils';
 import { BlockSelection } from '@blocksuite/block-std';
-import { assertType } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
+import { slashMenuToolTips } from './tooltips/index.js';
 import type {
   SlashMenuActionItem,
+  SlashMenuConfig,
   SlashMenuContext,
-  SlashMenuGroupDivider,
   SlashMenuItem,
-  SlashMenuItemGenerator,
-  SlashMenuStaticItem,
-  SlashSubMenu,
-} from './config.js';
-import { slashMenuToolTips } from './tooltips/index.js';
+  SlashMenuSubMenu,
+} from './types';
 
-export function isGroupDivider(
-  item: SlashMenuStaticItem
-): item is SlashMenuGroupDivider {
-  return 'groupName' in item;
-}
-
-export function notGroupDivider(
-  item: SlashMenuStaticItem
-): item is Exclude<SlashMenuStaticItem, SlashMenuGroupDivider> {
-  return !isGroupDivider(item);
-}
-
-export function isActionItem(
-  item: SlashMenuStaticItem
-): item is SlashMenuActionItem {
+export function isActionItem(item: SlashMenuItem): item is SlashMenuActionItem {
   return 'action' in item;
 }
 
-export function isSubMenuItem(item: SlashMenuStaticItem): item is SlashSubMenu {
+export function isSubMenuItem(item: SlashMenuItem): item is SlashMenuSubMenu {
   return 'subMenu' in item;
 }
 
-export function isMenuItemGenerator(
-  item: SlashMenuItem
-): item is SlashMenuItemGenerator {
-  return typeof item === 'function';
-}
-
-export function slashItemClassName(item: SlashMenuStaticItem) {
-  const name = isGroupDivider(item) ? item.groupName : item.name;
-
+export function slashItemClassName({ name }: SlashMenuItem) {
   return name.split(' ').join('-').toLocaleLowerCase();
 }
 
-export function filterEnabledSlashMenuItems(
+export function parseGroup(group: NonNullable<SlashMenuItem['group']>) {
+  return [
+    parseInt(group.split('_')[0]),
+    group.split('_')[1].split('@')[0],
+    parseInt(group.split('@')[1]),
+  ] as const;
+}
+
+function itemCompareFn(a: SlashMenuItem, b: SlashMenuItem) {
+  if (a.group === undefined && b.group === undefined) return 0;
+  if (a.group === undefined) return -1;
+  if (b.group === undefined) return 1;
+
+  const [aGroupIndex, aGroupName, aItemIndex] = parseGroup(a.group);
+  const [bGroupIndex, bGroupName, bItemIndex] = parseGroup(b.group);
+  if (isNaN(aGroupIndex)) return -1;
+  if (isNaN(bGroupIndex)) return 1;
+  if (aGroupIndex < bGroupIndex) return -1;
+  if (aGroupIndex > bGroupIndex) return 1;
+
+  if (aGroupName !== bGroupName) return aGroupName.localeCompare(bGroupName);
+
+  if (isNaN(aItemIndex)) return -1;
+  if (isNaN(bItemIndex)) return 1;
+
+  return aItemIndex - bItemIndex;
+}
+
+export function buildSlashMenuItems(
   items: SlashMenuItem[],
-  context: SlashMenuContext
-): SlashMenuStaticItem[] {
+  context: SlashMenuContext,
+  transform?: (item: SlashMenuItem) => SlashMenuItem
+): SlashMenuItem[] {
+  if (transform) items = items.map(transform);
+
   const result = items
-    .map(item => (isMenuItemGenerator(item) ? item(context) : item))
-    .flat()
-    .filter(item => (item.showWhen ? item.showWhen(context) : true))
+    .filter(item => (item.when ? item.when(context) : true))
+    .sort(itemCompareFn)
     .map(item => {
       if (isSubMenuItem(item)) {
         return {
           ...item,
-          subMenu: filterEnabledSlashMenuItems(item.subMenu, context),
+          subMenu: buildSlashMenuItems(item.subMenu, context),
         };
       } else {
         return { ...item };
@@ -75,14 +80,20 @@ export function filterEnabledSlashMenuItems(
   return result;
 }
 
-export function getFirstNotDividerItem(
-  items: SlashMenuStaticItem[]
-): SlashMenuActionItem | SlashSubMenu | null {
-  const firstItem = items.find(item => !isGroupDivider(item));
-  assertType<SlashMenuActionItem | SlashSubMenu | undefined>(firstItem);
-  return firstItem ?? null;
+export function mergeSlashMenuConfigs(
+  configs: Map<string, SlashMenuConfig>
+): SlashMenuConfig {
+  return {
+    items: Array.from(configs.values().flatMap(config => config.items)),
+    disableWhen: ctx =>
+      configs
+        .values()
+        .map(config => config.disableWhen?.(ctx) ?? false)
+        .some(Boolean),
+  };
 }
 
+// TODO(@L-Sun): remove edgeless text check
 export function insideEdgelessText(model: BlockModel) {
   return isInsideBlockByFlavour(model.doc, model, 'affine:edgeless-text');
 }
@@ -94,15 +105,17 @@ export function tryRemoveEmptyLine(model: BlockModel) {
 }
 
 export function createConversionItem(
-  config: TextConversionConfig
+  config: TextConversionConfig,
+  group?: SlashMenuItem['group']
 ): SlashMenuActionItem {
   const { name, description, icon, flavour, type } = config;
   return {
     name,
+    group,
     description,
     icon,
     tooltip: slashMenuToolTips[name],
-    showWhen: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
+    when: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
     action: ({ std }) => {
       std.command.exec(updateBlockType, {
         flavour,
@@ -113,12 +126,14 @@ export function createConversionItem(
 }
 
 export function createTextFormatItem(
-  config: TextFormatConfig
+  config: TextFormatConfig,
+  group?: SlashMenuItem['group']
 ): SlashMenuActionItem {
   const { name, icon, id, action } = config;
   return {
     name,
     icon,
+    group,
     tooltip: slashMenuToolTips[name],
     action: ({ std, model }) => {
       const { host } = std;
