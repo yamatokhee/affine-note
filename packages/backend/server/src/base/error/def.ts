@@ -767,4 +767,19 @@ export const USER_FRIENDLY_ERRORS = {
     message: ({ clientVersion, requiredVersion }) =>
       `Unsupported client with version [${clientVersion}], required version is [${requiredVersion}].`,
   },
+
+  // Notification Errors
+  notification_not_found: {
+    type: 'resource_not_found',
+    message: 'Notification not found.',
+  },
+  mention_user_doc_access_denied: {
+    type: 'no_permission',
+    args: { docId: 'string' },
+    message: ({ docId }) => `Mentioned user can not access doc ${docId}.`,
+  },
+  mention_user_oneself_denied: {
+    type: 'action_forbidden',
+    message: 'You can not mention yourself.',
+  },
 } satisfies Record<string, UserFriendlyErrorOptions>;
