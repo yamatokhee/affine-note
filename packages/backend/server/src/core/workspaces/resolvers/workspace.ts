@@ -533,7 +533,7 @@ export class WorkspaceResolver {
 
     const inviteeId = inviteeUserId || user?.id;
     if (!inviteeId) throw new UserNotFound();
-    const invitee = await this.models.user.getPublicUser(inviteeId);
+    const invitee = await this.models.user.getWorkspaceUser(inviteeId);
 
     return { workspace, user: owner, invitee };
   }

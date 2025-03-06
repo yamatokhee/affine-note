@@ -493,7 +493,7 @@ input GrantDocUserRolesInput {
 
 type GrantedDocUserType {
   role: DocRole!
-  user: PublicUserType!
+  user: WorkspaceUserType!
 }
 
 type GrantedDocUserTypeEdge {
@@ -997,7 +997,6 @@ enum PublicDocMode {
 
 type PublicUserType {
   avatarUrl: String
-  email: String!
   id: String!
   name: String!
 }
@@ -1021,6 +1020,9 @@ type Query {
   """List all copilot prompts"""
   listCopilotPrompts: [CopilotPromptType!]!
   prices: [SubscriptionPrice!]!
+
+  """Get public user by id"""
+  publicUserById(id: String!): PublicUserType
 
   """server config"""
   serverConfig: ServerConfigType!
@@ -1553,6 +1555,13 @@ type WorkspaceType {
 
   """if workspace is team workspace"""
   team: Boolean!
+}
+
+type WorkspaceUserType {
+  avatarUrl: String
+  email: String!
+  id: String!
+  name: String!
 }
 
 type WrongSignInCredentialsDataType {
