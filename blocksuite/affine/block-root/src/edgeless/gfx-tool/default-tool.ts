@@ -43,9 +43,10 @@ import {
 } from '@blocksuite/block-std/gfx';
 import type { IVec } from '@blocksuite/global/gfx';
 import { Bound, getCommonBoundWithRotation, Vec } from '@blocksuite/global/gfx';
-import { DisposableGroup, last, noop } from '@blocksuite/global/utils';
+import { DisposableGroup, noop } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 import clamp from 'lodash-es/clamp';
+import last from 'lodash-es/last';
 
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 import { prepareCloneData } from '../utils/clone-utils.js';
