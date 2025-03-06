@@ -32,7 +32,7 @@ import {
 import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { Bound } from '@blocksuite/global/gfx';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/lit';
 import {
   TextAlignCenterIcon,
   TextAlignLeftIcon,

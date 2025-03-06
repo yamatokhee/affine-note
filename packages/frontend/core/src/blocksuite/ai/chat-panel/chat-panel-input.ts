@@ -1,7 +1,7 @@
 import { stopPropagation } from '@affine/core/utils';
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { openFileOrFiles, unsafeCSSVarV2 } from '@blocksuite/affine/blocks';
-import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import {
   BroomIcon,
   CloseIcon,

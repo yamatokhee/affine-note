@@ -4,7 +4,8 @@ import {
   getCommonBoundWithRotation,
   type IBound,
 } from '@blocksuite/global/gfx';
-import { assertType, DisposableGroup } from '@blocksuite/global/utils';
+import { DisposableGroup } from '@blocksuite/global/slot';
+import { assertType } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 import { Signal } from '@preact/signals-core';
 import last from 'lodash-es/last';

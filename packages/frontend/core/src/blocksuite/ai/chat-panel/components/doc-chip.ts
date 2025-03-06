@@ -2,7 +2,7 @@ import {
   type EditorHost,
   ShadowlessElement,
 } from '@blocksuite/affine/block-std';
-import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { Signal } from '@preact/signals-core';
 import { html, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';

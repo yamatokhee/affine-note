@@ -55,8 +55,8 @@ import {
   deserializeXYWH,
   normalizeDegAngle,
 } from '@blocksuite/global/gfx';
-import type { Disposable } from '@blocksuite/global/utils';
-import { assertType, Slot } from '@blocksuite/global/utils';
+import { type Disposable, Slot } from '@blocksuite/global/slot';
+import { assertType } from '@blocksuite/global/utils';
 import { css, html, nothing } from 'lit';
 import { state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';

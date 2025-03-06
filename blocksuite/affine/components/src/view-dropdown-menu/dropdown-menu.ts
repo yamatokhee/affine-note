@@ -7,7 +7,7 @@ import {
   requiredProperties,
   ShadowlessElement,
 } from '@blocksuite/block-std';
-import { SignalWatcher } from '@blocksuite/global/utils';
+import { SignalWatcher } from '@blocksuite/global/lit';
 import { ArrowDownSmallIcon } from '@blocksuite/icons/lit';
 import type { ReadonlySignal, Signal } from '@preact/signals-core';
 import { property } from 'lit/decorators.js';

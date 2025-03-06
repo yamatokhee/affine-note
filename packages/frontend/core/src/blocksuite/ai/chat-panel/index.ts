@@ -7,7 +7,7 @@ import {
   NotificationProvider,
   type SpecBuilder,
 } from '@blocksuite/affine/blocks';
-import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import type { Store } from '@blocksuite/affine/store';
 import { HelpIcon, InformationIcon } from '@blocksuite/icons/lit';
 import { type Signal, signal } from '@preact/signals-core';

@@ -2,7 +2,8 @@ import {
   BlockSuiteError,
   ErrorCode,
 } from '@blocksuite/affine/global/exceptions';
-import { NoopLogger, Slot } from '@blocksuite/affine/global/utils';
+import { Slot } from '@blocksuite/affine/global/slot';
+import { NoopLogger } from '@blocksuite/affine/global/utils';
 import {
   type CreateBlocksOptions,
   type Doc,

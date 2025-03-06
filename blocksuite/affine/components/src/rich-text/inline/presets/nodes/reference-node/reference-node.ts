@@ -14,7 +14,7 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent, BlockStdScope } from '@blocksuite/block-std';
 import { BLOCK_ID_ATTR, ShadowlessElement } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/lit';
 import { LinkedPageIcon } from '@blocksuite/icons/lit';
 import {
   type DeltaInsert,

@@ -1,5 +1,5 @@
 import { ShadowlessElement } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/lit';
 import { computed, effect } from '@preact/signals-core';
 import type { ReactiveController } from 'lit';
 import { css, html } from 'lit';

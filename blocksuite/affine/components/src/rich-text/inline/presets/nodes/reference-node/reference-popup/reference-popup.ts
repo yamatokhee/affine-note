@@ -9,7 +9,7 @@ import { FONT_XS, PANEL_BASE } from '@blocksuite/affine-shared/styles';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { type BlockStdScope, ShadowlessElement } from '@blocksuite/block-std';
-import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import { DoneIcon, ResetIcon } from '@blocksuite/icons/lit';
 import type { InlineRange } from '@blocksuite/inline';
 import { computePosition, inline, offset, shift } from '@floating-ui/dom';

@@ -8,7 +8,8 @@ import {
 } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound, deserializeXYWH } from '@blocksuite/global/gfx';
-import { DisposableGroup, WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/lit';
+import { DisposableGroup } from '@blocksuite/global/slot';
 import { type Query, type Store } from '@blocksuite/store';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';

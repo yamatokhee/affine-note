@@ -8,7 +8,7 @@ import {
   type GfxViewportElement,
 } from '@blocksuite/block-std/gfx';
 import type { Container, ServiceIdentifier } from '@blocksuite/global/di';
-import { DisposableGroup } from '@blocksuite/global/utils';
+import { DisposableGroup } from '@blocksuite/global/slot';
 import debounce from 'lodash-es/debounce';
 
 import {

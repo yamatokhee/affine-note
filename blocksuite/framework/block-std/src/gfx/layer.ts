@@ -1,5 +1,6 @@
 import { Bound } from '@blocksuite/global/gfx';
-import { assertType, DisposableGroup, Slot } from '@blocksuite/global/utils';
+import { DisposableGroup, Slot } from '@blocksuite/global/slot';
+import { assertType } from '@blocksuite/global/utils';
 import type { Store } from '@blocksuite/store';
 import { generateKeyBetween } from 'fractional-indexing';
 import last from 'lodash-es/last';

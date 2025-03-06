@@ -8,7 +8,7 @@ import {
   requiredProperties,
   ShadowlessElement,
 } from '@blocksuite/block-std';
-import { SignalWatcher } from '@blocksuite/global/utils';
+import { SignalWatcher } from '@blocksuite/global/lit';
 import { PaletteIcon } from '@blocksuite/icons/lit';
 import {
   computed,

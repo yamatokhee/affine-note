@@ -4,7 +4,8 @@ import {
 } from '@blocksuite/affine-components/rich-text';
 import type { UIEventStateContext } from '@blocksuite/block-std';
 import { TextSelection, WidgetComponent } from '@blocksuite/block-std';
-import { assertType, DisposableGroup } from '@blocksuite/global/utils';
+import { DisposableGroup } from '@blocksuite/global/slot';
+import { assertType } from '@blocksuite/global/utils';
 import { InlineEditor } from '@blocksuite/inline';
 import debounce from 'lodash-es/debounce';
 

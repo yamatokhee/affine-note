@@ -20,11 +20,8 @@ import type {
   BlockStdScope,
   EditorHost,
 } from '@blocksuite/block-std';
-import {
-  nextTick,
-  SignalWatcher,
-  WithDisposable,
-} from '@blocksuite/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
+import { nextTick } from '@blocksuite/global/utils';
 import { autoUpdate, computePosition, flip, offset } from '@floating-ui/dom';
 import { computed, signal } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';

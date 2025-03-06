@@ -6,7 +6,7 @@ import {
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import type { BlockComponent, BlockStdScope } from '@blocksuite/block-std';
 import { BLOCK_ID_ATTR, ShadowlessElement } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/lit';
 import {
   type DeltaInsert,
   INLINE_ROOT_ATTR,

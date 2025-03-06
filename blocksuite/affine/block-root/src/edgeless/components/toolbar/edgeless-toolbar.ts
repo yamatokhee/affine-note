@@ -16,7 +16,7 @@ import {
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { WidgetComponent } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
-import { Slot } from '@blocksuite/global/utils';
+import { Slot } from '@blocksuite/global/slot';
 import {
   ArrowLeftSmallIcon,
   ArrowRightSmallIcon,

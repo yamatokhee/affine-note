@@ -26,7 +26,7 @@ import type {
   Container,
   ServiceIdentifier,
 } from '@blocksuite/affine/global/di';
-import { DisposableGroup } from '@blocksuite/affine/global/utils';
+import { DisposableGroup } from '@blocksuite/affine/global/slot';
 import type { ExtensionType } from '@blocksuite/affine/store';
 import { batch, signal } from '@preact/signals-core';
 import type { FrameworkProvider } from '@toeverything/infra';

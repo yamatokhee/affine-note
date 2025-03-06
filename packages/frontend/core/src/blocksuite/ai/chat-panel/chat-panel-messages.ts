@@ -6,7 +6,7 @@ import {
   isInsidePageEditor,
   type SpecBuilder,
 } from '@blocksuite/affine/blocks';
-import { WithDisposable } from '@blocksuite/affine/global/utils';
+import { WithDisposable } from '@blocksuite/affine/global/lit';
 import type { BaseSelection } from '@blocksuite/affine/store';
 import {
   AiIcon,

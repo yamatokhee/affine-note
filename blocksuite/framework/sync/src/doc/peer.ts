@@ -1,4 +1,5 @@
-import { type Logger, Slot } from '@blocksuite/global/utils';
+import { Slot } from '@blocksuite/global/slot';
+import type { Logger } from '@blocksuite/global/utils';
 import isEqual from 'lodash-es/isEqual';
 import type { Doc } from 'yjs';
 import {

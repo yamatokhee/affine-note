@@ -4,7 +4,7 @@ import {
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
 import { type BlockStdScope, TextSelection } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/lit';
 import { DoneIcon } from '@blocksuite/icons/lit';
 import type { InlineRange } from '@blocksuite/inline/types';
 import { computePosition, inline, offset, shift } from '@floating-ui/dom';

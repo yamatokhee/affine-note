@@ -22,7 +22,7 @@ import {
   ToolbarContext,
 } from '@blocksuite/affine-shared/services';
 import { Bound } from '@blocksuite/global/gfx';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/lit';
 import type { TemplateResult } from 'lit';
 import { html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';

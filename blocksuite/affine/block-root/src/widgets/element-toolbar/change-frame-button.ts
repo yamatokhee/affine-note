@@ -23,7 +23,7 @@ import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { matchModels } from '@blocksuite/affine-shared/utils';
 import { GfxExtensionIdentifier } from '@blocksuite/block-std/gfx';
 import { deserializeXYWH, serializeXYWH } from '@blocksuite/global/gfx';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/lit';
 import { EditIcon, PageIcon, UngroupIcon } from '@blocksuite/icons/lit';
 import { html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';

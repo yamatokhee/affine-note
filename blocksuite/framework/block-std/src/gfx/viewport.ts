@@ -5,7 +5,7 @@ import {
   type IVec,
   Vec,
 } from '@blocksuite/global/gfx';
-import { Slot } from '@blocksuite/global/utils';
+import { Slot } from '@blocksuite/global/slot';
 import { signal } from '@preact/signals-core';
 import debounce from 'lodash-es/debounce';
 

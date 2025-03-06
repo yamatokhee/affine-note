@@ -1,5 +1,5 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import { WithDisposable } from '@blocksuite/affine/global/utils';
+import { WithDisposable } from '@blocksuite/affine/global/lit';
 import {
   ArrowDownBigIcon as ArrowDownIcon,
   ArrowUpBigIcon as ArrowUpIcon,

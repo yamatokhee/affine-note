@@ -1,5 +1,5 @@
 import { SpecProvider } from '@blocksuite/affine/blocks';
-import { Slot } from '@blocksuite/affine/global/utils';
+import { Slot } from '@blocksuite/affine/global/slot';
 import {
   AwarenessStore,
   type Doc,
