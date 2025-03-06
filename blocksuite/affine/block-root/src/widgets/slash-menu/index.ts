@@ -126,10 +126,13 @@ export class AffineSlashMenuWidget extends WidgetComponent {
       const textSelection = this.host.selection.find(TextSelection);
       if (!textSelection) return;
 
-      const model = this.host.doc.getBlock(textSelection.blockId)?.model;
-      if (!model) return;
+      const block = this.host.view.getBlock(textSelection.blockId);
+      if (!block) return;
+      const model = block.model;
 
-      if (this.config.ignoreBlockTypes.includes(model.flavour)) return;
+      if (block.closest(this.config.ignoreSelector)) return;
+
+      if (this.config.ignoreBlockTypes.includes(block.flavour)) return;
 
       const inlineRange = inlineEditor.getInlineRange();
       if (!inlineRange) return;
@@ -217,7 +220,6 @@ export class AffineSlashMenuWidget extends WidgetComponent {
       return;
     }
 
-    // this.handleEvent('beforeInput', this._onBeforeInput);
     this.handleEvent('keyDown', this._onKeyDown);
     this.handleEvent('compositionEnd', this._onCompositionEnd);
   }
