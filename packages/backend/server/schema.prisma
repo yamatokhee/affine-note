@@ -126,6 +126,8 @@ model WorkspaceDoc {
   mode        Int     @default(0) @db.SmallInt
   // Whether the doc is blocked
   blocked     Boolean @default(false)
+  title       String?  @db.VarChar
+  summary     String?  @db.VarChar
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
