@@ -4,12 +4,9 @@ import {
 } from '@blocksuite/affine-components/rich-text';
 import type { UIEventStateContext } from '@blocksuite/block-std';
 import { TextSelection, WidgetComponent } from '@blocksuite/block-std';
-import {
-  assertType,
-  debounce,
-  DisposableGroup,
-} from '@blocksuite/global/utils';
+import { assertType, DisposableGroup } from '@blocksuite/global/utils';
 import { InlineEditor } from '@blocksuite/inline';
+import debounce from 'lodash-es/debounce';
 
 import type { RootBlockComponent } from '../../types.js';
 import {
@@ -75,7 +72,8 @@ const showSlashMenu = debounce(
     container.append(slashMenu);
     return slashMenu;
   },
-  100
+  100,
+  { leading: true }
 );
 
 export const AFFINE_SLASH_MENU_WIDGET = 'affine-slash-menu-widget';

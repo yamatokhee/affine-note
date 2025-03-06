@@ -28,7 +28,6 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import { BlockSelection } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
-import { throttle } from '@blocksuite/global/utils';
 import { Text } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
 import { html, nothing } from 'lit';
@@ -36,6 +35,7 @@ import { property, queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
+import throttle from 'lodash-es/throttle';
 import * as Y from 'yjs';
 
 import { EmbedBlockComponent } from '../common/embed-block-element.js';

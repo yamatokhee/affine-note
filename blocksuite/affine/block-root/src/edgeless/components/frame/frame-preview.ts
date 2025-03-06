@@ -8,15 +8,12 @@ import {
 } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound, deserializeXYWH } from '@blocksuite/global/gfx';
-import {
-  debounce,
-  DisposableGroup,
-  WithDisposable,
-} from '@blocksuite/global/utils';
+import { DisposableGroup, WithDisposable } from '@blocksuite/global/utils';
 import { type Query, type Store } from '@blocksuite/store';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import debounce from 'lodash-es/debounce';
 
 import type { EdgelessRootPreviewBlockComponent } from '../../edgeless-root-preview-block.js';
 
@@ -182,7 +179,9 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
     this._clearFrameDisposables();
     this._frameDisposables = new DisposableGroup();
     this._frameDisposables.add(
-      frame.propsUpdated.on(debounce(this._updateFrameViewportWH, 10))
+      frame.propsUpdated.on(
+        debounce(this._updateFrameViewportWH, 10, { leading: true })
+      )
     );
   }
 

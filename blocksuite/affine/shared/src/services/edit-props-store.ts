@@ -7,8 +7,8 @@ import {
   Slot,
 } from '@blocksuite/global/utils';
 import { computed, type Signal, signal } from '@preact/signals-core';
-import clonedeep from 'lodash.clonedeep';
-import mergeWith from 'lodash.mergewith';
+import clonedeep from 'lodash-es/cloneDeep';
+import mergeWith from 'lodash-es/mergeWith';
 import * as Y from 'yjs';
 import { z } from 'zod';
 
