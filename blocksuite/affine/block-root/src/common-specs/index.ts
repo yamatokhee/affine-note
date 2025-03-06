@@ -1,20 +1,26 @@
 import { FileDropExtension } from '@blocksuite/affine-components/drop-indicator';
+import { NoteBlockSchema } from '@blocksuite/affine-model';
 import {
   DNDAPIExtension,
   DocModeService,
   EmbedOptionService,
   PageViewportServiceExtension,
   ThemeService,
+  ToolbarModuleExtension,
   ToolbarRegistryExtension,
 } from '@blocksuite/affine-shared/services';
 import { dragHandleWidget } from '@blocksuite/affine-widget-drag-handle';
 import { docRemoteSelectionWidget } from '@blocksuite/affine-widget-remote-selection';
 import { scrollAnchoringWidget } from '@blocksuite/affine-widget-scroll-anchoring';
 import { toolbarWidget } from '@blocksuite/affine-widget-toolbar';
-import { FlavourExtension } from '@blocksuite/block-std';
+import {
+  BlockFlavourIdentifier,
+  FlavourExtension,
+} from '@blocksuite/block-std';
 import type { ExtensionType } from '@blocksuite/store';
 
 import { RootBlockAdapterExtensions } from '../adapters/extension';
+import { builtinToolbarConfig } from '../configs/toolbar';
 import {
   innerModalWidget,
   linkedDocWidget,
@@ -43,6 +49,11 @@ export const CommonSpecs: ExtensionType[] = [
   viewportOverlayWidget,
   scrollAnchoringWidget,
   toolbarWidget,
+
+  ToolbarModuleExtension({
+    id: BlockFlavourIdentifier(NoteBlockSchema.model.flavour),
+    config: builtinToolbarConfig,
+  }),
 ];
 
 export * from './widgets';

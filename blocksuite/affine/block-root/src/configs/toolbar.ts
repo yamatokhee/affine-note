@@ -8,6 +8,7 @@ import {
   notifyDocCreated,
   promptDocTitle,
 } from '@blocksuite/affine-block-embed';
+import { updateBlockType } from '@blocksuite/affine-block-note';
 import {
   deleteTextCommand,
   formatBlockCommand,
@@ -50,8 +51,6 @@ import {
 import { toDraftModel } from '@blocksuite/store';
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
-
-import { updateBlockType } from '../commands';
 
 const conversionsActionGroup = {
   id: 'a.conversions',
@@ -161,7 +160,7 @@ const highlightActionGroup = {
   },
 } as const satisfies ToolbarAction;
 
-export const turnIntoDatabase = {
+const turnIntoDatabase = {
   id: 'd.convert-to-database',
   tooltip: 'Create Table',
   icon: DatabaseTableViewIcon(),
@@ -208,7 +207,7 @@ export const turnIntoDatabase = {
   },
 } as const satisfies ToolbarAction;
 
-export const turnIntoLinkedDoc = {
+const turnIntoLinkedDoc = {
   id: 'e.convert-to-linked-doc',
   tooltip: 'Create Linked Doc',
   icon: LinkedPageIcon(),

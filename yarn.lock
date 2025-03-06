@@ -2524,14 +2524,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-block-note@workspace:blocksuite/affine/block-note"
   dependencies:
-    "@blocksuite/affine-block-database": "workspace:*"
     "@blocksuite/affine-block-embed": "workspace:*"
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
-    "@blocksuite/data-view": "workspace:*"
     "@blocksuite/global": "workspace:*"
     "@blocksuite/icons": "npm:^2.2.1"
     "@blocksuite/inline": "workspace:*"
