@@ -1,11 +1,12 @@
 import { enableAutoTrack, mixpanel, sentry } from '@affine/track';
 import { appSettingAtom } from '@toeverything/infra';
 import { useAtomValue } from 'jotai/react';
-import { useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 
 export function Telemetry() {
   const settings = useAtomValue(appSettingAtom);
-  useLayoutEffect(() => {
+
+  useEffect(() => {
     if (settings.enableTelemetry === false) {
       sentry.disable();
       mixpanel.opt_out_tracking();
@@ -16,5 +17,6 @@ export function Telemetry() {
       return enableAutoTrack(document.body, mixpanel.track);
     }
   }, [settings.enableTelemetry]);
+
   return null;
 }
