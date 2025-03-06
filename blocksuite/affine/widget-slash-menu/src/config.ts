@@ -57,8 +57,8 @@ import {
   createDefaultDoc,
   openFileOrFiles,
 } from '@blocksuite/affine-shared/utils';
+import type { BlockStdScope } from '@blocksuite/block-std';
 import { viewPresets } from '@blocksuite/data-view/view-presets';
-import { assertType } from '@blocksuite/global/utils';
 import {
   DualLinkIcon,
   ExportToPdfIcon,
@@ -74,16 +74,15 @@ import type { BlockModel } from '@blocksuite/store';
 import { Slice, Text } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
 
-import type { RootBlockComponent } from '../../types.js';
-import { formatDate, formatTime } from '../../utils/misc.js';
-import type { AffineLinkedDocWidget } from '../linked-doc/index.js';
-import { type SlashMenuTooltip, slashMenuToolTips } from './tooltips/index.js';
+import { type SlashMenuTooltip, slashMenuToolTips } from './tooltips';
 import {
   createConversionItem,
   createTextFormatItem,
+  formatDate,
+  formatTime,
   insideEdgelessText,
   tryRemoveEmptyLine,
-} from './utils.js';
+} from './utils';
 
 export type SlashMenuConfig = {
   triggerKeys: string[];
@@ -136,7 +135,7 @@ export type SlashMenuItemGenerator = (
 ) => (SlashMenuGroupDivider | SlashMenuActionItem | SlashSubMenu)[];
 
 export type SlashMenuContext = {
-  rootComponent: RootBlockComponent;
+  std: BlockStdScope;
   model: BlockModel;
 };
 
@@ -183,7 +182,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       showWhen: ({ model }) => {
         return model.doc.get(FeatureFlagService).getFlag('enable_callout');
       },
-      action: ({ model, rootComponent }) => {
+      action: ({ model, std }) => {
         const { doc } = model;
         const parent = doc.getParent(model);
         if (!parent) return;
@@ -194,11 +193,11 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         if (!calloutId) return;
         const paragraphId = doc.addBlock('affine:paragraph', {}, calloutId);
         if (!paragraphId) return;
-        rootComponent.updateComplete
+        std.host.updateComplete
           .then(() => {
-            const paragraph = rootComponent.std.view.getBlock(paragraphId);
+            const paragraph = std.view.getBlock(paragraphId);
             if (!paragraph) return;
-            rootComponent.std.command.exec(focusBlockEnd, {
+            std.command.exec(focusBlockEnd, {
               focusBlock: paragraph,
             });
           })
@@ -211,8 +210,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Create a equation block.',
       icon: TeXIcon(),
       alias: ['inlineMath, inlineEquation', 'inlineLatex'],
-      action: ({ rootComponent }) => {
-        rootComponent.std.command
+      action: ({ std }) => {
+        std.command
           .chain()
           .pipe(getTextSelectionCommand)
           .pipe(insertInlineLatex)
@@ -245,9 +244,9 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       tooltip: slashMenuToolTips['New Doc'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
-      action: ({ rootComponent, model }) => {
-        const newDoc = createDefaultDoc(rootComponent.doc.workspace);
-        insertContent(rootComponent.host, model, REFERENCE_NODE, {
+      action: ({ std, model }) => {
+        const newDoc = createDefaultDoc(std.host.doc.workspace);
+        insertContent(std.host, model, REFERENCE_NODE, {
           reference: {
             type: 'LinkedPage',
             pageId: newDoc.id,
@@ -261,33 +260,36 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       icon: LinkedDocIcon,
       tooltip: slashMenuToolTips['Linked Doc'],
       alias: ['dual link'],
-      showWhen: ({ rootComponent, model }) => {
-        const { std } = rootComponent;
+      showWhen: ({ std, model }) => {
+        const root = model.doc.root;
+        if (!root) return false;
         const linkedDocWidget = std.view.getWidget(
           'affine-linked-doc-widget',
-          rootComponent.model.id
+          root.id
         );
         if (!linkedDocWidget) return false;
 
         return model.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc');
       },
-      action: ({ model, rootComponent }) => {
-        const { std } = rootComponent;
-
+      action: ({ model, std }) => {
+        const root = model.doc.root;
+        if (!root) return;
         const linkedDocWidget = std.view.getWidget(
           'affine-linked-doc-widget',
-          rootComponent.model.id
+          root.id
         );
         if (!linkedDocWidget) return;
-        assertType<AffineLinkedDocWidget>(linkedDocWidget);
-
+        // TODO(@L-Sun): make linked-doc-widget as extension
+        // @ts-expect-error same as above
         const triggerKey = linkedDocWidget.config.triggerKeys[0];
 
-        insertContent(rootComponent.host, model, triggerKey);
+        insertContent(std.host, model, triggerKey);
 
-        const inlineEditor = getInlineEditorByModel(rootComponent.host, model);
+        const inlineEditor = getInlineEditorByModel(std.host, model);
         // Wait for range to be updated
         inlineEditor?.slots.inlineRangeSync.once(() => {
+          // TODO(@L-Sun): make linked-doc-widget as extension
+          // @ts-expect-error same as above
           linkedDocWidget.show({ addTriggerKey: true });
         });
       },
@@ -301,8 +303,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       icon: TableIcon(),
       tooltip: slashMenuToolTips['Table View'],
       showWhen: ({ model }) => !insideEdgelessText(model),
-      action: ({ rootComponent }) => {
-        rootComponent.std.command
+      action: ({ std }) => {
+        std.command
           .chain()
           .pipe(getSelectedModelsCommand)
           .pipe(insertTableBlockCommand, {
@@ -311,8 +313,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           })
           .pipe(({ insertedTableBlockId }) => {
             if (insertedTableBlockId) {
-              const telemetry =
-                rootComponent.std.getOptional(TelemetryProvider);
+              const telemetry = std.getOptional(TelemetryProvider);
               telemetry?.track('BlockCreated', {
                 blockType: 'affine:table',
               });
@@ -328,8 +329,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       tooltip: slashMenuToolTips['Image'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:image'),
-      action: async ({ rootComponent }) => {
-        const [success, ctx] = rootComponent.std.command
+      action: async ({ std }) => {
+        const [success, ctx] = std.command
           .chain()
           .pipe(getSelectedModelsCommand)
           .pipe(insertImagesCommand, { removeEmptyLine: true })
@@ -345,14 +346,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       tooltip: slashMenuToolTips['Link'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:bookmark'),
-      action: async ({ rootComponent, model }) => {
-        const parentModel = rootComponent.doc.getParent(model);
+      action: async ({ std, model }) => {
+        const { host } = std;
+        const parentModel = host.doc.getParent(model);
         if (!parentModel) {
           return;
         }
         const index = parentModel.children.indexOf(model) + 1;
         await toggleEmbedCardCreateModal(
-          rootComponent.host,
+          host,
           'Links',
           'The added link will be displayed as a card view.',
           { mode: 'page', parentModel, index }
@@ -368,19 +370,13 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       alias: ['file'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:attachment'),
-      action: async ({ rootComponent, model }) => {
+      action: async ({ std, model }) => {
         const file = await openFileOrFiles();
         if (!file) return;
 
-        const maxFileSize =
-          rootComponent.std.store.get(FileSizeLimitService).maxFileSize;
+        const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
 
-        await addSiblingAttachmentBlocks(
-          rootComponent.host,
-          [file],
-          maxFileSize,
-          model
-        );
+        await addSiblingAttachmentBlocks(std.host, [file], maxFileSize, model);
         tryRemoveEmptyLine(model);
       },
     },
@@ -391,15 +387,14 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       tooltip: slashMenuToolTips['PDF'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:attachment'),
-      action: async ({ rootComponent, model }) => {
+      action: async ({ std, model }) => {
         const file = await openFileOrFiles();
         if (!file) return;
 
-        const maxFileSize =
-          rootComponent.std.store.get(FileSizeLimitService).maxFileSize;
+        const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
 
         await addSiblingAttachmentBlocks(
-          rootComponent.host,
+          std.host,
           [file],
           maxFileSize,
           model,
@@ -416,14 +411,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       tooltip: slashMenuToolTips['YouTube'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-youtube'),
-      action: async ({ rootComponent, model }) => {
-        const parentModel = rootComponent.doc.getParent(model);
+      action: async ({ std, model }) => {
+        const { host } = std;
+        const parentModel = host.doc.getParent(model);
         if (!parentModel) {
           return;
         }
         const index = parentModel.children.indexOf(model) + 1;
         await toggleEmbedCardCreateModal(
-          rootComponent.host,
+          host,
           'YouTube',
           'The added YouTube video link will be displayed as an embed view.',
           { mode: 'page', parentModel, index }
@@ -438,14 +434,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       tooltip: slashMenuToolTips['Github'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-github'),
-      action: async ({ rootComponent, model }) => {
-        const parentModel = rootComponent.doc.getParent(model);
+      action: async ({ std, model }) => {
+        const { host } = std;
+        const parentModel = host.doc.getParent(model);
         if (!parentModel) {
           return;
         }
         const index = parentModel.children.indexOf(model) + 1;
         await toggleEmbedCardCreateModal(
-          rootComponent.host,
+          host,
           'GitHub',
           'The added GitHub issue or pull request link will be displayed as a card view.',
           { mode: 'page', parentModel, index }
@@ -462,14 +459,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       tooltip: slashMenuToolTips['Figma'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-figma'),
-      action: async ({ rootComponent, model }) => {
-        const parentModel = rootComponent.doc.getParent(model);
+      action: async ({ std, model }) => {
+        const { host } = std;
+        const parentModel = host.doc.getParent(model);
         if (!parentModel) {
           return;
         }
         const index = parentModel.children.indexOf(model) + 1;
         await toggleEmbedCardCreateModal(
-          rootComponent.host,
+          host,
           'Figma',
           'The added Figma link will be displayed as an embed view.',
           { mode: 'page', parentModel, index }
@@ -483,14 +481,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       icon: LoomIcon,
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-loom'),
-      action: async ({ rootComponent, model }) => {
-        const parentModel = rootComponent.doc.getParent(model);
+      action: async ({ std, model }) => {
+        const { host } = std;
+        const parentModel = host.doc.getParent(model);
         if (!parentModel) {
           return;
         }
         const index = parentModel.children.indexOf(model) + 1;
         await toggleEmbedCardCreateModal(
-          rootComponent.host,
+          host,
           'Loom',
           'The added Loom video link will be displayed as an embed view.',
           { mode: 'page', parentModel, index }
@@ -504,8 +503,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Create a equation block.',
       icon: TeXIcon(),
       alias: ['mathBlock, equationBlock', 'latexBlock'],
-      action: ({ rootComponent }) => {
-        rootComponent.std.command
+      action: ({ std }) => {
+        std.command
           .chain()
           .pipe(getSelectedModelsCommand)
           .pipe(insertLatexBlockCommand, {
@@ -519,24 +518,24 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     // TODO(@L-Sun): Linear
 
     // ---------------------------------------------------------
-    ({ model, rootComponent }) => {
-      const { doc } = rootComponent;
+    ({ model, std }) => {
+      const { host } = std;
 
-      const surfaceModel = getSurfaceBlock(doc);
+      const surfaceModel = getSurfaceBlock(host.doc);
       if (!surfaceModel) return [];
 
-      const parent = doc.getParent(model);
+      const parent = host.doc.getParent(model);
       if (!parent) return [];
 
-      const frameModels = doc
+      const frameModels = host.doc
         .getBlocksByFlavour('affine:frame')
         .map(block => block.model as FrameBlockModel);
 
       const frameItems = frameModels.map<SlashMenuActionItem>(frameModel => ({
         name: 'Frame: ' + frameModel.title,
         icon: FrameIcon(),
-        action: ({ rootComponent }) => {
-          rootComponent.std.command
+        action: ({ std }) => {
+          std.command
             .chain()
             .pipe(getSelectedModelsCommand)
             .pipe(insertSurfaceRefBlockCommand, {
@@ -553,7 +552,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         name: 'Group: ' + group.title.toString(),
         icon: GroupingIcon(),
         action: () => {
-          rootComponent.std.command
+          std.command
             .chain()
             .pipe(getSelectedModelsCommand)
             .pipe(insertSurfaceRefBlockCommand, {
@@ -594,8 +593,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           icon: TodayIcon,
           tooltip: slashMenuToolTips['Today'],
           description: formatDate(now),
-          action: ({ rootComponent, model }) => {
-            insertContent(rootComponent.host, model, formatDate(now));
+          action: ({ std, model }) => {
+            insertContent(std.host, model, formatDate(now));
           },
         },
         {
@@ -603,10 +602,10 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           icon: TomorrowIcon,
           tooltip: slashMenuToolTips['Tomorrow'],
           description: formatDate(tomorrow),
-          action: ({ rootComponent, model }) => {
+          action: ({ std, model }) => {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            insertContent(rootComponent.host, model, formatDate(tomorrow));
+            insertContent(std.host, model, formatDate(tomorrow));
           },
         },
         {
@@ -614,10 +613,10 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           icon: YesterdayIcon,
           tooltip: slashMenuToolTips['Yesterday'],
           description: formatDate(yesterday),
-          action: ({ rootComponent, model }) => {
+          action: ({ std, model }) => {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            insertContent(rootComponent.host, model, formatDate(yesterday));
+            insertContent(std.host, model, formatDate(yesterday));
           },
         },
         {
@@ -625,8 +624,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           icon: NowIcon,
           tooltip: slashMenuToolTips['Now'],
           description: formatTime(now),
-          action: ({ rootComponent, model }) => {
-            insertContent(rootComponent.host, model, formatTime(now));
+          action: ({ std, model }) => {
+            insertContent(std.host, model, formatTime(now));
           },
         },
       ];
@@ -643,8 +642,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:database') &&
         !insideEdgelessText(model),
-      action: ({ rootComponent }) => {
-        rootComponent.std.command
+      action: ({ std }) => {
+        std.command
           .chain()
           .pipe(getSelectedModelsCommand)
           .pipe(insertDatabaseBlockCommand, {
@@ -654,8 +653,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           })
           .pipe(({ insertedDatabaseBlockId }) => {
             if (insertedDatabaseBlockId) {
-              const telemetry =
-                rootComponent.std.getOptional(TelemetryProvider);
+              const telemetry = std.getOptional(TelemetryProvider);
               telemetry?.track('BlockCreated', {
                 blockType: 'affine:database',
               });
@@ -674,21 +672,22 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         !insideEdgelessText(model) &&
         !!model.doc.get(FeatureFlagService).getFlag('enable_block_query'),
 
-      action: ({ model, rootComponent }) => {
-        const parent = rootComponent.doc.getParent(model);
+      action: ({ model, std }) => {
+        const { host } = std;
+        const parent = host.doc.getParent(model);
         if (!parent) return;
         const index = parent.children.indexOf(model);
-        const id = rootComponent.doc.addBlock(
+        const id = host.doc.addBlock(
           'affine:data-view',
           {},
-          rootComponent.doc.getParent(model),
+          host.doc.getParent(model),
           index + 1
         );
-        const dataViewModel = rootComponent.doc.getBlock(id)!;
+        const dataViewModel = host.doc.getBlock(id)!;
 
         Promise.resolve()
           .then(() => {
-            const dataView = rootComponent.std.view.getBlock(
+            const dataView = std.view.getBlock(
               dataViewModel.id
             ) as DataViewBlockComponent | null;
             dataView?.dataSource.viewManager.viewAdd('table');
@@ -706,8 +705,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:database') &&
         !insideEdgelessText(model),
-      action: ({ rootComponent }) => {
-        rootComponent.std.command
+      action: ({ std }) => {
+        std.command
           .chain()
           .pipe(getSelectedModelsCommand)
           .pipe(insertDatabaseBlockCommand, {
@@ -717,8 +716,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           })
           .pipe(({ insertedDatabaseBlockId }) => {
             if (insertedDatabaseBlockId) {
-              const telemetry =
-                rootComponent.std.getOptional(TelemetryProvider);
+              const telemetry = std.getOptional(TelemetryProvider);
               telemetry?.track('BlockCreated', {
                 blockType: 'affine:database',
               });
@@ -735,15 +733,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Shift this line up.',
       icon: ArrowUpBigIcon,
       tooltip: slashMenuToolTips['Move Up'],
-      action: ({ rootComponent, model }) => {
-        const doc = rootComponent.doc;
-        const previousSiblingModel = doc.getPrev(model);
+      action: ({ std, model }) => {
+        const { host } = std;
+        const previousSiblingModel = host.doc.getPrev(model);
         if (!previousSiblingModel) return;
 
-        const parentModel = doc.getParent(previousSiblingModel);
+        const parentModel = host.doc.getParent(previousSiblingModel);
         if (!parentModel) return;
 
-        doc.moveBlocks([model], parentModel, previousSiblingModel, true);
+        host.doc.moveBlocks([model], parentModel, previousSiblingModel, true);
       },
     },
     {
@@ -751,15 +749,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Shift this line down.',
       icon: ArrowDownBigIcon,
       tooltip: slashMenuToolTips['Move Down'],
-      action: ({ rootComponent, model }) => {
-        const doc = rootComponent.doc;
-        const nextSiblingModel = doc.getNext(model);
+      action: ({ std, model }) => {
+        const { host } = std;
+        const nextSiblingModel = host.doc.getNext(model);
         if (!nextSiblingModel) return;
 
-        const parentModel = doc.getParent(nextSiblingModel);
+        const parentModel = host.doc.getParent(nextSiblingModel);
         if (!parentModel) return;
 
-        doc.moveBlocks([model], parentModel, nextSiblingModel, false);
+        host.doc.moveBlocks([model], parentModel, nextSiblingModel, false);
       },
     },
     {
@@ -767,13 +765,13 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Copy this line to clipboard.',
       icon: CopyIcon,
       tooltip: slashMenuToolTips['Copy'],
-      action: ({ rootComponent, model }) => {
-        const slice = Slice.fromModels(rootComponent.std.store, [model]);
+      action: ({ std, model }) => {
+        const slice = Slice.fromModels(std.store, [model]);
 
-        rootComponent.std.clipboard
+        std.clipboard
           .copy(slice)
           .then(() => {
-            toast(rootComponent.host, 'Copied to clipboard');
+            toast(std.host, 'Copied to clipboard');
           })
           .catch(e => {
             console.error(e);
@@ -785,12 +783,13 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       description: 'Create a duplicate of this line.',
       icon: DualLinkIcon(),
       tooltip: slashMenuToolTips['Copy'],
-      action: ({ rootComponent, model }) => {
+      action: ({ std, model }) => {
         if (!model.text || !(model.text instanceof Text)) {
           console.error("Can't duplicate a block without text");
           return;
         }
-        const parent = rootComponent.doc.getParent(model);
+        const { host } = std;
+        const parent = host.doc.getParent(model);
         if (!parent) {
           console.error(
             'Failed to duplicate block! Parent not found: ' +
@@ -803,7 +802,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         const index = parent.children.indexOf(model);
 
         // TODO add clone model util
-        rootComponent.doc.addBlock(
+        host.doc.addBlock(
           model.flavour as never,
           {
             type: (model as ParagraphBlockModel).type,
@@ -811,7 +810,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
             // @ts-expect-error FIXME: ts error
             checked: model.checked,
           },
-          rootComponent.doc.getParent(model),
+          host.doc.getParent(model),
           index
         );
       },
@@ -822,8 +821,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       alias: ['remove'],
       icon: DeleteIcon,
       tooltip: slashMenuToolTips['Delete'],
-      action: ({ rootComponent, model }) => {
-        rootComponent.doc.deleteBlock(model);
+      action: ({ std, model }) => {
+        std.host.doc.deleteBlock(model);
       },
     },
   ],

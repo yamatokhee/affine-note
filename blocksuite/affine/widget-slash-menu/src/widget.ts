@@ -5,11 +5,9 @@ import {
 import type { UIEventStateContext } from '@blocksuite/block-std';
 import { TextSelection, WidgetComponent } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/slot';
-import { assertType } from '@blocksuite/global/utils';
 import { InlineEditor } from '@blocksuite/inline';
 import debounce from 'lodash-es/debounce';
 
-import type { RootBlockComponent } from '../../types.js';
 import {
   defaultSlashMenuConfig,
   type SlashMenuActionItem,
@@ -19,9 +17,9 @@ import {
   type SlashMenuItemGenerator,
   type SlashMenuStaticConfig,
   type SlashSubMenu,
-} from './config.js';
-import { SlashMenu } from './slash-menu-popover.js';
-import { filterEnabledSlashMenuItems } from './utils.js';
+} from './config';
+import { SlashMenu } from './slash-menu-popover';
+import { filterEnabledSlashMenuItems } from './utils';
 
 export type AffineSlashMenuContext = SlashMenuContext;
 export type AffineSlashMenuItem = SlashMenuItem;
@@ -57,7 +55,7 @@ const showSlashMenu = debounce(
     );
 
     const inlineEditor = getInlineEditorByModel(
-      context.rootComponent.host,
+      context.std.host,
       context.model
     );
     if (!inlineEditor) return;
@@ -115,12 +113,10 @@ export class AffineSlashMenuWidget extends WidgetComponent {
       else inlineEditor.slots.inlineRangeSync.once(callback);
     };
 
-    const rootComponent = this.block;
-    if (rootComponent.model.flavour !== 'affine:page') {
+    if (this.block.model.flavour !== 'affine:page') {
       console.error('SlashMenuWidget should be used in RootBlock');
       return;
     }
-    assertType<RootBlockComponent>(rootComponent);
 
     inlineRangeApplyCallback(() => {
       const textSelection = this.host.selection.find(TextSelection);
@@ -155,7 +151,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
         ...this.config,
         items: filterEnabledSlashMenuItems(this.config.items, {
           model,
-          rootComponent,
+          std: this.std,
         }),
       };
 
@@ -163,7 +159,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
       showSlashMenu({
         context: {
           model,
-          rootComponent,
+          std: this.std,
         },
         triggerKey: matchedKey,
         config,
@@ -222,11 +218,5 @@ export class AffineSlashMenuWidget extends WidgetComponent {
 
     this.handleEvent('keyDown', this._onKeyDown);
     this.handleEvent('compositionEnd', this._onCompositionEnd);
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [AFFINE_SLASH_MENU_WIDGET]: AffineSlashMenuWidget;
   }
 }

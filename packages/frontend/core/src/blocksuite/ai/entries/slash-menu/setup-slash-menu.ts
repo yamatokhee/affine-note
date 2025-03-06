@@ -29,26 +29,28 @@ export function setupSlashMenuAIEntry(slashMenu: AffineSlashMenuWidget) {
 
   const showWhenWrapper =
     (item?: AIItemConfig) =>
-    ({ rootComponent }: AffineSlashMenuContext) => {
-      const affineAIPanelWidget = rootComponent.host.view.getWidget(
+    ({ std }: AffineSlashMenuContext) => {
+      const root = std.host.doc.root;
+      if (!root) return false;
+      const affineAIPanelWidget = std.view.getWidget(
         AFFINE_AI_PANEL_WIDGET,
-        rootComponent.model.id
+        root.id
       );
       if (affineAIPanelWidget === null) return false;
 
-      const chain = rootComponent.host.command.chain();
-      const docModeService = rootComponent.std.get(DocModeProvider);
-      const editorMode = docModeService.getPrimaryMode(rootComponent.doc.id);
+      const chain = std.host.command.chain();
+      const docModeService = std.get(DocModeProvider);
+      const editorMode = docModeService.getPrimaryMode(std.host.doc.id);
 
-      return item?.showWhen?.(chain, editorMode, rootComponent.host) ?? true;
+      return item?.showWhen?.(chain, editorMode, std.host) ?? true;
     };
 
   const actionItemWrapper = (
     item: AIItemConfig
   ): AffineSlashMenuActionItem => ({
     ...basicItemConfig(item),
-    action: ({ rootComponent }: AffineSlashMenuContext) => {
-      item?.handler?.(rootComponent.host);
+    action: ({ std }: AffineSlashMenuContext) => {
+      item?.handler?.(std.host);
     },
   });
 
@@ -58,7 +60,7 @@ export function setupSlashMenuAIEntry(slashMenu: AffineSlashMenuWidget) {
       subMenu: (item.subItem ?? []).map<AffineSlashMenuActionItem>(
         ({ type, handler }) => ({
           name: type,
-          action: ({ rootComponent }) => handler?.(rootComponent.host),
+          action: ({ std }) => handler?.(std.host),
         })
       ),
     };
@@ -78,11 +80,12 @@ export function setupSlashMenuAIEntry(slashMenu: AffineSlashMenuWidget) {
     name: 'Ask AI',
     icon: AIStarIcon,
     showWhen: showWhenWrapper(),
-    action: ({ rootComponent }) => {
-      const view = rootComponent.host.view;
-      const affineAIPanelWidget = view.getWidget(
+    action: ({ std }) => {
+      const root = std.host.doc.root;
+      if (!root) return;
+      const affineAIPanelWidget = std.view.getWidget(
         AFFINE_AI_PANEL_WIDGET,
-        rootComponent.model.id
+        root.id
       ) as AffineAIPanelWidget;
       handleInlineAskAIAction(affineAIPanelWidget.host);
     },

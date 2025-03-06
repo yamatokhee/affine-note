@@ -9,6 +9,7 @@ import {
 import {
   createKeydownObserver,
   getCurrentNativeRange,
+  getPopperPosition,
   isControlledKeyboardEvent,
   isFuzzyMatch,
   substringMatchScore,
@@ -21,7 +22,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import throttle from 'lodash-es/throttle';
 
-import { getPopperPosition } from '../../utils/position.js';
 import type {
   SlashMenuActionItem,
   SlashMenuContext,
@@ -147,7 +147,7 @@ export class SlashMenu extends WithDisposable(LitElement) {
   }
 
   get host() {
-    return this.context.rootComponent.host;
+    return this.context.std.host;
   }
 
   constructor(
@@ -480,7 +480,7 @@ export class InnerSlashMenu extends WithDisposable(LitElement) {
     });
 
     const inlineEditor = getInlineEditorByModel(
-      this.context.rootComponent.host,
+      this.context.std.host,
       this.context.model
     );
 

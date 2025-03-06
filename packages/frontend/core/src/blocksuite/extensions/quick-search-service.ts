@@ -137,11 +137,10 @@ export function patchQuickSearchService(framework: FrameworkProvider) {
               'action' in item &&
               (item.name === 'Linked Doc' || item.name === 'Link')
             ) {
-              item.action = async ({ rootComponent }) => {
-                const [success, { insertedLinkType }] =
-                  rootComponent.std.command.exec(
-                    insertLinkByQuickSearchCommand
-                  );
+              item.action = async ({ std }) => {
+                const [success, { insertedLinkType }] = std.command.exec(
+                  insertLinkByQuickSearchCommand
+                );
 
                 if (!success) return;
 

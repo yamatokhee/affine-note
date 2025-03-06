@@ -250,6 +250,7 @@ export const PackageList = [
       'blocksuite/affine/widget-frame-title',
       'blocksuite/affine/widget-remote-selection',
       'blocksuite/affine/widget-scroll-anchoring',
+      'blocksuite/affine/widget-slash-menu',
       'blocksuite/affine/widget-toolbar',
       'blocksuite/framework/block-std',
       'blocksuite/affine/data-view',
@@ -436,6 +437,28 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/widget-slash-menu',
+    name: '@blocksuite/affine-widget-slash-menu',
+    workspaceDependencies: [
+      'blocksuite/affine/block-attachment',
+      'blocksuite/affine/block-database',
+      'blocksuite/affine/block-embed',
+      'blocksuite/affine/block-image',
+      'blocksuite/affine/block-latex',
+      'blocksuite/affine/block-note',
+      'blocksuite/affine/block-surface',
+      'blocksuite/affine/block-surface-ref',
+      'blocksuite/affine/block-table',
+      'blocksuite/affine/components',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/affine/data-view',
+      'blocksuite/framework/global',
+      'blocksuite/framework/inline',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/widget-toolbar',
     name: '@blocksuite/affine-widget-toolbar',
     workspaceDependencies: [
@@ -481,6 +504,7 @@ export const PackageList = [
       'blocksuite/affine/widget-frame-title',
       'blocksuite/affine/widget-remote-selection',
       'blocksuite/affine/widget-scroll-anchoring',
+      'blocksuite/affine/widget-slash-menu',
       'blocksuite/affine/widget-toolbar',
       'blocksuite/framework/block-std',
       'blocksuite/affine/data-view',
@@ -887,6 +911,7 @@ export type PackageName =
   | '@blocksuite/affine-widget-frame-title'
   | '@blocksuite/affine-widget-remote-selection'
   | '@blocksuite/affine-widget-scroll-anchoring'
+  | '@blocksuite/affine-widget-slash-menu'
   | '@blocksuite/affine-widget-toolbar'
   | '@blocksuite/blocks'
   | '@blocksuite/block-std'

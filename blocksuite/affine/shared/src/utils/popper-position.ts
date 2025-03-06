@@ -18,7 +18,7 @@ type CollisionBox = {
   edgeGap?: number;
 };
 
-export function calcSafeCoordinate({
+function calcSafeCoordinate({
   positioningPoint,
   objRect = { width: 0, height: 0 },
   boundaryRect = document.body.getBoundingClientRect(),
@@ -50,7 +50,7 @@ export function calcSafeCoordinate({
  *
  * Please give preference to {@link getPopperPosition}
  */
-export function compareTopAndBottomSpace(
+function compareTopAndBottomSpace(
   obj: { getBoundingClientRect: () => DOMRect },
   container = document.body,
   gap = 20

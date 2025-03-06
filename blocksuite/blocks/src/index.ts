@@ -114,6 +114,9 @@ export {
 export type { DragBlockPayload } from '@blocksuite/affine-widget-drag-handle';
 export { toolbarWidget } from '@blocksuite/affine-widget-toolbar';
 
+// TODO(@L-Sun): Narrow the export scope
+export * from '@blocksuite/affine-widget-slash-menu';
+
 const env: Record<string, unknown> =
   typeof globalThis !== 'undefined'
     ? globalThis
