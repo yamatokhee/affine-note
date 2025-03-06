@@ -63,6 +63,10 @@ export class ChatSession implements AsyncDisposable {
     return this.state.messages.slice(-this.stashMessageCount);
   }
 
+  get latestUserMessage() {
+    return this.state.messages.findLast(m => m.role === 'user');
+  }
+
   push(message: ChatMessage) {
     if (
       this.state.prompt.action &&
@@ -313,6 +317,7 @@ export class ChatSessionService {
               role: true,
               content: true,
               attachments: true,
+              params: true,
               createdAt: true,
             },
             orderBy: { createdAt: 'asc' },
