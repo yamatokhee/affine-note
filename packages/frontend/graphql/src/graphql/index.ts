@@ -643,6 +643,18 @@ export const getPageGrantedUsersListQuery = {
 }`,
 };
 
+export const getPublicUserByIdQuery = {
+  id: 'getPublicUserByIdQuery' as const,
+  op: 'getPublicUserById',
+  query: `query getPublicUserById($id: String!) {
+  publicUserById(id: $id) {
+    id
+    avatarUrl
+    name
+  }
+}`,
+};
+
 export const getServerRuntimeConfigQuery = {
   id: 'getServerRuntimeConfigQuery' as const,
   op: 'getServerRuntimeConfig',
