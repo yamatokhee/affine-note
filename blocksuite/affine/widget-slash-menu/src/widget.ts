@@ -48,14 +48,7 @@ const showSlashMenu = debounce(
     disposables.add(() => slashMenu.remove());
     slashMenu.context = context;
     slashMenu.items = buildSlashMenuItems(
-      config.items
-        .map(item => {
-          if (typeof item === 'function') {
-            return item(context);
-          }
-          return item;
-        })
-        .flat(),
+      typeof config.items === 'function' ? config.items(context) : config.items,
       context,
       configItemTransform
     );

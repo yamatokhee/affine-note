@@ -2,26 +2,23 @@ import {
   AIStarIcon,
   DocModeProvider,
   type SlashMenuActionItem,
+  SlashMenuConfigExtension,
   type SlashMenuContext,
-  SlashMenuExtension,
   type SlashMenuItem,
   type SlashMenuSubMenu,
 } from '@blocksuite/affine/blocks';
-import type { BlockStdScope } from '@blocksuite/block-std';
 import { MoreHorizontalIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 
-import { pageAIGroups } from '../../_common/config';
-import { handleInlineAskAIAction } from '../../actions/doc-handler';
-import type { AIItemConfig } from '../../components/ai-item/types';
+import { pageAIGroups } from '../_common/config';
+import { handleInlineAskAIAction } from '../actions/doc-handler';
+import type { AIItemConfig } from '../components/ai-item/types';
 import {
   AFFINE_AI_PANEL_WIDGET,
   type AffineAIPanelWidget,
-} from '../../widgets/ai-panel/ai-panel';
+} from '../widgets/ai-panel/ai-panel';
 
-export function setupSlashMenuAIEntry(std: BlockStdScope) {
-  const slashMenuExtension = std.get(SlashMenuExtension);
-
+export function AiSlashMenuConfigExtension() {
   const AIItems = pageAIGroups.map(group => group.items).flat();
 
   const iconWrapper = (icon: AIItemConfig['icon']) => {
@@ -129,8 +126,7 @@ export function setupSlashMenuAIEntry(std: BlockStdScope) {
     },
   ];
 
-  slashMenuExtension.config = {
-    ...slashMenuExtension.config,
-    items: [...AIMenuItems, ...slashMenuExtension.config.items],
-  };
+  return SlashMenuConfigExtension('ai', {
+    items: AIMenuItems,
+  });
 }

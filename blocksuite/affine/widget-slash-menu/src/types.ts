@@ -51,7 +51,7 @@ export type SlashMenuConfig = {
   /**
    * The items in the slash menu. It can be generated dynamically with the context.
    */
-  items: (SlashMenuItem | ((ctx: SlashMenuContext) => SlashMenuItem[]))[];
+  items: SlashMenuItem[] | ((ctx: SlashMenuContext) => SlashMenuItem[]);
 
   /**
    * Slash menu will not be triggered when the condition is true.

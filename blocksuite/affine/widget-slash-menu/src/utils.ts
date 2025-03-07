@@ -73,11 +73,14 @@ export function mergeSlashMenuConfigs(
   configs: Map<string, SlashMenuConfig>
 ): SlashMenuConfig {
   return {
-    items: Array.from(configs.values().flatMap(config => config.items)),
+    items: ctx =>
+      Array.from(configs.values()).flatMap(({ items }) =>
+        typeof items === 'function' ? items(ctx) : items
+      ),
     disableWhen: ctx =>
       configs
         .values()
-        .map(config => config.disableWhen?.(ctx) ?? false)
+        .map(({ disableWhen }) => disableWhen?.(ctx) ?? false)
         .some(Boolean),
   };
 }

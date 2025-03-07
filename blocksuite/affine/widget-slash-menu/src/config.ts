@@ -41,7 +41,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
   disableWhen: ({ model }) => {
     return model.flavour === 'affine:code';
   },
-  items: [
+  items: ({ std, model }) => [
     {
       name: 'New Doc',
       description: 'Start a new document.',
@@ -103,7 +103,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     },
 
     // ---------------------------------------------------------
-    ({ std, model }) => {
+    ...(() => {
       const { host } = std;
 
       const surfaceModel = getSurfaceBlock(host.doc);
@@ -152,10 +152,10 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       }));
 
       return [...frameItems, ...groupItems];
-    },
+    })(),
 
     // ---------------------------------------------------------
-    () => {
+    ...((): SlashMenuActionItem[] => {
       const now = new Date();
       const tomorrow = new Date();
       const yesterday = new Date();
@@ -209,7 +209,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           },
         },
       ];
-    },
+    })(),
 
     // ---------------------------------------------------------
     // { groupName: 'Actions' },

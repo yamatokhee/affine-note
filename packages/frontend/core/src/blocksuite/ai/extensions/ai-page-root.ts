@@ -3,7 +3,6 @@ import {
   LifeCycleWatcher,
 } from '@blocksuite/affine/block-std';
 import {
-  AffineSlashMenuWidget,
   PageRootBlockSpec,
   ToolbarModuleExtension,
 } from '@blocksuite/affine/blocks';
@@ -12,12 +11,12 @@ import type { FrameworkProvider } from '@toeverything/infra';
 
 import { buildAIPanelConfig } from '../ai-panel';
 import { toolbarAIEntryConfig } from '../entries';
-import { setupSlashMenuAIEntry } from '../entries/slash-menu/setup-slash-menu';
 import { setupSpaceAIEntry } from '../entries/space/setup-space';
 import {
   AffineAIPanelWidget,
   aiPanelWidget,
 } from '../widgets/ai-panel/ai-panel';
+import { AiSlashMenuConfigExtension } from './ai-slash-menu';
 
 function getAIPageRootWatcher(framework: FrameworkProvider) {
   class AIPageRootWatcher extends LifeCycleWatcher {
@@ -36,10 +35,6 @@ function getAIPageRootWatcher(framework: FrameworkProvider) {
           component.config = buildAIPanelConfig(component, framework);
           setupSpaceAIEntry(component);
         }
-
-        if (component instanceof AffineSlashMenuWidget) {
-          setupSlashMenuAIEntry(this.std);
-        }
       });
     }
   }
@@ -57,5 +52,6 @@ export function createAIPageRootBlockSpec(
       id: BlockFlavourIdentifier('custom:affine:note'),
       config: toolbarAIEntryConfig(),
     }),
+    AiSlashMenuConfigExtension(),
   ];
 }
