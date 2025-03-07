@@ -1,12 +1,6 @@
 import { addSiblingAttachmentBlocks } from '@blocksuite/affine-block-attachment';
 import type { DataViewBlockComponent } from '@blocksuite/affine-block-data-view';
 import { insertDatabaseBlockCommand } from '@blocksuite/affine-block-database';
-import {
-  FigmaIcon,
-  GithubIcon,
-  LoomIcon,
-  YoutubeIcon,
-} from '@blocksuite/affine-block-embed';
 import { insertImagesCommand } from '@blocksuite/affine-block-image';
 import { insertLatexBlockCommand } from '@blocksuite/affine-block-latex';
 import { focusBlockEnd } from '@blocksuite/affine-block-note';
@@ -14,23 +8,6 @@ import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
 import { insertTableBlockCommand } from '@blocksuite/affine-block-table';
 import { toggleEmbedCardCreateModal } from '@blocksuite/affine-components/embed-card-modal';
-import {
-  ArrowDownBigIcon,
-  ArrowUpBigIcon,
-  CopyIcon,
-  DatabaseKanbanViewIcon20,
-  DatabaseTableViewIcon20,
-  DeleteIcon,
-  FileIcon,
-  HeadingIcon,
-  LinkedDocIcon,
-  LinkIcon,
-  NewDocIcon,
-  NowIcon,
-  TodayIcon,
-  TomorrowIcon,
-  YesterdayIcon,
-} from '@blocksuite/affine-components/icons';
 import {
   getInlineEditorByModel,
   insertContent,
@@ -60,14 +37,33 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import { viewPresets } from '@blocksuite/data-view/view-presets';
 import {
+  ArrowDownBigIcon,
+  ArrowUpBigIcon,
+  CopyIcon,
+  DatabaseKanbanViewIcon,
+  DatabaseTableViewIcon,
+  DeleteIcon,
   DualLinkIcon,
   ExportToPdfIcon,
+  FigmaDuotoneIcon,
+  FileIcon,
   FontIcon,
   FrameIcon,
+  GithubDuotoneIcon,
   GroupingIcon,
+  HeadingsIcon,
   ImageIcon,
+  LinkedPageIcon,
+  LinkIcon,
+  LoomLogoDuotoneIcon,
+  NowIcon,
+  PlusIcon,
   TableIcon,
   TeXIcon,
+  TodayIcon,
+  TomorrowIcon,
+  YesterdayIcon,
+  YoutubeDuotoneIcon,
 } from '@blocksuite/icons/lit';
 import type { DeltaInsert } from '@blocksuite/inline';
 import { Slice, Text } from '@blocksuite/store';
@@ -103,7 +99,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       .map(config => createConversionItem(config, `0_Basic@${index++}`)),
     {
       name: 'Other Headings',
-      icon: HeadingIcon,
+      icon: HeadingsIcon(),
       group: `0_Basic@${index++}`,
       subMenu: textConversionConfigs
         .filter(i => i.type && ['h4', 'h5', 'h6'].includes(i.type))
@@ -193,7 +189,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'New Doc',
       description: 'Start a new document.',
-      icon: NewDocIcon,
+      icon: PlusIcon(),
       tooltip: slashMenuToolTips['New Doc'],
       group: `3_Page@${index++}`,
       when: ({ model }) =>
@@ -211,7 +207,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Linked Doc',
       description: 'Link to another document.',
-      icon: LinkedDocIcon,
+      icon: LinkedPageIcon(),
       tooltip: slashMenuToolTips['Linked Doc'],
       searchAlias: ['dual link'],
       group: `3_Page@${index++}`,
@@ -299,7 +295,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Link',
       description: 'Add a bookmark for reference.',
-      icon: LinkIcon,
+      icon: LinkIcon(),
       tooltip: slashMenuToolTips['Link'],
       group: `4_Content & Media@${index++}`,
       when: ({ model }) =>
@@ -326,7 +322,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Attachment',
       description: 'Attach a file to document.',
-      icon: FileIcon,
+      icon: FileIcon(),
       tooltip: slashMenuToolTips['Attachment'],
       searchAlias: ['file'],
       group: `4_Content & Media@${index++}`,
@@ -350,7 +346,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'PDF',
       description: 'Upload a PDF to document.',
-      icon: ExportToPdfIcon({ width: '20', height: '20' }),
+      icon: ExportToPdfIcon(),
       tooltip: slashMenuToolTips['PDF'],
       group: `4_Content & Media@${index++}`,
       when: ({ model }) =>
@@ -377,7 +373,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'YouTube',
       description: 'Embed a YouTube video.',
-      icon: YoutubeIcon,
+      icon: YoutubeDuotoneIcon(),
       tooltip: slashMenuToolTips['YouTube'],
       group: `4_Content & Media@${index++}`,
       when: ({ model }) =>
@@ -403,7 +399,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'GitHub',
       description: 'Link to a GitHub repository.',
-      icon: GithubIcon,
+      icon: GithubDuotoneIcon(),
       tooltip: slashMenuToolTips['Github'],
       group: `4_Content & Media@${index++}`,
       when: ({ model }) =>
@@ -431,7 +427,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Figma',
       description: 'Embed a Figma document.',
-      icon: FigmaIcon,
+      icon: FigmaDuotoneIcon(),
       tooltip: slashMenuToolTips['Figma'],
       group: `4_Content & Media@${index++}`,
       when: ({ model }) =>
@@ -457,7 +453,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
 
     {
       name: 'Loom',
-      icon: LoomIcon,
+      icon: LoomLogoDuotoneIcon(),
       group: `4_Content & Media@${index++}`,
       when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-loom'),
@@ -564,7 +560,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       return [
         {
           name: 'Today',
-          icon: TodayIcon,
+          icon: TodayIcon(),
           tooltip: slashMenuToolTips['Today'],
           description: formatDate(now),
           group: `6_Date@${index++}`,
@@ -574,7 +570,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         },
         {
           name: 'Tomorrow',
-          icon: TomorrowIcon,
+          icon: TomorrowIcon(),
           tooltip: slashMenuToolTips['Tomorrow'],
           description: formatDate(tomorrow),
           group: `6_Date@${index++}`,
@@ -586,7 +582,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         },
         {
           name: 'Yesterday',
-          icon: YesterdayIcon,
+          icon: YesterdayIcon(),
           tooltip: slashMenuToolTips['Yesterday'],
           description: formatDate(yesterday),
           group: `6_Date@${index++}`,
@@ -598,7 +594,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         },
         {
           name: 'Now',
-          icon: NowIcon,
+          icon: NowIcon(),
           tooltip: slashMenuToolTips['Now'],
           description: formatTime(now),
           group: `6_Date@${index++}`,
@@ -615,7 +611,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       name: 'Table View',
       description: 'Display items in a table format.',
       searchAlias: ['database'],
-      icon: DatabaseTableViewIcon20,
+      icon: DatabaseTableViewIcon(),
       tooltip: slashMenuToolTips['Table View'],
       group: `7_Database@${index++}`,
       when: ({ model }) =>
@@ -644,7 +640,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Todo',
       searchAlias: ['todo view'],
-      icon: DatabaseTableViewIcon20,
+      icon: DatabaseTableViewIcon(),
       tooltip: slashMenuToolTips['Todo'],
       group: `7_Database@${index++}`,
       when: ({ model }) =>
@@ -680,7 +676,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       name: 'Kanban View',
       description: 'Visualize data in a dashboard.',
       searchAlias: ['database'],
-      icon: DatabaseKanbanViewIcon20,
+      icon: DatabaseKanbanViewIcon(),
       tooltip: slashMenuToolTips['Kanban View'],
       group: `7_Database@${index++}`,
       when: ({ model }) =>
@@ -712,7 +708,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Move Up',
       description: 'Shift this line up.',
-      icon: ArrowUpBigIcon,
+      icon: ArrowUpBigIcon(),
       tooltip: slashMenuToolTips['Move Up'],
       group: `8_Actions@${index++}`,
       action: ({ std, model }) => {
@@ -729,7 +725,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Move Down',
       description: 'Shift this line down.',
-      icon: ArrowDownBigIcon,
+      icon: ArrowDownBigIcon(),
       tooltip: slashMenuToolTips['Move Down'],
       group: `8_Actions@${index++}`,
       action: ({ std, model }) => {
@@ -746,7 +742,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Copy',
       description: 'Copy this line to clipboard.',
-      icon: CopyIcon,
+      icon: CopyIcon(),
       tooltip: slashMenuToolTips['Copy'],
       group: `8_Actions@${index++}`,
       action: ({ std, model }) => {
@@ -804,7 +800,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       name: 'Delete',
       description: 'Remove this line permanently.',
       searchAlias: ['remove'],
-      icon: DeleteIcon,
+      icon: DeleteIcon(),
       tooltip: slashMenuToolTips['Delete'],
       group: `8_Actions@${index++}`,
       action: ({ std, model }) => {

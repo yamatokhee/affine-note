@@ -1,4 +1,3 @@
-import { ArrowDownIcon } from '@blocksuite/affine-components/icons';
 import { createLitPortal } from '@blocksuite/affine-components/portal';
 import type { AffineInlineEditor } from '@blocksuite/affine-components/rich-text';
 import {
@@ -15,6 +14,7 @@ import {
   substringMatchScore,
 } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/lit';
+import { ArrowDownSmallIcon } from '@blocksuite/icons/lit';
 import { autoPlacement, offset } from '@floating-ui/dom';
 import { html, LitElement, nothing, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
@@ -445,7 +445,7 @@ export class InnerSlashMenu extends WithDisposable(LitElement) {
     >
       ${icon && html`<div class="slash-menu-item-icon">${icon}</div>`}
       <div slot="suffix" style="transform: rotate(-90deg);">
-        ${ArrowDownIcon}
+        ${ArrowDownSmallIcon()}
       </div>
     </icon-button>`;
   };
