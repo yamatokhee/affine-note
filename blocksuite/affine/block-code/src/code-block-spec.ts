@@ -1,3 +1,4 @@
+import { SlashMenuConfigExtension } from '@blocksuite/affine-widget-slash-menu';
 import {
   BlockViewExtension,
   FlavourExtension,
@@ -13,6 +14,7 @@ import {
 } from './code-block-inline.js';
 import { CodeBlockService } from './code-block-service.js';
 import { AFFINE_CODE_TOOLBAR_WIDGET } from './code-toolbar/index.js';
+import { codeSlashMenuConfig } from './configs/slash-menu.js';
 
 export const codeToolbarWidget = WidgetViewExtension(
   'affine:code',
@@ -28,4 +30,5 @@ export const CodeBlockSpec: ExtensionType[] = [
   CodeBlockInlineManagerExtension,
   CodeBlockUnitSpecExtension,
   CodeBlockAdapterExtensions,
+  SlashMenuConfigExtension('affine:code', codeSlashMenuConfig),
 ].flat();

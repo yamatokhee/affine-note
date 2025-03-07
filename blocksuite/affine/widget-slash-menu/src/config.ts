@@ -20,9 +20,6 @@ import type { SlashMenuConfig } from './types';
 import { formatDate, formatTime } from './utils';
 
 export const defaultSlashMenuConfig: SlashMenuConfig = {
-  disableWhen: ({ model }) => {
-    return model.flavour === 'affine:code';
-  },
   items: () => {
     const now = new Date();
     const tomorrow = new Date();
