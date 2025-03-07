@@ -25,10 +25,7 @@ export class SlashMenuExtension extends Extension {
     di.add(this, [StdIdentifier]);
 
     // TODO(@L-Sun): remove this after moving all configs to corresponding extensions
-    SlashMenuConfigExtension({
-      id: 'default',
-      config: defaultSlashMenuConfig,
-    }).setup(di);
+    SlashMenuConfigExtension('default', defaultSlashMenuConfig).setup(di);
   }
 
   constructor(readonly std: BlockStdScope) {
@@ -43,13 +40,10 @@ const SlashMenuConfigIdentifier = createIdentifier<SlashMenuConfig>(
   `${AFFINE_SLASH_MENU_WIDGET}-config`
 );
 
-export function SlashMenuConfigExtension({
-  id,
-  config,
-}: {
-  id: string;
-  config: SlashMenuConfig;
-}): ExtensionType {
+export function SlashMenuConfigExtension(
+  id: string,
+  config: SlashMenuConfig
+): ExtensionType {
   return {
     setup: di => {
       di.addImpl(SlashMenuConfigIdentifier(id), config);

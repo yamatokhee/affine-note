@@ -1,6 +1,4 @@
 import { addSiblingAttachmentBlocks } from '@blocksuite/affine-block-attachment';
-import type { DataViewBlockComponent } from '@blocksuite/affine-block-data-view';
-import { insertDatabaseBlockCommand } from '@blocksuite/affine-block-database';
 import { insertImagesCommand } from '@blocksuite/affine-block-image';
 import { insertLatexBlockCommand } from '@blocksuite/affine-block-latex';
 import { focusBlockEnd } from '@blocksuite/affine-block-note';
@@ -35,13 +33,10 @@ import {
   findAncestorModel,
   openFileOrFiles,
 } from '@blocksuite/affine-shared/utils';
-import { viewPresets } from '@blocksuite/data-view/view-presets';
 import {
   ArrowDownBigIcon,
   ArrowUpBigIcon,
   CopyIcon,
-  DatabaseKanbanViewIcon,
-  DatabaseTableViewIcon,
   DeleteIcon,
   DualLinkIcon,
   ExportToPdfIcon,
@@ -85,7 +80,7 @@ let index = 0;
 export const defaultSlashMenuConfig: SlashMenuConfig = {
   disableWhen: ({ model }) => {
     return (
-      ['affine:database', 'affine:code'].includes(model.flavour) ||
+      ['affine:code'].includes(model.flavour) ||
       !!findAncestorModel(
         model,
         ancestor => ancestor.flavour === 'affine:callout'
@@ -93,7 +88,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     );
   },
   items: [
-    // ---------------------------------------------------------
+    // TODO(@L-Sun): move this to rich-text when it has been remove from blocksuite/affine-components
     ...textConversionConfigs
       .filter(i => i.type && ['h1', 'h2', 'h3', 'text'].includes(i.type))
       .map(config => createConversionItem(config, `0_Basic@${index++}`)),
@@ -180,12 +175,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       .filter(i => !['Code', 'Link'].includes(i.name))
       .map(config => createTextFormatItem(config, `2_Style@${index++}`)),
 
-    // ---------------------------------------------------------
-    // {
-    //   groupName: 'Page',
-    //   when: ({ model }) =>
-    //     model.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
-    // },
     {
       name: 'New Doc',
       description: 'Start a new document.',
@@ -603,104 +592,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           },
         },
       ];
-    },
-
-    // ---------------------------------------------------------
-    // { groupName: 'Database' },
-    {
-      name: 'Table View',
-      description: 'Display items in a table format.',
-      searchAlias: ['database'],
-      icon: DatabaseTableViewIcon(),
-      tooltip: slashMenuToolTips['Table View'],
-      group: `7_Database@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:database') &&
-        !insideEdgelessText(model),
-      action: ({ std }) => {
-        std.command
-          .chain()
-          .pipe(getSelectedModelsCommand)
-          .pipe(insertDatabaseBlockCommand, {
-            viewType: viewPresets.tableViewMeta.type,
-            place: 'after',
-            removeEmptyLine: true,
-          })
-          .pipe(({ insertedDatabaseBlockId }) => {
-            if (insertedDatabaseBlockId) {
-              const telemetry = std.getOptional(TelemetryProvider);
-              telemetry?.track('BlockCreated', {
-                blockType: 'affine:database',
-              });
-            }
-          })
-          .run();
-      },
-    },
-    {
-      name: 'Todo',
-      searchAlias: ['todo view'],
-      icon: DatabaseTableViewIcon(),
-      tooltip: slashMenuToolTips['Todo'],
-      group: `7_Database@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:database') &&
-        !insideEdgelessText(model) &&
-        !!model.doc.get(FeatureFlagService).getFlag('enable_block_query'),
-
-      action: ({ model, std }) => {
-        const { host } = std;
-        const parent = host.doc.getParent(model);
-        if (!parent) return;
-        const index = parent.children.indexOf(model);
-        const id = host.doc.addBlock(
-          'affine:data-view',
-          {},
-          host.doc.getParent(model),
-          index + 1
-        );
-        const dataViewModel = host.doc.getBlock(id)!;
-
-        Promise.resolve()
-          .then(() => {
-            const dataView = std.view.getBlock(
-              dataViewModel.id
-            ) as DataViewBlockComponent | null;
-            dataView?.dataSource.viewManager.viewAdd('table');
-          })
-          .catch(console.error);
-        tryRemoveEmptyLine(model);
-      },
-    },
-    {
-      name: 'Kanban View',
-      description: 'Visualize data in a dashboard.',
-      searchAlias: ['database'],
-      icon: DatabaseKanbanViewIcon(),
-      tooltip: slashMenuToolTips['Kanban View'],
-      group: `7_Database@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:database') &&
-        !insideEdgelessText(model),
-      action: ({ std }) => {
-        std.command
-          .chain()
-          .pipe(getSelectedModelsCommand)
-          .pipe(insertDatabaseBlockCommand, {
-            viewType: viewPresets.kanbanViewMeta.type,
-            place: 'after',
-            removeEmptyLine: true,
-          })
-          .pipe(({ insertedDatabaseBlockId }) => {
-            if (insertedDatabaseBlockId) {
-              const telemetry = std.getOptional(TelemetryProvider);
-              telemetry?.track('BlockCreated', {
-                blockType: 'affine:database',
-              });
-            }
-          })
-          .run();
-      },
     },
 
     // ---------------------------------------------------------

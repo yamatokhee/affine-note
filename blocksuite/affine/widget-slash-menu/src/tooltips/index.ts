@@ -16,7 +16,6 @@ import { Heading4Tooltip } from './heading-4';
 import { Heading5Tooltip } from './heading-5';
 import { Heading6Tooltip } from './heading-6';
 import { ItalicTooltip } from './italic';
-import { KanbanViewTooltip } from './kanban-view';
 import { LinearTooltip } from './linear';
 import { LinkTooltip } from './link';
 import { LinkDocTooltip } from './link-doc';
@@ -29,9 +28,7 @@ import { PDFTooltip } from './pdf';
 import { PhotoTooltip } from './photo';
 import { QuoteTooltip } from './quote';
 import { StrikethroughTooltip } from './strikethrough';
-import { TableViewTooltip } from './table-view';
 import { TextTooltip } from './text';
-import { ToDoListTooltip } from './to-do-list';
 import { TodayTooltip } from './today';
 import { TomorrowTooltip } from './tomorrow';
 import { TweetTooltip } from './tweet';
@@ -98,11 +95,6 @@ export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
   'Numbered List': {
     figure: NumberedListTooltip,
     caption: 'Numbered List',
-  },
-
-  'To-do List': {
-    figure: ToDoListTooltip,
-    caption: 'To-do List',
   },
 
   Bold: {
@@ -198,16 +190,6 @@ export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
   Now: {
     figure: NowTooltip,
     caption: 'Now',
-  },
-
-  'Table View': {
-    figure: TableViewTooltip,
-    caption: 'Table View',
-  },
-
-  'Kanban View': {
-    figure: KanbanViewTooltip,
-    caption: 'Kanban View',
   },
 
   'Move Up': {
