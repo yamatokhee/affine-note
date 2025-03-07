@@ -142,6 +142,7 @@ export const PackageList = [
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
+      'blocksuite/affine/widget-slash-menu',
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',
       'blocksuite/framework/inline',
@@ -494,7 +495,6 @@ export const PackageList = [
     location: 'blocksuite/affine/widget-slash-menu',
     name: '@blocksuite/affine-widget-slash-menu',
     workspaceDependencies: [
-      'blocksuite/affine/block-embed',
       'blocksuite/affine/block-surface',
       'blocksuite/affine/block-surface-ref',
       'blocksuite/affine/components',

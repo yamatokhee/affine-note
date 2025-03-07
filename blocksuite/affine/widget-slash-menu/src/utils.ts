@@ -1,5 +1,3 @@
-import type { BlockModel } from '@blocksuite/store';
-
 import type {
   SlashMenuActionItem,
   SlashMenuConfig,
@@ -82,12 +80,6 @@ export function mergeSlashMenuConfigs(
         .map(config => config.disableWhen?.(ctx) ?? false)
         .some(Boolean),
   };
-}
-
-export function tryRemoveEmptyLine(model: BlockModel) {
-  if (model.text?.length === 0) {
-    model.doc.deleteBlock(model);
-  }
 }
 
 export function formatDate(date: Date) {

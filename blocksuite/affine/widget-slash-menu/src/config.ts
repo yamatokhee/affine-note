@@ -1,6 +1,5 @@
 import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
-import { toggleEmbedCardCreateModal } from '@blocksuite/affine-components/embed-card-modal';
 import { toast } from '@blocksuite/affine-components/toast';
 import type {
   FrameBlockModel,
@@ -19,25 +18,21 @@ import {
   CopyIcon,
   DeleteIcon,
   DualLinkIcon,
-  FigmaDuotoneIcon,
   FrameIcon,
-  GithubDuotoneIcon,
   GroupingIcon,
   LinkedPageIcon,
-  LoomLogoDuotoneIcon,
   NowIcon,
   PlusIcon,
   TodayIcon,
   TomorrowIcon,
   YesterdayIcon,
-  YoutubeDuotoneIcon,
 } from '@blocksuite/icons/lit';
 import type { DeltaInsert } from '@blocksuite/inline';
 import { Slice, Text } from '@blocksuite/store';
 
 import { slashMenuToolTips } from './tooltips';
 import type { SlashMenuActionItem, SlashMenuConfig } from './types';
-import { formatDate, formatTime, tryRemoveEmptyLine } from './utils';
+import { formatDate, formatTime } from './utils';
 
 // TODO(@L-Sun): This counter temporarily added variables for refactoring.
 let index = 0;
@@ -106,117 +101,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         });
       },
     },
-
-    // ---------------------------------------------------------
-    // { groupName: 'Content & Media' },
-
-    {
-      name: 'YouTube',
-      description: 'Embed a YouTube video.',
-      icon: YoutubeDuotoneIcon(),
-      tooltip: slashMenuToolTips['YouTube'],
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:embed-youtube'),
-      action: ({ std, model }) => {
-        (async () => {
-          const { host } = std;
-          const parentModel = host.doc.getParent(model);
-          if (!parentModel) {
-            return;
-          }
-          const index = parentModel.children.indexOf(model) + 1;
-          await toggleEmbedCardCreateModal(
-            host,
-            'YouTube',
-            'The added YouTube video link will be displayed as an embed view.',
-            { mode: 'page', parentModel, index }
-          );
-          tryRemoveEmptyLine(model);
-        })().catch(console.error);
-      },
-    },
-    {
-      name: 'GitHub',
-      description: 'Link to a GitHub repository.',
-      icon: GithubDuotoneIcon(),
-      tooltip: slashMenuToolTips['Github'],
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:embed-github'),
-      action: ({ std, model }) => {
-        (async () => {
-          const { host } = std;
-          const parentModel = host.doc.getParent(model);
-          if (!parentModel) {
-            return;
-          }
-          const index = parentModel.children.indexOf(model) + 1;
-          await toggleEmbedCardCreateModal(
-            host,
-            'GitHub',
-            'The added GitHub issue or pull request link will be displayed as a card view.',
-            { mode: 'page', parentModel, index }
-          );
-          tryRemoveEmptyLine(model);
-        })().catch(console.error);
-      },
-    },
-    // TODO: X Twitter
-
-    {
-      name: 'Figma',
-      description: 'Embed a Figma document.',
-      icon: FigmaDuotoneIcon(),
-      tooltip: slashMenuToolTips['Figma'],
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:embed-figma'),
-      action: ({ std, model }) => {
-        (async () => {
-          const { host } = std;
-          const parentModel = host.doc.getParent(model);
-          if (!parentModel) {
-            return;
-          }
-          const index = parentModel.children.indexOf(model) + 1;
-          await toggleEmbedCardCreateModal(
-            host,
-            'Figma',
-            'The added Figma link will be displayed as an embed view.',
-            { mode: 'page', parentModel, index }
-          );
-          tryRemoveEmptyLine(model);
-        })().catch(console.error);
-      },
-    },
-
-    {
-      name: 'Loom',
-      icon: LoomLogoDuotoneIcon(),
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:embed-loom'),
-      action: ({ std, model }) => {
-        (async () => {
-          const { host } = std;
-          const parentModel = host.doc.getParent(model);
-          if (!parentModel) {
-            return;
-          }
-          const index = parentModel.children.indexOf(model) + 1;
-          await toggleEmbedCardCreateModal(
-            host,
-            'Loom',
-            'The added Loom video link will be displayed as an embed view.',
-            { mode: 'page', parentModel, index }
-          );
-          tryRemoveEmptyLine(model);
-        })().catch(console.error);
-      },
-    },
-
-    // TODO(@L-Sun): Linear
 
     // ---------------------------------------------------------
     ({ std, model }) => {

@@ -1,4 +1,5 @@
 import { html } from 'lit';
+
 // prettier-ignore
 export const YoutubeVideoTooltip = html`<svg width="170" height="106" viewBox="0 0 170 106" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g clip-path="url(#clip0_1_2)">
