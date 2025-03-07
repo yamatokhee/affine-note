@@ -1,6 +1,7 @@
 import {
   AttachmentBlockModel,
   BookmarkBlockModel,
+  CalloutBlockModel,
   CodeBlockModel,
   DatabaseBlockModel,
   DividerBlockModel,
@@ -53,8 +54,18 @@ export function mergeWithPrev(editorHost: EditorHost, model: BlockModel) {
     return handleNoPreviousSibling(editorHost, model);
   }
 
+  const modelIndex = parent.children.indexOf(model);
+  const prevSibling = doc.getPrev(model);
+  if (matchModels(prevSibling, [CalloutBlockModel])) {
+    editorHost.selection.setGroup('note', [
+      editorHost.selection.create(BlockSelection, {
+        blockId: prevSibling.id,
+      }),
+    ]);
+    return true;
+  }
+
   if (matchModels(prevBlock, [ParagraphBlockModel, ListBlockModel])) {
-    const modelIndex = parent.children.indexOf(model);
     if (
       (modelIndex === -1 || modelIndex === parent.children.length - 1) &&
       parent.role === 'content'
