@@ -18,19 +18,16 @@ import {
   textFormatConfigs,
 } from '@blocksuite/affine-rich-text';
 import {
-  focusBlockEnd,
   getSelectedModelsCommand,
   getTextSelectionCommand,
 } from '@blocksuite/affine-shared/commands';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import {
-  FeatureFlagService,
   FileSizeLimitService,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
 import {
   createDefaultDoc,
-  findAncestorModel,
   openFileOrFiles,
 } from '@blocksuite/affine-shared/utils';
 import {
@@ -42,7 +39,6 @@ import {
   ExportToPdfIcon,
   FigmaDuotoneIcon,
   FileIcon,
-  FontIcon,
   FrameIcon,
   GithubDuotoneIcon,
   GroupingIcon,
@@ -79,13 +75,7 @@ let index = 0;
 
 export const defaultSlashMenuConfig: SlashMenuConfig = {
   disableWhen: ({ model }) => {
-    return (
-      ['affine:code'].includes(model.flavour) ||
-      !!findAncestorModel(
-        model,
-        ancestor => ancestor.flavour === 'affine:callout'
-      )
-    );
+    return model.flavour === 'affine:code';
   },
   items: [
     // TODO(@L-Sun): move this to rich-text when it has been remove from blocksuite/affine-components
@@ -115,38 +105,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
               !insideEdgelessText(model),
           }) satisfies SlashMenuActionItem
       ),
-
-    {
-      name: 'Callout',
-      description: 'Let your words stand out.',
-      icon: FontIcon(),
-      searchAlias: ['callout'],
-      group: `0_Basic@${index++}`,
-      when: ({ model }) => {
-        return model.doc.get(FeatureFlagService).getFlag('enable_callout');
-      },
-      action: ({ model, std }) => {
-        const { doc } = model;
-        const parent = doc.getParent(model);
-        if (!parent) return;
-
-        const index = parent.children.indexOf(model);
-        if (index === -1) return;
-        const calloutId = doc.addBlock('affine:callout', {}, parent, index + 1);
-        if (!calloutId) return;
-        const paragraphId = doc.addBlock('affine:paragraph', {}, calloutId);
-        if (!paragraphId) return;
-        std.host.updateComplete
-          .then(() => {
-            const paragraph = std.view.getBlock(paragraphId);
-            if (!paragraph) return;
-            std.command.exec(focusBlockEnd, {
-              focusBlock: paragraph,
-            });
-          })
-          .catch(console.error);
-      },
-    },
 
     {
       name: 'Inline equation',
