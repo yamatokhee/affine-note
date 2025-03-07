@@ -13,7 +13,6 @@
   "author": "toeverything",
   "license": "MIT",
   "dependencies": {
-    "@blocksuite/affine-block-attachment": "workspace:*",
     "@blocksuite/affine-block-embed": "workspace:*",
     "@blocksuite/affine-block-latex": "workspace:*",
     "@blocksuite/affine-block-note": "workspace:*",

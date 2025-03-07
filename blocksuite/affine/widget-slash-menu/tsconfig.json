@@ -7,7 +7,6 @@
   },
   "include": ["./src"],
   "references": [
-    { "path": "../block-attachment" },
     { "path": "../block-embed" },
     { "path": "../block-latex" },
     { "path": "../block-note" },

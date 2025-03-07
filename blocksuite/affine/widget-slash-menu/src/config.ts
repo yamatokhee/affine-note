@@ -1,4 +1,3 @@
-import { addSiblingAttachmentBlocks } from '@blocksuite/affine-block-attachment';
 import { insertLatexBlockCommand } from '@blocksuite/affine-block-latex';
 import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
@@ -20,26 +19,19 @@ import {
   getTextSelectionCommand,
 } from '@blocksuite/affine-shared/commands';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
-import { FileSizeLimitService } from '@blocksuite/affine-shared/services';
-import {
-  createDefaultDoc,
-  openFileOrFiles,
-} from '@blocksuite/affine-shared/utils';
+import { createDefaultDoc } from '@blocksuite/affine-shared/utils';
 import {
   ArrowDownBigIcon,
   ArrowUpBigIcon,
   CopyIcon,
   DeleteIcon,
   DualLinkIcon,
-  ExportToPdfIcon,
   FigmaDuotoneIcon,
-  FileIcon,
   FrameIcon,
   GithubDuotoneIcon,
   GroupingIcon,
   HeadingsIcon,
   LinkedPageIcon,
-  LinkIcon,
   LoomLogoDuotoneIcon,
   NowIcon,
   PlusIcon,
@@ -188,84 +180,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
 
     // ---------------------------------------------------------
     // { groupName: 'Content & Media' },
-    {
-      name: 'Link',
-      description: 'Add a bookmark for reference.',
-      icon: LinkIcon(),
-      tooltip: slashMenuToolTips['Link'],
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:bookmark'),
-      action: ({ std, model }) => {
-        const { host } = std;
-        const parentModel = host.doc.getParent(model);
-        if (!parentModel) {
-          return;
-        }
-        const index = parentModel.children.indexOf(model) + 1;
-        toggleEmbedCardCreateModal(
-          host,
-          'Links',
-          'The added link will be displayed as a card view.',
-          { mode: 'page', parentModel, index }
-        )
-          .then(() => {
-            tryRemoveEmptyLine(model);
-          })
-          .catch(console.error);
-      },
-    },
-    {
-      name: 'Attachment',
-      description: 'Attach a file to document.',
-      icon: FileIcon(),
-      tooltip: slashMenuToolTips['Attachment'],
-      searchAlias: ['file'],
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:attachment'),
-      action: ({ std, model }) => {
-        (async () => {
-          const file = await openFileOrFiles();
-          if (!file) return;
-          const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
-          await addSiblingAttachmentBlocks(
-            std.host,
-            [file],
-            maxFileSize,
-            model
-          );
-          tryRemoveEmptyLine(model);
-        })().catch(console.error);
-      },
-    },
-    {
-      name: 'PDF',
-      description: 'Upload a PDF to document.',
-      icon: ExportToPdfIcon(),
-      tooltip: slashMenuToolTips['PDF'],
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:attachment'),
-      action: ({ std, model }) => {
-        (async () => {
-          const file = await openFileOrFiles();
-          if (!file) return;
 
-          const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
-
-          await addSiblingAttachmentBlocks(
-            std.host,
-            [file],
-            maxFileSize,
-            model,
-            'after',
-            true
-          );
-          tryRemoveEmptyLine(model);
-        })().catch(console.error);
-      },
-    },
     {
       name: 'YouTube',
       description: 'Embed a YouTube video.',

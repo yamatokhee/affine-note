@@ -1,5 +1,4 @@
 import type { SlashMenuTooltip } from '../types';
-import { AttachmentTooltip } from './attachment';
 import { BoldTextTooltip } from './bold-text';
 import { BulletedListTooltip } from './bulleted-list';
 import { CodeBlockTooltip } from './code-block';
@@ -23,7 +22,6 @@ import { MoveUpTooltip } from './move-up';
 import { NewDocTooltip } from './new-doc';
 import { NowTooltip } from './now';
 import { NumberedListTooltip } from './numbered-list';
-import { PDFTooltip } from './pdf';
 import { QuoteTooltip } from './quote';
 import { StrikethroughTooltip } from './strikethrough';
 import { TextTooltip } from './text';
@@ -123,16 +121,6 @@ export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
   'Linked Doc': {
     figure: LinkDocTooltip,
     caption: 'Link Doc',
-  },
-
-  Attachment: {
-    figure: AttachmentTooltip,
-    caption: 'Attachment',
-  },
-
-  PDF: {
-    figure: PDFTooltip,
-    caption: 'PDF',
   },
 
   Github: {
