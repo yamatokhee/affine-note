@@ -9,8 +9,6 @@ import type {
 import {
   getInlineEditorByModel,
   insertContent,
-  textConversionConfigs,
-  textFormatConfigs,
 } from '@blocksuite/affine-rich-text';
 import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
@@ -25,7 +23,6 @@ import {
   FrameIcon,
   GithubDuotoneIcon,
   GroupingIcon,
-  HeadingsIcon,
   LinkedPageIcon,
   LoomLogoDuotoneIcon,
   NowIcon,
@@ -40,14 +37,7 @@ import { Slice, Text } from '@blocksuite/store';
 
 import { slashMenuToolTips } from './tooltips';
 import type { SlashMenuActionItem, SlashMenuConfig } from './types';
-import {
-  createConversionItem,
-  createTextFormatItem,
-  formatDate,
-  formatTime,
-  insideEdgelessText,
-  tryRemoveEmptyLine,
-} from './utils';
+import { formatDate, formatTime, tryRemoveEmptyLine } from './utils';
 
 // TODO(@L-Sun): This counter temporarily added variables for refactoring.
 let index = 0;
@@ -57,46 +47,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     return model.flavour === 'affine:code';
   },
   items: [
-    // TODO(@L-Sun): move this to rich-text when it has been remove from blocksuite/affine-components
-    ...textConversionConfigs
-      .filter(i => i.type && ['h1', 'h2', 'h3', 'text'].includes(i.type))
-      .map(config => createConversionItem(config, `0_Basic@${index++}`)),
-    {
-      name: 'Other Headings',
-      icon: HeadingsIcon(),
-      group: `0_Basic@${index++}`,
-      subMenu: textConversionConfigs
-        .filter(i => i.type && ['h4', 'h5', 'h6'].includes(i.type))
-        .map(config => createConversionItem(config)),
-    },
-    ...textConversionConfigs
-      .filter(i => i.flavour === 'affine:code')
-      .map(config => createConversionItem(config, `0_Basic@${index++}`)),
-
-    ...textConversionConfigs
-      .filter(i => i.type && ['divider', 'quote'].includes(i.type))
-      .map(
-        config =>
-          ({
-            ...createConversionItem(config, `0_Basic@${index++}`),
-            when: ({ model }) =>
-              model.doc.schema.flavourSchemaMap.has(config.flavour) &&
-              !insideEdgelessText(model),
-          }) satisfies SlashMenuActionItem
-      ),
-
-    // ---------------------------------------------------------
-    // { groupName: 'List' },
-    ...textConversionConfigs
-      .filter(i => i.flavour === 'affine:list')
-      .map(config => createConversionItem(config, `1_List@${index++}`)),
-
-    // ---------------------------------------------------------
-    // { groupName: 'Style' },
-    ...textFormatConfigs
-      .filter(i => !['Code', 'Link'].includes(i.name))
-      .map(config => createTextFormatItem(config, `2_Style@${index++}`)),
-
     {
       name: 'New Doc',
       description: 'Start a new document.',

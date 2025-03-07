@@ -1,14 +1,5 @@
-import { updateBlockType } from '@blocksuite/affine-block-note';
-import {
-  formatBlockCommand,
-  type TextConversionConfig,
-  type TextFormatConfig,
-} from '@blocksuite/affine-rich-text';
-import { isInsideBlockByFlavour } from '@blocksuite/affine-shared/utils';
-import { BlockSelection } from '@blocksuite/block-std';
 import type { BlockModel } from '@blocksuite/store';
 
-import { slashMenuToolTips } from './tooltips/index.js';
 import type {
   SlashMenuActionItem,
   SlashMenuConfig,
@@ -93,66 +84,10 @@ export function mergeSlashMenuConfigs(
   };
 }
 
-// TODO(@L-Sun): remove edgeless text check
-export function insideEdgelessText(model: BlockModel) {
-  return isInsideBlockByFlavour(model.doc, model, 'affine:edgeless-text');
-}
-
 export function tryRemoveEmptyLine(model: BlockModel) {
   if (model.text?.length === 0) {
     model.doc.deleteBlock(model);
   }
-}
-
-export function createConversionItem(
-  config: TextConversionConfig,
-  group?: SlashMenuItem['group']
-): SlashMenuActionItem {
-  const { name, description, icon, flavour, type } = config;
-  return {
-    name,
-    group,
-    description,
-    icon,
-    tooltip: slashMenuToolTips[name],
-    when: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
-    action: ({ std }) => {
-      std.command.exec(updateBlockType, {
-        flavour,
-        props: { type },
-      });
-    },
-  };
-}
-
-export function createTextFormatItem(
-  config: TextFormatConfig,
-  group?: SlashMenuItem['group']
-): SlashMenuActionItem {
-  const { name, icon, id, action } = config;
-  return {
-    name,
-    icon,
-    group,
-    tooltip: slashMenuToolTips[name],
-    action: ({ std, model }) => {
-      const { host } = std;
-
-      if (model.text?.length !== 0) {
-        std.command.exec(formatBlockCommand, {
-          blockSelections: [
-            std.selection.create(BlockSelection, {
-              blockId: model.id,
-            }),
-          ],
-          styles: { [id]: true },
-        });
-      } else {
-        // like format bar when the line is empty
-        action(host);
-      }
-    },
-  };
 }
 
 export function formatDate(date: Date) {
