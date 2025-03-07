@@ -17,7 +17,6 @@ import { Heading5Tooltip } from './heading-5';
 import { Heading6Tooltip } from './heading-6';
 import { ItalicTooltip } from './italic';
 import { LinearTooltip } from './linear';
-import { LinkTooltip } from './link';
 import { LinkDocTooltip } from './link-doc';
 import { MoveDownTooltip } from './move-down';
 import { MoveUpTooltip } from './move-up';
@@ -124,11 +123,6 @@ export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
   'Linked Doc': {
     figure: LinkDocTooltip,
     caption: 'Link Doc',
-  },
-
-  Link: {
-    figure: LinkTooltip,
-    caption: 'Link',
   },
 
   Attachment: {
