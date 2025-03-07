@@ -1,5 +1,4 @@
 import { addSiblingAttachmentBlocks } from '@blocksuite/affine-block-attachment';
-import { insertImagesCommand } from '@blocksuite/affine-block-image';
 import { insertLatexBlockCommand } from '@blocksuite/affine-block-latex';
 import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
@@ -39,7 +38,6 @@ import {
   GithubDuotoneIcon,
   GroupingIcon,
   HeadingsIcon,
-  ImageIcon,
   LinkedPageIcon,
   LinkIcon,
   LoomLogoDuotoneIcon,
@@ -190,24 +188,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
 
     // ---------------------------------------------------------
     // { groupName: 'Content & Media' },
-    {
-      name: 'Image',
-      description: 'Insert an image.',
-      icon: ImageIcon(),
-      tooltip: slashMenuToolTips['Image'],
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) =>
-        model.doc.schema.flavourSchemaMap.has('affine:image'),
-      action: ({ std }) => {
-        const [success, ctx] = std.command
-          .chain()
-          .pipe(getSelectedModelsCommand)
-          .pipe(insertImagesCommand, { removeEmptyLine: true })
-          .run();
-
-        if (success) ctx.insertedImageIds.catch(console.error);
-      },
-    },
     {
       name: 'Link',
       description: 'Add a bookmark for reference.',

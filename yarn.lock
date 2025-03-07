@@ -2476,6 +2476,7 @@ __metadata:
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/affine-widget-slash-menu": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
     "@blocksuite/icons": "npm:^2.2.1"
@@ -3034,7 +3035,6 @@ __metadata:
   dependencies:
     "@blocksuite/affine-block-attachment": "workspace:*"
     "@blocksuite/affine-block-embed": "workspace:*"
-    "@blocksuite/affine-block-image": "workspace:*"
     "@blocksuite/affine-block-latex": "workspace:*"
     "@blocksuite/affine-block-note": "workspace:*"
     "@blocksuite/affine-block-surface": "workspace:*"

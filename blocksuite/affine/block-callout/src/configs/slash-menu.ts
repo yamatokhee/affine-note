@@ -3,6 +3,7 @@ import { focusBlockEnd } from '@blocksuite/affine-shared/commands';
 import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import {
   findAncestorModel,
+  isInsideBlockByFlavour,
   matchModels,
 } from '@blocksuite/affine-shared/utils';
 import { type SlashMenuConfig } from '@blocksuite/affine-widget-slash-menu';
@@ -23,8 +24,11 @@ export const calloutSlashMenuConfig: SlashMenuConfig = {
       icon: FontIcon(),
       searchAlias: ['callout'],
       group: '0_Basic@9',
-      when: ({ std }) => {
-        return std.get(FeatureFlagService).getFlag('enable_callout');
+      when: ({ std, model }) => {
+        return (
+          std.get(FeatureFlagService).getFlag('enable_callout') &&
+          !isInsideBlockByFlavour(model.doc, model, 'affine:edgeless-text')
+        );
       },
       action: ({ model, std }) => {
         const { doc } = model;

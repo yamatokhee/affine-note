@@ -25,7 +25,6 @@ import { NewDocTooltip } from './new-doc';
 import { NowTooltip } from './now';
 import { NumberedListTooltip } from './numbered-list';
 import { PDFTooltip } from './pdf';
-import { PhotoTooltip } from './photo';
 import { QuoteTooltip } from './quote';
 import { StrikethroughTooltip } from './strikethrough';
 import { TextTooltip } from './text';
@@ -150,11 +149,6 @@ export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
   YouTube: {
     figure: YoutubeVideoTooltip,
     caption: 'YouTube Video',
-  },
-
-  Image: {
-    figure: PhotoTooltip,
-    caption: 'Photo',
   },
 
   'X (Twitter)': {
