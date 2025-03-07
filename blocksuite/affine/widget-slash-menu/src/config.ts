@@ -1,7 +1,6 @@
 import { addSiblingAttachmentBlocks } from '@blocksuite/affine-block-attachment';
 import { insertImagesCommand } from '@blocksuite/affine-block-image';
 import { insertLatexBlockCommand } from '@blocksuite/affine-block-latex';
-import { focusBlockEnd } from '@blocksuite/affine-block-note';
 import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
 import { insertTableBlockCommand } from '@blocksuite/affine-block-table';
@@ -19,6 +18,7 @@ import type {
   ParagraphBlockModel,
 } from '@blocksuite/affine-model';
 import {
+  focusBlockEnd,
   getSelectedModelsCommand,
   getTextSelectionCommand,
 } from '@blocksuite/affine-shared/commands';

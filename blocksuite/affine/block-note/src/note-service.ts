@@ -7,6 +7,8 @@ import {
   ParagraphBlockModel,
 } from '@blocksuite/affine-model';
 import {
+  focusBlockEnd,
+  focusBlockStart,
   getBlockSelectionsCommand,
   getNextBlockCommand,
   getPrevBlockCommand,
@@ -28,8 +30,6 @@ import type { BaseSelection, BlockModel } from '@blocksuite/store';
 import {
   dedentBlocks,
   dedentBlocksToRoot,
-  focusBlockEnd,
-  focusBlockStart,
   indentBlocks,
   selectBlock,
   selectBlocksBetween,
