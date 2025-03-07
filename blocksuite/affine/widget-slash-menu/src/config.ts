@@ -1,20 +1,13 @@
 import { toast } from '@blocksuite/affine-components/toast';
 import type { ParagraphBlockModel } from '@blocksuite/affine-model';
-import {
-  getInlineEditorByModel,
-  insertContent,
-} from '@blocksuite/affine-rich-text';
-import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
-import { createDefaultDoc } from '@blocksuite/affine-shared/utils';
+import { insertContent } from '@blocksuite/affine-rich-text';
 import {
   ArrowDownBigIcon,
   ArrowUpBigIcon,
   CopyIcon,
   DeleteIcon,
   DualLinkIcon,
-  LinkedPageIcon,
   NowIcon,
-  PlusIcon,
   TodayIcon,
   TomorrowIcon,
   YesterdayIcon,
@@ -38,67 +31,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     return [
-      {
-        name: 'New Doc',
-        description: 'Start a new document.',
-        icon: PlusIcon(),
-        tooltip: slashMenuToolTips['New Doc'],
-        group: '3_Page@0',
-        when: ({ model }) =>
-          model.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
-        action: ({ std, model }) => {
-          const newDoc = createDefaultDoc(std.host.doc.workspace);
-          insertContent(std.host, model, REFERENCE_NODE, {
-            reference: {
-              type: 'LinkedPage',
-              pageId: newDoc.id,
-            },
-          });
-        },
-      },
-      {
-        name: 'Linked Doc',
-        description: 'Link to another document.',
-        icon: LinkedPageIcon(),
-        tooltip: slashMenuToolTips['Linked Doc'],
-        searchAlias: ['dual link'],
-        group: '3_Page@1',
-        when: ({ std, model }) => {
-          const root = model.doc.root;
-          if (!root) return false;
-          const linkedDocWidget = std.view.getWidget(
-            'affine-linked-doc-widget',
-            root.id
-          );
-          if (!linkedDocWidget) return false;
-
-          return model.doc.schema.flavourSchemaMap.has(
-            'affine:embed-linked-doc'
-          );
-        },
-        action: ({ model, std }) => {
-          const root = model.doc.root;
-          if (!root) return;
-          const linkedDocWidget = std.view.getWidget(
-            'affine-linked-doc-widget',
-            root.id
-          );
-          if (!linkedDocWidget) return;
-          // TODO(@L-Sun): make linked-doc-widget as extension
-          // @ts-expect-error same as above
-          const triggerKey = linkedDocWidget.config.triggerKeys[0];
-
-          insertContent(std.host, model, triggerKey);
-
-          const inlineEditor = getInlineEditorByModel(std.host, model);
-          // Wait for range to be updated
-          inlineEditor?.slots.inlineRangeSync.once(() => {
-            // TODO(@L-Sun): make linked-doc-widget as extension
-            // @ts-expect-error same as above
-            linkedDocWidget.show({ addTriggerKey: true });
-          });
-        },
-      },
       {
         name: 'Today',
         icon: TodayIcon(),

@@ -1,10 +1,15 @@
 import { toggleEmbedCardCreateModal } from '@blocksuite/affine-components/embed-card-modal';
-import { type SlashMenuConfig } from '@blocksuite/affine-widget-slash-menu';
+import { BookmarkBlockSchema } from '@blocksuite/affine-model';
+import {
+  type SlashMenuConfig,
+  SlashMenuConfigIdentifier,
+} from '@blocksuite/affine-widget-slash-menu';
 import { LinkIcon } from '@blocksuite/icons/lit';
+import type { ExtensionType } from '@blocksuite/store';
 
 import { LinkTooltip } from './tooltips';
 
-export const bookmarkSlashMenuConfig: SlashMenuConfig = {
+const bookmarkSlashMenuConfig: SlashMenuConfig = {
   items: [
     {
       name: 'Link',
@@ -39,4 +44,14 @@ export const bookmarkSlashMenuConfig: SlashMenuConfig = {
       },
     },
   ],
+};
+
+export const BookmarkSlashMenuConfigIdentifier = SlashMenuConfigIdentifier(
+  BookmarkBlockSchema.model.flavour
+);
+
+export const BookmarkSlashMenuConfigExtension: ExtensionType = {
+  setup: di => {
+    di.addImpl(BookmarkSlashMenuConfigIdentifier, bookmarkSlashMenuConfig);
+  },
 };

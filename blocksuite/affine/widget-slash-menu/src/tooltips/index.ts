@@ -1,26 +1,14 @@
 import type { SlashMenuTooltip } from '../types';
 import { CopyTooltip } from './copy';
 import { DeleteTooltip } from './delete';
-import { LinkDocTooltip } from './link-doc';
 import { MoveDownTooltip } from './move-down';
 import { MoveUpTooltip } from './move-up';
-import { NewDocTooltip } from './new-doc';
 import { NowTooltip } from './now';
 import { TodayTooltip } from './today';
 import { TomorrowTooltip } from './tomorrow';
 import { YesterdayTooltip } from './yesterday';
 
 export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
-  'New Doc': {
-    figure: NewDocTooltip,
-    caption: 'New Doc',
-  },
-
-  'Linked Doc': {
-    figure: LinkDocTooltip,
-    caption: 'Link Doc',
-  },
-
   Today: {
     figure: TodayTooltip,
     caption: 'Today',

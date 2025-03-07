@@ -24,7 +24,6 @@ export class SlashMenuExtension extends Extension {
 
     di.add(this, [StdIdentifier]);
 
-    // TODO(@L-Sun): remove this after moving all configs to corresponding extensions
     SlashMenuConfigExtension('default', defaultSlashMenuConfig).setup(di);
   }
 
@@ -36,7 +35,7 @@ export class SlashMenuExtension extends Extension {
   }
 }
 
-const SlashMenuConfigIdentifier = createIdentifier<SlashMenuConfig>(
+export const SlashMenuConfigIdentifier = createIdentifier<SlashMenuConfig>(
   `${AFFINE_SLASH_MENU_WIDGET}-config`
 );
 

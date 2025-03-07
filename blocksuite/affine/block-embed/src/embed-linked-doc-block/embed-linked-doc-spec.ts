@@ -8,6 +8,7 @@ import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
 import { EmbedLinkedDocBlockAdapterExtensions } from './adapters/extension';
+import { LinkedDocSlashMenuConfigExtension } from './configs/slash-menu';
 import { builtinToolbarConfig } from './configs/toolbar';
 
 const flavour = EmbedLinkedDocBlockSchema.model.flavour;
@@ -23,4 +24,5 @@ export const EmbedLinkedDocBlockSpec: ExtensionType[] = [
     id: BlockServiceIdentifier(flavour),
     config: builtinToolbarConfig,
   }),
+  LinkedDocSlashMenuConfigExtension,
 ].flat();

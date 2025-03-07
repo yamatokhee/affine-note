@@ -101,7 +101,6 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import type { TemplateResult } from 'lit';
 
 import type { PageRootBlockComponent } from '../../page/page-root-block.js';
-import { formatDate, formatTime } from '../../utils/misc.js';
 import type { AffineLinkedDocWidget } from '../linked-doc/index.js';
 import {
   FigmaDuotoneIcon,
@@ -110,6 +109,7 @@ import {
   TextBackgroundDuotoneIcon,
   TextColorIcon,
 } from './icons.js';
+import { formatDate, formatTime } from './utils.js';
 
 export type KeyboardToolbarConfig = {
   items: KeyboardToolbarItem[];

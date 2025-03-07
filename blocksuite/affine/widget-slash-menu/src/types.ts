@@ -12,7 +12,7 @@ export type SlashMenuTooltip = {
   caption: string;
 };
 
-export type SlashMenuItemBase = {
+type SlashMenuItemBase = {
   name: string;
   description?: string;
   icon?: TemplateResult;
@@ -24,10 +24,6 @@ export type SlashMenuItemBase = {
    */
   group?: `${number}_${string}@${number}`;
 
-  // TODO(@L-Sun): move this field to SlashMenuActionItem when refactoring search
-  /**
-   * The alias of the menu item for search.
-   */
   searchAlias?: string[];
   /**
    * The condition to show the menu item.
@@ -38,6 +34,10 @@ export type SlashMenuItemBase = {
 export type SlashMenuActionItem = SlashMenuItemBase & {
   action: (ctx: SlashMenuContext) => void;
   tooltip?: SlashMenuTooltip;
+  /**
+   * The alias of the menu item for search.
+   */
+  searchAlias?: string[];
 };
 
 export type SlashMenuSubMenu = SlashMenuItemBase & {
@@ -47,7 +47,6 @@ export type SlashMenuSubMenu = SlashMenuItemBase & {
 export type SlashMenuItem = SlashMenuActionItem | SlashMenuSubMenu;
 
 export type SlashMenuConfig = {
-  // TODO(@L-Sun): change this type to SlashMenuItem[] and (ctx: SlashMenuContext) => SlashMenuItem[]
   /**
    * The items in the slash menu. It can be generated dynamically with the context.
    */
