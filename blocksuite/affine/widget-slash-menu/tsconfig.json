@@ -8,7 +8,6 @@
   "include": ["./src"],
   "references": [
     { "path": "../block-embed" },
-    { "path": "../block-latex" },
     { "path": "../block-note" },
     { "path": "../block-surface" },
     { "path": "../block-surface-ref" },

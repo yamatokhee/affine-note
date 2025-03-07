@@ -1,4 +1,3 @@
-import { insertLatexBlockCommand } from '@blocksuite/affine-block-latex';
 import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
 import { toggleEmbedCardCreateModal } from '@blocksuite/affine-components/embed-card-modal';
@@ -10,14 +9,10 @@ import type {
 import {
   getInlineEditorByModel,
   insertContent,
-  insertInlineLatex,
   textConversionConfigs,
   textFormatConfigs,
 } from '@blocksuite/affine-rich-text';
-import {
-  getSelectedModelsCommand,
-  getTextSelectionCommand,
-} from '@blocksuite/affine-shared/commands';
+import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import { createDefaultDoc } from '@blocksuite/affine-shared/utils';
 import {
@@ -35,7 +30,6 @@ import {
   LoomLogoDuotoneIcon,
   NowIcon,
   PlusIcon,
-  TeXIcon,
   TodayIcon,
   TomorrowIcon,
   YesterdayIcon,
@@ -90,21 +84,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
               !insideEdgelessText(model),
           }) satisfies SlashMenuActionItem
       ),
-
-    {
-      name: 'Inline equation',
-      group: `0_Basic@${index++}`,
-      description: 'Create a equation block.',
-      icon: TeXIcon(),
-      searchAlias: ['inlineMath, inlineEquation', 'inlineLatex'],
-      action: ({ std }) => {
-        std.command
-          .chain()
-          .pipe(getTextSelectionCommand)
-          .pipe(insertInlineLatex)
-          .run();
-      },
-    },
 
     // ---------------------------------------------------------
     // { groupName: 'List' },
@@ -284,24 +263,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           );
           tryRemoveEmptyLine(model);
         })().catch(console.error);
-      },
-    },
-
-    {
-      name: 'Equation',
-      description: 'Create a equation block.',
-      icon: TeXIcon(),
-      searchAlias: ['mathBlock, equationBlock', 'latexBlock'],
-      group: `4_Content & Media@${index++}`,
-      action: ({ std }) => {
-        std.command
-          .chain()
-          .pipe(getSelectedModelsCommand)
-          .pipe(insertLatexBlockCommand, {
-            place: 'after',
-            removeEmptyLine: true,
-          })
-          .run();
       },
     },
 
