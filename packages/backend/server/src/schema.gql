@@ -1436,7 +1436,7 @@ type WorkspacePermissionNotFoundDataType {
 }
 
 type WorkspacePermissions {
-  Workspace_Adminitrators_Manage: Boolean!
+  Workspace_Administrators_Manage: Boolean!
   Workspace_Blobs_List: Boolean!
   Workspace_Blobs_Read: Boolean!
   Workspace_Blobs_Write: Boolean!

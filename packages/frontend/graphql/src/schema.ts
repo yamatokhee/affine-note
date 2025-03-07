@@ -1735,7 +1735,7 @@ export interface WorkspacePermissionNotFoundDataType {
 
 export interface WorkspacePermissions {
   __typename?: 'WorkspacePermissions';
-  Workspace_Adminitrators_Manage: Scalars['Boolean']['output'];
+  Workspace_Administrators_Manage: Scalars['Boolean']['output'];
   Workspace_Blobs_List: Scalars['Boolean']['output'];
   Workspace_Blobs_Read: Scalars['Boolean']['output'];
   Workspace_Blobs_Write: Scalars['Boolean']['output'];
@@ -3435,7 +3435,7 @@ export type GetWorkspaceRolePermissionsQuery = {
     __typename?: 'WorkspaceRolePermissions';
     permissions: {
       __typename?: 'WorkspacePermissions';
-      Workspace_Adminitrators_Manage: boolean;
+      Workspace_Administrators_Manage: boolean;
       Workspace_Blobs_List: boolean;
       Workspace_Blobs_Read: boolean;
       Workspace_Blobs_Write: boolean;

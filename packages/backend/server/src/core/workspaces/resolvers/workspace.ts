@@ -559,7 +559,7 @@ export class WorkspaceResolver {
       .workspace(workspaceId)
       .assert(
         role.type === WorkspaceRole.Admin
-          ? 'Workspace.Adminitrators.Manage'
+          ? 'Workspace.Administrators.Manage'
           : 'Workspace.Users.Manage'
       );
 

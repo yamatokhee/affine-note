@@ -1405,7 +1405,7 @@ export const getWorkspaceRolePermissionsQuery = {
   query: `query getWorkspaceRolePermissions($id: String!) {
   workspaceRolePermissions(id: $id) {
     permissions {
-      Workspace_Adminitrators_Manage
+      Workspace_Administrators_Manage
       Workspace_Blobs_List
       Workspace_Blobs_Read
       Workspace_Blobs_Write
