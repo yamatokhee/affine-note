@@ -10,6 +10,7 @@
   "references": [
     { "path": "../components" },
     { "path": "../model" },
+    { "path": "../rich-text" },
     { "path": "../shared" },
     { "path": "../../framework/block-std" },
     { "path": "../data-view" },

@@ -1,7 +1,7 @@
 import {
   type AffineInlineEditor,
   getInlineEditorByModel,
-} from '@blocksuite/affine-components/rich-text';
+} from '@blocksuite/affine-rich-text';
 import type { UIEventStateContext } from '@blocksuite/block-std';
 import { TextSelection, WidgetComponent } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/slot';

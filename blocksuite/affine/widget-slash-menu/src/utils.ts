@@ -3,7 +3,7 @@ import {
   formatBlockCommand,
   type TextConversionConfig,
   type TextFormatConfig,
-} from '@blocksuite/affine-components/rich-text';
+} from '@blocksuite/affine-rich-text';
 import { isInsideBlockByFlavour } from '@blocksuite/affine-shared/utils';
 import { BlockSelection } from '@blocksuite/block-std';
 import type { BlockModel } from '@blocksuite/store';

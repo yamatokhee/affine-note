@@ -1,3 +1,4 @@
+import type { EditorIconButton } from '@blocksuite/affine-components/toolbar';
 import type { ReferenceInfo } from '@blocksuite/affine-model';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import {
@@ -18,7 +19,6 @@ import { css, html } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { live } from 'lit/directives/live.js';
 
-import type { EditorIconButton } from '../../../../../../toolbar/index';
 import type { AffineInlineEditor } from '../../../affine-inline-specs';
 
 export class ReferencePopup extends SignalWatcher(

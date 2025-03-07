@@ -1,3 +1,4 @@
+import { toast } from '@blocksuite/affine-components/toast';
 import {
   ActionPlacement,
   EmbedOptionProvider,
@@ -16,7 +17,6 @@ import { signal } from '@preact/signals-core';
 import { html } from 'lit-html';
 import { keyed } from 'lit-html/directives/keyed.js';
 
-import { toast } from '../../../../../../toast';
 import { AffineLink } from '../affine-link';
 import { toggleLinkPopup } from '../link-popup/toggle-link-popup';
 

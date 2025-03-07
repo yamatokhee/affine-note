@@ -1,3 +1,4 @@
+import { createLitPortal } from '@blocksuite/affine-components/portal';
 import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import {
@@ -16,8 +17,6 @@ import { signal } from '@preact/signals-core';
 import katex from 'katex';
 import { css, html, render } from 'lit';
 import { property } from 'lit/decorators.js';
-
-import { createLitPortal } from '../../../../../portal/helper.js';
 
 export class AffineLatexNode extends SignalWatcher(
   WithDisposable(ShadowlessElement)

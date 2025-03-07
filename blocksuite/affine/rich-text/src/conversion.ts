@@ -1,5 +1,3 @@
-import type { TemplateResult } from 'lit';
-
 import {
   BulletedListIcon,
   CheckBoxIcon,
@@ -14,7 +12,8 @@ import {
   NumberedListIcon,
   QuoteIcon,
   TextIcon,
-} from '../icons';
+} from '@blocksuite/affine-components/icons';
+import type { TemplateResult } from 'lit';
 
 /**
  * Text primitive entries used in slash menu and format bar,

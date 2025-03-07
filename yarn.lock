@@ -2269,6 +2269,7 @@ __metadata:
   dependencies:
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2293,6 +2294,7 @@ __metadata:
   dependencies:
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2342,6 +2344,7 @@ __metadata:
   dependencies:
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/affine-widget-drag-handle": "workspace:*"
     "@blocksuite/affine-widget-slash-menu": "workspace:*"
@@ -2393,6 +2396,7 @@ __metadata:
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2416,6 +2420,7 @@ __metadata:
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2517,6 +2522,7 @@ __metadata:
   dependencies:
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2542,7 +2548,9 @@ __metadata:
     "@blocksuite/affine-block-embed": "workspace:*"
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-fragment-doc-title": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2566,6 +2574,7 @@ __metadata:
   dependencies:
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2602,7 +2611,9 @@ __metadata:
     "@blocksuite/affine-block-surface-ref": "workspace:*"
     "@blocksuite/affine-block-table": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-fragment-doc-title": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/affine-widget-drag-handle": "workspace:*"
     "@blocksuite/affine-widget-edgeless-auto-connect": "workspace:*"
@@ -2667,6 +2678,7 @@ __metadata:
   dependencies:
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2695,6 +2707,7 @@ __metadata:
     "@atlaskit/pragmatic-drag-and-drop": "npm:^1.4.0"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/data-view": "workspace:*"
@@ -2743,6 +2756,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blocksuite/affine-fragment-doc-title@workspace:*, @blocksuite/affine-fragment-doc-title@workspace:blocksuite/affine/fragment-doc-title":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-fragment-doc-title@workspace:blocksuite/affine/fragment-doc-title"
+  dependencies:
+    "@blocksuite/affine-block-frame": "workspace:*"
+    "@blocksuite/affine-block-surface": "workspace:*"
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/icons": "npm:^2.2.1"
+    "@blocksuite/inline": "workspace:*"
+    "@blocksuite/store": "workspace:*"
+    "@floating-ui/dom": "npm:^1.6.13"
+    "@lit/context": "npm:^1.1.2"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@toeverything/theme": "npm:^1.1.12"
+    lit: "npm:^3.2.0"
+    minimatch: "npm:^10.0.1"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@blocksuite/affine-fragment-frame-panel@workspace:*, @blocksuite/affine-fragment-frame-panel@workspace:blocksuite/affine/fragment-frame-panel":
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-fragment-frame-panel@workspace:blocksuite/affine/fragment-frame-panel"
@@ -2751,6 +2789,7 @@ __metadata:
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2773,7 +2812,9 @@ __metadata:
   dependencies:
     "@blocksuite/affine-block-note": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-fragment-doc-title": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -2803,6 +2844,40 @@ __metadata:
     "@types/lodash-es": "npm:^4.17.12"
     fractional-indexing: "npm:^3.2.0"
     lodash-es: "npm:^4.17.21"
+    yjs: "npm:^13.6.21"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
+"@blocksuite/affine-rich-text@workspace:*, @blocksuite/affine-rich-text@workspace:blocksuite/affine/rich-text":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-rich-text@workspace:blocksuite/affine/rich-text"
+  dependencies:
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/icons": "npm:^2.2.1"
+    "@blocksuite/inline": "workspace:*"
+    "@blocksuite/store": "workspace:*"
+    "@floating-ui/dom": "npm:^1.6.13"
+    "@lit/context": "npm:^1.1.2"
+    "@lottiefiles/dotlottie-wc": "npm:^0.4.0"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@toeverything/theme": "npm:^1.1.12"
+    "@types/hast": "npm:^3.0.4"
+    "@types/katex": "npm:^0.16.7"
+    "@types/lodash-es": "npm:^4.17.12"
+    "@types/mdast": "npm:^4.0.4"
+    collapse-white-space: "npm:^2.1.0"
+    date-fns: "npm:^4.0.0"
+    katex: "npm:^0.16.11"
+    lit: "npm:^3.2.0"
+    lit-html: "npm:^3.2.1"
+    lodash-es: "npm:^4.17.21"
+    remark-math: "npm:^6.0.0"
+    shiki: "npm:^3.0.0"
     yjs: "npm:^13.6.21"
     zod: "npm:^3.23.8"
   languageName: unknown
@@ -2963,6 +3038,7 @@ __metadata:
     "@blocksuite/affine-block-surface-ref": "workspace:*"
     "@blocksuite/affine-block-table": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -3070,9 +3146,11 @@ __metadata:
     "@blocksuite/affine-block-surface-ref": "workspace:*"
     "@blocksuite/affine-block-table": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-fragment-doc-title": "workspace:*"
     "@blocksuite/affine-fragment-frame-panel": "workspace:*"
     "@blocksuite/affine-fragment-outline": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/affine-widget-drag-handle": "workspace:*"
     "@blocksuite/affine-widget-edgeless-auto-connect": "workspace:*"
@@ -3162,11 +3240,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/integration-test@workspace:blocksuite/integration-test"
   dependencies:
-    "@blocksuite/affine-block-note": "workspace:*"
-    "@blocksuite/affine-block-surface": "workspace:*"
-    "@blocksuite/affine-components": "workspace:*"
-    "@blocksuite/affine-model": "workspace:*"
-    "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/blocks": "workspace:*"
     "@blocksuite/global": "workspace:*"
@@ -3194,10 +3267,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/legacy-e2e@workspace:blocksuite/tests-legacy"
   dependencies:
-    "@blocksuite/affine-components": "workspace:*"
-    "@blocksuite/affine-model": "workspace:*"
-    "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/blocks": "workspace:*"
     "@blocksuite/global": "workspace:*"
     "@blocksuite/inline": "workspace:*"
     "@blocksuite/integration-test": "workspace:*"

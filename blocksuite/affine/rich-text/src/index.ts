@@ -11,7 +11,6 @@ export {
   onModelTextUpdated,
   selectTextModel,
 } from './dom';
-export * from './effects';
 export * from './extension';
 export * from './format';
 export * from './inline';

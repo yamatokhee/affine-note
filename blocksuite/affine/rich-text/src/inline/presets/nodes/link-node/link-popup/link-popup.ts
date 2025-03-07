@@ -1,3 +1,4 @@
+import type { EditorIconButton } from '@blocksuite/affine-components/toolbar';
 import {
   isValidUrl,
   normalizeUrl,
@@ -12,7 +13,6 @@ import { html, LitElement } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 
-import type { EditorIconButton } from '../../../../../../toolbar/index';
 import type { AffineInlineEditor } from '../../../affine-inline-specs';
 import { linkPopupStyle } from './styles';
 

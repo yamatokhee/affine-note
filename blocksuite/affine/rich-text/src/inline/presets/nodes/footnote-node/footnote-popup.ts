@@ -1,3 +1,10 @@
+import {
+  DarkLoadingIcon,
+  getAttachmentFileIcon,
+  LightLoadingIcon,
+  WebIcon16,
+} from '@blocksuite/affine-components/icons';
+import { PeekViewProvider } from '@blocksuite/affine-components/peek';
 import { ColorScheme, type FootNote } from '@blocksuite/affine-model';
 import {
   DocDisplayMetaProvider,
@@ -12,13 +19,6 @@ import { computed, signal } from '@preact/signals-core';
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import {
-  DarkLoadingIcon,
-  getAttachmentFileIcon,
-  LightLoadingIcon,
-  WebIcon16,
-} from '../../../../../icons';
-import { PeekViewProvider } from '../../../../../peek/service';
 import type { FootNotePopupClickHandler } from './footnote-config';
 
 export class FootNotePopup extends SignalWatcher(WithDisposable(LitElement)) {

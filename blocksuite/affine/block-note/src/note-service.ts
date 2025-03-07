@@ -1,4 +1,3 @@
-import { textConversionConfigs } from '@blocksuite/affine-components/rich-text';
 import {
   CodeBlockModel,
   ListBlockModel,
@@ -6,6 +5,7 @@ import {
   NoteBlockSchema,
   ParagraphBlockModel,
 } from '@blocksuite/affine-model';
+import { textConversionConfigs } from '@blocksuite/affine-rich-text';
 import {
   focusBlockEnd,
   focusBlockStart,

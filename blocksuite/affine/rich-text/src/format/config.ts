@@ -1,6 +1,3 @@
-import { type EditorHost, TextSelection } from '@blocksuite/block-std';
-import type { TemplateResult } from 'lit';
-
 import {
   BoldIcon,
   CodeIcon,
@@ -8,7 +5,10 @@ import {
   LinkIcon,
   StrikethroughIcon,
   UnderlineIcon,
-} from '../../icons/index.js';
+} from '@blocksuite/affine-components/icons';
+import { type EditorHost, TextSelection } from '@blocksuite/block-std';
+import type { TemplateResult } from 'lit';
+
 import {
   isTextStyleActive,
   toggleBold,

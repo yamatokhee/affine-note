@@ -5,18 +5,18 @@ import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
 import { insertTableBlockCommand } from '@blocksuite/affine-block-table';
 import { toggleEmbedCardCreateModal } from '@blocksuite/affine-components/embed-card-modal';
+import { toast } from '@blocksuite/affine-components/toast';
+import type {
+  FrameBlockModel,
+  ParagraphBlockModel,
+} from '@blocksuite/affine-model';
 import {
   getInlineEditorByModel,
   insertContent,
   insertInlineLatex,
   textConversionConfigs,
   textFormatConfigs,
-} from '@blocksuite/affine-components/rich-text';
-import { toast } from '@blocksuite/affine-components/toast';
-import type {
-  FrameBlockModel,
-  ParagraphBlockModel,
-} from '@blocksuite/affine-model';
+} from '@blocksuite/affine-rich-text';
 import {
   focusBlockEnd,
   getSelectedModelsCommand,

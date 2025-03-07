@@ -1,3 +1,4 @@
+import { whenHover } from '@blocksuite/affine-components/hover';
 import type { ReferenceInfo } from '@blocksuite/affine-model';
 import {
   ParseDocUrlProvider,
@@ -17,8 +18,7 @@ import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
 
-import { whenHover } from '../../../../../hover/index';
-import { RefNodeSlotsProvider } from '../../../../extension/index';
+import { RefNodeSlotsProvider } from '../../../../extension';
 import { affineTextStyles } from '../affine-text';
 
 export class AffineLink extends WithDisposable(ShadowlessElement) {

@@ -24,10 +24,6 @@ export {
   type MenuOptions,
   onMenuOpen,
 } from '@blocksuite/affine-components/context-menu';
-export {
-  DocTitle,
-  getDocTitleByEditorHost,
-} from '@blocksuite/affine-components/doc-title';
 export { toggleEmbedCardEditModal } from '@blocksuite/affine-components/embed-card-modal';
 export {
   HoverController,
@@ -52,7 +48,6 @@ export {
   createLitPortal,
   createSimplePortal,
 } from '@blocksuite/affine-components/portal';
-export * from '@blocksuite/affine-components/rich-text';
 export { toast } from '@blocksuite/affine-components/toast';
 export {
   type AdvancedMenuItem,
@@ -67,9 +62,14 @@ export {
   ToolbarMoreMenuConfigExtension,
   Tooltip,
 } from '@blocksuite/affine-components/toolbar';
+export {
+  DocTitle,
+  getDocTitleByEditorHost,
+} from '@blocksuite/affine-fragment-doc-title';
 export * from '@blocksuite/affine-fragment-frame-panel';
 export * from '@blocksuite/affine-fragment-outline';
 export * from '@blocksuite/affine-model';
+export * from '@blocksuite/affine-rich-text';
 export * from '@blocksuite/affine-shared/adapters';
 export * from '@blocksuite/affine-shared/commands';
 export { HighlightSelection } from '@blocksuite/affine-shared/selection';

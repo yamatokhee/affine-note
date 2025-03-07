@@ -6,6 +6,7 @@ import {
   ParagraphBlockModel,
   type RootBlockModel,
 } from '@blocksuite/affine-model';
+import { focusTextModel, type RichText } from '@blocksuite/affine-rich-text';
 import { matchModels } from '@blocksuite/affine-shared/utils';
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/lit';
@@ -13,8 +14,6 @@ import type { Store } from '@blocksuite/store';
 import { effect } from '@preact/signals-core';
 import { css, html } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-
-import { focusTextModel, type RichText } from '../rich-text';
 
 const DOC_BLOCK_CHILD_PADDING = 24;
 

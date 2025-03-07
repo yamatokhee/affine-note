@@ -10,6 +10,7 @@
   "references": [
     { "path": "../components" },
     { "path": "../model" },
+    { "path": "../rich-text" },
     { "path": "../shared" },
     { "path": "../widget-drag-handle" },
     { "path": "../widget-slash-menu" },

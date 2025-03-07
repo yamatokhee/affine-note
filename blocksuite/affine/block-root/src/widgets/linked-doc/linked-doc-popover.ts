@@ -3,7 +3,7 @@ import type { IconButton } from '@blocksuite/affine-components/icon-button';
 import {
   cleanSpecifiedTail,
   getTextContentFromInlineRange,
-} from '@blocksuite/affine-components/rich-text';
+} from '@blocksuite/affine-rich-text';
 import { unsafeCSSVar } from '@blocksuite/affine-shared/theme';
 import {
   createKeydownObserver,

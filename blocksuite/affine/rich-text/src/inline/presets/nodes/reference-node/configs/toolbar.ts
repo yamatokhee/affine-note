@@ -1,3 +1,4 @@
+import { notifyLinkedDocSwitchedToEmbed } from '@blocksuite/affine-components/notification';
 import {
   ActionPlacement,
   type ToolbarAction,
@@ -14,7 +15,6 @@ import { signal } from '@preact/signals-core';
 import { html } from 'lit-html';
 import { keyed } from 'lit-html/directives/keyed.js';
 
-import { notifyLinkedDocSwitchedToEmbed } from '../../../../../../notification';
 import { AffineReference } from '../reference-node';
 
 const trackBaseProps = {

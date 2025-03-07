@@ -1,3 +1,4 @@
+import { HoverController } from '@blocksuite/affine-components/hover';
 import type { FootNote } from '@blocksuite/affine-model';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
@@ -22,7 +23,6 @@ import { property } from 'lit/decorators.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { ref } from 'lit-html/directives/ref.js';
 
-import { HoverController } from '../../../../../hover/controller';
 import type { FootNoteNodeConfigProvider } from './footnote-config';
 
 // Virtual padding for the footnote popup overflow detection offsets.

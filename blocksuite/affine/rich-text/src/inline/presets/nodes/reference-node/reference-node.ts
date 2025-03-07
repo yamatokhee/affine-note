@@ -1,3 +1,5 @@
+import { whenHover } from '@blocksuite/affine-components/hover';
+import { Peekable } from '@blocksuite/affine-components/peek';
 import type { ReferenceInfo } from '@blocksuite/affine-model';
 import {
   DEFAULT_DOC_NAME,
@@ -30,9 +32,7 @@ import { choose } from 'lit/directives/choose.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { whenHover } from '../../../../../hover/index';
-import { Peekable } from '../../../../../peek/index';
-import { RefNodeSlotsProvider } from '../../../../extension/index';
+import { RefNodeSlotsProvider } from '../../../../extension';
 import { affineTextStyles } from '../affine-text';
 import type { ReferenceNodeConfigProvider } from './reference-config';
 import type { DocLinkClickedEvent } from './types';
