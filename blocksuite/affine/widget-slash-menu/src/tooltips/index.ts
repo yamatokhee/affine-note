@@ -1,7 +1,6 @@
 import type { SlashMenuTooltip } from '../types';
 import { CopyTooltip } from './copy';
 import { DeleteTooltip } from './delete';
-import { EdgelessTooltip } from './edgeless';
 import { LinkDocTooltip } from './link-doc';
 import { MoveDownTooltip } from './move-down';
 import { MoveUpTooltip } from './move-up';
@@ -60,10 +59,5 @@ export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
   Delete: {
     figure: DeleteTooltip,
     caption: 'Delete',
-  },
-
-  'Group & Frame': {
-    figure: EdgelessTooltip,
-    caption: 'Edgeless',
   },
 };

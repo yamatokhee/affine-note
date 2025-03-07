@@ -7,8 +7,6 @@
   },
   "include": ["./src"],
   "references": [
-    { "path": "../block-surface" },
-    { "path": "../block-surface-ref" },
     { "path": "../components" },
     { "path": "../rich-text" },
     { "path": "../shared" },

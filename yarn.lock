@@ -2665,9 +2665,10 @@ __metadata:
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/affine-widget-slash-menu": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
-    "@blocksuite/icons": "npm:^2.2.3"
+    "@blocksuite/icons": "npm:^2.2.4"
     "@blocksuite/inline": "workspace:*"
     "@blocksuite/store": "workspace:*"
     "@lit/context": "npm:^1.1.2"
@@ -3040,8 +3041,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-widget-slash-menu@workspace:blocksuite/affine/widget-slash-menu"
   dependencies:
-    "@blocksuite/affine-block-surface": "workspace:*"
-    "@blocksuite/affine-block-surface-ref": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
