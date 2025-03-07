@@ -3,7 +3,6 @@ import { insertImagesCommand } from '@blocksuite/affine-block-image';
 import { insertLatexBlockCommand } from '@blocksuite/affine-block-latex';
 import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
-import { insertTableBlockCommand } from '@blocksuite/affine-block-table';
 import { toggleEmbedCardCreateModal } from '@blocksuite/affine-components/embed-card-modal';
 import { toast } from '@blocksuite/affine-components/toast';
 import type {
@@ -22,10 +21,7 @@ import {
   getTextSelectionCommand,
 } from '@blocksuite/affine-shared/commands';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
-import {
-  FileSizeLimitService,
-  TelemetryProvider,
-} from '@blocksuite/affine-shared/services';
+import { FileSizeLimitService } from '@blocksuite/affine-shared/services';
 import {
   createDefaultDoc,
   openFileOrFiles,
@@ -49,7 +45,6 @@ import {
   LoomLogoDuotoneIcon,
   NowIcon,
   PlusIcon,
-  TableIcon,
   TeXIcon,
   TodayIcon,
   TomorrowIcon,
@@ -195,32 +190,6 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
 
     // ---------------------------------------------------------
     // { groupName: 'Content & Media' },
-    {
-      name: 'Table',
-      description: 'Create a simple table.',
-      icon: TableIcon(),
-      tooltip: slashMenuToolTips['Table View'],
-      group: `4_Content & Media@${index++}`,
-      when: ({ model }) => !insideEdgelessText(model),
-      action: ({ std }) => {
-        std.command
-          .chain()
-          .pipe(getSelectedModelsCommand)
-          .pipe(insertTableBlockCommand, {
-            place: 'after',
-            removeEmptyLine: true,
-          })
-          .pipe(({ insertedTableBlockId }) => {
-            if (insertedTableBlockId) {
-              const telemetry = std.getOptional(TelemetryProvider);
-              telemetry?.track('BlockCreated', {
-                blockType: 'affine:table',
-              });
-            }
-          })
-          .run();
-      },
-    },
     {
       name: 'Image',
       description: 'Insert an image.',

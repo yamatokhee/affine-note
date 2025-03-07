@@ -14,7 +14,6 @@
     { "path": "../block-note" },
     { "path": "../block-surface" },
     { "path": "../block-surface-ref" },
-    { "path": "../block-table" },
     { "path": "../components" },
     { "path": "../rich-text" },
     { "path": "../shared" },
