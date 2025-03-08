@@ -15,6 +15,7 @@ import {
   FontFamilyMap,
   FontStyle,
   FontWeightMap,
+  getSurfaceBlock,
   PointStyle,
   StrokeStyle,
   TextAlign,
@@ -29,7 +30,6 @@ import { menuTrigger, settingWrapper } from '../style.css';
 import { sortedFontWeightEntries, usePalettes } from '../utils';
 import { Point } from './point';
 import { EdgelessSnapshot } from './snapshot';
-import { getSurfaceBlock } from './utils';
 
 enum ConnecterStyle {
   General = 'general',

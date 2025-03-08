@@ -18,6 +18,7 @@ import {
   FontStyle,
   FontWeightMap,
   getShapeName,
+  getSurfaceBlock,
   ShapeStyle,
   ShapeType,
   StrokeStyle,
@@ -39,7 +40,6 @@ import { sortedFontWeightEntries, usePalettes } from '../utils';
 import type { DocName } from './docs';
 import { Point } from './point';
 import { EdgelessSnapshot } from './snapshot';
-import { getSurfaceBlock } from './utils';
 
 enum ShapeTextFontSize {
   '16px' = '16',

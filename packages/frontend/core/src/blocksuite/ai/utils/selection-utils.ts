@@ -10,6 +10,7 @@ import {
   getImageSelectionsCommand,
   getSelectedBlocksCommand,
   getSelectedModelsCommand,
+  getSurfaceBlock,
   getTextSelectionCommand,
   ImageBlockModel,
   isCanvasElement,
@@ -197,7 +198,7 @@ export const stopPropagation = (e: Event) => {
 
 export function getSurfaceElementFromEditor(editor: EditorHost) {
   const { doc } = editor;
-  const surfaceModel = doc.getBlockByFlavour('affine:surface')[0];
+  const surfaceModel = getSurfaceBlock(doc);
   if (!surfaceModel) return null;
 
   const surfaceId = surfaceModel.id;
