@@ -205,23 +205,21 @@ export class AffinePageDraggingAreaWidget extends WidgetComponent<
         const state = ctx.get('pointerState');
         const { button } = state.raw;
         if (button !== 0) return;
-        if (isDragArea(state)) {
-          if (!this._viewport) {
-            return;
-          }
-          this._dragging = true;
-          const { scrollLeft, scrollTop } = this._viewport;
-          this._initialScrollOffset = {
-            left: scrollLeft,
-            top: scrollTop,
-          };
-          this._initialContainerOffset = {
-            x: state.containerOffset.x,
-            y: state.containerOffset.y,
-          };
-          return true;
-        }
-        return;
+        if (!isDragArea(state)) return;
+        if (!this._viewport) return;
+
+        this._dragging = true;
+        const { scrollLeft, scrollTop } = this._viewport;
+        this._initialScrollOffset = {
+          left: scrollLeft,
+          top: scrollTop,
+        };
+        this._initialContainerOffset = {
+          x: state.containerOffset.x,
+          y: state.containerOffset.y,
+        };
+
+        return true;
       },
       { global: true }
     );

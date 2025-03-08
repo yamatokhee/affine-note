@@ -274,8 +274,10 @@ export class AffineToolbarWidget extends WidgetComponent {
     const dragStart = () => flags.toggle(Flag.Hiding, true);
     const dragEnd = () => flags.toggle(Flag.Hiding, false);
     const eventOptions = { passive: false };
-    this.handleEvent('dragStart', dragStart);
-    this.handleEvent('dragEnd', dragEnd);
+    this.handleEvent('dragStart', () => {
+      dragStart();
+      host.addEventListener('pointerup', dragEnd, { once: true });
+    });
     this.handleEvent('nativeDrop', dragEnd);
     disposables.addFromEvent(host, 'dragenter', dragStart, eventOptions);
     disposables.addFromEvent(
@@ -288,9 +290,9 @@ export class AffineToolbarWidget extends WidgetComponent {
           const rect = host.getBoundingClientRect();
           if (
             x >= rect.left &&
+            x <= rect.right &&
             y >= rect.top &&
-            x <= rect.bottom &&
-            y <= rect.right
+            y <= rect.bottom
           )
             return;
           dragEnd();
