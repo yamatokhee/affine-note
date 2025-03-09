@@ -85,7 +85,6 @@
     { "path": "./blocksuite/affine/widgets/widget-scroll-anchoring" },
     { "path": "./blocksuite/affine/widgets/widget-slash-menu" },
     { "path": "./blocksuite/affine/widgets/widget-toolbar" },
-    { "path": "./blocksuite/blocks" },
     { "path": "./blocksuite/framework/block-std" },
     { "path": "./blocksuite/framework/global" },
     { "path": "./blocksuite/framework/inline" },

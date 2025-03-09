@@ -25,10 +25,10 @@ import { i18nTime } from '@affine/i18n';
 import {
   customImageProxyMiddleware,
   ImageProxyService,
-  LinkPreviewerService,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
 import { DisposableGroup } from '@blocksuite/affine/global/slot';
+import { LinkPreviewerService } from '@blocksuite/affine/shared/services';
 import {
   FrameworkScope,
   useLiveData,

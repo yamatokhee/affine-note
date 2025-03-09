@@ -8,22 +8,24 @@ import {
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type { DocMode, ImageSelection } from '@blocksuite/affine/blocks';
 import {
-  DocModeProvider,
   EdgelessCRUDIdentifier,
-  EditPropsStore,
   getSelectedBlocksCommand,
-  matchModels,
   NoteDisplayMode,
-  NotificationProvider,
   ParagraphBlockModel,
   RefNodeSlotsProvider,
-  TelemetryProvider,
 } from '@blocksuite/affine/blocks';
 import {
   Bound,
   getCommonBoundWithRotation,
   type SerializedXYWH,
 } from '@blocksuite/affine/global/gfx';
+import {
+  DocModeProvider,
+  EditPropsStore,
+  NotificationProvider,
+  TelemetryProvider,
+} from '@blocksuite/affine/shared/services';
+import { matchModels } from '@blocksuite/affine/shared/utils';
 import type { Store } from '@blocksuite/affine/store';
 import {
   BlockIcon,

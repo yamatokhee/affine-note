@@ -2,7 +2,7 @@ import type {
   EdgelessRootBlockComponent,
   PageRootBlockComponent,
   SurfaceBlockComponent,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine/blocks';
 import type { Store } from '@blocksuite/store';
 
 import type { TestAffineEditorContainer } from '../../index.js';

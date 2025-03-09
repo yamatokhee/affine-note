@@ -2,13 +2,15 @@ import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
   CanvasElementType,
   ConnectorMode,
-  DocModeProvider,
   EdgelessCRUDIdentifier,
   getSurfaceBlock,
-  NotificationProvider,
-  type SpecBuilder,
-  TelemetryProvider,
 } from '@blocksuite/affine/blocks';
+import {
+  DocModeProvider,
+  NotificationProvider,
+  TelemetryProvider,
+} from '@blocksuite/affine/shared/services';
+import type { SpecBuilder } from '@blocksuite/affine/shared/utils';
 import { InformationIcon } from '@blocksuite/icons/lit';
 import { html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';

@@ -4,16 +4,16 @@ import type {
   BlockComponent,
   EditorHost,
   TextSelection,
-} from '@blocksuite/block-std';
+} from '@blocksuite/affine/block-std';
 import type {
   AffineInlineEditor,
   EdgelessNoteBackground,
   NoteBlockModel,
   RichText,
   RootBlockModel,
-} from '@blocksuite/blocks';
-import type { InlineRootElement } from '@blocksuite/inline';
-import type { BlockModel } from '@blocksuite/store';
+} from '@blocksuite/affine/blocks';
+import type { InlineRootElement } from '@blocksuite/affine/inline';
+import type { BlockModel } from '@blocksuite/affine/store';
 import { expect, type Locator, type Page } from '@playwright/test';
 
 import {

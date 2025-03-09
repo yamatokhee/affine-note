@@ -4,11 +4,11 @@ import type {
   DatabaseBlockModel,
   ListType,
   RichText,
-} from '@blocksuite/blocks';
-import type { InlineRange, InlineRootElement } from '@blocksuite/inline';
+} from '@blocksuite/affine/blocks';
+import type { InlineRange, InlineRootElement } from '@blocksuite/affine/inline';
+import type { BlockModel } from '@blocksuite/affine/store';
+import { uuidv4 } from '@blocksuite/affine/store';
 import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
-import type { BlockModel } from '@blocksuite/store';
-import { uuidv4 } from '@blocksuite/store';
 import type { ConsoleMessage, Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import lz from 'lz-string';
@@ -1249,7 +1249,7 @@ export async function mockParseDocUrlService(
 ) {
   await page.evaluate(mapping => {
     const parseDocUrlService = window.host.std.get(
-      window.$blocksuite.blocks.ParseDocUrlProvider
+      window.$blocksuite.services.ParseDocUrlProvider
     );
     parseDocUrlService.parseDocUrl = (url: string) => {
       const docId = mapping[url];

@@ -9,9 +9,9 @@ import {
   customImageProxyMiddleware,
   type DocMode,
   ImageProxyService,
-  LinkPreviewerService,
 } from '@blocksuite/affine/blocks';
 import { DisposableGroup } from '@blocksuite/affine/global/slot';
+import { LinkPreviewerService } from '@blocksuite/affine/shared/services';
 import type { Store } from '@blocksuite/affine/store';
 import { Slot } from '@radix-ui/react-slot';
 import { useLiveData, useService } from '@toeverything/infra';

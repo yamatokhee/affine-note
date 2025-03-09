@@ -3,8 +3,8 @@ import type {
   GroupElementModel,
   ShapeElementModel,
   SurfaceBlockModel,
-} from '@blocksuite/blocks';
-import { DefaultTheme } from '@blocksuite/blocks';
+} from '@blocksuite/affine/blocks';
+import { DefaultTheme } from '@blocksuite/affine/blocks';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { wait } from '../utils/common.js';

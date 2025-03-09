@@ -18,10 +18,10 @@ import {
   HtmlTransformer,
   MarkdownAdapterFactoryIdentifier,
   MarkdownTransformer,
-  printToPdf,
   titleMiddleware,
   ZipTransformer,
 } from '@blocksuite/affine/blocks';
+import { printToPdf } from '@blocksuite/affine/shared/utils';
 import { type Store, Transformer } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useSetAtom } from 'jotai';

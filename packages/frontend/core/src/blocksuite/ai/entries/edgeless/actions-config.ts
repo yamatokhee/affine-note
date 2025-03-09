@@ -1,10 +1,10 @@
 import {
-  AIStarIconWithAnimation,
   MindmapElementModel,
   ShapeElementModel,
   splitElements,
   TextElementModel,
 } from '@blocksuite/affine/blocks';
+import { AIStarIconWithAnimation } from '@blocksuite/affine/components/icons';
 import {
   CommentIcon,
   ExplainIcon,

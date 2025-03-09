@@ -14,10 +14,10 @@ import {
   getTextSelectionCommand,
   ImageBlockModel,
   isCanvasElement,
-  matchModels,
   splitElements,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine/blocks';
+import { matchModels } from '@blocksuite/affine/shared/utils';
 import {
   type BlockModel,
   type DraftModel,

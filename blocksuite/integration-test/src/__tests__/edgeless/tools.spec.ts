@@ -1,7 +1,7 @@
 import type {
   EdgelessRootBlockComponent,
   SurfaceBlockComponent,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine/blocks';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { click, drag, wait } from '../utils/common.js';

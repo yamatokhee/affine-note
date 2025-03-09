@@ -2,7 +2,7 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { AffineCanvasTextFonts } from '@blocksuite/blocks';
+import { AffineCanvasTextFonts } from '@blocksuite/affine/blocks';
 
 const fontPath = join(
   fileURLToPath(import.meta.url),

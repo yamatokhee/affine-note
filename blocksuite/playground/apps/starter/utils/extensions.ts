@@ -1,16 +1,18 @@
 import {
+  EdgelessEditorBlockSpecs,
+  PageEditorBlockSpecs,
+  RefNodeSlotsProvider,
+} from '@blocksuite/affine/blocks';
+import {
   CommunityCanvasTextFonts,
   DocModeProvider,
-  EdgelessEditorBlockSpecs,
   EditorSettingExtension,
   FeatureFlagService,
   FontConfigExtension,
-  PageEditorBlockSpecs,
   ParseDocUrlExtension,
-  RefNodeSlotsProvider,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine/shared/services';
+import type { ExtensionType, Store, Workspace } from '@blocksuite/affine/store';
 import { type TestAffineEditorContainer } from '@blocksuite/integration-test';
-import type { ExtensionType, Store, Workspace } from '@blocksuite/store';
 
 import {
   mockDocModeService,

@@ -1,12 +1,12 @@
 import {
-  AIStarIcon,
-  DocModeProvider,
   type SlashMenuActionItem,
   SlashMenuConfigExtension,
   type SlashMenuContext,
   type SlashMenuItem,
   type SlashMenuSubMenu,
 } from '@blocksuite/affine/blocks';
+import { AIStarIcon } from '@blocksuite/affine/components/icons';
+import { DocModeProvider } from '@blocksuite/affine/shared/services';
 import { MoreHorizontalIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 

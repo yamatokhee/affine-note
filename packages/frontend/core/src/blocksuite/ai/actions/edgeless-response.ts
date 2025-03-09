@@ -14,12 +14,12 @@ import {
   fitContent,
   getSurfaceBlock,
   ImageBlockModel,
-  LightLoadingIcon,
   MindmapUtils,
   NoteDisplayMode,
-  TelemetryProvider,
 } from '@blocksuite/affine/blocks';
+import { LightLoadingIcon } from '@blocksuite/affine/components/icons';
 import { Bound } from '@blocksuite/affine/global/gfx';
+import { TelemetryProvider } from '@blocksuite/affine/shared/services';
 import {
   ChatWithAiIcon,
   DeleteIcon,

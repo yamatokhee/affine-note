@@ -1,4 +1,5 @@
-import { AffineSchemas, replaceIdMiddleware } from '@blocksuite/blocks';
+import { replaceIdMiddleware } from '@blocksuite/affine/blocks';
+import { AffineSchemas } from '@blocksuite/affine/schemas';
 import {
   type DocSnapshot,
   Schema,

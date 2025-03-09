@@ -2,7 +2,7 @@ import type {
   MindmapElementModel,
   MindmapNode,
   ShapeElementModel,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine/blocks';
 import type { Page } from '@playwright/test';
 
 import { clickView } from './actions/click.js';

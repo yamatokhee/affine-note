@@ -1,5 +1,8 @@
-import type { RichTextCell, RichTextCellEditing } from '@blocksuite/blocks';
-import { ZERO_WIDTH_SPACE } from '@blocksuite/inline';
+import type {
+  RichTextCell,
+  RichTextCellEditing,
+} from '@blocksuite/affine/blocks';
+import { ZERO_WIDTH_SPACE } from '@blocksuite/affine/inline';
 import { expect, type Locator, type Page } from '@playwright/test';
 
 import {

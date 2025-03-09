@@ -1,4 +1,3 @@
-import type { BlockStdScope } from '@blocksuite/block-std';
 import {
   type BrushElementModel,
   type ConnectorElementModel,
@@ -6,7 +5,6 @@ import {
   DefaultTheme,
   type EdgelessRootBlockComponent,
   type EdgelessTextBlockModel,
-  EditPropsStore,
   FontFamily,
   type FrameBlockModel,
   getSurfaceBlock,
@@ -18,7 +16,9 @@ import {
   type ShapeElementModel,
   ShapeType,
   type TextElementModel,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine/blocks';
+import { EditPropsStore } from '@blocksuite/affine/shared/services';
+import type { BlockStdScope } from '@blocksuite/block-std';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { getDocRootBlock } from '../utils/edgeless.js';

@@ -7,11 +7,11 @@ import {
 } from '@affine/component';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { BlockStdScope } from '@blocksuite/affine/block-std';
+import { type DragBlockPayload } from '@blocksuite/affine/blocks';
 import {
   DNDAPIExtension,
   DndApiExtensionIdentifier,
-  type DragBlockPayload,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/shared/services';
 import { type SliceSnapshot } from '@blocksuite/affine/store';
 import { Service } from '@toeverything/infra';
 

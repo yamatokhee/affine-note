@@ -9,9 +9,9 @@ import {
   type DocMode,
   type DocTitle,
   focusBlockEnd,
-  getLastNoteBlock,
   type RootBlockModel,
 } from '@blocksuite/affine/blocks';
+import { getLastNoteBlock } from '@blocksuite/affine/shared/utils';
 import { type Store } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';

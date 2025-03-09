@@ -12,10 +12,10 @@ import {
   fitContent,
   getSurfaceBlock,
   SurfaceBlockModel,
-  TelemetryProvider,
   uploadBlobForImage,
 } from '@blocksuite/affine/blocks';
 import { Bound, getCommonBound } from '@blocksuite/affine/global/gfx';
+import { TelemetryProvider } from '@blocksuite/affine/shared/services';
 import { type BlockProps, Text } from '@blocksuite/affine/store';
 import * as Y from 'yjs';
 

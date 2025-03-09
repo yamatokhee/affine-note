@@ -1,13 +1,13 @@
 import '../../style.css';
 
-import * as blockStd from '@blocksuite/block-std';
-import * as blocks from '@blocksuite/blocks';
-import { effects as blocksEffects } from '@blocksuite/blocks/effects';
-import * as globalUtils from '@blocksuite/global/utils';
+import * as blockStd from '@blocksuite/affine/block-std';
+import * as blocks from '@blocksuite/affine/blocks';
+import { effects as blocksEffects } from '@blocksuite/affine/effects';
+import * as globalUtils from '@blocksuite/affine/global/utils';
+import * as services from '@blocksuite/affine/shared/services';
+import * as store from '@blocksuite/affine/store';
 import * as editor from '@blocksuite/integration-test';
 import { effects as presetsEffects } from '@blocksuite/integration-test/effects';
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import * as store from '@blocksuite/store';
 
 import { setupEdgelessTemplate } from '../_common/setup.js';
 import { effects as commentEffects } from '../comment/effects.js';
@@ -38,6 +38,7 @@ async function main() {
         store,
         blocks,
         global: { utils: globalUtils },
+        services,
         editor,
         blockStd: blockStd,
       }),

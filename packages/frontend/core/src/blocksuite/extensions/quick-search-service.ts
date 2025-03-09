@@ -10,18 +10,17 @@ import {
 import { ExternalLinksQuickSearchSession } from '@affine/core/modules/quicksearch/impls/external-links';
 import { JournalsQuickSearchSession } from '@affine/core/modules/quicksearch/impls/journals';
 import { track } from '@affine/track';
-import type {
-  QuickSearchResult,
-  SlashMenuConfig,
-  SlashMenuItem,
-} from '@blocksuite/affine/blocks';
+import type { SlashMenuConfig, SlashMenuItem } from '@blocksuite/affine/blocks';
 import {
   BookmarkSlashMenuConfigIdentifier,
   insertLinkByQuickSearchCommand,
   LinkedDocSlashMenuConfigIdentifier,
-  QuickSearchExtension,
 } from '@blocksuite/affine/blocks';
 import type { ServiceIdentifier } from '@blocksuite/affine/global/di';
+import {
+  QuickSearchExtension,
+  type QuickSearchResult,
+} from '@blocksuite/affine/shared/services';
 import { type ExtensionType, Text } from '@blocksuite/affine/store';
 import type { FrameworkProvider } from '@toeverything/infra';
 import { pick } from 'lodash-es';

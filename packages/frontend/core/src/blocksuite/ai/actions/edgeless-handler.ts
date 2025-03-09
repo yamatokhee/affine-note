@@ -8,12 +8,12 @@ import {
   EdgelessTextBlockModel,
   EmbedSyncedDocModel,
   ImageBlockModel,
-  matchModels,
   NoteBlockModel,
   ShapeElementModel,
   splitElements,
   TextElementModel,
 } from '@blocksuite/affine/blocks';
+import { matchModels } from '@blocksuite/affine/shared/utils';
 import { Slice } from '@blocksuite/affine/store';
 import type { TemplateResult } from 'lit';
 

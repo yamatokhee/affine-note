@@ -5,8 +5,8 @@ import {
 import {
   EdgelessElementToolbarWidget,
   EdgelessRootBlockSpec,
-  ToolbarModuleExtension,
 } from '@blocksuite/affine/blocks';
+import { ToolbarModuleExtension } from '@blocksuite/affine/shared/services';
 import type { ExtensionType } from '@blocksuite/affine/store';
 import type { FrameworkProvider } from '@toeverything/infra';
 

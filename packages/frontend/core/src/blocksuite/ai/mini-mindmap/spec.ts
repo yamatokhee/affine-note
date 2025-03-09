@@ -3,12 +3,14 @@ import {
   FlavourExtension,
 } from '@blocksuite/affine/block-std';
 import {
-  DocModeService,
   MindMapView,
   RootBlockSchema,
   SurfaceBlockSchema,
-  ThemeService,
 } from '@blocksuite/affine/blocks';
+import {
+  DocModeService,
+  ThemeService,
+} from '@blocksuite/affine/shared/services';
 import type { BlockSchema, ExtensionType } from '@blocksuite/affine/store';
 import { literal } from 'lit/static-html.js';
 import type { z } from 'zod';

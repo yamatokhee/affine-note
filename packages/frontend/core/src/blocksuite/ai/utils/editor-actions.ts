@@ -8,8 +8,8 @@ import {
 import {
   defaultImageProxyMiddleware,
   deleteTextCommand,
-  isInsideEdgelessEditor,
 } from '@blocksuite/affine/blocks';
+import { isInsideEdgelessEditor } from '@blocksuite/affine/shared/utils';
 import { type BlockModel, Slice } from '@blocksuite/affine/store';
 
 import {

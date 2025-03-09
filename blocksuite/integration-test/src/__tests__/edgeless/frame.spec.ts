@@ -3,7 +3,7 @@ import type {
   EdgelessRootBlockComponent,
   FrameBlockComponent,
   FrameBlockModel,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine/blocks';
 import { assertType } from '@blocksuite/global/utils';
 import { Text } from '@blocksuite/store';
 import { beforeEach, describe, expect, test } from 'vitest';

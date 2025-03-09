@@ -4,9 +4,9 @@ import {
   getSelectedModelsCommand,
   ImageBlockModel,
   ListBlockModel,
-  matchModels,
   ParagraphBlockModel,
 } from '@blocksuite/affine/blocks';
+import { matchModels } from '@blocksuite/affine/shared/utils';
 import {
   CommentIcon,
   DoneIcon,

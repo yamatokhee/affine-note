@@ -18,7 +18,6 @@ import {
   GfxPrimitiveElementModel,
 } from '@blocksuite/affine/block-std/gfx';
 import {
-  ActionPlacement,
   AffineReference,
   BookmarkBlockComponent,
   BookmarkBlockModel,
@@ -30,27 +29,33 @@ import {
   EmbedSyncedDocBlockComponent,
   EmbedSyncedDocModel,
   EmbedYoutubeBlockComponent,
-  GenerateDocUrlProvider,
   getDocContentWithMaxLength,
   getSelectedModelsCommand,
   ImageSelection,
-  isPeekable,
-  matchModels,
-  type MenuContext,
-  type MenuItemGroup,
+  toggleReferencePopup,
+} from '@blocksuite/affine/blocks';
+import { toggleEmbedCardEditModal } from '@blocksuite/affine/components/embed-card-modal';
+import {
   notifyLinkedDocClearedAliases,
   notifyLinkedDocSwitchedToCard,
+} from '@blocksuite/affine/components/notification';
+import { isPeekable, peek } from '@blocksuite/affine/components/peek';
+import { toast } from '@blocksuite/affine/components/toast';
+import type {
+  MenuContext,
+  MenuItemGroup,
+} from '@blocksuite/affine/components/toolbar';
+import {
+  ActionPlacement,
+  GenerateDocUrlProvider,
   type OpenDocMode,
-  peek,
-  toast,
-  toggleEmbedCardEditModal,
-  toggleReferencePopup,
   type ToolbarAction,
   type ToolbarActionGroup,
   type ToolbarContext,
   type ToolbarModuleConfig,
   ToolbarModuleExtension,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/shared/services';
+import { matchModels } from '@blocksuite/affine/shared/utils';
 import type { ExtensionType } from '@blocksuite/affine/store';
 import {
   ArrowDownSmallIcon,

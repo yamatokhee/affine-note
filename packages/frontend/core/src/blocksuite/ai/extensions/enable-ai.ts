@@ -4,8 +4,8 @@ import {
   ImageBlockSpec,
   PageRootBlockSpec,
   ParagraphBlockSpec,
-  type SpecBuilder,
 } from '@blocksuite/affine/blocks';
+import type { SpecBuilder } from '@blocksuite/affine/shared/utils';
 import type { FrameworkProvider } from '@toeverything/infra';
 
 import { AIChatBlockSpec } from '../blocks';

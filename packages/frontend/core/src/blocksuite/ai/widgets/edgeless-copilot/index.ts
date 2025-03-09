@@ -4,15 +4,15 @@ import {
 } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type { RootBlockModel } from '@blocksuite/affine/blocks';
-import {
-  EdgelessLegacySlotIdentifier,
-  MOUSE_BUTTON,
-  requestConnectedFrame,
-} from '@blocksuite/affine/blocks';
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine/blocks';
 import {
   Bound,
   getCommonBoundWithRotation,
 } from '@blocksuite/affine/global/gfx';
+import {
+  MOUSE_BUTTON,
+  requestConnectedFrame,
+} from '@blocksuite/affine/shared/utils';
 import {
   autoUpdate,
   computePosition,

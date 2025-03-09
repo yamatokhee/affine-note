@@ -3,7 +3,7 @@ import {
   EdgelessRootService,
   type FrameBlockComponent,
   type SurfaceRefBlockComponent,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine/blocks';
 import type { DocSnapshot } from '@blocksuite/store';
 import { beforeEach, describe, expect, test } from 'vitest';
 

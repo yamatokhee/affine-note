@@ -7,13 +7,13 @@ export default defineConfig({
   },
   plugins: [vanillaExtractPlugin()],
   test: {
-    globalSetup: '../../scripts/vitest-global.js',
+    globalSetup: '../../../scripts/vitest-global.js',
     include: ['src/__tests__/**/*.unit.spec.ts'],
     testTimeout: 1000,
     coverage: {
       provider: 'istanbul', // or 'c8'
       reporter: ['lcov'],
-      reportsDirectory: '../../.coverage/blocks',
+      reportsDirectory: '../../../.coverage/blocksuite-affine',
     },
     /**
      * Custom handler for console.log in tests.
@@ -22,7 +22,7 @@ export default defineConfig({
      */
     onConsoleLog(log, type) {
       if (
-        log.includes('https://lit.dev/msg/dev-mode') ||
+        log.includes('lit.dev/msg/dev-mode') ||
         log.includes(
           `KaTeX doesn't work in quirks mode. Make sure your website has a suitable doctype.`
         )

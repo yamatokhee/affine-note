@@ -3,8 +3,8 @@ import '@toeverything/theme/style.css';
 import {
   ColorScheme,
   type EdgelessRootBlockComponent,
-  ThemeProvider,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine/blocks';
+import { ThemeProvider } from '@blocksuite/affine/shared/services';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { getDocRootBlock } from '../utils/edgeless.js';

@@ -3,12 +3,14 @@ import type { EditorHost } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import {
   ImageBlockModel,
-  isInsideEdgelessEditor,
-  matchModels,
   NoteBlockModel,
   NoteDisplayMode,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/gfx';
+import {
+  isInsideEdgelessEditor,
+  matchModels,
+} from '@blocksuite/affine/shared/utils';
 import {
   ChatWithAiIcon,
   DeleteIcon,

@@ -1,5 +1,4 @@
 import type {
-  AffineTextAttributes,
   AttachmentBlockModel,
   BookmarkBlockModel,
   EmbedBlockModel,
@@ -14,6 +13,7 @@ import {
   TableModelFlavour,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
+import type { AffineTextAttributes } from '@blocksuite/affine/shared/types';
 import {
   createYProxy,
   type DraftModel,

@@ -10,9 +10,9 @@ import {
 import {
   EdgelessCRUDIdentifier,
   type EdgelessRootPreviewBlockComponent,
-  SpecProvider,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/gfx';
+import { SpecProvider } from '@blocksuite/affine/shared/utils';
 import type { Block, Store } from '@blocksuite/affine/store';
 import { useFramework } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
