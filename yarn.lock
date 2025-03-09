@@ -530,7 +530,7 @@ __metadata:
     builder-util-runtime: "npm:^9.2.10"
     cross-env: "npm:^7.0.3"
     debug: "npm:^4.4.0"
-    electron: "npm:^34.0.0"
+    electron: "npm:^35.0.0"
     electron-log: "npm:^5.2.4"
     electron-squirrel-startup: "npm:1.0.1"
     electron-updater: "npm:^6.3.9"
@@ -731,7 +731,7 @@ __metadata:
     "@vitest/coverage-istanbul": "npm:3.0.8"
     "@vitest/ui": "npm:3.0.8"
     cross-env: "npm:^7.0.3"
-    electron: "npm:^34.0.0"
+    electron: "npm:^35.0.0"
     eslint: "npm:^9.16.0"
     eslint-config-prettier: "npm:^10.0.0"
     eslint-import-resolver-typescript: "npm:^3.7.0"
@@ -14443,7 +14443,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=10.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18.0.0, @types/node@npm:>=8.1.0, @types/node@npm:^22.0.0":
+"@types/node@npm:*, @types/node@npm:>=10.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18.0.0, @types/node@npm:>=8.1.0, @types/node@npm:^22.0.0, @types/node@npm:^22.7.7":
   version: 22.13.10
   resolution: "@types/node@npm:22.13.10"
   dependencies:
@@ -14458,15 +14458,6 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10/05a54af019aae1fa7d7f8e6475071a7486cb8554f638894b5697ef1cad3b5ac6cbdd5fdfe3d8d70b3af7e56e0245b0033a986c00e1c09e80cb584db06e40c0ba
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.9.0":
-  version: 20.17.24
-  resolution: "@types/node@npm:20.17.24"
-  dependencies:
-    undici-types: "npm:~6.19.2"
-  checksum: 10/0c5fe294b003656b0f95ffce295c08e7ed3fa814ba9bf891e146dced90322d186e63837db9d9bb14d4f294fbe1a6fa1c89ced0b173380c8aaeb90de6c3eddb3b
   languageName: node
   linkType: hard
 
@@ -19370,16 +19361,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^34.0.0":
-  version: 34.3.1
-  resolution: "electron@npm:34.3.1"
+"electron@npm:^35.0.0":
+  version: 35.0.0
+  resolution: "electron@npm:35.0.0"
   dependencies:
     "@electron/get": "npm:^2.0.0"
-    "@types/node": "npm:^20.9.0"
+    "@types/node": "npm:^22.7.7"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10/72e64331223ca9ba134c7d8f8d6153ac267fcca811803559bc3f3eb9d73d2dd1fba3e005979f6dbe7cc6591510c366842b439eb07fc7970fe0da4ed6a5d0fdae
+  checksum: 10/dc0b19ea5df5de17aaeb3fc522044d47f627afec9778d913c24e9cea9d98d8d8889ff39759861407b98a210163967af32abfad19bee2462276d2256da3bd54c8
   languageName: node
   linkType: hard
 
@@ -32344,13 +32335,6 @@ __metadata:
   version: 5.26.5
   resolution: "undici-types@npm:5.26.5"
   checksum: 10/0097779d94bc0fd26f0418b3a05472410408877279141ded2bd449167be1aed7ea5b76f756562cb3586a07f251b90799bab22d9019ceba49c037c76445f7cddd
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~6.19.2":
-  version: 6.19.8
-  resolution: "undici-types@npm:6.19.8"
-  checksum: 10/cf0b48ed4fc99baf56584afa91aaffa5010c268b8842f62e02f752df209e3dea138b372a60a963b3b2576ed932f32329ce7ddb9cb5f27a6c83040d8cd74b7a70
   languageName: node
   linkType: hard
 
