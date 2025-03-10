@@ -14,6 +14,7 @@ import { DisposableGroup } from '@blocksuite/global/slot';
 import { type Query, type Store } from '@blocksuite/store';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
+import { guard } from 'lit/directives/guard.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import debounce from 'lodash-es/debounce';
 
@@ -151,7 +152,6 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
   }
 
   private _renderSurfaceContent() {
-    if (!this._previewDoc || !this.frame) return nothing;
     const { width, height } = this.frameViewportWH;
 
     const _previewSpec = this._previewSpec.value;
@@ -169,10 +169,13 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
           height: `${height}px`,
         })}
       >
-        ${new BlockStdScope({
-          store: this._previewDoc,
-          extensions: _previewSpec,
-        }).render()}
+        ${guard([this._previewDoc, this.frame], () => {
+          if (!this._previewDoc || !this.frame) return nothing;
+          return new BlockStdScope({
+            store: this._previewDoc,
+            extensions: _previewSpec,
+          }).render();
+        })}
       </div>
     </div>`;
   }
