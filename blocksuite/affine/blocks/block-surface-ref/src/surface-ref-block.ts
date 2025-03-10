@@ -15,6 +15,7 @@ import {
   DocModeProvider,
   EditPropsStore,
   ThemeProvider,
+  ViewportElementExtension,
 } from '@blocksuite/affine-shared/services';
 import {
   matchModels,
@@ -238,7 +239,9 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
   private _previewDoc: Store | null = null;
 
-  private readonly _previewSpec = SpecProvider._.getSpec('preview:edgeless');
+  private readonly _previewSpec = SpecProvider._.getSpec(
+    'preview:edgeless'
+  ).extend([ViewportElementExtension('.ref-viewport')]);
 
   private _referencedModel: GfxModel | null = null;
 

@@ -8,7 +8,10 @@ import {
   type RootBlockModel,
 } from '@blocksuite/affine-model';
 import { focusTextModel } from '@blocksuite/affine-rich-text';
-import { PageViewportService } from '@blocksuite/affine-shared/services';
+import {
+  PageViewportService,
+  ViewportElementProvider,
+} from '@blocksuite/affine-shared/services';
 import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
   focusTitle,
@@ -112,8 +115,6 @@ export class PageRootBlockComponent extends BlockComponent<
     }
   `;
 
-  private _viewportElement: HTMLDivElement | null = null;
-
   clipboardController = new PageClipboard(this);
 
   /**
@@ -182,12 +183,8 @@ export class PageRootBlockComponent extends BlockComponent<
     };
   }
 
-  get viewportElement(): HTMLDivElement | null {
-    if (this._viewportElement) return this._viewportElement;
-    this._viewportElement = this.host.closest<HTMLDivElement>(
-      '.affine-page-viewport'
-    );
-    return this._viewportElement;
+  get viewportElement(): HTMLElement {
+    return this.std.get(ViewportElementProvider).viewportElement;
   }
 
   private _createDefaultNoteBlock() {

@@ -1,4 +1,5 @@
 import type { FrameBlockModel } from '@blocksuite/affine-model';
+import { ViewportElementExtension } from '@blocksuite/affine-shared/services';
 import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import {
   BlockStdScope,
@@ -15,8 +16,6 @@ import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import debounce from 'lodash-es/debounce';
-
-import type { EdgelessRootPreviewBlockComponent } from '../../edgeless-root-preview-block.js';
 
 const DEFAULT_PREVIEW_CONTAINER_WIDTH = 280;
 const DEFAULT_PREVIEW_CONTAINER_HEIGHT = 166;
@@ -118,7 +117,8 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
       static override key = 'frame-preview-watcher';
 
       override mounted() {
-        const { view } = this.std;
+        const std = this.std;
+        const { view } = std;
         view.viewUpdated.on(payload => {
           if (
             payload.type !== 'block' ||
@@ -127,16 +127,17 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
           ) {
             return;
           }
-          const edgelessBlock =
-            payload.view as EdgelessRootPreviewBlockComponent;
-          edgelessBlock.editorViewportSelector = 'frame-preview-viewport';
-          edgelessBlock.service.viewport.sizeUpdated.once(() => {
+          const viewport = std.get(GfxControllerIdentifier).viewport;
+          viewport.sizeUpdated.once(() => {
             refreshViewport();
           });
         });
       }
     }
-    this._previewSpec.extend([FramePreviewWatcher]);
+    this._previewSpec.extend([
+      ViewportElementExtension('.frame-preview-viewport'),
+      FramePreviewWatcher,
+    ]);
   }
 
   private _refreshViewport() {

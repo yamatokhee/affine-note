@@ -1,3 +1,4 @@
+import { ViewportElementExtension } from '@blocksuite/affine-shared/services';
 import { autoConnectWidget } from '@blocksuite/affine-widget-edgeless-auto-connect';
 import { frameTitleWidget } from '@blocksuite/affine-widget-frame-title';
 import { edgelessRemoteSelectionWidget } from '@blocksuite/affine-widget-remote-selection';
@@ -72,6 +73,7 @@ const EdgelessCommonExtension: ExtensionType[] = [
   CommonSpecs,
   ToolController,
   EdgelessRootService,
+  ViewportElementExtension('.affine-edgeless-viewport'),
 ].flat();
 
 export const EdgelessRootBlockSpec: ExtensionType[] = [

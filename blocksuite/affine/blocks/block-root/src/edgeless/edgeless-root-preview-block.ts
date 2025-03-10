@@ -3,12 +3,12 @@ import {
   type SurfaceBlockComponent,
   type SurfaceBlockModel,
 } from '@blocksuite/affine-block-surface';
-import type { EdgelessPreviewer } from '@blocksuite/affine-block-surface-ref';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import {
   EditorSettingProvider,
   FontLoaderService,
   ThemeProvider,
+  ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
 import { requestThrottledConnectedFrame } from '@blocksuite/affine-shared/utils';
 import {
@@ -17,7 +17,6 @@ import {
   SurfaceSelection,
 } from '@blocksuite/block-std';
 import type { GfxViewportElement } from '@blocksuite/block-std/gfx';
-import { BlockSuiteError } from '@blocksuite/global/exceptions';
 import { css, html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -26,14 +25,11 @@ import type { EdgelessRootBlockWidgetName } from '../types.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
 import { isCanvasElement } from './utils/query.js';
 
-export class EdgelessRootPreviewBlockComponent
-  extends BlockComponent<
-    RootBlockModel,
-    EdgelessRootService,
-    EdgelessRootBlockWidgetName
-  >
-  implements EdgelessPreviewer
-{
+export class EdgelessRootPreviewBlockComponent extends BlockComponent<
+  RootBlockModel,
+  EdgelessRootService,
+  EdgelessRootBlockWidgetName
+> {
   static override styles = css`
     affine-edgeless-root-preview {
       pointer-events: none;
@@ -87,8 +83,6 @@ export class EdgelessRootPreviewBlockComponent
 
   private _resizeObserver: ResizeObserver | null = null;
 
-  private _viewportElement: HTMLElement | null = null;
-
   get dispatcher() {
     return this.service?.uiEventDispatcher;
   }
@@ -100,17 +94,7 @@ export class EdgelessRootPreviewBlockComponent
   }
 
   get viewportElement(): HTMLElement {
-    if (this._viewportElement) return this._viewportElement;
-    this._viewportElement = this.host.closest(
-      this.editorViewportSelector
-    ) as HTMLElement | null;
-    if (!this._viewportElement) {
-      throw new BlockSuiteError(
-        BlockSuiteError.ErrorCode.ValueNotExists,
-        'EdgelessRootPreviewBlockComponent.viewportElement: viewport element is not found'
-      );
-    }
-    return this._viewportElement;
+    return this.std.get(ViewportElementProvider).viewportElement;
   }
 
   private _initFontLoader() {
@@ -159,23 +143,24 @@ export class EdgelessRootPreviewBlockComponent
   }
 
   private _initResizeEffect() {
-    if (!this._viewportElement) {
-      return;
-    }
-
     const resizeObserver = new ResizeObserver((_: ResizeObserverEntry[]) => {
       // FIXME: find a better way to get rid of empty check
       if (!this.service || !this.service.selection || !this.service.viewport) {
-        console.error('Service not ready');
+        console.error('Service is not ready');
         return;
       }
       this.service.selection.set(this.service.selection.surfaceSelections);
       this.service.viewport.onResize();
     });
 
-    resizeObserver.observe(this.viewportElement);
-    this._resizeObserver?.disconnect();
-    this._resizeObserver = resizeObserver;
+    try {
+      resizeObserver.observe(this.viewportElement);
+      this._resizeObserver?.disconnect();
+      this._resizeObserver = resizeObserver;
+    } catch {
+      // viewport is not ready
+      console.error('Viewport is not ready');
+    }
   }
 
   private _initSlotEffects() {
@@ -265,17 +250,8 @@ export class EdgelessRootPreviewBlockComponent
     `;
   }
 
-  override willUpdate(_changedProperties: Map<PropertyKey, unknown>): void {
-    if (_changedProperties.has('editorViewportSelector')) {
-      this._initResizeEffect();
-    }
-  }
-
   @state()
   accessor overrideBackground: string | undefined = undefined;
-
-  @state()
-  accessor editorViewportSelector = '.affine-edgeless-viewport';
 
   @query('gfx-viewport')
   accessor gfxViewportElm!: GfxViewportElement;

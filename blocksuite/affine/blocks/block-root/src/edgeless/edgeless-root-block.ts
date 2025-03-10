@@ -20,6 +20,7 @@ import {
   EditPropsStore,
   FontLoaderService,
   ThemeProvider,
+  ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
 import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
@@ -39,7 +40,6 @@ import {
   type GfxViewportElement,
 } from '@blocksuite/block-std/gfx';
 import { IS_WINDOWS } from '@blocksuite/global/env';
-import { BlockSuiteError } from '@blocksuite/global/exceptions';
 import { Bound, Point, Vec } from '@blocksuite/global/gfx';
 import { effect } from '@preact/signals-core';
 import { css, html } from 'lit';
@@ -125,8 +125,6 @@ export class EdgelessRootBlockComponent extends BlockComponent<
 
   private _resizeObserver: ResizeObserver | null = null;
 
-  private _viewportElement: HTMLElement | null = null;
-
   clipboardController = new EdgelessClipboardController(this);
 
   keyboardManager: EdgelessPageKeyboardManager | null = null;
@@ -165,39 +163,11 @@ export class EdgelessRootBlockComponent extends BlockComponent<
    * This refers to the wrapper element of the EditorHost.
    */
   get viewport(): Viewport {
-    const {
-      scrollLeft,
-      scrollTop,
-      scrollWidth,
-      scrollHeight,
-      clientWidth,
-      clientHeight,
-    } = this.viewportElement;
-    const { top, left } = this.viewportElement.getBoundingClientRect();
-    return {
-      top,
-      left,
-      scrollLeft,
-      scrollTop,
-      scrollWidth,
-      scrollHeight,
-      clientWidth,
-      clientHeight,
-    };
+    return this.std.get(ViewportElementProvider).viewport;
   }
 
   get viewportElement(): HTMLElement {
-    if (this._viewportElement) return this._viewportElement;
-    this._viewportElement = this.host.closest(
-      '.affine-edgeless-viewport'
-    ) as HTMLElement | null;
-    if (!this._viewportElement) {
-      throw new BlockSuiteError(
-        BlockSuiteError.ErrorCode.ValueNotExists,
-        'EdgelessRootBlockComponent.viewportElement: viewport element is not found'
-      );
-    }
-    return this._viewportElement;
+    return this.std.get(ViewportElementProvider).viewportElement;
   }
 
   private _initFontLoader() {
