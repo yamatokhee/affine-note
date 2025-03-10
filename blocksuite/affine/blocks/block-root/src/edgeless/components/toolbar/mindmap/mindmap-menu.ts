@@ -18,7 +18,6 @@ import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { EdgelessRootBlockComponent } from '../../../index.js';
-import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { getMindMaps, type ToolbarMindmapItem } from './assets.js';
@@ -174,7 +173,9 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
         ${importMindMapIcon}
       </button>
       <affine-tooltip tip-position="top" .offset=${12}>
-        ${getTooltipWithShortcut('Support import of FreeMind,OPML.')}
+        <affine-tooltip-content-with-shortcut
+          data-tip="${'Support import of FreeMind,OPML.'}"
+        ></affine-tooltip-content-with-shortcut>
       </affine-tooltip>
     </div>`;
   }
@@ -292,7 +293,9 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
             ${mediaItem.icon}
           </button>
           <affine-tooltip tip-position="top" .offset=${12}>
-            ${getTooltipWithShortcut('Add media')}
+            <affine-tooltip-content-with-shortcut
+              data-tip="${'Add media'}"
+            ></affine-tooltip-content-with-shortcut>
           </affine-tooltip>
         </div>
         <div class="thin-divider"></div>
@@ -321,7 +324,10 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
             ${textItem.icon}
           </button>
           <affine-tooltip tip-position="top" .offset=${12}>
-            ${getTooltipWithShortcut('Edgeless Text', 'T')}
+            <affine-tooltip-content-with-shortcut
+              data-tip="${'Edgeless Text'}"
+              data-shortcup="${'T'}"
+            ></affine-tooltip-content-with-shortcut>
           </affine-tooltip>
         </div>
         <div class="thin-divider"></div>
@@ -364,7 +370,10 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
                 ${mindMap.icon}
               </button>
               <affine-tooltip tip-position="top" .offset=${12}>
-                ${getTooltipWithShortcut('Mind Map', 'M')}
+                <affine-tooltip-content-with-shortcut
+                  data-tip="${'Mind Map'}"
+                  data-shortcup="${'M'}"
+                ></affine-tooltip-content-with-shortcut>
               </affine-tooltip>
             </div>
           `;

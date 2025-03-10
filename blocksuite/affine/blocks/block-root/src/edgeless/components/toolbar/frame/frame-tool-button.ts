@@ -2,7 +2,6 @@ import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { FrameIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
 
-import { getTooltipWithShortcut } from '../../../components/utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 
 export class EdgelessFrameToolButton extends QuickToolMixin(LitElement) {
@@ -26,7 +25,12 @@ export class EdgelessFrameToolButton extends QuickToolMixin(LitElement) {
     return html`
       <edgeless-tool-icon-button
         class="edgeless-frame-button"
-        .tooltip=${this.popper ? '' : getTooltipWithShortcut('Frame', 'F')}
+        .tooltip=${this.popper
+          ? ''
+          : html`<affine-tooltip-content-with-shortcut
+              data-tip="${'Frame'}"
+              data-shortcut="${'F'}"
+            ></affine-tooltip-content-with-shortcut>`}
         .tooltipOffset=${17}
         .iconSize=${'24px'}
         .active=${type === 'frame'}

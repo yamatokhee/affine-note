@@ -9,7 +9,6 @@ import {
 import { computed } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 
-import { getTooltipWithShortcut } from '../../utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 
 const IcomMap = {
@@ -55,7 +54,10 @@ export class EdgelessConnectorToolButton extends QuickToolMixin(
         class="edgeless-connector-button"
         .tooltip=${this.popper
           ? ''
-          : getTooltipWithShortcut(getConnectorModeName(mode), 'C')}
+          : html`<affine-tooltip-content-with-shortcut
+              data-tip="${getConnectorModeName(mode)}"
+              data-shortcut="${'C'}"
+            ></affine-tooltip-content-with-shortcut>`}
         .tooltipOffset=${17}
         .active=${active}
         .iconContainerPadding=${6}

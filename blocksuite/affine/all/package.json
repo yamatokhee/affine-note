@@ -131,6 +131,7 @@
     "./components/toggle-switch": "./src/components/toggle-switch.ts",
     "./components/toolbar": "./src/components/toolbar.ts",
     "./components/view-dropdown-menu": "./src/components/view-dropdown-menu.ts",
+    "./components/tooltip-content-with-shortcut": "./src/components/tooltip-content-with-shortcut.ts",
     "./rich-text": "./src/rich-text/index.ts",
     "./rich-text/effects": "./src/rich-text/effects.ts",
     "./shared/adapters": "./src/shared/adapters.ts",

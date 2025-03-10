@@ -36,6 +36,7 @@ import { SmoothCorner } from '@blocksuite/affine-components/smooth-corner';
 import { effects as componentToggleButtonEffects } from '@blocksuite/affine-components/toggle-button';
 import { ToggleSwitch } from '@blocksuite/affine-components/toggle-switch';
 import { effects as componentToolbarEffects } from '@blocksuite/affine-components/toolbar';
+import { effects as componentTooltipContentWithShortcutEffects } from '@blocksuite/affine-components/tooltip-content-with-shortcut';
 import { effects as componentViewDropdownMenuEffects } from '@blocksuite/affine-components/view-dropdown-menu';
 import { effects as fragmentDocTitleEffects } from '@blocksuite/affine-fragment-doc-title/effects';
 import { effects as fragmentFramePanelEffects } from '@blocksuite/affine-fragment-frame-panel/effects';
@@ -145,6 +146,7 @@ export function effects() {
   componentCardStyleDropdownMenuEffects();
   componentHighlightDropdownMenuEffects();
   componentViewDropdownMenuEffects();
+  componentTooltipContentWithShortcutEffects();
 
   widgetScrollAnchoringEffects();
   widgetFrameTitleEffects();

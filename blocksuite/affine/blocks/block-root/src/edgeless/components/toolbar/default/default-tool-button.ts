@@ -4,7 +4,6 @@ import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { query } from 'lit/decorators.js';
 
-import { getTooltipWithShortcut } from '../../utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 export class EdgelessDefaultToolButton extends QuickToolMixin(LitElement) {
   static override styles = css`
@@ -74,12 +73,17 @@ export class EdgelessDefaultToolButton extends QuickToolMixin(LitElement) {
   override render() {
     const type = this.edgelessTool?.type;
     const { active } = this;
+    const tipInfo =
+      type === 'pan'
+        ? { tip: 'Hand', shortcut: 'H' }
+        : { tip: 'Select', shortcut: 'V' };
     return html`
       <edgeless-tool-icon-button
         class="edgeless-default-button ${type}"
-        .tooltip=${type === 'pan'
-          ? getTooltipWithShortcut('Hand', 'H')
-          : getTooltipWithShortcut('Select', 'V')}
+        .tooltip=${html`<affine-tooltip-content-with-shortcut
+          data-tip="${tipInfo.tip}"
+          data-shortcut="${tipInfo.shortcut}"
+        ></affine-tooltip-content-with-shortcut>`}
         .tooltipOffset=${17}
         .active=${active}
         .iconContainerPadding=${6}

@@ -3,7 +3,6 @@ import { LinkIcon } from '@blocksuite/affine-components/icons';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import { css, html, LitElement } from 'lit';
 
-import { getTooltipWithShortcut } from '../../utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 
 export class EdgelessLinkToolButton extends QuickToolMixin(LitElement) {
@@ -53,7 +52,10 @@ export class EdgelessLinkToolButton extends QuickToolMixin(LitElement) {
   override render() {
     return html`<edgeless-tool-icon-button
       .iconContainerPadding="${6}"
-      .tooltip="${getTooltipWithShortcut('Link', '@')}"
+      .tooltip="${html`<affine-tooltip-content-with-shortcut
+        data-tip="${'Link'}"
+        data-shortcut="${'@'}"
+      ></affine-tooltip-content-with-shortcut>`}"
       .tooltipOffset=${17}
       class="edgeless-link-tool-button"
       @click=${this._onClick}

@@ -16,7 +16,6 @@ import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
-import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { NOTE_MENU_ITEMS } from './note-menu-config.js';
 
@@ -123,7 +122,10 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
 
             <edgeless-tool-icon-button
               .activeMode=${'background'}
-              .tooltip=${getTooltipWithShortcut('Link', '@')}
+              .tooltip=${html`<affine-tooltip-content-with-shortcut
+                data-tip="${'Link'}"
+                data-shortcut="${'@'}"
+              ></affine-tooltip-content-with-shortcut>`}
               @click=${() => {
                 this._onHandleLinkButtonClick();
               }}

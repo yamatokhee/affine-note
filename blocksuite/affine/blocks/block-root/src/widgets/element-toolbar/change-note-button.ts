@@ -54,7 +54,6 @@ import {
   type LineStyleEvent,
   LineStylesPanel,
 } from '../../edgeless/components/panel/line-styles-panel.js';
-import { getTooltipWithShortcut } from '../../edgeless/components/utils.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import { SmallArrowDownIcon } from './icons.js';
 import * as styles from './styles.css';
@@ -522,7 +521,10 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
         ? html`
             <editor-icon-button
               aria-label="Slicer"
-              .tooltip=${getTooltipWithShortcut('Cutting mode', '-')}
+              .tooltip=${html`<affine-tooltip-content-with-shortcut
+                data-tip="${'Cutting mode'}"
+                data-shortcut="${'-'}"
+              ></affine-tooltip-content-with-shortcut>`}
               .active=${this.enableNoteSlicer}
               .iconSize=${'20px'}
               @click=${() => this._handleNoteSlicerButtonClick()}

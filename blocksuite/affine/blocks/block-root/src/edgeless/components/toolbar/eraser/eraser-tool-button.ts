@@ -2,7 +2,6 @@ import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { css, html, LitElement } from 'lit';
 
-import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { EdgelessEraserDarkIcon, EdgelessEraserLightIcon } from './icons.js';
 
@@ -60,7 +59,10 @@ export class EdgelessEraserToolButton extends EdgelessToolbarToolMixin(
     return html`
       <edgeless-toolbar-button
         class="edgeless-eraser-button"
-        .tooltip=${getTooltipWithShortcut('Eraser', 'E')}
+        .tooltip=${html`<affine-tooltip-content-with-shortcut
+          data-tip="${'Eraser'}"
+          data-shortcut="${'E'}"
+        ></affine-tooltip-content-with-shortcut>`}
         .tooltipOffset=${4}
         .active=${type === 'eraser'}
         @click=${() => this.setEdgelessTool({ type: 'eraser' })}

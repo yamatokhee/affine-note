@@ -7,7 +7,6 @@ import { computed } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { EdgelessPenDarkIcon, EdgelessPenLightIcon } from './icons.js';
 
@@ -78,7 +77,12 @@ export class EdgelessBrushToolButton extends EdgelessToolbarToolMixin(
     return html`
       <edgeless-toolbar-button
         class="edgeless-brush-button"
-        .tooltip=${this.popper ? '' : getTooltipWithShortcut('Pen', 'P')}
+        .tooltip=${this.popper
+          ? ''
+          : html`<affine-tooltip-content-with-shortcut
+              data-tip="${'Pen'}"
+              data-shortcut="${'P'}"
+            ></affine-tooltip-content-with-shortcut>`}
         .tooltipOffset=${4}
         .active=${active}
         .withHover=${true}

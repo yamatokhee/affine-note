@@ -4,7 +4,6 @@ import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import { getTooltipWithShortcut } from '../../../components/utils.js';
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
 import { createPopper, type MenuPopper } from '../common/create-popper.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
@@ -88,7 +87,12 @@ export class EdgelessNoteToolButton extends QuickToolMixin(LitElement) {
     return html`
       <edgeless-tool-icon-button
         class="edgeless-note-button"
-        .tooltip=${this._noteMenu ? '' : getTooltipWithShortcut('Note', 'N')}
+        .tooltip=${this._noteMenu
+          ? ''
+          : html`<affine-tooltip-content-with-shortcut
+              data-tip="${'Note'}"
+              data-shortcut="${'N'}"
+            ></affine-tooltip-content-with-shortcut>`}
         .tooltipOffset=${17}
         .active=${active}
         .iconContainerPadding=${6}

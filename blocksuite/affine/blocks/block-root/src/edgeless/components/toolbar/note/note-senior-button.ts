@@ -13,7 +13,6 @@ import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
-import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { toShapeNotToAdapt } from './icon.js';
 
@@ -187,7 +186,12 @@ export class EdgelessNoteSeniorButton extends EdgelessToolbarToolMixin(
 
     return html`<edgeless-toolbar-button
       class="edgeless-note-button"
-      .tooltip=${this.popper ? '' : getTooltipWithShortcut('Note', 'N')}
+      .tooltip=${this.popper
+        ? ''
+        : html`<affine-tooltip-content-with-shortcut
+            data-tip="${'Note'}"
+            data-shortcut="${'N'}"
+          ></affine-tooltip-content-with-shortcut>`}
       .tooltipOffset=${5}
     >
       <div

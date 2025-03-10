@@ -3,7 +3,6 @@ import { SignalWatcher } from '@blocksuite/global/lit';
 import { css, html, LitElement } from 'lit';
 
 import { ShapeTool } from '../../../gfx-tool/shape-tool.js';
-import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import type { DraggableShape } from './utils.js';
 
@@ -68,7 +67,12 @@ export class EdgelessShapeToolButton extends EdgelessToolbarToolMixin(
     return html`
       <edgeless-toolbar-button
         class="edgeless-shape-button"
-        .tooltip=${this.popper ? '' : getTooltipWithShortcut('Shape', 'S')}
+        .tooltip=${this.popper
+          ? ''
+          : html`<affine-tooltip-content-with-shortcut
+              data-tip="${'Shape'}"
+              data-shortcut="${'S'}"
+            ></affine-tooltip-content-with-shortcut>`}
         .tooltipOffset=${5}
         .active=${active}
       >

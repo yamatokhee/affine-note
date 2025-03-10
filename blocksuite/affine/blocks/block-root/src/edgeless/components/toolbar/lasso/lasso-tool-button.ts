@@ -4,7 +4,6 @@ import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { query, state } from 'lit/decorators.js';
 
-import { getTooltipWithShortcut } from '../../utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 import { LassoFreeHandIcon, LassoPolygonalIcon } from './icons.js';
 
@@ -72,7 +71,10 @@ export class EdgelessLassoToolButton extends QuickToolMixin(
     return html`
       <edgeless-tool-icon-button
         class="edgeless-lasso-button ${mode}"
-        .tooltip=${getTooltipWithShortcut('Lasso', 'L')}
+        .tooltip=${html`<affine-tooltip-content-with-shortcut
+          data-tip="${'Lasso'}"
+          data-shortcut="${'L'}"
+        ></affine-tooltip-content-with-shortcut>`}
         .tooltipOffset=${17}
         .active=${type === 'lasso'}
         .iconContainerPadding=${6}
