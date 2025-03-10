@@ -2,6 +2,7 @@ import { addAttachments } from '@blocksuite/affine-block-attachment';
 import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import { addImages } from '@blocksuite/affine-block-image';
 import { CanvasElementType } from '@blocksuite/affine-block-surface';
+import { mountTextElementEditor } from '@blocksuite/affine-gfx-text';
 import {
   MAX_IMAGE_WIDTH,
   type MindmapStyle,
@@ -18,7 +19,6 @@ import * as Y from 'yjs';
 
 import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
 import type { EdgelessRootService } from '../../../edgeless-root-service.js';
-import { mountTextElementEditor } from '../../../utils/text.js';
 
 export type ConfigProperty = 'x' | 'y' | 'r' | 's' | 'z' | 'o';
 export type ConfigState = 'default' | 'active' | 'hover' | 'next';

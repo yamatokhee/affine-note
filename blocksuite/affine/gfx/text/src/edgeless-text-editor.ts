@@ -1,5 +1,6 @@
 import {
   EdgelessCRUDIdentifier,
+  getSurfaceBlock,
   TextUtils,
 } from '@blocksuite/affine-block-surface';
 import type { TextElementModel } from '@blocksuite/affine-model';
@@ -7,21 +8,26 @@ import type { RichText } from '@blocksuite/affine-rich-text';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { getSelectedRect } from '@blocksuite/affine-shared/utils';
 import {
+  type BlockStdScope,
   RANGE_SYNC_EXCLUDE_ATTR,
   ShadowlessElement,
+  stdContext,
 } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound, toRadian, Vec } from '@blocksuite/global/gfx';
 import { WithDisposable } from '@blocksuite/global/lit';
+import { consume } from '@lit/context';
 import { css, html, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
-import { deleteElements } from '../../utils/crud.js';
-
 export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
   get crud() {
-    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+    return this.std.get(EdgelessCRUDIdentifier);
+  }
+
+  get gfx() {
+    return this.std.get(GfxControllerIdentifier);
   }
 
   static BORDER_WIDTH = 1;
@@ -71,10 +77,9 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
   private _keeping = false;
 
   private readonly _updateRect = () => {
-    const edgeless = this.edgeless;
     const element = this.element;
 
-    if (!edgeless || !element || !this.inlineEditorContainer) return;
+    if (!element || !this.inlineEditorContainer) return;
 
     const newWidth = this.inlineEditorContainer.scrollWidth;
     const newHeight = this.inlineEditorContainer.scrollHeight;
@@ -153,10 +158,6 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    if (!this.edgeless) {
-      console.error('edgeless is not set.');
-      return;
-    }
     if (!this.element) {
       console.error('text element is not set.');
       return;
@@ -166,9 +167,13 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
   }
 
   override firstUpdated(): void {
-    const edgeless = this.edgeless;
     const element = this.element;
-    const { dispatcher } = this.edgeless;
+    const dispatcher = this.std.event;
+    const surface = getSurfaceBlock(this.std.store);
+    if (!surface) {
+      console.error('surface block is not found.');
+      return;
+    }
 
     this.updateComplete
       .then(() => {
@@ -179,13 +184,13 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
         });
 
         this.disposables.add(
-          edgeless.service.surface.elementUpdated.on(({ id }) => {
+          surface.elementUpdated.on(({ id }) => {
             if (id === element.id) this.requestUpdate();
           })
         );
 
         this.disposables.add(
-          edgeless.service.viewport.viewportUpdated.on(() => {
+          this.gfx.viewport.viewportUpdated.on(() => {
             this.requestUpdate();
           })
         );
@@ -197,10 +202,10 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
           element.display = true;
 
           if (element.text.length === 0) {
-            deleteElements(edgeless, [element]);
+            this.crud.deleteElements([element]);
           }
 
-          edgeless.service.selection.set({
+          this.gfx.selection.set({
             elements: [],
             editing: false,
           });
@@ -346,7 +351,7 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
     );
     const rect = getSelectedRect([this.element]);
 
-    const { translateX, translateY, zoom } = this.edgeless.service.viewport;
+    const { translateX, translateY, zoom } = this.gfx.viewport;
     const [visualX, visualY] = this.getVisualPosition(this.element);
     const containerOffset = this.getContainerOffset();
     const transformOperation = [
@@ -358,7 +363,7 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
     ];
 
     const isEmpty = !text.length && !this._isComposition;
-    const color = this.edgeless.std
+    const color = this.std
       .get(ThemeProvider)
       .generateColorProperty(this.element.color, '#000000');
 
@@ -404,8 +409,8 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
     this._keeping = keeping;
   }
 
-  @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
+  @consume({ context: stdContext })
+  accessor std!: BlockStdScope;
 
   @property({ attribute: false })
   accessor element!: TextElementModel;

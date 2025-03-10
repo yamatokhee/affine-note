@@ -24,6 +24,7 @@
     { "path": "../block-table" },
     { "path": "../../components" },
     { "path": "../../fragments/fragment-doc-title" },
+    { "path": "../../gfx/text" },
     { "path": "../../model" },
     { "path": "../../rich-text" },
     { "path": "../../shared" },

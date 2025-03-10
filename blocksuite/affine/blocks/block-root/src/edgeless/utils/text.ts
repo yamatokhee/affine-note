@@ -1,16 +1,10 @@
-import {
-  CanvasElementType,
-  EdgelessCRUDIdentifier,
-  type IModelCoord,
-  TextUtils,
-} from '@blocksuite/affine-block-surface';
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type {
   ConnectorElementModel,
   FrameBlockModel,
   GroupElementModel,
 } from '@blocksuite/affine-model';
-import { ShapeElementModel, TextElementModel } from '@blocksuite/affine-model';
-import type { PointerEventState } from '@blocksuite/block-std';
+import { ShapeElementModel } from '@blocksuite/affine-model';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { IVec } from '@blocksuite/global/gfx';
 import { Bound } from '@blocksuite/global/gfx';
@@ -20,46 +14,7 @@ import { EdgelessConnectorLabelEditor } from '../components/text/edgeless-connec
 import { EdgelessFrameTitleEditor } from '../components/text/edgeless-frame-title-editor.js';
 import { EdgelessGroupTitleEditor } from '../components/text/edgeless-group-title-editor.js';
 import { EdgelessShapeTextEditor } from '../components/text/edgeless-shape-text-editor.js';
-import { EdgelessTextEditor } from '../components/text/edgeless-text-editor.js';
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
-
-export function mountTextElementEditor(
-  textElement: TextElementModel,
-  edgeless: EdgelessRootBlockComponent,
-  focusCoord?: IModelCoord
-) {
-  if (!edgeless.mountElm) {
-    throw new BlockSuiteError(
-      ErrorCode.ValueNotExists,
-      "edgeless block's mount point does not exist"
-    );
-  }
-
-  let cursorIndex = textElement.text.length;
-  if (focusCoord) {
-    cursorIndex = Math.min(
-      TextUtils.getCursorByCoord(textElement, focusCoord),
-      cursorIndex
-    );
-  }
-
-  const textEditor = new EdgelessTextEditor();
-  textEditor.edgeless = edgeless;
-  textEditor.element = textElement;
-
-  edgeless.append(textEditor);
-  textEditor.updateComplete
-    .then(() => {
-      textEditor.inlineEditor?.focusIndex(cursorIndex);
-    })
-    .catch(console.error);
-
-  edgeless.gfx.tool.setTool('default');
-  edgeless.gfx.selection.set({
-    elements: [textElement.id],
-    editing: true,
-  });
-}
 
 export function mountShapeTextEditor(
   shapeElement: ShapeElementModel,
@@ -143,39 +98,6 @@ export function mountGroupTitleEditor(
     elements: [group.id],
     editing: true,
   });
-}
-
-/**
- * @deprecated
- *
- * Canvas Text has been deprecated
- */
-export function addText(
-  edgeless: EdgelessRootBlockComponent,
-  event: PointerEventState
-) {
-  const [x, y] = edgeless.service.viewport.toModelCoord(event.x, event.y);
-  const selected = edgeless.service.gfx.getElementByPoint(x, y);
-
-  if (!selected) {
-    const [modelX, modelY] = edgeless.service.viewport.toModelCoord(
-      event.x,
-      event.y
-    );
-    const id = edgeless.std
-      .get(EdgelessCRUDIdentifier)
-      .addElement(CanvasElementType.TEXT, {
-        xywh: new Bound(modelX, modelY, 32, 32).serialize(),
-        text: new Y.Text(),
-      });
-    if (!id) return;
-    edgeless.doc.captureSync();
-    const textElement = edgeless.service.crud.getElementById(id);
-    if (!textElement) return;
-    if (textElement instanceof TextElementModel) {
-      mountTextElementEditor(textElement, edgeless);
-    }
-  }
 }
 
 export function mountConnectorLabelEditor(

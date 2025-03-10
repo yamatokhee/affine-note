@@ -4,6 +4,7 @@ import {
   PresentTool,
 } from '@blocksuite/affine-block-frame';
 import { ConnectionOverlay } from '@blocksuite/affine-block-surface';
+import { TextTool } from '@blocksuite/affine-gfx-text';
 import type { ExtensionType } from '@blocksuite/store';
 
 import { EdgelessRootBlockSpec } from './edgeless-root-spec.js';
@@ -19,7 +20,6 @@ import { NoteTool } from './gfx-tool/note-tool.js';
 import { PanTool } from './gfx-tool/pan-tool.js';
 import { ShapeTool } from './gfx-tool/shape-tool.js';
 import { TemplateTool } from './gfx-tool/template-tool.js';
-import { TextTool } from './gfx-tool/text-tool.js';
 import { EditPropsMiddlewareBuilder } from './middlewares/base.js';
 import { SnapManager } from './utils/snap-manager.js';
 

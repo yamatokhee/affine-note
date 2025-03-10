@@ -9,6 +9,7 @@ import {
   isNoteBlock,
   OverlayIdentifier,
 } from '@blocksuite/affine-block-surface';
+import { addText, mountTextElementEditor } from '@blocksuite/affine-gfx-text';
 import type {
   EdgelessTextBlockModel,
   FrameBlockModel,
@@ -55,12 +56,10 @@ import { calPanDelta } from '../utils/panning-utils.js';
 import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
 import type { SnapManager } from '../utils/snap-manager.js';
 import {
-  addText,
   mountConnectorLabelEditor,
   mountFrameTitleEditor,
   mountGroupTitleEditor,
   mountShapeTextEditor,
-  mountTextElementEditor,
 } from '../utils/text.js';
 import { CanvasElementEventExt } from './default-tool-ext/event-ext.js';
 import type { DefaultToolExt } from './default-tool-ext/ext.js';

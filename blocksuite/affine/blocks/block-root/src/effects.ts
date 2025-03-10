@@ -1,3 +1,5 @@
+import { effects as gfxCanvasTextEffects } from '@blocksuite/affine-gfx-text/effects';
+
 import { EdgelessAutoCompletePanel } from './edgeless/components/auto-complete/auto-complete-panel.js';
 import { EdgelessAutoComplete } from './edgeless/components/auto-complete/edgeless-auto-complete.js';
 import { EdgelessToolIconButton } from './edgeless/components/buttons/tool-icon-button.js';
@@ -36,7 +38,6 @@ import { EdgelessConnectorLabelEditor } from './edgeless/components/text/edgeles
 import { EdgelessFrameTitleEditor } from './edgeless/components/text/edgeless-frame-title-editor.js';
 import { EdgelessGroupTitleEditor } from './edgeless/components/text/edgeless-group-title-editor.js';
 import { EdgelessShapeTextEditor } from './edgeless/components/text/edgeless-shape-text-editor.js';
-import { EdgelessTextEditor } from './edgeless/components/text/edgeless-text-editor.js';
 import { EdgelessBrushMenu } from './edgeless/components/toolbar/brush/brush-menu.js';
 import { EdgelessBrushToolButton } from './edgeless/components/toolbar/brush/brush-tool-button.js';
 import { EdgelessSlideMenu } from './edgeless/components/toolbar/common/slide-menu.js';
@@ -122,6 +123,7 @@ export function effects() {
 
   // Register components by category
   registerRootComponents();
+  registerGfxEffects();
   registerWidgets();
   registerEdgelessToolbarComponents();
   registerEdgelessPanelComponents();
@@ -137,6 +139,10 @@ function registerRootComponents() {
     'affine-edgeless-root-preview',
     EdgelessRootPreviewBlockComponent
   );
+}
+
+function registerGfxEffects() {
+  gfxCanvasTextEffects();
 }
 
 function registerWidgets() {
@@ -258,7 +264,6 @@ function registerEdgelessEditorComponents() {
     'edgeless-frame-title-editor',
     EdgelessFrameTitleEditor
   );
-  customElements.define('edgeless-text-editor', EdgelessTextEditor);
 }
 
 function registerMiscComponents() {
@@ -348,7 +353,6 @@ declare global {
     'edgeless-frame-title-editor': EdgelessFrameTitleEditor;
     'edgeless-group-title-editor': EdgelessGroupTitleEditor;
     'edgeless-shape-text-editor': EdgelessShapeTextEditor;
-    'edgeless-text-editor': EdgelessTextEditor;
     'edgeless-toolbar-widget': EdgelessToolbarWidget;
     'presentation-toolbar': PresentationToolbar;
     'edgeless-brush-menu': EdgelessBrushMenu;

@@ -9,10 +9,9 @@ import { BaseTool, type GfxController } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import * as Y from 'yjs';
 
-import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
-import { mountTextElementEditor } from '../utils/text.js';
+import { mountTextElementEditor } from './mount-text-editor';
 
-export function addText(gfx: GfxController, event: PointerEventState) {
+function addText(gfx: GfxController, event: PointerEventState) {
   const [x, y] = gfx.viewport.toModelCoord(event.x, event.y);
   const selected = gfx.getElementByPoint(x, y);
 
@@ -31,10 +30,11 @@ export function addText(gfx: GfxController, event: PointerEventState) {
     gfx.doc.captureSync();
     const textElement = gfx.getElementById(id) as TextElementModel;
     const edgelessView = gfx.std.view.getBlock(gfx.std.store.root!.id);
-    mountTextElementEditor(
-      textElement,
-      edgelessView as EdgelessRootBlockComponent
-    );
+    if (!edgelessView) {
+      console.error('edgeless view is not found.');
+      return;
+    }
+    mountTextElementEditor(textElement, edgelessView);
   }
 }
 
@@ -49,6 +49,7 @@ export class TextTool extends BaseTool {
     if (textFlag) {
       const [x, y] = this.gfx.viewport.toModelCoord(e.x, e.y);
       this.gfx.std.command.exec(insertEdgelessTextCommand, { x, y });
+      // @ts-expect-error TODO: refactor gfx tool
       this.gfx.tool.setTool('default');
     } else {
       addText(this.gfx, e);

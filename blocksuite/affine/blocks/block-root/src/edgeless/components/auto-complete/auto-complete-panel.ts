@@ -4,6 +4,7 @@ import {
   EdgelessCRUDIdentifier,
 } from '@blocksuite/affine-block-surface';
 import { FontFamilyIcon } from '@blocksuite/affine-components/icons';
+import { mountTextElementEditor } from '@blocksuite/affine-gfx-text';
 import type {
   Connection,
   ConnectorElementModel,
@@ -56,10 +57,7 @@ import {
   SHAPE_OVERLAY_HEIGHT,
   SHAPE_OVERLAY_WIDTH,
 } from '../../utils/consts.js';
-import {
-  mountShapeTextEditor,
-  mountTextElementEditor,
-} from '../../utils/text.js';
+import { mountShapeTextEditor } from '../../utils/text.js';
 import { ShapeComponentConfig } from '../toolbar/shape/shape-menu-config.js';
 import {
   type AUTO_COMPLETE_TARGET_TYPE,

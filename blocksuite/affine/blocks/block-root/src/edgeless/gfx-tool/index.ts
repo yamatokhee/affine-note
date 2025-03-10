@@ -9,4 +9,3 @@ export { NoteTool, type NoteToolOption } from './note-tool.js';
 export { PanTool, type PanToolOption } from './pan-tool.js';
 export { ShapeTool, type ShapeToolOption } from './shape-tool.js';
 export { TemplateTool } from './template-tool.js';
-export { TextTool } from './text-tool.js';
