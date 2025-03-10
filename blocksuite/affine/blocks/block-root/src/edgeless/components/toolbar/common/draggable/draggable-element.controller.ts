@@ -1,6 +1,7 @@
 import {
   EditPropsStore,
   ThemeProvider,
+  ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
 import { Bound } from '@blocksuite/global/gfx';
 import {
@@ -240,7 +241,8 @@ export class EdgelessDraggableElementController<T>
     // Cannot get edgeless.host.getBoundingClientRect().width in Safari (Always 0)
     const edgelessRect = edgeless.host.getBoundingClientRect();
     if (edgelessRect.width === 0) {
-      edgelessRect.width = edgeless.viewport.clientWidth;
+      const { viewport } = edgeless.std.get(ViewportElementProvider);
+      edgelessRect.width = viewport.clientWidth;
     }
 
     this.info = {

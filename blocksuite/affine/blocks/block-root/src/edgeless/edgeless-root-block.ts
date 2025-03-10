@@ -22,7 +22,6 @@ import {
   ThemeProvider,
   ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
-import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
   isTouchPadPinchEvent,
   matchModels,
@@ -156,14 +155,6 @@ export class EdgelessRootBlockComponent extends BlockComponent<
     return this.model.children.find(
       child => child.flavour === 'affine:surface'
     ) as SurfaceBlockModel;
-  }
-
-  /**
-   * Don't confuse with `gfx.viewport` which is edgeless-only concept.
-   * This refers to the wrapper element of the EditorHost.
-   */
-  get viewport(): Viewport {
-    return this.std.get(ViewportElementProvider).viewport;
   }
 
   get viewportElement(): HTMLElement {

@@ -55,6 +55,8 @@ const styles = css`
   }
 `;
 
+export const AFFINE_FRAME_PREVIEW = 'frame-preview';
+
 export class FramePreview extends WithDisposable(ShadowlessElement) {
   static override styles = styles;
 

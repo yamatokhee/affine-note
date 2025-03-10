@@ -11,6 +11,7 @@ import {
   EditPropsStore,
   TelemetryProvider,
   ThemeProvider,
+  ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
 import { SignalWatcher } from '@blocksuite/global/lit';
 import { css, html, LitElement, nothing } from 'lit';
@@ -253,7 +254,8 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
             return;
           }
           const { x, y } = service.gfx.tool.lastMousePos$.peek();
-          const { left, top } = this.edgeless.viewport;
+          const { viewport } = this.edgeless.std.get(ViewportElementProvider);
+          const { left, top } = viewport;
           const clientPos = { x: x + left, y: y + top };
           this.draggableController.clickToDrag(el, clientPos);
         },

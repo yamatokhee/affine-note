@@ -15,10 +15,10 @@ import type { ExtensionType } from '@blocksuite/store';
 import { literal, unsafeStatic } from 'lit/static-html.js';
 
 import { CommonSpecs } from '../common-specs/index.js';
+import { edgelessNavigatorBgWidget } from '../widgets/edgeless-navigator-bg/index.js';
 import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from '../widgets/edgeless-zoom-toolbar/index.js';
 import { EDGELESS_ELEMENT_TOOLBAR_WIDGET } from '../widgets/element-toolbar/index.js';
 import { NOTE_SLICER_WIDGET } from './components/note-slicer/index.js';
-import { EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET } from './components/presentation/edgeless-navigator-black-background.js';
 import { EDGELESS_DRAGGING_AREA_WIDGET } from './components/rects/edgeless-dragging-area-rect.js';
 import { EDGELESS_SELECTED_RECT_WIDGET } from './components/rects/edgeless-selected-rect.js';
 import { EDGELESS_TOOLBAR_WIDGET } from './components/toolbar/edgeless-toolbar.js';
@@ -43,11 +43,6 @@ export const noteSlicerWidget = WidgetViewExtension(
   'affine:page',
   NOTE_SLICER_WIDGET,
   literal`${unsafeStatic(NOTE_SLICER_WIDGET)}`
-);
-export const edgelessNavigatorBlackBackgroundWidget = WidgetViewExtension(
-  'affine:page',
-  EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET,
-  literal`${unsafeStatic(EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET)}`
 );
 export const edgelessSelectedRectWidget = WidgetViewExtension(
   'affine:page',
@@ -86,7 +81,7 @@ export const EdgelessRootBlockSpec: ExtensionType[] = [
   autoConnectWidget,
   edgelessDraggingAreaWidget,
   noteSlicerWidget,
-  edgelessNavigatorBlackBackgroundWidget,
+  edgelessNavigatorBgWidget,
   edgelessSelectedRectWidget,
   edgelessToolbarWidget,
 ];

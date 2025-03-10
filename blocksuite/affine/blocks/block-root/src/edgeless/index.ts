@@ -1,4 +1,3 @@
-export { FramePreview } from './components/frame/frame-preview.js';
 export { EdgelessTemplatePanel } from './components/toolbar/template/template-panel.js';
 export * from './components/toolbar/template/template-type.js';
 export * from './edgeless-root-block.js';

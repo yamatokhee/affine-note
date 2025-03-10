@@ -11,6 +11,7 @@ import {
   AFFINE_FRAME_TITLE_EDITOR,
   FrameCardTitleEditor,
 } from './card/frame-card-title-editor';
+import { AFFINE_FRAME_PREVIEW, FramePreview } from './card/frame-preview';
 import { AFFINE_FRAME_PANEL, FramePanel } from './frame-panel';
 import {
   AFFINE_FRAME_PANEL_HEADER,
@@ -29,4 +30,5 @@ export function effects() {
   customElements.define(AFFINE_FRAME_PANEL_BODY, FramePanelBody);
   customElements.define(AFFINE_FRAME_PANEL_HEADER, FramePanelHeader);
   customElements.define(AFFINE_FRAMES_SETTING_MENU, FramesSettingMenu);
+  customElements.define(AFFINE_FRAME_PREVIEW, FramePreview);
 }

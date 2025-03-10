@@ -6,6 +6,7 @@ import type {
 import {
   EditPropsStore,
   ThemeProvider,
+  ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import type { Bound } from '@blocksuite/global/gfx';
@@ -309,7 +310,8 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
           this.setEdgelessTool({ type: 'empty' });
           const icon = this.mindmapElement;
           const { x, y } = service.gfx.tool.lastMousePos$.peek();
-          const { left, top } = this.edgeless.viewport;
+          const { viewport } = this.edgeless.std.get(ViewportElementProvider);
+          const { left, top } = viewport;
           const clientPos = { x: x + left, y: y + top };
           this.draggableController.clickToDrag(icon, clientPos);
         },

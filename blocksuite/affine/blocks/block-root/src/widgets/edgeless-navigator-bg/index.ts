@@ -1,20 +1,17 @@
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import type { FrameBlockModel, RootBlockModel } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
-import { WidgetComponent } from '@blocksuite/block-std';
+import { WidgetComponent, WidgetViewExtension } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import { effect } from '@preact/signals-core';
 import { css, html, nothing } from 'lit';
 import { state } from 'lit/decorators.js';
-
-import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
+import { literal, unsafeStatic } from 'lit/static-html.js';
 
 export const EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET =
   'edgeless-navigator-black-background';
-export class EdgelessNavigatorBlackBackgroundWidget extends WidgetComponent<
-  RootBlockModel,
-  EdgelessRootBlockComponent
-> {
+export class EdgelessNavigatorBlackBackgroundWidget extends WidgetComponent<RootBlockModel> {
   static override styles = css`
     .edgeless-navigator-black-background {
       background-color: black;
@@ -31,6 +28,10 @@ export class EdgelessNavigatorBlackBackgroundWidget extends WidgetComponent<
     return this.std.get(GfxControllerIdentifier);
   }
 
+  private get _slots() {
+    return this.std.get(EdgelessLegacySlotIdentifier);
+  }
+
   private _tryLoadBlackBackground() {
     const value = this.std
       .get(EditPropsStore)
@@ -39,15 +40,15 @@ export class EdgelessNavigatorBlackBackgroundWidget extends WidgetComponent<
   }
 
   override firstUpdated() {
-    const { _disposables, gfx, block } = this;
+    const { _disposables, gfx } = this;
     _disposables.add(
-      block.slots.navigatorFrameChanged.on(frame => {
+      this._slots.navigatorFrameChanged.on(frame => {
         this.frame = frame;
       })
     );
 
     _disposables.add(
-      block.slots.navigatorSettingUpdated.on(({ blackBackground }) => {
+      this._slots.navigatorSettingUpdated.on(({ blackBackground }) => {
         if (blackBackground !== undefined) {
           this.std
             .get(EditPropsStore)
@@ -57,7 +58,7 @@ export class EdgelessNavigatorBlackBackgroundWidget extends WidgetComponent<
 
           this.show =
             blackBackground &&
-            block.gfx.tool.currentToolOption$.peek().type === 'frameNavigator';
+            this.gfx.tool.currentToolOption$.peek().type === 'frameNavigator';
         }
       })
     );
@@ -75,7 +76,7 @@ export class EdgelessNavigatorBlackBackgroundWidget extends WidgetComponent<
     );
 
     _disposables.add(
-      block.slots.fullScreenToggled.on(
+      this._slots.fullScreenToggled.on(
         () =>
           setTimeout(() => {
             this.requestUpdate();
@@ -114,3 +115,9 @@ export class EdgelessNavigatorBlackBackgroundWidget extends WidgetComponent<
   @state()
   private accessor show = false;
 }
+
+export const edgelessNavigatorBgWidget = WidgetViewExtension(
+  'affine:page',
+  EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET,
+  literal`${unsafeStatic(EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET)}`
+);

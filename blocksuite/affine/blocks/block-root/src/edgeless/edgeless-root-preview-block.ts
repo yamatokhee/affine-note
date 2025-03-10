@@ -1,4 +1,5 @@
 import {
+  EdgelessCRUDIdentifier,
   getBgGridGap,
   type SurfaceBlockComponent,
   type SurfaceBlockModel,
@@ -16,7 +17,10 @@ import {
   type GfxBlockComponent,
   SurfaceSelection,
 } from '@blocksuite/block-std';
-import type { GfxViewportElement } from '@blocksuite/block-std/gfx';
+import {
+  GfxControllerIdentifier,
+  type GfxViewportElement,
+} from '@blocksuite/block-std/gfx';
 import { css, html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -87,6 +91,10 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
     return this.service?.uiEventDispatcher;
   }
 
+  private get _gfx() {
+    return this.std.get(GfxControllerIdentifier);
+  }
+
   get surfaceBlockModel() {
     return this.model.children.find(
       child => child.flavour === 'affine:surface'
@@ -118,7 +126,7 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
     });
 
     this._disposables.add(
-      this.service.layer.slots.layerUpdated.on(() => updateLayers())
+      this._gfx.layer.slots.layerUpdated.on(() => updateLayers())
     );
   }
 
@@ -127,7 +135,7 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
 
     const onPixelRatioChange = () => {
       if (media) {
-        this.service.viewport.onResize();
+        this._gfx.viewport.onResize();
         media.removeEventListener('change', onPixelRatioChange);
       }
 
@@ -144,13 +152,8 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
 
   private _initResizeEffect() {
     const resizeObserver = new ResizeObserver((_: ResizeObserverEntry[]) => {
-      // FIXME: find a better way to get rid of empty check
-      if (!this.service || !this.service.selection || !this.service.viewport) {
-        console.error('Service is not ready');
-        return;
-      }
-      this.service.selection.set(this.service.selection.surfaceSelections);
-      this.service.viewport.onResize();
+      this._gfx.selection.set(this._gfx.selection.surfaceSelections);
+      this._gfx.viewport.onResize();
     });
 
     try {
@@ -177,6 +180,10 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
     return editorSetting?.peek().edgelessDisableScheduleUpdate ?? false;
   }
 
+  private get _crud() {
+    return this.std.get(EdgelessCRUDIdentifier);
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -186,7 +193,7 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
       );
       if (!surface) return;
 
-      const el = this.service.crud.getElementById(surface.elements[0]);
+      const el = this._crud.getElementById(surface.elements[0]);
       if (isCanvasElement(el)) {
         return true;
       }
@@ -212,7 +219,7 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
     this._initLayerUpdateEffect();
 
     this._disposables.add(
-      this.service.viewport.viewportUpdated.on(() => {
+      this._gfx.viewport.viewportUpdated.on(() => {
         this._refreshLayerViewport();
       })
     );
@@ -229,10 +236,10 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
       <div class="edgeless-background edgeless-container" style=${background}>
         <gfx-viewport
           .enableChildrenSchedule=${!this._disableScheduleUpdate}
-          .viewport=${this.service.viewport}
+          .viewport=${this._gfx.viewport}
           .getModelsInViewport=${() => {
-            const blocks = this.service.gfx.grid.search(
-              this.service.viewport.viewportBounds,
+            const blocks = this._gfx.grid.search(
+              this._gfx.viewport.viewportBounds,
               {
                 useSet: true,
                 filter: ['block'],

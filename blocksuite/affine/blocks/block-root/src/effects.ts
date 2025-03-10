@@ -25,10 +25,6 @@ import { EdgelessShapeStylePanel } from './edgeless/components/panel/shape-style
 import { EdgelessSizePanel } from './edgeless/components/panel/size-panel.js';
 import { StrokeStylePanel } from './edgeless/components/panel/stroke-style-panel.js';
 import {
-  EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET,
-  EdgelessNavigatorBlackBackgroundWidget,
-} from './edgeless/components/presentation/edgeless-navigator-black-background.js';
-import {
   EDGELESS_DRAGGING_AREA_WIDGET,
   EdgelessDraggingAreaRectWidget,
 } from './edgeless/components/rects/edgeless-dragging-area-rect.js';
@@ -80,10 +76,13 @@ import {
   EDGELESS_TOOLBAR_WIDGET,
   EdgelessRootBlockComponent,
   EdgelessRootPreviewBlockComponent,
-  FramePreview,
   PageRootBlockComponent,
   PreviewRootBlockComponent,
 } from './index.js';
+import {
+  EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET,
+  EdgelessNavigatorBlackBackgroundWidget,
+} from './widgets/edgeless-navigator-bg/index.js';
 import {
   AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET,
   AffineEdgelessZoomToolbarWidget,
@@ -268,7 +267,6 @@ function registerMiscComponents() {
 
   // Loading and preview components
   customElements.define('loader-element', Loader);
-  customElements.define('frame-preview', FramePreview);
   customElements.define('affine-template-loading', AffineTemplateLoading);
 
   // Toolbar and UI components
@@ -327,7 +325,6 @@ declare global {
     'edgeless-tool-icon-button': EdgelessToolIconButton;
     'edgeless-toolbar-button': EdgelessToolbarButton;
     'edgeless-connector-handle': EdgelessConnectorHandle;
-    'frame-preview': FramePreview;
     'note-slicer': NoteSlicer;
     'edgeless-align-panel': EdgelessAlignPanel;
     'card-style-panel': CardStylePanel;
