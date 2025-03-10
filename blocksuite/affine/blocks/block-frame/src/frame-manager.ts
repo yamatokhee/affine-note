@@ -121,7 +121,7 @@ export class FrameOverlay extends Overlay {
     this._innerElements.forEach(element => {
       const [x, y, w, h] = deserializeXYWH(element.xywh);
       ctx.translate(x + w / 2, y + h / 2);
-      ctx.rotate(element.rotate);
+      ctx.rotate((element.rotate * Math.PI) / 180);
       ctx.roundRect(-w / 2, -h / 2, w, h, radius);
       ctx.translate(-x - w / 2, -y - h / 2);
       ctx.stroke();
