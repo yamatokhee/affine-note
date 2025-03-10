@@ -1,5 +1,8 @@
 import { Overlay } from '@blocksuite/affine-block-surface';
-import { ConnectorElementModel } from '@blocksuite/affine-model';
+import {
+  ConnectorElementModel,
+  MindmapElementModel,
+} from '@blocksuite/affine-model';
 import type { GfxModel } from '@blocksuite/block-std/gfx';
 import { almostEqual, Bound, Point } from '@blocksuite/global/gfx';
 
@@ -64,7 +67,13 @@ export class SnapManager extends Overlay {
    * corners, etc. It essentially represents the guidelines for the positioning
    * and alignment within the individual graphic elements.
    */
-  private _intraGraphicAlignLines: [Point, Point][] = [];
+  private _intraGraphicAlignLines: {
+    horizontal: [Point, Point][];
+    vertical: [Point, Point][];
+  } = {
+    horizontal: [],
+    vertical: [],
+  };
 
   override clear() {
     super.clear();
@@ -74,7 +83,10 @@ export class SnapManager extends Overlay {
       horizontal: [],
       all: [],
     };
-    this._intraGraphicAlignLines = [];
+    this._intraGraphicAlignLines = {
+      horizontal: [],
+      vertical: [],
+    };
     this._distributedAlignLines = [];
     this._skippedElements.clear();
   }
@@ -520,14 +532,12 @@ export class SnapManager extends Overlay {
     const top = Math.min(bound.minY + dy, other.minY);
     const down = Math.max(bound.maxY + dy, other.maxY);
 
-    this._intraGraphicAlignLines.push(
-      ...distanceIndices.map(
-        idx =>
-          [
-            new Point(alignXPosition[idx], top),
-            new Point(alignXPosition[idx], down),
-          ] as [Point, Point]
-      )
+    this._intraGraphicAlignLines.horizontal = distanceIndices.map(
+      idx =>
+        [
+          new Point(alignXPosition[idx], top),
+          new Point(alignXPosition[idx], down),
+        ] as [Point, Point]
     );
   }
 
@@ -567,14 +577,12 @@ export class SnapManager extends Overlay {
     const left = Math.min(bound.minX + dx, other.minX);
     const right = Math.max(bound.maxX + dx, other.maxX);
 
-    this._intraGraphicAlignLines.push(
-      ...alignPositionIndices.map(
-        idx =>
-          [
-            new Point(left, alignXPosition[idx]),
-            new Point(right, alignXPosition[idx]),
-          ] as [Point, Point]
-      )
+    this._intraGraphicAlignLines.vertical = alignPositionIndices.map(
+      idx =>
+        [
+          new Point(left, alignXPosition[idx]),
+          new Point(right, alignXPosition[idx]),
+        ] as [Point, Point]
     );
   }
 
@@ -584,18 +592,29 @@ export class SnapManager extends Overlay {
 
     const { viewport } = this.gfx;
 
-    this._intraGraphicAlignLines = [];
+    this._intraGraphicAlignLines = {
+      horizontal: [],
+      vertical: [],
+    };
     this._distributedAlignLines = [];
     this._updateAlignCandidates(bound);
 
     for (const other of this._referenceBounds.all) {
       const closestDistances = this._calculateClosestDistances(bound, other);
 
-      if (closestDistances.horiz) {
+      if (
+        closestDistances.horiz &&
+        (!this._intraGraphicAlignLines.horizontal.length ||
+          Math.abs(closestDistances.horiz.distance) < Math.abs(rst.dx))
+      ) {
         this._updateXAlignPoint(rst, bound, other, closestDistances);
       }
 
-      if (closestDistances.vert) {
+      if (
+        closestDistances.vert &&
+        (!this._intraGraphicAlignLines.vertical.length ||
+          Math.abs(closestDistances.vert.distance) < Math.abs(rst.dy))
+      ) {
         this._updateYAlignPoint(rst, bound, other, closestDistances);
       }
     }
@@ -616,7 +635,8 @@ export class SnapManager extends Overlay {
 
   override render(ctx: CanvasRenderingContext2D) {
     if (
-      this._intraGraphicAlignLines.length === 0 &&
+      this._intraGraphicAlignLines.vertical.length === 0 &&
+      this._intraGraphicAlignLines.horizontal.length === 0 &&
       this._distributedAlignLines.length === 0
     )
       return;
@@ -627,7 +647,10 @@ export class SnapManager extends Overlay {
     ctx.lineWidth = strokeWidth;
     ctx.beginPath();
 
-    this._intraGraphicAlignLines.forEach(line => {
+    [
+      ...this._intraGraphicAlignLines.horizontal,
+      ...this._intraGraphicAlignLines.vertical,
+    ].forEach(line => {
       let d = '';
       if (line[0].x === line[1].x) {
         const x = line[0].x;
@@ -666,6 +689,13 @@ export class SnapManager extends Overlay {
     });
   }
 
+  private _isSkippedElement(element: GfxModel) {
+    return (
+      element instanceof ConnectorElementModel ||
+      element.group instanceof MindmapElementModel
+    );
+  }
+
   private _updateAlignCandidates(movingBound: Bound) {
     movingBound = movingBound.expand(ALIGN_THRESHOLD * this.gfx.viewport.zoom);
 
@@ -695,15 +725,13 @@ export class SnapManager extends Overlay {
     const allBounds: Bound[] = [];
 
     vertCandidates.forEach(candidate => {
-      if (skipped.has(candidate) || candidate instanceof ConnectorElementModel)
-        return;
+      if (skipped.has(candidate) || this._isSkippedElement(candidate)) return;
       verticalBounds.push(candidate.elementBound);
       allBounds.push(candidate.elementBound);
     });
 
     horizCandidates.forEach(candidate => {
-      if (skipped.has(candidate) || candidate instanceof ConnectorElementModel)
-        return;
+      if (skipped.has(candidate) || this._isSkippedElement(candidate)) return;
       horizBounds.push(candidate.elementBound);
       allBounds.push(candidate.elementBound);
     });
