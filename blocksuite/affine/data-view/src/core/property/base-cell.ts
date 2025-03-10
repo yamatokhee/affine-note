@@ -13,6 +13,10 @@ export abstract class BaseCellRenderer<
   extends SignalWatcher(WithDisposable(ShadowlessElement))
   implements DataViewCellLifeCycle, CellRenderProps<Data, Value>
 {
+  get expose() {
+    return this;
+  }
+
   @property({ attribute: false })
   accessor cell!: Cell<Value, Data>;
 

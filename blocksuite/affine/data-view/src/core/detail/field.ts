@@ -11,11 +11,10 @@ import {
   MoveLeftIcon,
   MoveRightIcon,
 } from '@blocksuite/icons/lit';
-import { computed } from '@preact/signals-core';
+import { computed, signal } from '@preact/signals-core';
 import { css } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { createRef } from 'lit/directives/ref.js';
 import { html } from 'lit/static-html.js';
 
 import { inputConfig, typeConfig } from '../common/property-menu.js';
@@ -109,7 +108,7 @@ export class RecordField extends SignalWatcher(
     }
   `;
 
-  private readonly _cell = createRef<DataViewCellLifeCycle>();
+  private readonly _cell = signal<DataViewCellLifeCycle>();
 
   _click = (e: MouseEvent) => {
     e.stopPropagation();

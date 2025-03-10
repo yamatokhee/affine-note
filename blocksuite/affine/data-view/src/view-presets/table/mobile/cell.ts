@@ -1,9 +1,8 @@
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
-import { computed, effect } from '@preact/signals-core';
+import { computed, effect, signal } from '@preact/signals-core';
 import { css } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { createRef } from 'lit/directives/ref.js';
 
 import {
   type CellRenderProps,
@@ -36,7 +35,7 @@ export class MobileTableCell extends SignalWatcher(
     }
   `;
 
-  private readonly _cell = createRef<DataViewCellLifeCycle>();
+  private readonly _cell = signal<DataViewCellLifeCycle>();
 
   @property({ attribute: false })
   accessor column!: TableColumn;

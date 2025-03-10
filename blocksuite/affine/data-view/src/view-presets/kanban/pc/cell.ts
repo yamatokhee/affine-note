@@ -2,9 +2,9 @@
 
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
+import { signal } from '@preact/signals-core';
 import { css } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { createRef } from 'lit/directives/ref.js';
 import { html } from 'lit/static-html.js';
 
 import type {
@@ -59,7 +59,7 @@ export class KanbanCell extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private readonly _cell = createRef<DataViewCellLifeCycle>();
+  private readonly _cell = signal<DataViewCellLifeCycle>();
 
   selectCurrentCell = (editing: boolean) => {
     const selectionView = this.closest(

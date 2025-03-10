@@ -3,10 +3,9 @@
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
-import { computed, effect } from '@preact/signals-core';
+import { computed, effect, signal } from '@preact/signals-core';
 import { css } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { createRef } from 'lit/directives/ref.js';
 import { html } from 'lit/static-html.js';
 
 import type {
@@ -51,7 +50,7 @@ export class MobileKanbanCell extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private readonly _cell = createRef<DataViewCellLifeCycle>();
+  private readonly _cell = signal<DataViewCellLifeCycle>();
 
   isEditing$ = computed(() => {
     const selection = this.kanban?.props.selection$.value;
