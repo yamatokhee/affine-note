@@ -237,18 +237,18 @@ export class RecordField extends SignalWatcher(
 
     const props: CellRenderProps = {
       cell: this.cell$.value,
-      isEditing: this.editing,
+      isEditing$: this.isEditing$,
       selectCurrentCell: this.changeEditing,
     };
     const renderer = this.column.renderer$.value;
     if (!renderer) {
       return;
     }
-    const { view, edit } = renderer;
+    const { view } = renderer;
     const contentClass = classMap({
       'field-content': true,
-      empty: !this.editing && this.cell$.value.isEmpty$.value,
-      'is-editing': this.editing,
+      empty: !this.isEditing$.value && this.cell$.value.isEmpty$.value,
+      'is-editing': this.isEditing$.value,
       'is-focus': this.isFocus,
     });
     return html`
@@ -261,7 +261,7 @@ export class RecordField extends SignalWatcher(
         </div>
       </div>
       <div @click="${this._click}" class="${contentClass}">
-        ${renderUniLit(this.editing && edit ? edit : view, props, {
+        ${renderUniLit(view, props, {
           ref: this._cell,
           class: 'kanban-cell',
         })}
@@ -269,8 +269,7 @@ export class RecordField extends SignalWatcher(
     `;
   }
 
-  @state()
-  accessor editing = false;
+  isEditing$ = signal(false);
 
   @state()
   accessor isFocus = false;

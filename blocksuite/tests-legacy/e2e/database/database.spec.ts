@@ -40,9 +40,8 @@ import {
   clickDatabaseOutside,
   focusDatabaseHeader,
   focusDatabaseSearch,
-  getDatabaseBodyCell,
+  getDatabaseCell,
   getDatabaseHeaderColumn,
-  getFirstColumnCell,
   initDatabaseColumn,
   switchColumnType,
 } from './actions.js';
@@ -66,9 +65,9 @@ test('edit database block title and create new rows', async ({ page }) => {
   await assertBlockProps(page, '2', {
     title: 'hello',
   });
-  await undoByClick(page);
+  await undoByKeyboard(page);
   await assertBlockProps(page, '2', {
-    title: 'Database 1',
+    title: '',
   });
   await initDatabaseRowWithData(page, '');
   await initDatabaseRowWithData(page, '');
@@ -103,7 +102,10 @@ test('should modify the value when the input loses focus', async ({ page }) => {
   await initDatabaseDynamicRowWithData(page, '1', true);
 
   await clickDatabaseOutside(page);
-  const cell = getFirstColumnCell(page, 'number');
+  const cell = getDatabaseCell(page, {
+    rowIndex: 0,
+    columnType: 'number',
+  });
   const text = await cell.textContent();
   expect(text?.trim()).toBe('1');
 });
@@ -116,13 +118,17 @@ test('should rich-text column support soft enter', async ({ page }) => {
   await switchColumnType(page, 'Text');
   await initDatabaseDynamicRowWithData(page, '123', true);
 
-  const cell = getFirstColumnCell(page, 'affine-database-rich-text');
-  await cell.click();
+  // const cell = getDatabaseCell(page, {
+  //   rowIndex: 0,
+  //   columnType: 'rich-text',
+  // });
+  // await cell.click();
+  await pressEnter(page);
   await pressArrowLeft(page);
   await pressEnter(page);
   await assertDatabaseCellRichTexts(page, { text: '123' });
 
-  await cell.click();
+  await pressEnter(page);
   await pressArrowRight(page);
   await pressArrowLeft(page);
   await pressShiftEnter(page);
@@ -139,10 +145,13 @@ test('should the multi-select mode work correctly', async ({ page }) => {
   await pressEscape(page);
   await initDatabaseDynamicRowWithData(page, '2');
   await pressEscape(page);
-  const cell = getFirstColumnCell(page, 'select-selected');
-  expect(await cell.count()).toBe(2);
-  expect(await cell.nth(0).innerText()).toBe('1');
-  expect(await cell.nth(1).innerText()).toBe('2');
+  const tags = getDatabaseCell(page, {
+    rowIndex: 0,
+    columnType: 'multi-select',
+  }).getByTestId('tag-selected');
+  expect(await tags.count()).toBe(2);
+  expect(await tags.nth(0).innerText()).toBe('1');
+  expect(await tags.nth(1).innerText()).toBe('2');
 });
 
 test('should database search work', async ({ page }) => {
@@ -375,7 +384,10 @@ test('should title column support quick changing of column type', async ({
   await typeIcon.click();
   await waitNextFrame(page);
   await clickColumnType(page, 'Select');
-  const cell = getFirstColumnCell(page, 'select-selected');
+  const cell = getDatabaseCell(page, {
+    rowIndex: 0,
+    columnType: 'select',
+  });
   expect(await cell.count()).toBe(1);
 });
 
@@ -513,12 +525,19 @@ test.describe('readonly mode', () => {
     await switchColumnType(page, 'Text');
     await initDatabaseDynamicRowWithData(page, '', true);
 
-    const cell = getFirstColumnCell(page, 'affine-database-rich-text');
+    const cell = getDatabaseCell(page, {
+      rowIndex: 0,
+      columnType: 'rich-text',
+    });
     await cell.click();
+    await pressEnter(page);
     await type(page, '123');
+    await pressEnter(page);
     await assertDatabaseCellRichTexts(page, { text: '123' });
 
     await switchReadonly(page);
+    await waitNextFrame(page);
+    await pressEnter(page);
     await pressBackspace(page);
     await type(page, '789');
     await assertDatabaseCellRichTexts(page, { text: '123' });
@@ -610,7 +629,10 @@ test.describe('readonly mode', () => {
     const database = page.locator('affine-database');
     await expect(database).toBeVisible();
 
-    const cell = getFirstColumnCell(page, 'affine-database-rich-text');
+    const cell = getDatabaseCell(page, {
+      rowIndex: 0,
+      columnType: 'rich-text',
+    });
     await cell.click();
 
     const focusBorder = database.locator(
@@ -635,11 +657,11 @@ test.describe('readonly mode', () => {
     const database = page.locator('affine-database');
     await expect(database).toBeVisible();
 
-    const startCell = getDatabaseBodyCell(page, {
+    const startCell = getDatabaseCell(page, {
       rowIndex: 0,
       columnIndex: 0,
     });
-    const endCell = getDatabaseBodyCell(page, {
+    const endCell = getDatabaseCell(page, {
       rowIndex: 0,
       columnIndex: 1,
     });

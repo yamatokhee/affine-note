@@ -2,7 +2,7 @@ import { ShadowlessElement } from '@blocksuite/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import { computed, effect, signal } from '@preact/signals-core';
 import { css } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 
 import {
   type CellRenderProps,
@@ -47,7 +47,7 @@ export class MobileTableCell extends SignalWatcher(
     return this.column.cellGet(this.rowId);
   });
 
-  isEditing$ = computed(() => {
+  isSelectionEditing$ = computed(() => {
     const selection = this.table?.props.selection$.value;
     if (selection?.selectionType !== 'area') {
       return false;
@@ -97,10 +97,6 @@ export class MobileTableCell extends SignalWatcher(
     return this.closest('mobile-table-group')?.group?.key;
   }
 
-  private get readonly() {
-    return this.column.readonly$.value;
-  }
-
   private get table() {
     return this.closest('mobile-data-view-table');
   }
@@ -110,18 +106,21 @@ export class MobileTableCell extends SignalWatcher(
     if (this.column.readonly$.value) return;
     this.disposables.add(
       effect(() => {
-        const isEditing = this.isEditing$.value;
+        const isEditing = this.isSelectionEditing$.value;
         if (isEditing) {
-          this.isEditing = true;
-          this._cell.value?.onEnterEditMode();
+          this.isEditing$.value = true;
+          const cell = this._cell.value;
+          requestAnimationFrame(() => {
+            cell?.afterEnterEditingMode();
+          });
         } else {
-          this._cell.value?.onExitEditMode();
-          this.isEditing = false;
+          this._cell.value?.beforeExitEditingMode();
+          this.isEditing$.value = false;
         }
       })
     );
     this.disposables.addFromEvent(this, 'click', () => {
-      if (!this.isEditing) {
+      if (!this.isEditing$.value) {
         this.selectCurrentCell(!this.column.readonly$.value);
       }
     });
@@ -132,17 +131,16 @@ export class MobileTableCell extends SignalWatcher(
     if (!renderer) {
       return;
     }
-    const { edit, view } = renderer;
-    const uni = !this.readonly && this.isEditing && edit != null ? edit : view;
-    this.view.lockRows(this.isEditing);
-    this.dataset['editing'] = `${this.isEditing}`;
+    const { view } = renderer;
+    this.view.lockRows(this.isEditing$.value);
+    this.dataset['editing'] = `${this.isEditing$.value}`;
     const props: CellRenderProps = {
       cell: this.cell$.value,
-      isEditing: this.isEditing,
+      isEditing$: this.isEditing$,
       selectCurrentCell: this.selectCurrentCell,
     };
 
-    return renderUniLit(uni, props, {
+    return renderUniLit(view, props, {
       ref: this._cell,
       style: {
         display: 'contents',
@@ -156,8 +154,7 @@ export class MobileTableCell extends SignalWatcher(
   @property({ attribute: false })
   accessor columnIndex!: number;
 
-  @state()
-  accessor isEditing = false;
+  isEditing$ = signal(false);
 
   @property({ attribute: false })
   accessor rowIndex!: number;

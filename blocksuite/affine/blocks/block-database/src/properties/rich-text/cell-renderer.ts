@@ -21,13 +21,16 @@ import { IS_MAC } from '@blocksuite/global/env';
 import type { DeltaInsert } from '@blocksuite/inline';
 import type { BlockSnapshot } from '@blocksuite/store';
 import { Text } from '@blocksuite/store';
-import { css } from 'lit';
-import { query } from 'lit/decorators.js';
-import { keyed } from 'lit/directives/keyed.js';
+import { computed, effect, signal } from '@preact/signals-core';
+import { ref } from 'lit/directives/ref.js';
 import { html } from 'lit/static-html.js';
 
 import { HostContextKey } from '../../context/host-context.js';
 import type { DatabaseBlockComponent } from '../../database-block.js';
+import {
+  richTextCellStyle,
+  richTextContainerStyle,
+} from './cell-renderer.css.js';
 import { richTextPropertyModelConfig } from './define.js';
 
 function toggleStyle(
@@ -78,61 +81,10 @@ function toggleStyle(
   inlineEditor.syncInlineRange();
 }
 
-abstract class BaseRichTextCell extends BaseCellRenderer<Text> {
-  static override styles = css`
-    affine-database-rich-text-cell,
-    affine-database-rich-text-cell-editing {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      user-select: none;
-    }
-
-    .affine-database-rich-text {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      outline: none;
-      font-size: var(--data-view-cell-text-size);
-      line-height: var(--data-view-cell-text-line-height);
-      word-break: break-all;
-    }
-
-    .affine-database-rich-text v-line {
-      display: flex !important;
-      align-items: center;
-      height: 100%;
-      width: 100%;
-    }
-
-    .affine-database-rich-text v-line > div {
-      flex-grow: 1;
-    }
-
-    .data-view-header-area-icon {
-      height: max-content;
-      display: flex;
-      align-items: center;
-      margin-right: 8px;
-      padding: 2px;
-      border-radius: 4px;
-      margin-top: 2px;
-      background-color: var(--affine-background-secondary-color);
-    }
-
-    .data-view-header-area-icon svg {
-      width: 14px;
-      height: 14px;
-      fill: var(--affine-icon-color);
-      color: var(--affine-icon-color);
-    }
-  `;
-
-  get inlineEditor() {
-    return this.richText?.inlineEditor;
-  }
+export class RichTextCell extends BaseCellRenderer<Text> {
+  inlineEditor$ = computed(() => {
+    return this.richText$.value?.inlineEditor;
+  });
 
   get inlineManager() {
     return this.view
@@ -146,118 +98,17 @@ abstract class BaseRichTextCell extends BaseCellRenderer<Text> {
     return databaseBlock?.topContenteditableElement;
   }
 
-  get attributeRenderer() {
-    return this.inlineManager?.getRenderer();
-  }
-
-  get attributesSchema() {
-    return this.inlineManager?.getSchema();
-  }
-
   get host() {
     return this.view.contextGet(HostContextKey);
   }
 
-  @query('rich-text')
-  accessor richText!: RichText;
-
-  @query('.affine-database-rich-text')
-  accessor _richTextElement!: HTMLElement;
-}
-
-export class RichTextCell extends BaseRichTextCell {
-  static override styles = css`
-    affine-database-rich-text-cell {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      user-select: none;
-    }
-
-    .affine-database-rich-text {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      outline: none;
-      font-size: var(--data-view-cell-text-size);
-      line-height: var(--data-view-cell-text-line-height);
-      word-break: break-all;
-    }
-
-    .affine-database-rich-text v-line {
-      display: flex !important;
-      align-items: center;
-      height: 100%;
-      width: 100%;
-    }
-
-    .affine-database-rich-text v-line > div {
-      flex-grow: 1;
-    }
-  `;
+  private readonly richText$ = signal<RichText>();
 
   private changeUserSelectAccordToReadOnly() {
     if (this && this instanceof HTMLElement) {
       this.style.userSelect = this.readonly ? 'text' : 'none';
     }
   }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.changeUserSelectAccordToReadOnly();
-  }
-
-  override render() {
-    if (!this.value || !(this.value instanceof Text)) {
-      return html`<div class="affine-database-rich-text"></div>`;
-    }
-    return keyed(
-      this.value,
-      html`<rich-text
-        .yText=${this.value}
-        .attributesSchema=${this.attributesSchema}
-        .attributeRenderer=${this.attributeRenderer}
-        .embedChecker=${this.inlineManager?.embedChecker}
-        .markdownMatches=${this.inlineManager?.markdownMatches}
-        .readonly=${true}
-        class="affine-database-rich-text inline-editor"
-      ></rich-text>`
-    );
-  }
-}
-
-export class RichTextCellEditing extends BaseRichTextCell {
-  static override styles = css`
-    affine-database-rich-text-cell-editing {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      min-width: 1px;
-      cursor: text;
-    }
-
-    .affine-database-rich-text {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      outline: none;
-    }
-
-    .affine-database-rich-text v-line {
-      display: flex !important;
-      align-items: center;
-      height: 100%;
-      width: 100%;
-    }
-
-    .affine-database-rich-text v-line > div {
-      flex-grow: 1;
-    }
-  `;
 
   private readonly _handleKeyDown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') {
@@ -280,7 +131,7 @@ export class RichTextCellEditing extends BaseRichTextCell {
       return;
     }
 
-    const inlineEditor = this.inlineEditor;
+    const inlineEditor = this.inlineEditor$.value;
     if (!inlineEditor) return;
 
     switch (event.key) {
@@ -331,17 +182,17 @@ export class RichTextCellEditing extends BaseRichTextCell {
 
   private readonly _initYText = (text?: string) => {
     const yText = new Text(text);
-    this.onChange(yText);
+    this.valueSetImmediate(yText);
   };
 
   private readonly _onSoftEnter = () => {
-    if (this.value && this.inlineEditor) {
-      const inlineRange = this.inlineEditor.getInlineRange();
+    if (this.value && this.inlineEditor$.value) {
+      const inlineRange = this.inlineEditor$.value.getInlineRange();
       if (!inlineRange) return;
 
-      const text = new Text(this.inlineEditor.yText);
+      const text = new Text(this.inlineEditor$.value.yText);
       text.replace(inlineRange.index, inlineRange.length, '\n');
-      this.inlineEditor.setInlineRange({
+      this.inlineEditor$.value.setInlineRange({
         index: inlineRange.index + 1,
         length: 0,
       });
@@ -349,7 +200,7 @@ export class RichTextCellEditing extends BaseRichTextCell {
   };
 
   private readonly _onCopy = (e: ClipboardEvent) => {
-    const inlineEditor = this.inlineEditor;
+    const inlineEditor = this.inlineEditor$.value;
     if (!inlineEditor) return;
 
     const inlineRange = inlineEditor.getInlineRange();
@@ -366,7 +217,7 @@ export class RichTextCellEditing extends BaseRichTextCell {
   };
 
   private readonly _onCut = (e: ClipboardEvent) => {
-    const inlineEditor = this.inlineEditor;
+    const inlineEditor = this.inlineEditor$.value;
     if (!inlineEditor) return;
 
     const inlineRange = inlineEditor.getInlineRange();
@@ -388,7 +239,9 @@ export class RichTextCellEditing extends BaseRichTextCell {
   };
 
   private readonly _onPaste = (e: ClipboardEvent) => {
-    const inlineEditor = this.inlineEditor;
+    e.preventDefault();
+    e.stopPropagation();
+    const inlineEditor = this.inlineEditor$.value;
     if (!inlineEditor) return;
 
     const inlineRange = inlineEditor.getInlineRange();
@@ -419,8 +272,7 @@ export class RichTextCellEditing extends BaseRichTextCell {
       ?.getData('text/plain')
       ?.replace(/\r?\n|\r/g, '\n');
     if (!text) return;
-    e.preventDefault();
-    e.stopPropagation();
+
     if (isValidUrl(text)) {
       const std = this.std;
       const result = std?.getOptional(ParseDocUrlProvider)?.parseDocUrl(text);
@@ -459,6 +311,7 @@ export class RichTextCellEditing extends BaseRichTextCell {
         });
       }
     } else {
+      console.log(text);
       inlineEditor.insertText(inlineRange, text);
       inlineEditor.setInlineRange({
         index: inlineRange.index + text.length,
@@ -469,67 +322,78 @@ export class RichTextCellEditing extends BaseRichTextCell {
 
   override connectedCallback() {
     super.connectedCallback();
-    if (!this.value || typeof this.value === 'string') {
-      this._initYText(this.value);
-    }
+    this.classList.add(richTextCellStyle);
+
+    this.changeUserSelectAccordToReadOnly();
 
     const selectAll = (e: KeyboardEvent) => {
       if (e.key === 'a' && (IS_MAC ? e.metaKey : e.ctrlKey)) {
         e.stopPropagation();
         e.preventDefault();
-        this.inlineEditor?.selectAll();
+        this.inlineEditor$.value?.selectAll();
       }
     };
     this.addEventListener('keydown', selectAll);
     this.disposables.addFromEvent(this, 'keydown', selectAll);
+    this.disposables.add(
+      effect(() => {
+        const editor = this.inlineEditor$.value;
+        if (editor) {
+          const disposable = editor.slots.keydown.on(this._handleKeyDown);
+          return () => disposable.dispose();
+        }
+        return;
+      })
+    );
+    this.disposables.add(
+      effect(() => {
+        const richText = this.richText$.value;
+        if (richText) {
+          richText.addEventListener('copy', this._onCopy, true);
+          richText.addEventListener('cut', this._onCut, true);
+          richText.addEventListener('paste', this._onPaste, true);
+          return () => {
+            richText.removeEventListener('copy', this._onCopy);
+            richText.removeEventListener('cut', this._onCut);
+            richText.removeEventListener('paste', this._onPaste);
+          };
+        }
+        return;
+      })
+    );
   }
 
-  override firstUpdated() {
-    this.richText?.updateComplete
-      .then(() => {
-        const inlineEditor = this.inlineEditor;
-        if (!inlineEditor) return;
+  override beforeEnterEditMode() {
+    if (!this.value || typeof this.value === 'string') {
+      this._initYText(this.value);
+    }
+    return true;
+  }
 
-        this.disposables.add(
-          inlineEditor.slots.keydown.on(this._handleKeyDown)
-        );
-
-        this.disposables.addFromEvent(
-          this._richTextElement!,
-          'copy',
-          this._onCopy
-        );
-        this.disposables.addFromEvent(
-          this._richTextElement!,
-          'cut',
-          this._onCut
-        );
-        this.disposables.addFromEvent(
-          this._richTextElement!,
-          'paste',
-          this._onPaste
-        );
-
-        inlineEditor.focusEnd();
-      })
-      .catch(console.error);
+  override afterEnterEditingMode() {
+    this.inlineEditor$.value?.focusEnd();
   }
 
   override render() {
-    return html`<rich-text
+    if (!this.value || !(this.value instanceof Text)) {
+      return html` <div class="${richTextContainerStyle}"></div>`;
+    }
+    return html` <rich-text
+      ${ref(this.richText$)}
       data-disable-ask-ai
       data-not-block-text
-      .yText=${this.value}
-      .inlineEventSource=${this.topContenteditableElement}
-      .attributesSchema=${this.attributesSchema}
-      .attributeRenderer=${this.attributeRenderer}
-      .embedChecker=${this.inlineManager?.embedChecker}
-      .markdownMatches=${this.inlineManager?.markdownMatches}
-      .verticalScrollContainerGetter=${() =>
+      .yText="${this.value}"
+      .inlineEventSource="${this.topContenteditableElement}"
+      .attributesSchema="${this.inlineManager?.getSchema()}"
+      .attributeRenderer="${this.inlineManager?.getRenderer()}"
+      .embedChecker="${this.inlineManager?.embedChecker}"
+      .markdownMatches="${this.inlineManager?.markdownMatches}"
+      .readonly="${!this.isEditing$.value || this.readonly}"
+      .verticalScrollContainerGetter="${() =>
         this.topContenteditableElement?.host
           ? getViewportElement(this.topContenteditableElement.host)
-          : null}
-      class="affine-database-rich-text inline-editor"
+          : null}"
+      class="${richTextContainerStyle} inline-editor"
     ></rich-text>`;
   }
 
@@ -538,7 +402,7 @@ export class RichTextCellEditing extends BaseRichTextCell {
   }
 
   insertDelta = (delta: DeltaInsert<AffineTextAttributes>) => {
-    const inlineEditor = this.inlineEditor;
+    const inlineEditor = this.inlineEditor$.value;
     const range = inlineEditor?.getInlineRange();
     if (!range || !delta.insert) {
       return;
@@ -553,7 +417,7 @@ export class RichTextCellEditing extends BaseRichTextCell {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'affine-database-rich-text-cell-editing': RichTextCellEditing;
+    'affine-database-rich-text-cell': RichTextCell;
   }
 }
 
@@ -563,6 +427,5 @@ export const richTextColumnConfig =
 
     cellRenderer: {
       view: createFromBaseCellRenderer(RichTextCell),
-      edit: createFromBaseCellRenderer(RichTextCellEditing),
     },
   });

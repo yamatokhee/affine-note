@@ -2,7 +2,7 @@ import { ShadowlessElement } from '@blocksuite/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import { computed, signal } from '@preact/signals-core';
 import { css } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 
 import { renderUniLit } from '../../../core/index.js';
 import type {
@@ -88,10 +88,6 @@ export class DatabaseCellContainer extends SignalWatcher(
     return this.closest<TableGroup>('affine-data-view-table-group')?.group?.key;
   }
 
-  private get readonly() {
-    return this.column.readonly$.value;
-  }
-
   private get selectionView() {
     return this.closest('affine-database-table')?.selectionController;
   }
@@ -104,7 +100,7 @@ export class DatabaseCellContainer extends SignalWatcher(
   override connectedCallback() {
     super.connectedCallback();
     this._disposables.addFromEvent(this, 'click', () => {
-      if (!this.isEditing) {
+      if (!this.isEditing$.value) {
         this.selectCurrentCell(!this.column.readonly$.value);
       }
     });
@@ -128,17 +124,16 @@ export class DatabaseCellContainer extends SignalWatcher(
     if (!renderer) {
       return;
     }
-    const { edit, view } = renderer;
-    const uni = !this.readonly && this.isEditing && edit != null ? edit : view;
-    this.view.lockRows(this.isEditing);
-    this.dataset['editing'] = `${this.isEditing}`;
+    const { view } = renderer;
+    this.view.lockRows(this.isEditing$.value);
+    this.dataset['editing'] = `${this.isEditing$.value}`;
     const props: CellRenderProps = {
       cell: this.cell$.value,
-      isEditing: this.isEditing,
+      isEditing$: this.isEditing$,
       selectCurrentCell: this.selectCurrentCell,
     };
 
-    return renderUniLit(uni, props, {
+    return renderUniLit(view, props, {
       ref: this._cell,
       style: {
         display: 'contents',
@@ -152,8 +147,7 @@ export class DatabaseCellContainer extends SignalWatcher(
   @property({ attribute: false })
   accessor columnIndex!: number;
 
-  @state()
-  accessor isEditing = false;
+  isEditing$ = signal(false);
 
   @property({ attribute: false })
   accessor rowIndex!: number;

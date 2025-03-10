@@ -1,3 +1,4 @@
+import { waitNextFrame } from '@affine-test/kit/bs/misc';
 import { test } from '@affine-test/kit/playwright';
 import {
   openHomePage,
@@ -319,10 +320,11 @@ test('can show database backlink info', async ({ page }) => {
   await page.keyboard.press('Escape');
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('Enter');
+  await waitNextFrame(page);
+  await waitNextFrame(page);
   await page.keyboard.type('Done');
-  await page
-    .locator('affine-multi-tag-select .select-option:has-text("Done")')
-    .click();
+  await waitNextFrame(page);
+  await page.keyboard.press('Enter');
 
   // go back to title cell
   await page.keyboard.press('ArrowLeft');
