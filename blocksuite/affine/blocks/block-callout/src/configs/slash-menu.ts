@@ -9,6 +9,8 @@ import {
 import { type SlashMenuConfig } from '@blocksuite/affine-widget-slash-menu';
 import { FontIcon } from '@blocksuite/icons/lit';
 
+import { calloutTooltip } from './tooltips';
+
 export const calloutSlashMenuConfig: SlashMenuConfig = {
   disableWhen: ({ model }) => {
     return (
@@ -22,6 +24,10 @@ export const calloutSlashMenuConfig: SlashMenuConfig = {
       name: 'Callout',
       description: 'Let your words stand out.',
       icon: FontIcon(),
+      tooltip: {
+        figure: calloutTooltip,
+        caption: 'Callout',
+      },
       searchAlias: ['callout'],
       group: '0_Basic@9',
       when: ({ std, model }) => {

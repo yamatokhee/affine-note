@@ -7,6 +7,7 @@ export const embedLoomSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Loom',
       icon: LoomLogoDuotoneIcon(),
+      description: 'Embed a Loom video.',
       group: '4_Content & Media@8',
       when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-loom'),

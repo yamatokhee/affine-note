@@ -28,6 +28,7 @@ export const PackageList = [
       'blocksuite/affine/fragments/fragment-doc-title',
       'blocksuite/affine/fragments/fragment-frame-panel',
       'blocksuite/affine/fragments/fragment-outline',
+      'blocksuite/affine/gfx/text',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',

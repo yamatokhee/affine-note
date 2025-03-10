@@ -5,6 +5,7 @@ import type { SlashMenuConfig } from '@blocksuite/affine-widget-slash-menu';
 import { TableIcon } from '@blocksuite/icons/lit';
 
 import { insertTableBlockCommand } from '../commands';
+import { tableTooltip } from './tooltips';
 
 export const tableSlashMenuConfig: SlashMenuConfig = {
   disableWhen: ({ model }) => model.flavour === 'affine:table',
@@ -13,6 +14,10 @@ export const tableSlashMenuConfig: SlashMenuConfig = {
       name: 'Table',
       description: 'Create a simple table.',
       icon: TableIcon(),
+      tooltip: {
+        figure: tableTooltip,
+        caption: 'Table',
+      },
       group: '4_Content & Media@0',
       when: ({ model }) =>
         !isInsideBlockByFlavour(model.doc, model, 'affine:edgeless-text'),

@@ -30,6 +30,7 @@
     { "path": "../fragments/fragment-doc-title" },
     { "path": "../fragments/fragment-frame-panel" },
     { "path": "../fragments/fragment-outline" },
+    { "path": "../gfx/text" },
     { "path": "../model" },
     { "path": "../rich-text" },
     { "path": "../shared" },
