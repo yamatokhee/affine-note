@@ -365,9 +365,7 @@ test.describe('slash menu should show and hide correctly', () => {
     await expect(subMenu).toBeHidden();
   });
 
-  test('should open and close menu when using left right arrow, Enter, Esc keys', async ({
-    page,
-  }) => {
+  test('navigate menu with left right arrow and Enter', async ({ page }) => {
     await initEmptyParagraphState(page);
     await focusRichText(page);
 
@@ -381,7 +379,11 @@ test.describe('slash menu should show and hide correctly', () => {
     await type(page, '/');
     await expect(slashMenu).toBeVisible();
     await pressArrowLeft(page);
-    await expect(slashMenu).toBeHidden();
+    await expect(
+      slashMenu,
+      'root menu should be visible when press arrow left'
+    ).toBeVisible();
+    await pressEscape(page);
 
     // Test sub menu case
     const slashItems = slashMenu.locator('icon-button');
@@ -407,9 +409,29 @@ test.describe('slash menu should show and hide correctly', () => {
     await pressEnter(page);
     await expect(slashMenu).toBeVisible();
     await expect(subMenu).toBeVisible();
+  });
 
-    await pressEscape(page);
+  test('menu should be hidden when press escape', async ({ page }) => {
+    await initEmptyParagraphState(page);
+    await focusRichText(page);
+
+    const slashMenu = page.locator('.slash-menu[data-testid=sub-menu-0]');
+
+    await type(page, '/');
     await expect(slashMenu).toBeVisible();
+    await pressEscape(page);
+    await expect(slashMenu).toBeHidden();
+
+    // go to sub menu
+    await type(page, '/');
+    await expect(slashMenu).toBeVisible();
+    await pressArrowDown(page, 4);
+    await pressArrowRight(page);
+    await expect(slashMenu).toBeVisible();
+    const subMenu = page.locator('.slash-menu[data-testid=sub-menu-1]');
+    await expect(subMenu).toBeVisible();
+    await pressEscape(page);
+    await expect(slashMenu).toBeHidden();
     await expect(subMenu).toBeHidden();
   });
 

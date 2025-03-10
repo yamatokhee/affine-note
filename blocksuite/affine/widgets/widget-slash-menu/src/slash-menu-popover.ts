@@ -216,7 +216,14 @@ export class SlashMenu extends WithDisposable(LitElement) {
           return;
         }
 
-        if (key === 'ArrowRight' || key === 'ArrowLeft' || key === 'Escape') {
+        if (key === 'Escape') {
+          this.abortController.abort();
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+
+        if (key === 'ArrowRight' || key === 'ArrowLeft') {
           return;
         }
 
@@ -542,7 +549,14 @@ export class InnerSlashMenu extends WithDisposable(LitElement) {
           event.stopPropagation();
         }
 
-        if ((key === 'ArrowLeft' || key === 'Escape') && notControlShift) {
+        if (key === 'ArrowLeft' && notControlShift) {
+          if (this.depth != 0) this.abortController.abort();
+
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        if (key === 'Escape' && notControlShift) {
           this.abortController.abort();
 
           event.preventDefault();
