@@ -190,9 +190,3 @@ export class EdgelessToolIconButton extends LitElement {
   @property({ attribute: false })
   accessor withHover: boolean | undefined = undefined;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-tool-icon-button': EdgelessToolIconButton;
-  }
-}

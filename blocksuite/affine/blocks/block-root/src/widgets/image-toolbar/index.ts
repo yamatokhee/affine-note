@@ -165,9 +165,3 @@ export class AffineImageToolbarWidget extends WidgetComponent<
     this._setHoverController();
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [AFFINE_IMAGE_TOOLBAR_WIDGET]: AffineImageToolbarWidget;
-  }
-}

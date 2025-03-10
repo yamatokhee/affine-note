@@ -312,11 +312,3 @@ export class EdgelessTextColorIcon extends LitElement {
   @property({ attribute: false })
   accessor color!: string;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-color-panel': EdgelessColorPanel;
-    'edgeless-color-button': EdgelessColorButton;
-    'edgeless-text-color-icon': EdgelessTextColorIcon;
-  }
-}

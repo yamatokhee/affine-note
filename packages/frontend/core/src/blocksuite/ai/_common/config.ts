@@ -1,11 +1,11 @@
 import type { Chain, InitCommandCtx } from '@blocksuite/affine/block-std';
 import {
   CodeBlockModel,
-  getSelectedModelsCommand,
   ImageBlockModel,
   ListBlockModel,
   ParagraphBlockModel,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/model';
+import { getSelectedModelsCommand } from '@blocksuite/affine/shared/commands';
 import { matchModels } from '@blocksuite/affine/shared/utils';
 import {
   CommentIcon,

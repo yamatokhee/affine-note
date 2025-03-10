@@ -136,9 +136,3 @@ export class AffineImageToolbar extends LitElement {
   @property({ attribute: false })
   accessor primaryGroups!: MenuItemGroup<ImageToolbarContext>[];
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'affine-image-toolbar': AffineImageToolbar;
-  }
-}

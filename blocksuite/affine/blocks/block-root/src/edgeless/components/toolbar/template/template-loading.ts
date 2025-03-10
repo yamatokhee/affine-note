@@ -48,9 +48,3 @@ export class AffineTemplateLoading extends LitElement {
     </div>`;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'affine-template-loading': AffineTemplateLoading;
-  }
-}

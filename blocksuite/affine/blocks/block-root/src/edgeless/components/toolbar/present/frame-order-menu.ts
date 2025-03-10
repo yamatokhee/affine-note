@@ -257,9 +257,3 @@ export class EdgelessFrameOrderMenu extends SignalWatcher(
   @property({ attribute: false })
   accessor embed = false;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-frame-order-menu': EdgelessFrameOrderMenu;
-  }
-}

@@ -129,9 +129,3 @@ export class EdgelessScalePanel extends LitElement {
   @property({ attribute: false })
   accessor scaleList: readonly number[] = SCALE_LIST;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-scale-panel': EdgelessScalePanel;
-  }
-}

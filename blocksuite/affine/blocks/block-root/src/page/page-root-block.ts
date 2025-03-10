@@ -452,9 +452,3 @@ export class PageRootBlockComponent extends BlockComponent<
   @query('.affine-page-root-block-container')
   accessor rootElementContainer!: HTMLDivElement;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'affine-page-root': PageRootBlockComponent;
-  }
-}

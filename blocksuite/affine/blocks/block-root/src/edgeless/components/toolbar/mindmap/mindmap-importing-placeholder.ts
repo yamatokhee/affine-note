@@ -52,9 +52,3 @@ export class MindMapPlaceholder extends ShadowlessElement {
     </div>`;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'mindmap-import-placeholder': MindMapPlaceholder;
-  }
-}

@@ -395,9 +395,3 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
   @consume({ context: stdContext })
   accessor std!: BlockStdScope;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-mindmap-menu': EdgelessMindmapMenu;
-  }
-}

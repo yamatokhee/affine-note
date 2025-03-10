@@ -626,9 +626,3 @@ export class EdgelessRootBlockComponent extends BlockComponent<
   @query('affine-surface')
   accessor surface!: SurfaceBlockComponent;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'affine-edgeless-root': EdgelessRootBlockComponent;
-  }
-}

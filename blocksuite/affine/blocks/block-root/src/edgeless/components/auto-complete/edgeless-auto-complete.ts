@@ -750,9 +750,3 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
   })
   accessor std!: BlockStdScope;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-auto-complete': EdgelessAutoComplete;
-  }
-}

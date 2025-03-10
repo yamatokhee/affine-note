@@ -6,19 +6,20 @@ import {
   TextSelection,
 } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
-import type { DocMode, ImageSelection } from '@blocksuite/affine/blocks';
-import {
-  EdgelessCRUDIdentifier,
-  getSelectedBlocksCommand,
-  NoteDisplayMode,
-  ParagraphBlockModel,
-  RefNodeSlotsProvider,
-} from '@blocksuite/affine/blocks';
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine/blocks/surface';
 import {
   Bound,
   getCommonBoundWithRotation,
   type SerializedXYWH,
 } from '@blocksuite/affine/global/gfx';
+import {
+  type DocMode,
+  NoteDisplayMode,
+  ParagraphBlockModel,
+} from '@blocksuite/affine/model';
+import { RefNodeSlotsProvider } from '@blocksuite/affine/rich-text';
+import { getSelectedBlocksCommand } from '@blocksuite/affine/shared/commands';
+import type { ImageSelection } from '@blocksuite/affine/shared/selection';
 import {
   DocModeProvider,
   EditPropsStore,

@@ -8,6 +8,7 @@ import {
 import { SettingRow } from '@affine/component/setting-components';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { useI18n } from '@affine/i18n';
+import { getSurfaceBlock } from '@blocksuite/affine/blocks/surface';
 import {
   ConnectorMode,
   DefaultTheme,
@@ -15,11 +16,10 @@ import {
   FontFamilyMap,
   FontStyle,
   FontWeightMap,
-  getSurfaceBlock,
   PointStyle,
   StrokeStyle,
   TextAlign,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/model';
 import type { Store } from '@blocksuite/affine/store';
 import { useFramework, useLiveData } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';

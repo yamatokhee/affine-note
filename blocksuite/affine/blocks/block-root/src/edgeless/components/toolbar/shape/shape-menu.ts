@@ -188,9 +188,3 @@ export class EdgelessShapeMenu extends SignalWatcher(
   @property({ attribute: false })
   accessor onChange!: (name: ShapeName) => void;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-shape-menu': EdgelessShapeMenu;
-  }
-}

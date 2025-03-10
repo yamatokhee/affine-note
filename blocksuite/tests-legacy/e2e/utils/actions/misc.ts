@@ -1,11 +1,8 @@
 import '../declare-test-window.js';
 
-import type {
-  DatabaseBlockModel,
-  ListType,
-  RichText,
-} from '@blocksuite/affine/blocks';
 import type { InlineRange, InlineRootElement } from '@blocksuite/affine/inline';
+import type { DatabaseBlockModel, ListType } from '@blocksuite/affine/model';
+import type { RichText } from '@blocksuite/affine/rich-text';
 import type { BlockModel } from '@blocksuite/affine/store';
 import { uuidv4 } from '@blocksuite/affine/store';
 import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
@@ -341,9 +338,8 @@ export async function initEmptyDatabaseState(page: Page, rootId?: string) {
       noteId
     );
     const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
-    const datasource = new window.$blocksuite.blocks.DatabaseBlockDataSource(
-      model
-    );
+    const datasource =
+      new window.$blocksuite.blocks.database.DatabaseBlockDataSource(model);
     datasource.viewManager.viewAdd('table');
     doc.captureSync();
     return { rootId, noteId, databaseId };
@@ -378,9 +374,8 @@ export async function initKanbanViewState(
         noteId
       );
       const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
-      const datasource = new window.$blocksuite.blocks.DatabaseBlockDataSource(
-        model
-      );
+      const datasource =
+        new window.$blocksuite.blocks.database.DatabaseBlockDataSource(model);
       const rowIds = config.rows.map(rowText => {
         const rowId = doc.addBlock(
           'affine:paragraph',
@@ -435,9 +430,8 @@ export async function initEmptyDatabaseWithParagraphState(
       noteId
     );
     const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
-    const datasource = new window.$blocksuite.blocks.DatabaseBlockDataSource(
-      model
-    );
+    const datasource =
+      new window.$blocksuite.blocks.database.DatabaseBlockDataSource(model);
     datasource.viewManager.viewAdd('table');
     doc.addBlock('affine:paragraph', {}, noteId);
     doc.captureSync();

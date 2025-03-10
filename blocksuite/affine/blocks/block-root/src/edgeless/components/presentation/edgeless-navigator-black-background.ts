@@ -114,9 +114,3 @@ export class EdgelessNavigatorBlackBackgroundWidget extends WidgetComponent<
   @state()
   private accessor show = false;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-navigator-black-background': EdgelessNavigatorBlackBackgroundWidget;
-  }
-}

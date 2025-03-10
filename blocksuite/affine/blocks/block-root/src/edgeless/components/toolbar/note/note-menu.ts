@@ -204,9 +204,3 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
   @property({ attribute: false })
   accessor tip!: string;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-note-menu': EdgelessNoteMenu;
-  }
-}

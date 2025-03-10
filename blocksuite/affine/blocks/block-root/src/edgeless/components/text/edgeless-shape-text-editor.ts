@@ -360,9 +360,3 @@ export class EdgelessShapeTextEditor extends WithDisposable(ShadowlessElement) {
   @query('rich-text')
   accessor richText!: RichText;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-shape-text-editor': EdgelessShapeTextEditor;
-  }
-}

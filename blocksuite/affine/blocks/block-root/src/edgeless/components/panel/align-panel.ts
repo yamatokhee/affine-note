@@ -68,9 +68,3 @@ export class EdgelessAlignPanel extends LitElement {
   @property({ attribute: false })
   accessor value: TextAlign = TextAlign.Left;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-align-panel': EdgelessAlignPanel;
-  }
-}

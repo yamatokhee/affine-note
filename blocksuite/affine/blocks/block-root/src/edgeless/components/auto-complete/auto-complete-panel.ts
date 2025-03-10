@@ -662,9 +662,3 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
   })
   accessor std!: BlockStdScope;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-auto-complete-panel': EdgelessAutoCompletePanel;
-  }
-}

@@ -87,9 +87,3 @@ export class AffineEdgelessZoomToolbarWidget extends WidgetComponent<
   @state()
   private accessor _hide = false;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET]: AffineEdgelessZoomToolbarWidget;
-  }
-}

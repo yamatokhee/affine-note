@@ -57,9 +57,3 @@ export class EdgelessShapeStylePanel extends LitElement {
   @property({ attribute: false })
   accessor value!: ShapeStyle;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-shape-style-panel': EdgelessShapeStylePanel;
-  }
-}

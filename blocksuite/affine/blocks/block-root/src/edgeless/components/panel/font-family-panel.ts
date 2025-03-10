@@ -55,9 +55,3 @@ export class EdgelessFontFamilyPanel extends LitElement {
   @property({ attribute: false })
   accessor value: FontFamily = FontFamily.Inter;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-font-family-panel': EdgelessFontFamilyPanel;
-  }
-}

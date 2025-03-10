@@ -174,9 +174,3 @@ export class EdgelessSlideMenu extends WithDisposable(LitElement) {
   @consume({ context: edgelessToolbarSlotsContext })
   accessor toolbarSlots!: EdgelessToolbarSlots;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-slide-menu': EdgelessSlideMenu;
-  }
-}

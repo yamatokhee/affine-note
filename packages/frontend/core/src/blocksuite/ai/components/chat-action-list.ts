@@ -3,7 +3,7 @@ import type {
   EditorHost,
   TextSelection,
 } from '@blocksuite/affine/block-std';
-import { type ImageSelection } from '@blocksuite/affine/blocks';
+import type { ImageSelection } from '@blocksuite/affine/shared/selection';
 import { NotificationProvider } from '@blocksuite/affine/shared/services';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';

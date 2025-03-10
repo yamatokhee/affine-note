@@ -3,7 +3,7 @@ import {
   EditorHost,
   ShadowlessElement,
 } from '@blocksuite/affine/block-std';
-import { PageEditorBlockSpecs } from '@blocksuite/affine/blocks';
+import { PageEditorBlockSpecs } from '@blocksuite/affine/extensions';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { noop } from '@blocksuite/affine/global/utils';
 import { ThemeProvider } from '@blocksuite/affine/shared/services';

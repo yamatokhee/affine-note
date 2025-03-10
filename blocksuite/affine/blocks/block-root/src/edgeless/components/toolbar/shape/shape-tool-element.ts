@@ -318,9 +318,3 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor shapeType!: ShapeName;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-shape-tool-element': EdgelessShapeToolElement;
-  }
-}

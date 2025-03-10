@@ -56,9 +56,3 @@ export class AffineInnerModalWidget extends WidgetComponent {
     this._getTarget = fn;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [AFFINE_INNER_MODAL_WIDGET]: AffineInnerModalWidget;
-  }
-}

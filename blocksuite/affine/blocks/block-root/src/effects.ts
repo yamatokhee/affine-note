@@ -317,3 +317,78 @@ function registerMiscComponents() {
   // Connector components
   customElements.define('edgeless-connector-handle', EdgelessConnectorHandle);
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'affine-edgeless-root': EdgelessRootBlockComponent;
+    'affine-edgeless-root-preview': EdgelessRootPreviewBlockComponent;
+    'edgeless-auto-complete-panel': EdgelessAutoCompletePanel;
+    'edgeless-auto-complete': EdgelessAutoComplete;
+    'edgeless-tool-icon-button': EdgelessToolIconButton;
+    'edgeless-toolbar-button': EdgelessToolbarButton;
+    'edgeless-connector-handle': EdgelessConnectorHandle;
+    'frame-preview': FramePreview;
+    'note-slicer': NoteSlicer;
+    'edgeless-align-panel': EdgelessAlignPanel;
+    'card-style-panel': CardStylePanel;
+    'edgeless-color-panel': EdgelessColorPanel;
+    'edgeless-color-button': EdgelessColorButton;
+    'edgeless-text-color-icon': EdgelessTextColorIcon;
+    'edgeless-font-family-panel': EdgelessFontFamilyPanel;
+    'edgeless-font-weight-and-style-panel': EdgelessFontWeightAndStylePanel;
+    'edgeless-line-width-panel': EdgelessLineWidthPanel;
+    'note-display-mode-panel': NoteDisplayModePanel;
+    'edgeless-note-shadow-panel': EdgelessNoteShadowPanel;
+    'edgeless-scale-panel': EdgelessScalePanel;
+    'edgeless-shape-panel': EdgelessShapePanel;
+    'edgeless-shape-style-panel': EdgelessShapeStylePanel;
+    'edgeless-size-panel': EdgelessSizePanel;
+    'stroke-style-panel': StrokeStylePanel;
+    'edgeless-navigator-black-background': EdgelessNavigatorBlackBackgroundWidget;
+    'edgeless-dragging-area-rect': EdgelessDraggingAreaRectWidget;
+    'edgeless-selected-rect': EdgelessSelectedRectWidget;
+    'edgeless-connector-label-editor': EdgelessConnectorLabelEditor;
+    'edgeless-frame-title-editor': EdgelessFrameTitleEditor;
+    'edgeless-group-title-editor': EdgelessGroupTitleEditor;
+    'edgeless-shape-text-editor': EdgelessShapeTextEditor;
+    'edgeless-text-editor': EdgelessTextEditor;
+    'edgeless-toolbar-widget': EdgelessToolbarWidget;
+    'presentation-toolbar': PresentationToolbar;
+    'edgeless-brush-menu': EdgelessBrushMenu;
+    'edgeless-brush-tool-button': EdgelessBrushToolButton;
+    'edgeless-slide-menu': EdgelessSlideMenu;
+    'toolbar-arrow-up-icon': ToolbarArrowUpIcon;
+    'edgeless-connector-menu': EdgelessConnectorMenu;
+    'edgeless-connector-tool-button': EdgelessConnectorToolButton;
+    'edgeless-default-tool-button': EdgelessDefaultToolButton;
+    'edgeless-eraser-tool-button': EdgelessEraserToolButton;
+    'edgeless-frame-menu': EdgelessFrameMenu;
+    'edgeless-frame-tool-button': EdgelessFrameToolButton;
+    'edgeless-lasso-tool-button': EdgelessLassoToolButton;
+    'edgeless-link-tool-button': EdgelessLinkToolButton;
+    'mindmap-import-placeholder': MindMapPlaceholder;
+    'edgeless-mindmap-menu': EdgelessMindmapMenu;
+    'edgeless-mindmap-tool-button': EdgelessMindmapToolButton;
+    'edgeless-note-menu': EdgelessNoteMenu;
+    'edgeless-note-tool-button': EdgelessNoteToolButton;
+    'edgeless-frame-order-menu': EdgelessFrameOrderMenu;
+    'edgeless-navigator-setting-button': EdgelessNavigatorSettingButton;
+    'edgeless-present-button': EdgelessPresentButton;
+    'edgeless-toolbar-shape-draggable': EdgelessToolbarShapeDraggable;
+    'edgeless-shape-menu': EdgelessShapeMenu;
+    'edgeless-shape-tool-button': EdgelessShapeToolButton;
+    'edgeless-shape-tool-element': EdgelessShapeToolElement;
+    'overlay-scrollbar': OverlayScrollbar;
+    'affine-template-loading': AffineTemplateLoading;
+    'edgeless-templates-panel': EdgelessTemplatePanel;
+    'edgeless-text-menu': EdgelessTextMenu;
+    'affine-page-root': PageRootBlockComponent;
+    'zoom-bar-toggle-button': ZoomBarToggleButton;
+    'edgeless-zoom-toolbar': EdgelessZoomToolbar;
+    'affine-image-toolbar': AffineImageToolbar;
+
+    [AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET]: AffineEdgelessZoomToolbarWidget;
+    [AFFINE_IMAGE_TOOLBAR_WIDGET]: AffineImageToolbarWidget;
+    [AFFINE_INNER_MODAL_WIDGET]: AffineInnerModalWidget;
+  }
+}

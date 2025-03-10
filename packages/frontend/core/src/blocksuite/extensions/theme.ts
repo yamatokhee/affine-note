@@ -1,8 +1,8 @@
 import { DocService, DocsService } from '@affine/core/modules/doc';
 import { AppThemeService } from '@affine/core/modules/theme';
 import { LifeCycleWatcher, StdIdentifier } from '@blocksuite/affine/block-std';
-import { ColorScheme } from '@blocksuite/affine/blocks';
 import type { Container } from '@blocksuite/affine/global/di';
+import { ColorScheme } from '@blocksuite/affine/model';
 import {
   type ThemeExtension,
   ThemeExtensionIdentifier,

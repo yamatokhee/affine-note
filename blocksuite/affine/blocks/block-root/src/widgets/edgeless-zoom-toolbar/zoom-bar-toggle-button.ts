@@ -107,9 +107,3 @@ export class ZoomBarToggleButton extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor edgeless!: EdgelessRootBlockComponent;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'zoom-bar-toggle-button': ZoomBarToggleButton;
-  }
-}

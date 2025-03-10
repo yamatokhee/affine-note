@@ -1,9 +1,9 @@
+import type { EdgelessRootBlockComponent } from '@blocksuite/affine/blocks/root';
 import {
-  type EdgelessRootBlockComponent,
   type GroupElementModel,
   LayoutType,
   NoteDisplayMode,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/model';
 import type { MindmapElementModel } from '@blocksuite/affine-model';
 import { beforeEach, describe, expect, test } from 'vitest';
 import * as Y from 'yjs';

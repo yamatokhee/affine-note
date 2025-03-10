@@ -97,9 +97,3 @@ export class EdgelessDefaultToolButton extends QuickToolMixin(LitElement) {
   @query('.current-icon')
   accessor currentIcon!: HTMLInputElement;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-default-tool-button': EdgelessDefaultToolButton;
-  }
-}

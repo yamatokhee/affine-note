@@ -63,9 +63,3 @@ export class EdgelessShapePanel extends LitElement {
   @property({ attribute: false })
   accessor shapeStyle: ShapeStyle = ShapeStyle.Scribbled;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-shape-panel': EdgelessShapePanel;
-  }
-}

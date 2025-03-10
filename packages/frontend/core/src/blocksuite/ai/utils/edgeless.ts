@@ -1,12 +1,12 @@
 import type { BlockComponent, EditorHost } from '@blocksuite/affine/block-std';
 import type { GfxModel } from '@blocksuite/affine/block-std/gfx';
+import { SurfaceBlockModel } from '@blocksuite/affine/blocks/surface';
 import {
   MindmapElementModel,
   NoteBlockModel,
   RootBlockModel,
   type ShapeElementModel,
-  SurfaceBlockModel,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/model';
 import { matchModels } from '@blocksuite/affine/shared/utils';
 
 import {

@@ -70,9 +70,3 @@ export class EdgelessEraserToolButton extends EdgelessToolbarToolMixin(
     `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-eraser-tool-button': EdgelessEraserToolButton;
-  }
-}

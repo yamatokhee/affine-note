@@ -6,7 +6,7 @@ import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { DocSearchMenuService } from '@affine/core/modules/doc-search-menu/services';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
-import { RefNodeSlotsProvider } from '@blocksuite/affine/blocks';
+import { RefNodeSlotsProvider } from '@blocksuite/affine/rich-text';
 import { DocModeProvider } from '@blocksuite/affine/shared/services';
 import {
   createSignalFromObservable,

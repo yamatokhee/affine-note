@@ -3,6 +3,7 @@ import {
   GfxControllerIdentifier,
   type GfxModel,
 } from '@blocksuite/affine/block-std/gfx';
+import { splitElements } from '@blocksuite/affine/blocks/root';
 import {
   CodeBlockModel,
   EdgelessTextBlockModel,
@@ -10,9 +11,8 @@ import {
   ImageBlockModel,
   NoteBlockModel,
   ShapeElementModel,
-  splitElements,
   TextElementModel,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/model';
 import { matchModels } from '@blocksuite/affine/shared/utils';
 import { Slice } from '@blocksuite/affine/store';
 import type { TemplateResult } from 'lit';

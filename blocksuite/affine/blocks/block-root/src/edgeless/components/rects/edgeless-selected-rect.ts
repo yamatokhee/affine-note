@@ -1554,9 +1554,3 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
   @state()
   accessor autoCompleteOff = false;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-selected-rect': EdgelessSelectedRectWidget;
-  }
-}

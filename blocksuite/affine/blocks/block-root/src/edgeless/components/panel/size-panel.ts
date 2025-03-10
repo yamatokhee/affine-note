@@ -160,9 +160,3 @@ export class EdgelessSizePanel extends LitElement {
   @property({ attribute: 'data-type' })
   accessor type: 'normal' | 'check' = 'normal';
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-size-panel': EdgelessSizePanel;
-  }
-}

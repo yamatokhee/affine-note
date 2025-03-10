@@ -15,9 +15,3 @@ export class ToolbarArrowUpIcon extends ShadowlessElement {
     return html`<span class="arrow-up-icon"> ${ArrowUpSmallIcon()} </span>`;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'toolbar-arrow-up-icon': ToolbarArrowUpIcon;
-  }
-}

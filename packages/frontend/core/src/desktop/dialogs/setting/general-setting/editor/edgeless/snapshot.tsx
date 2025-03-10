@@ -7,10 +7,8 @@ import {
   GfxControllerIdentifier,
   type GfxPrimitiveElementModel,
 } from '@blocksuite/affine/block-std/gfx';
-import {
-  EdgelessCRUDIdentifier,
-  type EdgelessRootPreviewBlockComponent,
-} from '@blocksuite/affine/blocks';
+import type { EdgelessRootPreviewBlockComponent } from '@blocksuite/affine/blocks/root';
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine/blocks/surface';
 import { Bound } from '@blocksuite/affine/global/gfx';
 import { SpecProvider } from '@blocksuite/affine/shared/utils';
 import type { Block, Store } from '@blocksuite/affine/store';

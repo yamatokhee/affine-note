@@ -63,9 +63,3 @@ export class CardStylePanel extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor value: EmbedCardStyle | undefined = undefined;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'card-style-panel': CardStylePanel;
-  }
-}

@@ -2,7 +2,7 @@ import {
   EdgelessTemplatePanel,
   type Template,
   type TemplateManager,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/blocks/root';
 import { beforeEach, expect, test } from 'vitest';
 
 import { setupEditor } from '../utils/setup.js';

@@ -1,10 +1,10 @@
+import { CodeBlockSpec } from '@blocksuite/affine/blocks/code';
+import { ImageBlockSpec } from '@blocksuite/affine/blocks/image';
+import { ParagraphBlockSpec } from '@blocksuite/affine/blocks/paragraph';
 import {
-  CodeBlockSpec,
   EdgelessRootBlockSpec,
-  ImageBlockSpec,
   PageRootBlockSpec,
-  ParagraphBlockSpec,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/blocks/root';
 import type { SpecBuilder } from '@blocksuite/affine/shared/utils';
 import type { FrameworkProvider } from '@toeverything/infra';
 

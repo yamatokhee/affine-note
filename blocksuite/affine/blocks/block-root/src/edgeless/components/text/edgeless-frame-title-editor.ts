@@ -175,9 +175,3 @@ export class EdgelessFrameTitleEditor extends WithDisposable(
   @query('rich-text')
   accessor richText: RichText | null = null;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-frame-title-editor': EdgelessFrameTitleEditor;
-  }
-}

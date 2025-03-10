@@ -62,9 +62,3 @@ export class EdgelessLinkToolButton extends QuickToolMixin(LitElement) {
     </edgeless-tool-icon-button>`;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-link-tool-button': EdgelessLinkToolButton;
-  }
-}

@@ -1,16 +1,20 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
+import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import {
   DatabaseBlockModel,
-  embedSyncedDocMiddleware,
-  getImageSelectionsCommand,
-  getSelectedBlocksCommand,
   ImageBlockModel,
-  MarkdownAdapter,
   type NoteBlockModel,
   NoteDisplayMode,
+} from '@blocksuite/affine/model';
+import {
+  embedSyncedDocMiddleware,
+  MarkdownAdapter,
   titleMiddleware,
-} from '@blocksuite/affine/blocks';
-import type { ServiceProvider } from '@blocksuite/affine/global/di';
+} from '@blocksuite/affine/shared/adapters';
+import {
+  getImageSelectionsCommand,
+  getSelectedBlocksCommand,
+} from '@blocksuite/affine/shared/commands';
 import { DocModeProvider } from '@blocksuite/affine/shared/services';
 import {
   isInsideEdgelessEditor,

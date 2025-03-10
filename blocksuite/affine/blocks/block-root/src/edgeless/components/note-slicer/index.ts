@@ -433,9 +433,3 @@ export class NoteSlicer extends WidgetComponent<
   @state()
   private accessor _isResizing = false;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'note-slicer': NoteSlicer;
-  }
-}

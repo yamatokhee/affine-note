@@ -68,9 +68,3 @@ export class StrokeStylePanel extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor theme!: ColorScheme;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'stroke-style-panel': StrokeStylePanel;
-  }
-}

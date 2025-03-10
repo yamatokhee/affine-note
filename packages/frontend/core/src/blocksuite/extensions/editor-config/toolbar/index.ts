@@ -17,23 +17,16 @@ import {
   GfxBlockElementModel,
   GfxPrimitiveElementModel,
 } from '@blocksuite/affine/block-std/gfx';
+import { BookmarkBlockComponent } from '@blocksuite/affine/blocks/bookmark';
 import {
-  AffineReference,
-  BookmarkBlockComponent,
-  BookmarkBlockModel,
   EmbedFigmaBlockComponent,
   EmbedGithubBlockComponent,
   EmbedLinkedDocBlockComponent,
-  EmbedLinkedDocModel,
   EmbedLoomBlockComponent,
   EmbedSyncedDocBlockComponent,
-  EmbedSyncedDocModel,
   EmbedYoutubeBlockComponent,
   getDocContentWithMaxLength,
-  getSelectedModelsCommand,
-  ImageSelection,
-  toggleReferencePopup,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/blocks/embed';
 import { toggleEmbedCardEditModal } from '@blocksuite/affine/components/embed-card-modal';
 import {
   notifyLinkedDocClearedAliases,
@@ -45,6 +38,17 @@ import type {
   MenuContext,
   MenuItemGroup,
 } from '@blocksuite/affine/components/toolbar';
+import {
+  BookmarkBlockModel,
+  EmbedLinkedDocModel,
+  EmbedSyncedDocModel,
+} from '@blocksuite/affine/model';
+import {
+  AffineReference,
+  toggleReferencePopup,
+} from '@blocksuite/affine/rich-text';
+import { getSelectedModelsCommand } from '@blocksuite/affine/shared/commands';
+import { ImageSelection } from '@blocksuite/affine/shared/selection';
 import {
   ActionPlacement,
   GenerateDocUrlProvider,

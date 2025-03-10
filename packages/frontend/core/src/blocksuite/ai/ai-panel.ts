@@ -1,12 +1,12 @@
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
+import { Bound } from '@blocksuite/affine/global/gfx';
 import {
   ImageBlockModel,
   NoteBlockModel,
   NoteDisplayMode,
-} from '@blocksuite/affine/blocks';
-import { Bound } from '@blocksuite/affine/global/gfx';
+} from '@blocksuite/affine/model';
 import {
   isInsideEdgelessEditor,
   matchModels,

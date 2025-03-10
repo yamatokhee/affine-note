@@ -350,9 +350,3 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
   @query('.edgeless-shape-draggable')
   accessor shapeContainer!: HTMLDivElement;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-toolbar-shape-draggable': EdgelessToolbarShapeDraggable;
-  }
-}

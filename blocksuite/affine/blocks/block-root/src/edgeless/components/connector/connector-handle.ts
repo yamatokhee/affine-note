@@ -162,9 +162,3 @@ export class EdgelessConnectorHandle extends WithDisposable(LitElement) {
   })
   accessor std!: BlockStdScope;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-connector-handle': EdgelessConnectorHandle;
-  }
-}

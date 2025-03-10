@@ -251,9 +251,3 @@ export class EdgelessLineWidthPanel extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor selectedSize: LineWidth = LineWidth.Two;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-line-width-panel': EdgelessLineWidthPanel;
-  }
-}

@@ -1,4 +1,4 @@
-import type { FrameBlockModel } from '@blocksuite/affine/blocks';
+import type { FrameBlockModel } from '@blocksuite/affine/model';
 import type { Store } from '@blocksuite/affine/store';
 
 export function getFrameBlock(doc: Store) {

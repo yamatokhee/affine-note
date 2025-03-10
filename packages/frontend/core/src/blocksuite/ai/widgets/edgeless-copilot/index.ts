@@ -3,12 +3,12 @@ import {
   WidgetViewExtension,
 } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
-import type { RootBlockModel } from '@blocksuite/affine/blocks';
-import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine/blocks';
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine/blocks/surface';
 import {
   Bound,
   getCommonBoundWithRotation,
 } from '@blocksuite/affine/global/gfx';
+import type { RootBlockModel } from '@blocksuite/affine/model';
 import {
   MOUSE_BUTTON,
   requestConnectedFrame,

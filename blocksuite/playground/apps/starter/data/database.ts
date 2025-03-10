@@ -1,10 +1,12 @@
 import {
   databaseBlockColumns,
   DatabaseBlockDataSource,
+} from '@blocksuite/affine/blocks/database';
+import {
   type DatabaseBlockModel,
   type ListType,
   type ParagraphType,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/model';
 import { Text, type Workspace } from '@blocksuite/affine/store';
 import { groupTraitKey } from '@blocksuite/data-view';
 import { propertyPresets } from '@blocksuite/data-view/property-presets';

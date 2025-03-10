@@ -693,9 +693,3 @@ export class EdgelessToolbarWidget extends WidgetComponent<
   @query('.edgeless-toolbar-container')
   accessor toolbarContainer!: HTMLElement;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-toolbar-widget': EdgelessToolbarWidget;
-  }
-}

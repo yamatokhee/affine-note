@@ -145,9 +145,3 @@ export class EdgelessGroupTitleEditor extends WithDisposable(
   @query('rich-text')
   accessor richText!: RichText;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-group-title-editor': EdgelessGroupTitleEditor;
-  }
-}

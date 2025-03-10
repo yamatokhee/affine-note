@@ -321,9 +321,3 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
   @query('rich-text')
   accessor richText!: RichText;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-connector-label-editor': EdgelessConnectorLabelEditor;
-  }
-}

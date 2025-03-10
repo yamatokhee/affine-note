@@ -1,5 +1,5 @@
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
-import { type LinkedMenuGroup } from '@blocksuite/affine/blocks';
+import type { LinkedMenuGroup } from '@blocksuite/affine/blocks/root';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { scrollbarStyle } from '@blocksuite/affine/shared/styles';
 import { SearchIcon } from '@blocksuite/icons/lit';

@@ -1,4 +1,4 @@
-import { ZipTransformer } from '@blocksuite/affine/blocks';
+import { ZipTransformer } from '@blocksuite/affine/blocks/root';
 import { AffineSchemas } from '@blocksuite/affine/schemas';
 import { Schema, Text, type Workspace } from '@blocksuite/affine/store';
 export async function affineSnapshot(collection: Workspace, id: string) {

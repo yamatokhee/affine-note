@@ -43,9 +43,3 @@ export class EdgelessFrameToolButton extends QuickToolMixin(LitElement) {
     `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-frame-tool-button': EdgelessFrameToolButton;
-  }
-}

@@ -74,9 +74,3 @@ export class EdgelessConnectorToolButton extends QuickToolMixin(
     `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-connector-tool-button': EdgelessConnectorToolButton;
-  }
-}

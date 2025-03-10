@@ -9,21 +9,23 @@ import { SettingRow } from '@affine/component/setting-components';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { useI18n } from '@affine/i18n';
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import type { ShapeElementModel, ShapeName } from '@blocksuite/affine/blocks';
+import {
+  EdgelessCRUDIdentifier,
+  getSurfaceBlock,
+} from '@blocksuite/affine/blocks/surface';
+import type { ShapeElementModel, ShapeName } from '@blocksuite/affine/model';
 import {
   DefaultTheme,
-  EdgelessCRUDIdentifier,
   FontFamily,
   FontFamilyMap,
   FontStyle,
   FontWeightMap,
   getShapeName,
-  getSurfaceBlock,
   ShapeStyle,
   ShapeType,
   StrokeStyle,
   TextAlign,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/model';
 import type { Store } from '@blocksuite/affine/store';
 import { useFramework, useLiveData } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';

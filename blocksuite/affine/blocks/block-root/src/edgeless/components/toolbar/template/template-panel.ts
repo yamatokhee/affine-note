@@ -512,9 +512,3 @@ export class EdgelessTemplatePanel extends WithDisposable(LitElement) {
   @state()
   accessor isDragging = false;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-templates-panel': EdgelessTemplatePanel;
-  }
-}

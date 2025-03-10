@@ -447,9 +447,3 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
   @property({ type: Boolean })
   accessor settingMenuShow = false;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'presentation-toolbar': PresentationToolbar;
-  }
-}

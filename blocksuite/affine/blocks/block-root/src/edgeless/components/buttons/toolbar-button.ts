@@ -37,9 +37,3 @@ export class EdgelessToolbarButton extends EdgelessToolIconButton {
     return html` ${super.render()} `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-toolbar-button': EdgelessToolbarButton;
-  }
-}

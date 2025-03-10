@@ -18,23 +18,16 @@ import './left-side-panel.js';
 
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
+import { defaultImageProxyMiddleware } from '@blocksuite/affine/blocks/image';
 import {
-  ColorScheme,
   createAssetsArchive,
-  defaultImageProxyMiddleware,
-  docLinkBaseURLMiddleware,
-  type DocMode,
   download,
-  ExportManager,
-  HtmlAdapterFactoryIdentifier,
   HtmlTransformer,
-  MarkdownAdapterFactoryIdentifier,
   MarkdownTransformer,
   NotionHtmlTransformer,
-  PlainTextAdapterFactoryIdentifier,
-  titleMiddleware,
   ZipTransformer,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/blocks/root';
+import { ExportManager } from '@blocksuite/affine/blocks/surface';
 import { toast } from '@blocksuite/affine/components/toast';
 import {
   BlockSuiteError,
@@ -42,6 +35,14 @@ import {
 } from '@blocksuite/affine/global/exceptions';
 import type { SerializedXYWH } from '@blocksuite/affine/global/gfx';
 import type { DeltaInsert } from '@blocksuite/affine/inline/types';
+import { ColorScheme, type DocMode } from '@blocksuite/affine/model';
+import {
+  docLinkBaseURLMiddleware,
+  HtmlAdapterFactoryIdentifier,
+  MarkdownAdapterFactoryIdentifier,
+  PlainTextAdapterFactoryIdentifier,
+  titleMiddleware,
+} from '@blocksuite/affine/shared/adapters';
 import { DocModeProvider } from '@blocksuite/affine/shared/services';
 import {
   ColorVariables,

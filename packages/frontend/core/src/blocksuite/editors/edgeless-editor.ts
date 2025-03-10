@@ -1,5 +1,5 @@
 import { BlockStdScope, ShadowlessElement } from '@blocksuite/affine/block-std';
-import { EdgelessEditorBlockSpecs } from '@blocksuite/affine/blocks';
+import { EdgelessEditorBlockSpecs } from '@blocksuite/affine/extensions';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { ThemeProvider } from '@blocksuite/affine/shared/services';
 import type { Store } from '@blocksuite/affine/store';

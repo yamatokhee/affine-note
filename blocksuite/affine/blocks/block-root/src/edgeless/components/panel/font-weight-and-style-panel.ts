@@ -161,9 +161,3 @@ export class EdgelessFontWeightAndStylePanel extends LitElement {
     | ((fontWeight: FontWeight, fontStyle: FontStyle) => void)
     | undefined;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-font-weight-and-style-panel': EdgelessFontWeightAndStylePanel;
-  }
-}

@@ -283,9 +283,3 @@ export class EdgelessRootPreviewBlockComponent
   @query('affine-surface')
   accessor surface!: SurfaceBlockComponent;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'affine-edgeless-root-preview': EdgelessRootPreviewBlockComponent;
-  }
-}

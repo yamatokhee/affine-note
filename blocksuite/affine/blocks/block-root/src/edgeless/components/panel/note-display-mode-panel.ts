@@ -102,9 +102,3 @@ export class NoteDisplayModePanel extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor panelWidth = 240;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'note-display-mode-panel': NoteDisplayModePanel;
-  }
-}

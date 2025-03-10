@@ -25,9 +25,9 @@ import { i18nTime } from '@affine/i18n';
 import {
   customImageProxyMiddleware,
   ImageProxyService,
-  RefNodeSlotsProvider,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/blocks/image';
 import { DisposableGroup } from '@blocksuite/affine/global/slot';
+import { RefNodeSlotsProvider } from '@blocksuite/affine/rich-text';
 import { LinkPreviewerService } from '@blocksuite/affine/shared/services';
 import {
   FrameworkScope,

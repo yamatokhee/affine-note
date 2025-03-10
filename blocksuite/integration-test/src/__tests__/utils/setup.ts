@@ -10,11 +10,11 @@ blocksEffects();
 effects();
 
 import {
-  type DocMode,
   EdgelessEditorBlockSpecs,
   PageEditorBlockSpecs,
   StoreExtensions,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/extensions';
+import type { DocMode } from '@blocksuite/affine/model';
 import { AffineSchemas } from '@blocksuite/affine/schemas';
 import {
   CommunityCanvasTextFonts,

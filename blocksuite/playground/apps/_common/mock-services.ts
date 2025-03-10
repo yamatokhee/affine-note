@@ -1,10 +1,10 @@
+import { toast } from '@blocksuite/affine/components/toast';
+import { Slot } from '@blocksuite/affine/global/slot';
 import {
   ColorScheme,
   type DocMode,
   type ReferenceParams,
-} from '@blocksuite/affine/blocks';
-import { toast } from '@blocksuite/affine/components/toast';
-import { Slot } from '@blocksuite/affine/global/slot';
+} from '@blocksuite/affine/model';
 import {
   type DocModeProvider,
   type EditorSetting,

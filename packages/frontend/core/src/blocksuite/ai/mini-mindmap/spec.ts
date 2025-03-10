@@ -4,9 +4,9 @@ import {
 } from '@blocksuite/affine/block-std';
 import {
   MindMapView,
-  RootBlockSchema,
   SurfaceBlockSchema,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/blocks/surface';
+import { RootBlockSchema } from '@blocksuite/affine/model';
 import {
   DocModeService,
   ThemeService,

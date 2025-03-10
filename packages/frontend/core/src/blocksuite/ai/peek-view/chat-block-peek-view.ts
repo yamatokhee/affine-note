@@ -1,10 +1,10 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
   CanvasElementType,
-  ConnectorMode,
   EdgelessCRUDIdentifier,
   getSurfaceBlock,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/blocks/surface';
+import { ConnectorMode } from '@blocksuite/affine/model';
 import {
   DocModeProvider,
   NotificationProvider,

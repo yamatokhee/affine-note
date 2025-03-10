@@ -1,5 +1,5 @@
-import { LayoutType, type MindMapView } from '@blocksuite/affine/blocks';
-import type { MindmapElementModel } from '@blocksuite/affine-model';
+import type { MindMapView } from '@blocksuite/affine/blocks/surface';
+import { LayoutType, type MindmapElementModel } from '@blocksuite/affine-model';
 import type { GfxController } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import { beforeEach, describe, expect, test } from 'vitest';

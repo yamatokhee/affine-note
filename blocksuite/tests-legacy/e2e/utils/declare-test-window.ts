@@ -12,7 +12,10 @@ declare global {
      */
     $blocksuite: {
       store: typeof import('@blocksuite/affine/store');
-      blocks: typeof import('@blocksuite/affine/blocks');
+      blocks: {
+        database: typeof import('@blocksuite/affine/blocks/database');
+        note: typeof import('@blocksuite/affine/blocks/note');
+      };
       global: {
         utils: typeof import('@blocksuite/affine/global/utils');
       };

@@ -112,9 +112,3 @@ export class EdgelessNoteToolButton extends QuickToolMixin(LitElement) {
   @state()
   accessor tip = 'Text';
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-note-tool-button': EdgelessNoteToolButton;
-  }
-}

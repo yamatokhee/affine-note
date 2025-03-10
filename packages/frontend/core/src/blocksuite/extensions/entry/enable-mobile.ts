@@ -5,24 +5,20 @@ import {
   LifeCycleWatcher,
   LifeCycleWatcherIdentifier,
 } from '@blocksuite/affine/block-std';
-import type {
-  CodeBlockConfig,
-  ReferenceNodeConfig,
-} from '@blocksuite/affine/blocks';
-import {
-  codeToolbarWidget,
-  imageToolbarWidget,
-  ParagraphBlockService,
-  ReferenceNodeConfigIdentifier,
-  SlashMenuExtension,
-  surfaceRefToolbarWidget,
-  toolbarWidget,
-} from '@blocksuite/affine/blocks';
+import type { CodeBlockConfig } from '@blocksuite/affine/blocks/code';
+import { codeToolbarWidget } from '@blocksuite/affine/blocks/code';
+import { imageToolbarWidget } from '@blocksuite/affine/blocks/image';
+import { ParagraphBlockService } from '@blocksuite/affine/blocks/paragraph';
+import { surfaceRefToolbarWidget } from '@blocksuite/affine/blocks/surface-ref';
 import type {
   Container,
   ServiceIdentifier,
 } from '@blocksuite/affine/global/di';
 import { DisposableGroup } from '@blocksuite/affine/global/slot';
+import {
+  type ReferenceNodeConfig,
+  ReferenceNodeConfigIdentifier,
+} from '@blocksuite/affine/rich-text';
 import {
   DocModeProvider,
   FeatureFlagService,
@@ -30,6 +26,8 @@ import {
 } from '@blocksuite/affine/shared/services';
 import type { SpecBuilder } from '@blocksuite/affine/shared/utils';
 import type { ExtensionType } from '@blocksuite/affine/store';
+import { SlashMenuExtension } from '@blocksuite/affine/widgets/slash-menu';
+import { toolbarWidget } from '@blocksuite/affine/widgets/toolbar';
 import { batch, signal } from '@preact/signals-core';
 import type { FrameworkProvider } from '@toeverything/infra';
 

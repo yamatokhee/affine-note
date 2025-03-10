@@ -1,8 +1,8 @@
 import {
   EdgelessEditorBlockSpecs,
   PageEditorBlockSpecs,
-  RefNodeSlotsProvider,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/extensions';
+import { RefNodeSlotsProvider } from '@blocksuite/affine/rich-text';
 import {
   CommunityCanvasTextFonts,
   DocModeProvider,

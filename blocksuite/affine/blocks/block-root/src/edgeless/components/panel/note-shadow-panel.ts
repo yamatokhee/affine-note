@@ -142,9 +142,3 @@ export class EdgelessNoteShadowPanel extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor value!: string;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-note-shadow-panel': EdgelessNoteShadowPanel;
-  }
-}

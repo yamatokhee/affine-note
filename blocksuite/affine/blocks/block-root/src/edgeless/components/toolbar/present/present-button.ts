@@ -38,9 +38,3 @@ export class EdgelessPresentButton extends QuickToolMixin(
   </div>`;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-present-button': EdgelessPresentButton;
-  }
-}

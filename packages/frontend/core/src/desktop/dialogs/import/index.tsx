@@ -17,7 +17,7 @@ import {
   MarkdownTransformer,
   NotionHtmlTransformer,
   ZipTransformer,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/blocks/root';
 import { openFileOrFiles } from '@blocksuite/affine/shared/utils';
 import type { Workspace } from '@blocksuite/affine/store';
 import {

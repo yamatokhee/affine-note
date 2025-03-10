@@ -238,9 +238,3 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
   @property({ attribute: false })
   accessor surfaceWidth: number = DEFAULT_PREVIEW_CONTAINER_WIDTH;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'frame-preview': FramePreview;
-  }
-}

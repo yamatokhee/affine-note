@@ -413,9 +413,3 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
   @query('rich-text')
   accessor richText!: RichText;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-text-editor': EdgelessTextEditor;
-  }
-}

@@ -172,9 +172,3 @@ export class OverlayScrollbar extends LitElement {
   @query('.overlay-handle')
   private accessor _handle!: HTMLDivElement;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'overlay-scrollbar': OverlayScrollbar;
-  }
-}

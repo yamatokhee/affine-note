@@ -148,9 +148,3 @@ export class EdgelessConnectorMenu extends EdgelessToolbarToolMixin(
   @property({ attribute: false })
   accessor onChange!: (props: Record<string, unknown>) => void;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-connector-menu': EdgelessConnectorMenu;
-  }
-}

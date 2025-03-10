@@ -56,9 +56,3 @@ export class EdgelessDraggingAreaRectWidget extends WidgetComponent<
     `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-dragging-area-rect': EdgelessDraggingAreaRectWidget;
-  }
-}

@@ -446,9 +446,3 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
   @state()
   accessor readyToDrop = false;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-mindmap-tool-button': EdgelessMindmapToolButton;
-  }
-}

@@ -95,9 +95,3 @@ export class EdgelessLassoToolButton extends QuickToolMixin(
   @query('.current-icon')
   accessor currentIcon!: HTMLInputElement;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-lasso-tool-button': EdgelessLassoToolButton;
-  }
-}

@@ -208,9 +208,3 @@ export class EdgelessZoomToolbar extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor layout: 'horizontal' | 'vertical' = 'horizontal';
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-zoom-toolbar': EdgelessZoomToolbar;
-  }
-}

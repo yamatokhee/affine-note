@@ -195,9 +195,3 @@ export class EdgelessNavigatorSettingButton extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor setPopperShow: (show: boolean) => void = () => {};
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-navigator-setting-button': EdgelessNavigatorSettingButton;
-  }
-}

@@ -96,9 +96,3 @@ export class EdgelessFrameMenu extends EdgelessToolbarToolMixin(LitElement) {
     `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-frame-menu': EdgelessFrameMenu;
-  }
-}

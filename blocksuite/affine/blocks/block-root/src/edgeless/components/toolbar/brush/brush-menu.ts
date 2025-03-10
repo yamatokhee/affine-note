@@ -80,9 +80,3 @@ export class EdgelessBrushMenu extends EdgelessToolbarToolMixin(
   @property({ attribute: false })
   accessor onChange!: (props: Record<string, unknown>) => void;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-brush-menu': EdgelessBrushMenu;
-  }
-}

@@ -3,20 +3,23 @@ import {
   GfxControllerIdentifier,
   type GfxModel,
 } from '@blocksuite/affine/block-std/gfx';
+import { isCanvasElement, splitElements } from '@blocksuite/affine/blocks/root';
+import {
+  getSurfaceBlock,
+  type SurfaceBlockComponent,
+} from '@blocksuite/affine/blocks/surface';
 import {
   DatabaseBlockModel,
   type FrameBlockModel,
+  ImageBlockModel,
+} from '@blocksuite/affine/model';
+import {
   getBlockSelectionsCommand,
   getImageSelectionsCommand,
   getSelectedBlocksCommand,
   getSelectedModelsCommand,
-  getSurfaceBlock,
   getTextSelectionCommand,
-  ImageBlockModel,
-  isCanvasElement,
-  splitElements,
-  type SurfaceBlockComponent,
-} from '@blocksuite/affine/blocks';
+} from '@blocksuite/affine/shared/commands';
 import { matchModels } from '@blocksuite/affine/shared/utils';
 import {
   type BlockModel,

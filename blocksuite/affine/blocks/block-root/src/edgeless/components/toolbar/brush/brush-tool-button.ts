@@ -89,9 +89,3 @@ export class EdgelessBrushToolButton extends EdgelessToolbarToolMixin(
     `;
   }
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-brush-tool-button': EdgelessBrushToolButton;
-  }
-}

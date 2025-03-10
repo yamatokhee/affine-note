@@ -1,7 +1,8 @@
 import '../../style.css';
 
 import * as blockStd from '@blocksuite/affine/block-std';
-import * as blocks from '@blocksuite/affine/blocks';
+import * as databaseBlocks from '@blocksuite/affine/blocks/database';
+import * as noteBlocks from '@blocksuite/affine/blocks/note';
 import { effects as blocksEffects } from '@blocksuite/affine/effects';
 import * as globalUtils from '@blocksuite/affine/global/utils';
 import * as services from '@blocksuite/affine/shared/services';
@@ -36,7 +37,10 @@ async function main() {
     Object.defineProperty(window, '$blocksuite', {
       value: Object.freeze({
         store,
-        blocks,
+        blocks: {
+          database: databaseBlocks,
+          note: noteBlocks,
+        },
         global: { utils: globalUtils },
         services,
         editor,
