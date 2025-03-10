@@ -53,13 +53,13 @@ function getParagraphs(host: EditorHost) {
       const sentences = segmentSentences(paragraphNode.textContent || '');
       paragraph.sentences = sentences.map(sentence => {
         const sentenceRects = getSentenceRects(paragraphNode, sentence);
-        const rects = sentenceRects.map(({ rect }) => {
+        const rects = sentenceRects.map(({ text, rect }) => {
           const [modelX, modelY] = clientToModelCoord(viewportRecord, [
             rect.x,
             rect.y,
           ]);
           return {
-            text: sentence,
+            text,
             ...rect,
             rect: {
               x: modelX,
@@ -105,10 +105,7 @@ export function getViewportLayout(
     });
   });
 
-  const layoutModelCoord = clientToModelCoord(viewport, [
-    layoutMinX,
-    layoutMinY,
-  ]);
+  const layoutModelCoord = [layoutMinX, layoutMinY];
   const w = (layoutMaxX - layoutMinX) / zoom / viewport.viewScale;
   const h = (layoutMaxY - layoutMinY) / zoom / viewport.viewScale;
   const layout: ViewportLayout = {
