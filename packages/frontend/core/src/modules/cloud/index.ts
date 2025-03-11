@@ -4,7 +4,6 @@ export type { AuthAccountInfo } from './entities/session';
 export { AccountChanged } from './events/account-changed';
 export { AccountLoggedIn } from './events/account-logged-in';
 export { AccountLoggedOut } from './events/account-logged-out';
-export { ServerInitialized } from './events/server-initialized';
 export { AuthProvider } from './provider/auth';
 export { ValidatorProvider } from './provider/validator';
 export { ServerScope } from './scopes/server';
