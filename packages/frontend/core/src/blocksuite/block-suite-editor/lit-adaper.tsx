@@ -24,8 +24,8 @@ import { MemberSearchService } from '@affine/core/modules/permissions';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import track from '@affine/track';
 import type { DocTitle } from '@blocksuite/affine/fragments/doc-title';
+import { ViewportTurboRendererExtension } from '@blocksuite/affine/gfx/turbo-renderer';
 import type { DocMode } from '@blocksuite/affine/model';
-import { ViewportTurboRendererExtension } from '@blocksuite/affine/shared/viewport-renderer';
 import type { Store } from '@blocksuite/affine/store';
 import {
   useFramework,
