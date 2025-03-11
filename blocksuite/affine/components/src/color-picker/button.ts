@@ -202,9 +202,3 @@ export class EdgelessColorPickerButton extends WithDisposable(LitElement) {
   @property()
   accessor tooltip: string | undefined = undefined;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'edgeless-color-picker-button': EdgelessColorPickerButton;
-  }
-}
