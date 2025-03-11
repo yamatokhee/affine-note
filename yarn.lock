@@ -2870,6 +2870,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blocksuite/affine-gfx-turbo-renderer@workspace:*, @blocksuite/affine-gfx-turbo-renderer@workspace:blocksuite/affine/gfx/turbo-renderer":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-gfx-turbo-renderer@workspace:blocksuite/affine/gfx/turbo-renderer"
+  dependencies:
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@types/lodash-es": "npm:^4.17.12"
+    lodash-es: "npm:^4.17.21"
+    tweakpane: "npm:^4.0.5"
+  languageName: unknown
+  linkType: soft
+
 "@blocksuite/affine-model@workspace:*, @blocksuite/affine-model@workspace:blocksuite/affine/model":
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-model@workspace:blocksuite/affine/model"
@@ -2959,7 +2971,6 @@ __metadata:
     remark-math: "npm:^6.0.0"
     remark-parse: "npm:^11.0.0"
     remark-stringify: "npm:^11.0.0"
-    tweakpane: "npm:^4.0.5"
     unified: "npm:^11.0.5"
     vitest: "npm:3.0.8"
     yjs: "npm:^13.6.21"
@@ -3138,6 +3149,7 @@ __metadata:
     "@blocksuite/affine-fragment-frame-panel": "workspace:*"
     "@blocksuite/affine-fragment-outline": "workspace:*"
     "@blocksuite/affine-gfx-text": "workspace:*"
+    "@blocksuite/affine-gfx-turbo-renderer": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-rich-text": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
