@@ -1,5 +1,5 @@
 import type { BlockMeta } from '@blocksuite/affine-model';
-import { type BlockModel, type Store, StoreExtension } from '@blocksuite/store';
+import { type BlockModel, StoreExtension } from '@blocksuite/store';
 
 import { FeatureFlagService } from './feature-flag-service';
 import { UserProvider } from './user-service';
@@ -15,30 +15,27 @@ export class BlockMetaService extends StoreExtension {
   static override key = 'affine-block-meta-service';
 
   get isBlockMetaEnabled() {
-    return (
-      this.store.get(FeatureFlagService).getFlag('enable_block_meta') === true
-    );
+    const flagService = this.store.get(FeatureFlagService);
+    return flagService.getFlag('enable_block_meta') === true;
   }
 
-  constructor(store: Store) {
-    super(store);
+  override loaded() {
+    this.store.disposableGroup.add(
+      this.store.slots.blockUpdated.on(({ type, id }) => {
+        if (!this.isBlockMetaEnabled) return;
 
-    if (!this.isBlockMetaEnabled) return;
+        const model = this.store.getBlock(id)?.model;
+        if (!model) return;
 
-    this.store.slots.blockUpdated.on(({ type, id }) => {
-      if (!this.isBlockMetaEnabled) return;
+        if (type === 'add') {
+          return this._onBlockCreated(model);
+        }
 
-      const model = this.store.getBlock(id)?.model;
-      if (!model) return;
-
-      if (type === 'add') {
-        return this._onBlockCreated(model);
-      }
-
-      if (type === 'update') {
-        return this._onBlockUpdated(model);
-      }
-    });
+        if (type === 'update') {
+          return this._onBlockUpdated(model);
+        }
+      })
+    );
   }
 
   private readonly _onBlockCreated = (model: BlockModel<BlockMeta>): void => {

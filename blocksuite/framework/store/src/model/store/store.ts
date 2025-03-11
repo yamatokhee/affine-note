@@ -1,7 +1,6 @@
 import { Container, type ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import type { Disposable } from '@blocksuite/global/slot';
-import { Slot } from '@blocksuite/global/slot';
+import { DisposableGroup, Slot } from '@blocksuite/global/slot';
 import { computed, signal } from '@preact/signals-core';
 
 import type { ExtensionType } from '../../extension/extension.js';
@@ -39,6 +38,8 @@ const internalExtensions = [StoreSelectionExtension];
 export class Store {
   readonly userExtensions: ExtensionType[];
 
+  disposableGroup = new DisposableGroup();
+
   private readonly _provider: ServiceProvider;
 
   private readonly _runQuery = (block: Block) => {
@@ -50,8 +51,6 @@ export class Store {
   private readonly _blocks = signal<Record<string, Block>>({});
 
   private readonly _crud: DocCRUD;
-
-  private readonly _disposeBlockUpdated: Disposable;
 
   private readonly _query: Query = {
     match: [],
@@ -358,8 +357,12 @@ export class Store {
       this._onBlockAdded(id, true);
     });
 
-    this._disposeBlockUpdated = this._doc.slots.yBlockUpdated.on(
-      ({ type, id }) => {
+    this._subscribeToSlots();
+  }
+
+  private readonly _subscribeToSlots = () => {
+    this.disposableGroup.add(
+      this._doc.slots.yBlockUpdated.on(({ type, id }) => {
         switch (type) {
           case 'add': {
             this._onBlockAdded(id);
@@ -370,9 +373,13 @@ export class Store {
             return;
           }
         }
-      }
+      })
     );
-  }
+    this.disposableGroup.add(this.slots.ready);
+    this.disposableGroup.add(this.slots.blockUpdated);
+    this.disposableGroup.add(this.slots.rootAdded);
+    this.disposableGroup.add(this.slots.rootDeleted);
+  };
 
   private _getSiblings<T>(
     block: BlockModel | string,
@@ -598,11 +605,7 @@ export class Store {
       ext.disposed();
     });
 
-    this._disposeBlockUpdated.dispose();
-    this.slots.ready.dispose();
-    this.slots.blockUpdated.dispose();
-    this.slots.rootAdded.dispose();
-    this.slots.rootDeleted.dispose();
+    this.disposableGroup.dispose();
   }
 
   getBlock(id: string): Block | undefined {
@@ -702,6 +705,11 @@ export class Store {
   }
 
   load(initFn?: () => void) {
+    if (this.disposableGroup.disposed) {
+      this.disposableGroup = new DisposableGroup();
+      this._subscribeToSlots();
+    }
+
     this._doc.load(initFn);
     this._provider.getAll(StoreExtensionIdentifier).forEach(ext => {
       ext.loaded();
