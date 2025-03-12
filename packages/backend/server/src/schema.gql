@@ -618,6 +618,9 @@ type InviteUserType {
   """User email verified"""
   createdAt: DateTime @deprecated(reason: "useless")
 
+  """User is disabled"""
+  disabled: Boolean
+
   """User email"""
   email: String
 
@@ -767,6 +770,9 @@ type Mutation {
   addContextDoc(options: AddContextDocInput!): [CopilotContextListItem!]!
   addWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Boolean!
   approveMember(userId: String!, workspaceId: String!): Boolean!
+
+  """Ban an user"""
+  banUser(id: String!): UserType!
   cancelSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
   changeEmail(email: String!, token: String!): UserType!
   changePassword(newPassword: String!, token: String!, userId: String): Boolean!
@@ -809,6 +815,9 @@ type Mutation {
   """Delete a user account"""
   deleteUser(id: String!): DeleteAccount!
   deleteWorkspace(id: String!): Boolean!
+
+  """Reenable an banned user"""
+  enableUser(id: String!): UserType!
 
   """Create a chat session"""
   forkCopilotSession(options: ForkChatSessionInput!): String!
@@ -864,7 +873,7 @@ type Mutation {
   updateRuntimeConfigs(updates: JSONObject!): [ServerRuntimeConfigType!]!
   updateSubscriptionRecurring(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, recurring: SubscriptionRecurring!, workspaceId: String): SubscriptionType!
 
-  """Update a user"""
+  """Update an user"""
   updateUser(id: String!, input: ManageUserInput!): UserType!
 
   """update user enabled feature"""
@@ -1358,6 +1367,9 @@ type UserType {
 
   """User email verified"""
   createdAt: DateTime @deprecated(reason: "useless")
+
+  """User is disabled"""
+  disabled: Boolean!
 
   """User email"""
   email: String!

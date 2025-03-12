@@ -202,7 +202,9 @@ export class UserManagementResolver {
     description: 'Get user by id',
   })
   async getUser(@Args('id') id: string) {
-    const user = await this.models.user.get(id);
+    const user = await this.models.user.get(id, {
+      withDisabled: true,
+    });
 
     if (!user) {
       return null;
@@ -217,7 +219,9 @@ export class UserManagementResolver {
     nullable: true,
   })
   async getUserByEmail(@Args('email') email: string) {
-    const user = await this.models.user.getUserByEmail(email);
+    const user = await this.models.user.getUserByEmail(email, {
+      withDisabled: true,
+    });
 
     if (!user) {
       return null;
@@ -256,7 +260,7 @@ export class UserManagementResolver {
   }
 
   @Mutation(() => UserType, {
-    description: 'Update a user',
+    description: 'Update an user',
   })
   async updateUser(
     @Args('id') id: string,
@@ -281,5 +285,19 @@ export class UserManagementResolver {
         name: input.name,
       })
     );
+  }
+
+  @Mutation(() => UserType, {
+    description: 'Ban an user',
+  })
+  async banUser(@Args('id') id: string): Promise<UserType> {
+    return sessionUser(await this.models.user.ban(id));
+  }
+
+  @Mutation(() => UserType, {
+    description: 'Reenable an banned user',
+  })
+  async enableUser(@Args('id') id: string): Promise<UserType> {
+    return sessionUser(await this.models.user.enable(id));
   }
 }
