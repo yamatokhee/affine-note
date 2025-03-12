@@ -506,6 +506,10 @@ type GraphqlBadRequestDataType {
   message: String!
 }
 
+input ImportUsersInput {
+  users: [CreateUserInput!]!
+}
+
 type InvalidEmailDataType {
   email: String!
 }
@@ -824,6 +828,9 @@ type Mutation {
   generateLicenseKey(sessionId: String!): String!
   grantDocUserRoles(input: GrantDocUserRolesInput!): Boolean!
   grantMember(permission: Permission!, userId: String!, workspaceId: String!): Boolean!
+
+  """import users"""
+  importUsers(input: ImportUsersInput!): [UserImportResultType!]!
   invite(email: String!, permission: Permission @deprecated(reason: "never used"), sendInviteMail: Boolean, workspaceId: String!): String!
   inviteBatch(emails: [String!]!, sendInviteMail: Boolean, workspaceId: String!): [InviteResult!]!
   leaveWorkspace(sendLeaveMail: Boolean, workspaceId: String!, workspaceName: String @deprecated(reason: "no longer used")): Boolean!
@@ -1332,6 +1339,13 @@ input UpdateWorkspaceInput {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+type UserImportFailedType {
+  email: String!
+  error: String!
+}
+
+union UserImportResultType = UserImportFailedType | UserType
 
 union UserOrLimitedUser = LimitedUserType | UserType
 

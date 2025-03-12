@@ -177,6 +177,17 @@ export class UserModel extends BaseModel {
     return user;
   }
 
+  async importUsers(inputs: CreateUserInput[]) {
+    return await Promise.allSettled(
+      inputs.map(async input => {
+        return await this.create({
+          ...input,
+          registered: true,
+        });
+      })
+    );
+  }
+
   @Transactional()
   async update(id: string, data: UpdateUserInput) {
     if (data.password) {

@@ -1,9 +1,11 @@
 import {
   Args,
+  createUnionType,
   Field,
   InputType,
   Int,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
 } from '@nestjs/graphql';
@@ -168,8 +170,28 @@ class CreateUserInput {
   email!: string;
 
   @Field(() => String, { nullable: true })
-  name!: string | null;
+  name?: string;
 }
+
+@InputType()
+class ImportUsersInput {
+  @Field(() => [CreateUserInput])
+  users!: CreateUserInput[];
+}
+
+@ObjectType()
+class UserImportFailedType {
+  @Field(() => String)
+  email!: string;
+
+  @Field(() => String)
+  error!: string;
+}
+
+const UserImportResultType = createUnionType({
+  name: 'UserImportResultType',
+  types: () => [UserType, UserImportFailedType],
+});
 
 @Admin()
 @Resolver(() => UserType)
@@ -243,6 +265,27 @@ export class UserManagementResolver {
 
     // data returned by `createUser` does not satisfies `UserType`
     return this.getUser(id);
+  }
+
+  @Mutation(() => [UserImportResultType], {
+    description: 'import users',
+  })
+  async importUsers(
+    @Args({ name: 'input', type: () => ImportUsersInput })
+    input: ImportUsersInput
+  ): Promise<(typeof UserImportResultType)[]> {
+    const results = await this.models.user.importUsers(input.users);
+
+    return results.map((result, i) => {
+      if (result.status === 'fulfilled') {
+        return sessionUser(result.value);
+      } else {
+        return {
+          email: input.users[i].email,
+          error: result.reason.message,
+        };
+      }
+    });
   }
 
   @Mutation(() => DeleteAccount, {
