@@ -1091,6 +1091,13 @@ type QueryTooLongDataType {
   max: Int!
 }
 
+type ReleaseVersionType {
+  changelog: String!
+  publishedAt: DateTime!
+  url: String!
+  version: String!
+}
+
 type RemoveAvatar {
   success: Boolean!
 }
@@ -1128,6 +1135,9 @@ type SameSubscriptionRecurringDataType {
 }
 
 type ServerConfigType {
+  """fetch latest available upgradable release of server"""
+  availableUpgrade: ReleaseVersionType!
+
   """Features for user that can be configured"""
   availableUserFeatures: [FeatureType!]!
 
