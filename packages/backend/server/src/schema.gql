@@ -303,6 +303,7 @@ enum DocRole {
   Editor
   External
   Manager
+  None
   Owner
   Reader
 }
