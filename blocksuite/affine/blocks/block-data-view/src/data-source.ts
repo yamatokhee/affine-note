@@ -199,7 +199,7 @@ export class BlockQueryDataSource extends DataSourceBase {
     const property = this.getProperty(propertyId);
     return (
       property.getColumnData?.(this.blocks[0].model) ??
-      property.metaConfig.config.defaultData()
+      property.metaConfig.config.propertyData.default()
     );
   }
 
@@ -284,7 +284,8 @@ export class BlockQueryDataSource extends DataSourceBase {
 
         currentCells as any
       ) ?? {
-        property: databaseBlockAllPropertyMap[toType].config.defaultData(),
+        property:
+          databaseBlockAllPropertyMap[toType].config.propertyData.default(),
         cells: currentCells.map(() => undefined),
       };
       this.block.doc.captureSync();

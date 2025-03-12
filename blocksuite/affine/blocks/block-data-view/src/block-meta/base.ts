@@ -4,16 +4,17 @@ import type { Block, BlockModel } from '@blocksuite/store';
 
 type PropertyMeta<
   T extends BlockModel = BlockModel,
-  Value = unknown,
+  RawValue = unknown,
+  JsonValue = unknown,
   ColumnData extends NonNullable<unknown> = NonNullable<unknown>,
 > = {
   name: string;
   key: string;
-  metaConfig: PropertyMetaConfig<string, ColumnData, Value>;
+  metaConfig: PropertyMetaConfig<string, ColumnData, RawValue, JsonValue>;
   getColumnData?: (block: T) => ColumnData;
   setColumnData?: (block: T, data: ColumnData) => void;
-  get: (block: T) => Value;
-  set?: (block: T, value: Value) => void;
+  get: (block: T) => RawValue;
+  set?: (block: T, value: RawValue) => void;
   updated: (block: T, callback: () => void) => DisposableMember;
 };
 export type BlockMeta<T extends BlockModel = BlockModel> = {

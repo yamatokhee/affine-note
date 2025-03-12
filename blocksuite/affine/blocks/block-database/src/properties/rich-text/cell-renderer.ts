@@ -81,7 +81,7 @@ function toggleStyle(
   inlineEditor.syncInlineRange();
 }
 
-export class RichTextCell extends BaseCellRenderer<Text> {
+export class RichTextCell extends BaseCellRenderer<Text, string> {
   inlineEditor$ = computed(() => {
     return this.richText$.value?.inlineEditor;
   });
