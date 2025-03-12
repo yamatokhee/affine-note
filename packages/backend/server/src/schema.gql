@@ -39,7 +39,6 @@ enum ContextFileStatus {
 type Copilot {
   """Get the context list of a session"""
   contexts(contextId: String, sessionId: String!): [CopilotContext!]!
-  docId: ID
   histories(docId: String, options: QueryChatHistoriesInput): [CopilotHistories!]!
 
   """Get the quota of the user in the workspace"""

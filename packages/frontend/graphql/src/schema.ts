@@ -78,7 +78,6 @@ export interface Copilot {
   __typename?: 'Copilot';
   /** Get the context list of a session */
   contexts: Array<CopilotContext>;
-  docId: Maybe<Scalars['ID']['output']>;
   histories: Array<CopilotHistories>;
   /** Get the quota of the user in the workspace */
   quota: CopilotQuota;
