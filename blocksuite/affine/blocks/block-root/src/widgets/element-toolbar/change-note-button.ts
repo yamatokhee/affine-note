@@ -7,10 +7,7 @@ import type {
   EdgelessColorPickerButton,
   PickColorEvent,
 } from '@blocksuite/affine-components/color-picker';
-import {
-  packColor,
-  packColorsWithColorScheme,
-} from '@blocksuite/affine-components/color-picker';
+import { packColor } from '@blocksuite/affine-components/color-picker';
 import {
   type EditorMenuButton,
   renderToolbarSeparator,
@@ -46,7 +43,6 @@ import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
-import { when } from 'lit/directives/when.js';
 import countBy from 'lodash-es/countBy';
 import maxBy from 'lodash-es/maxBy';
 
@@ -89,12 +85,6 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
   get crud() {
     return this.edgeless.std.get(EdgelessCRUDIdentifier);
   }
-
-  private readonly _setBackground = (background: string) => {
-    this.notes.forEach(element => {
-      this.crud.updateElement(element.id, { background });
-    });
-  };
 
   private readonly _setBorderRadius = (borderRadius: number) => {
     this.notes.forEach(note => {
@@ -348,6 +338,10 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
       NoteConfigExtension.identifier
     )?.edgelessNoteHeader;
 
+    const enableCustomColor = this.edgeless.doc
+      .get(FeatureFlagService)
+      .getFlag('enable_color_picker');
+
     const theme = this.edgeless.std.get(ThemeProvider).theme;
     const buttonIconSize = { width: '20px', height: '20px' };
     const buttons = [
@@ -403,57 +397,20 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
 
       isDocOnly
         ? nothing
-        : when(
-            this.edgeless.doc
-              .get(FeatureFlagService)
-              .getFlag('enable_color_picker'),
-            () => {
-              const { type, colors } = packColorsWithColorScheme(
-                colorScheme,
-                background,
-                note.background
-              );
-
-              return html`
-                <edgeless-color-picker-button
-                  class="background"
-                  .label=${'Background'}
-                  .pick=${this.pickColor}
-                  .color=${background}
-                  .colorPanelClass=${'small'}
-                  .colorType=${type}
-                  .colors=${colors}
-                  .theme=${colorScheme}
-                  .palettes=${DefaultTheme.NoteBackgroundColorPalettes}
-                >
-                </edgeless-color-picker-button>
-              `;
-            },
-            () => html`
-              <editor-menu-button
-                .contentPadding=${'8px'}
-                .button=${html`
-                  <editor-icon-button
-                    aria-label="Background"
-                    .tooltip=${'Background'}
-                  >
-                    <edgeless-color-button
-                      .color=${background}
-                    ></edgeless-color-button>
-                  </editor-icon-button>
-                `}
-              >
-                <edgeless-color-panel
-                  class="small"
-                  .value=${background}
-                  .theme=${colorScheme}
-                  .palettes=${DefaultTheme.NoteBackgroundColorPalettes}
-                  @select=${this._setBackground}
-                >
-                </edgeless-color-panel>
-              </editor-menu-button>
-            `
-          ),
+        : html`
+            <edgeless-color-picker-button
+              class="background"
+              .label=${'Background'}
+              .pick=${this.pickColor}
+              .color=${background}
+              .colorPanelClass=${'small'}
+              .theme=${colorScheme}
+              .palettes=${DefaultTheme.NoteBackgroundColorPalettes}
+              .originalColor=${note.background}
+              .enableCustomColor=${enableCustomColor}
+            >
+            </edgeless-color-picker-button>
+          `,
 
       isDocOnly
         ? nothing
