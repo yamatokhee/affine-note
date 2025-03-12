@@ -46,8 +46,9 @@ public class AuthPlugin: CAPPlugin, CAPBridgedPlugin {
         let endpoint = try call.getStringEnsure("endpoint")
         let code = try call.getStringEnsure("code")
         let state = try call.getStringEnsure("state")
+        let clientNonce = call.getString("clientNonce")
         
-        let (data, response) = try await self.fetch(endpoint, method: "POST", action: "/api/oauth/callback", headers: [:], body: ["code": code, "state": state])
+        let (data, response) = try await self.fetch(endpoint, method: "POST", action: "/api/oauth/callback", headers: [:], body: ["code": code, "state": state, "client_nonce": clientNonce])
         
         if response.statusCode >= 400 {
           if let textBody = String(data: data, encoding: .utf8) {

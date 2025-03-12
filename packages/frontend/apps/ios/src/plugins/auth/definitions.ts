@@ -8,6 +8,7 @@ export interface AuthPlugin {
     endpoint: string;
     code: string;
     state: string;
+    clientNonce?: string;
   }): Promise<{ token: string }>;
   signInPassword(options: {
     endpoint: string;

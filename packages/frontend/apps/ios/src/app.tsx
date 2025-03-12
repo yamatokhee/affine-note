@@ -177,11 +177,12 @@ framework.scope(ServerScope).override(AuthProvider, resolver => {
       });
       await writeEndpointToken(endpoint, token);
     },
-    async signInOauth(code, state, _provider) {
+    async signInOauth(code, state, _provider, clientNonce) {
       const { token } = await Auth.signInOauth({
         endpoint,
         code,
         state,
+        clientNonce,
       });
       await writeEndpointToken(endpoint, token);
       return {};

@@ -18,10 +18,15 @@ export function configureDefaultAuthProvider(framework: Framework) {
         });
       },
 
-      async signInOauth(code: string, state: string, _provider: string) {
+      async signInOauth(
+        code: string,
+        state: string,
+        _provider: string,
+        clientNonce?: string
+      ) {
         const res = await fetchService.fetch('/api/oauth/callback', {
           method: 'POST',
-          body: JSON.stringify({ code, state }),
+          body: JSON.stringify({ code, state, client_nonce: clientNonce }),
           headers: {
             'content-type': 'application/json',
           },

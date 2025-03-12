@@ -6,7 +6,8 @@ export interface AuthProvider {
   signInOauth(
     code: string,
     state: string,
-    provider: string
+    provider: string,
+    clientNonce?: string
   ): Promise<{ redirectUri?: string }>;
 
   signInPassword(credential: {
