@@ -8,13 +8,17 @@ export function configureDefaultAuthProvider(framework: Framework) {
   framework.scope(ServerScope).override(AuthProvider, resolver => {
     const fetchService = resolver.get(FetchService);
     return {
-      async signInMagicLink(email: string, token: string) {
+      async signInMagicLink(
+        email: string,
+        token: string,
+        clientNonce?: string
+      ) {
         await fetchService.fetch('/api/auth/magic-link', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, token }),
+          body: JSON.stringify({ email, token, client_nonce: clientNonce }),
         });
       },
 

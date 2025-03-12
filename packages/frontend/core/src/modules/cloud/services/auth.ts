@@ -79,6 +79,7 @@ export class AuthService extends Service {
     redirectUrl?: string // url to redirect to after signed-in
   ) {
     track.$.$.auth.signIn({ method: 'magic-link' });
+    this.setClientNonce();
     try {
       const scheme = this.urlService.getClientScheme();
       const magicLinkUrlParams = new URLSearchParams();
@@ -95,6 +96,7 @@ export class AuthService extends Service {
           // we call it [callbackUrl] instead of [redirect_uri]
           // to make it clear the url is used to finish the sign-in process instead of redirect after signed-in
           callbackUrl: `/magic-link?${magicLinkUrlParams.toString()}`,
+          client_nonce: this.store.getClientNonce(),
         }),
         headers: {
           'content-type': 'application/json',

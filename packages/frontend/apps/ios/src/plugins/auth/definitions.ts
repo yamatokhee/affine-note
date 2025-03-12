@@ -3,6 +3,7 @@ export interface AuthPlugin {
     endpoint: string;
     email: string;
     token: string;
+    clientNonce?: string;
   }): Promise<{ token: string }>;
   signInOauth(options: {
     endpoint: string;

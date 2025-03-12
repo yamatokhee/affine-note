@@ -74,7 +74,11 @@ export class AuthStore extends Store {
   }
 
   async signInMagicLink(email: string, token: string) {
-    await this.authProvider.signInMagicLink(email, token);
+    await this.authProvider.signInMagicLink(
+      email,
+      token,
+      this.getClientNonce()
+    );
   }
 
   async signInOauth(code: string, state: string, provider: string) {
