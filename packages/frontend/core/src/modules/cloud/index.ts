@@ -33,7 +33,6 @@ import { type Framework } from '@toeverything/infra';
 
 import { DocScope } from '../doc/scopes/doc';
 import { DocService } from '../doc/services/doc';
-import { EditorScope } from '../editor';
 import { GlobalCache, GlobalState } from '../storage/providers/global';
 import { GlobalStateService } from '../storage/services/global';
 import { UrlService } from '../url';
@@ -55,10 +54,10 @@ import { ValidatorProvider } from './provider/validator';
 import { ServerScope } from './scopes/server';
 import { AcceptInviteService } from './services/accept-invite';
 import { AuthService } from './services/auth';
+import { BlocksuiteWriterInfoService } from './services/blocksuite-writer-info';
 import { CaptchaService } from './services/captcha';
 import { CloudDocMetaService } from './services/cloud-doc-meta';
 import { DefaultServerService } from './services/default-server';
-import { EditorUserCursorLabelService } from './services/editor-user-cursor-label';
 import { EventSourceService } from './services/eventsource';
 import { FetchService } from './services/fetch';
 import { GraphQLService } from './services/graphql';
@@ -167,11 +166,6 @@ export function configureCloudModule(framework: Framework) {
     .service(WorkspaceInvoicesService)
     .entity(WorkspaceInvoices, [WorkspaceService, WorkspaceServerService])
     .service(SelfhostLicenseService, [SelfhostLicenseStore, WorkspaceService])
-    .store(SelfhostLicenseStore, [WorkspaceServerService]);
-
-  framework
-    .scope(WorkspaceScope)
-    .scope(DocScope)
-    .scope(EditorScope)
-    .service(EditorUserCursorLabelService, [WorkspaceServerService]);
+    .store(SelfhostLicenseStore, [WorkspaceServerService])
+    .service(BlocksuiteWriterInfoService, [WorkspaceServerService]);
 }

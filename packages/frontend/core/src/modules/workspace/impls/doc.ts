@@ -2,6 +2,7 @@ import { SpecProvider } from '@blocksuite/affine/shared/utils';
 import {
   AwarenessStore,
   type Doc,
+  type ExtensionType,
   type GetBlocksOptions,
   type Query,
   Store,
@@ -91,6 +92,8 @@ export class DocImpl implements Doc {
    * can be used interchangeably with ySpace
    */
   protected readonly _ySpaceDoc: Y.Doc;
+
+  readonly storeExtensions: ExtensionType[] = [];
 
   readonly awarenessStore: AwarenessStore;
 
@@ -284,7 +287,9 @@ export class DocImpl implements Doc {
 
     const storeExtensions = SpecProvider._.getSpec('store');
     const extensionSet = new Set(
-      storeExtensions.value.concat(extensions ?? [])
+      storeExtensions.value
+        .concat(extensions ?? [])
+        .concat(this.storeExtensions)
     );
 
     const doc = new Store({
