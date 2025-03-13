@@ -161,10 +161,26 @@ export const removeContextDocMutation = {
 }`,
 };
 
-export const listContextDocsAndFilesQuery = {
-  id: 'listContextDocsAndFilesQuery' as const,
-  op: 'listContextDocsAndFiles',
-  query: `query listContextDocsAndFiles($workspaceId: String!, $sessionId: String!, $contextId: String!) {
+export const addContextFileMutation = {
+  id: 'addContextFileMutation' as const,
+  op: 'addContextFile',
+  query: `mutation addContextFile($content: Upload!, $options: AddContextFileInput!) {
+  addContextFile(content: $content, options: $options) {
+    id
+    createdAt
+    name
+    chunkSize
+    status
+    blobId
+  }
+}`,
+  file: true,
+};
+
+export const listContextFilesQuery = {
+  id: 'listContextFilesQuery' as const,
+  op: 'listContextFiles',
+  query: `query listContextFiles($workspaceId: String!, $sessionId: String!, $contextId: String!) {
   currentUser {
     copilot(workspaceId: $workspaceId) {
       contexts(sessionId: $sessionId, contextId: $contextId) {
@@ -186,6 +202,59 @@ export const listContextDocsAndFilesQuery = {
 }`,
 };
 
+export const matchContextQuery = {
+  id: 'matchContextQuery' as const,
+  op: 'matchContext',
+  query: `query matchContext($contextId: String!, $content: String!, $limit: SafeInt) {
+  currentUser {
+    copilot {
+      contexts(contextId: $contextId) {
+        matchContext(content: $content, limit: $limit) {
+          fileId
+          chunk
+          content
+          distance
+        }
+      }
+    }
+  }
+}`,
+};
+
+export const removeContextFileMutation = {
+  id: 'removeContextFileMutation' as const,
+  op: 'removeContextFile',
+  query: `mutation removeContextFile($options: RemoveContextFileInput!) {
+  removeContextFile(options: $options)
+}`,
+};
+
+export const listContextDocsAndFilesQuery = {
+  id: 'listContextDocsAndFilesQuery' as const,
+  op: 'listContextDocsAndFiles',
+  query: `query listContextDocsAndFiles($workspaceId: String!, $sessionId: String!, $contextId: String!) {
+  currentUser {
+    copilot(workspaceId: $workspaceId) {
+      contexts(sessionId: $sessionId, contextId: $contextId) {
+        docs {
+          id
+          createdAt
+        }
+        files {
+          id
+          name
+          blobId
+          chunkSize
+          error
+          status
+          createdAt
+        }
+      }
+    }
+  }
+}`,
+};
+
 export const listContextQuery = {
   id: 'listContextQuery' as const,
   op: 'listContext',
@@ -194,9 +263,48 @@ export const listContextQuery = {
     copilot(workspaceId: $workspaceId) {
       contexts(sessionId: $sessionId) {
         id
+        workspaceId
       }
     }
   }
+}`,
+};
+
+export const matchWorkspaceContextQuery = {
+  id: 'matchWorkspaceContextQuery' as const,
+  op: 'matchWorkspaceContext',
+  query: `query matchWorkspaceContext($contextId: String!, $content: String!, $limit: SafeInt) {
+  currentUser {
+    copilot {
+      contexts(contextId: $contextId) {
+        matchWorkspaceContext(content: $content, limit: $limit) {
+          docId
+          chunk
+          content
+          distance
+        }
+      }
+    }
+  }
+}`,
+};
+
+export const getWorkspaceEmbeddingStatusQuery = {
+  id: 'getWorkspaceEmbeddingStatusQuery' as const,
+  op: 'getWorkspaceEmbeddingStatus',
+  query: `query getWorkspaceEmbeddingStatus($workspaceId: String!) {
+  queryWorkspaceEmbeddingStatus(workspaceId: $workspaceId) {
+    total
+    embedded
+  }
+}`,
+};
+
+export const queueWorkspaceEmbeddingMutation = {
+  id: 'queueWorkspaceEmbeddingMutation' as const,
+  op: 'queueWorkspaceEmbedding',
+  query: `mutation queueWorkspaceEmbedding($workspaceId: String!, $docId: [String!]!) {
+  queueWorkspaceEmbedding(workspaceId: $workspaceId, docId: $docId)
 }`,
 };
 

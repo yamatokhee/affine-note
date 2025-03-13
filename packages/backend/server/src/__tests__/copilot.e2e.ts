@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
+import { ProjectRoot } from '@affine-tools/utils/path';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 import Sinon from 'sinon';
@@ -8,7 +9,11 @@ import { ConfigModule } from '../base/config';
 import { AuthService } from '../core/auth';
 import { WorkspaceModule } from '../core/workspaces';
 import { CopilotModule } from '../plugins/copilot';
-import { CopilotContextService } from '../plugins/copilot/context';
+import {
+  CopilotContextDocJob,
+  CopilotContextService,
+} from '../plugins/copilot/context';
+import { MockEmbeddingClient } from '../plugins/copilot/context/embedding';
 import { prompts, PromptService } from '../plugins/copilot/prompt';
 import {
   CopilotProviderService,
@@ -29,6 +34,7 @@ import {
 } from './utils';
 import {
   addContextDoc,
+  addContextFile,
   array2sse,
   chatWithImages,
   chatWithText,
@@ -41,6 +47,7 @@ import {
   getHistories,
   listContext,
   listContextFiles,
+  matchContext,
   MockCopilotTestProvider,
   sse2array,
   textToEventStream,
@@ -52,6 +59,7 @@ const test = ava as TestFn<{
   auth: AuthService;
   app: TestingApp;
   context: CopilotContextService;
+  jobs: CopilotContextDocJob;
   prompt: PromptService;
   provider: CopilotProviderService;
   storage: CopilotStorage;
@@ -86,12 +94,14 @@ test.before(async t => {
   const context = app.get(CopilotContextService);
   const prompt = app.get(PromptService);
   const storage = app.get(CopilotStorage);
+  const jobs = app.get(CopilotContextDocJob);
 
   t.context.app = app;
   t.context.auth = auth;
   t.context.context = context;
   t.context.prompt = prompt;
   t.context.storage = storage;
+  t.context.jobs = jobs;
 });
 
 const promptName = 'prompt';
@@ -719,7 +729,7 @@ test('should be able to search image from unsplash', async t => {
 });
 
 test('should be able to manage context', async t => {
-  const { app } = t.context;
+  const { app, context, jobs } = t.context;
 
   const { id: workspaceId } = await createWorkspace(app);
   const sessionId = await createCopilotSession(
@@ -728,6 +738,10 @@ test('should be able to manage context', async t => {
     randomUUID(),
     promptName
   );
+
+  // use mocked embedding client
+  Sinon.stub(context, 'embeddingClient').get(() => new MockEmbeddingClient());
+  Sinon.stub(jobs, 'embeddingClient').get(() => new MockEmbeddingClient());
 
   {
     await t.throwsAsync(
@@ -747,16 +761,49 @@ test('should be able to manage context', async t => {
     );
   }
 
+  const fs = await import('node:fs');
+  const buffer = fs.readFileSync(
+    ProjectRoot.join('packages/common/native/fixtures/sample.pdf').toFileUrl()
+  );
+
   {
     const contextId = await createCopilotContext(app, workspaceId, sessionId);
 
+    const { id: fileId } = await addContextFile(
+      app,
+      contextId,
+      'fileId1',
+      'sample.pdf',
+      buffer
+    );
     await addContextDoc(app, contextId, 'docId1');
 
-    const { docs } =
+    const { docs, files } =
       (await listContextFiles(app, workspaceId, sessionId, contextId)) || {};
     t.snapshot(
       docs?.map(({ createdAt: _, ...d }) => d),
       'should list context files'
     );
+    t.snapshot(
+      files?.map(({ createdAt: _, id: __, ...f }) => f),
+      'should list context docs'
+    );
+
+    // wait for processing
+    {
+      let { files } =
+        (await listContextFiles(app, workspaceId, sessionId, contextId)) || {};
+
+      while (files?.[0].status !== 'finished') {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        ({ files } =
+          (await listContextFiles(app, workspaceId, sessionId, contextId)) ||
+          {});
+      }
+    }
+
+    const result = (await matchContext(app, contextId, 'test', 1))!;
+    t.is(result.length, 1, 'should match context');
+    t.is(result[0].fileId, fileId, 'should match file id');
   }
 });

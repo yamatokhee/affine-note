@@ -250,7 +250,7 @@ declare global {
       addContextDoc: (options: {
         contextId: string;
         docId: string;
-      }) => Promise<Array<{ id: string }>>;
+      }) => Promise<{ id: string; createdAt: number }>;
       removeContextDoc: (options: {
         contextId: string;
         docId: string;
@@ -268,7 +268,11 @@ declare global {
         sessionId: string,
         contextId: string
       ) => Promise<
-        { docs: CopilotContextDoc[]; files: CopilotContextFile[] } | undefined
+        | {
+            docs: Array<CopilotContextDoc>;
+            files: Array<CopilotContextFile>;
+          }
+        | undefined
       >;
     }
 

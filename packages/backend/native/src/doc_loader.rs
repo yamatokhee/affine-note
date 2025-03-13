@@ -17,9 +17,11 @@ impl Document {
   fn chunks(&self, env: Env) -> Result<JsObject> {
     let mut array = env.create_array_with_length(self.inner.chunks.len())?;
     for (i, chunk) in self.inner.chunks.iter().enumerate() {
+      let content = crate::utils::clean_content(&chunk.content);
+
       let mut obj = env.create_object()?;
       obj.set_named_property("index", i as i64)?;
-      obj.set_named_property("content", chunk.content.clone())?;
+      obj.set_named_property("content", content)?;
       array.set_element(i as u32, obj)?;
     }
     Ok(array)

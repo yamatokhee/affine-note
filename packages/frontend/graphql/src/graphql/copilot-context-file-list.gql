@@ -1,4 +1,8 @@
-query listContextDocsAndFiles($workspaceId: String!, $sessionId: String!, $contextId: String!) {
+query listContextFiles(
+  $workspaceId: String!
+  $sessionId: String!
+  $contextId: String!
+) {
   currentUser {
     copilot(workspaceId: $workspaceId) {
       contexts(sessionId: $sessionId, contextId: $contextId) {
@@ -11,7 +15,6 @@ query listContextDocsAndFiles($workspaceId: String!, $sessionId: String!, $conte
           name
           blobId
           chunkSize
-          error
           status
           createdAt
         }

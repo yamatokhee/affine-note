@@ -240,19 +240,25 @@ export async function matchContext(
 > {
   const res = await app.gql(
     `
-        mutation matchContext($content: String!, $contextId: String!, $limit: SafeInt) {
-          matchContext(content: $content, contextId: $contextId, limit: $limit) {
-            fileId
-            chunk
-            content
-            distance
+        query matchContext($contextId: String!, $content: String!, $limit: SafeInt, $threshold: Float) {
+          currentUser {
+            copilot {
+              contexts(contextId: $contextId) {
+                matchContext(content: $content, limit: $limit, threshold: $threshold) {
+                  fileId
+                  chunk
+                  content
+                  distance
+                }
+              }
+            }
           }
         }
       `,
-    { contextId, content, limit }
+    { contextId, content, limit, threshold: 1 }
   );
 
-  return res.matchContext;
+  return res.currentUser?.copilot?.contexts?.[0]?.matchContext;
 }
 
 export async function listContext(
@@ -287,7 +293,7 @@ export async function addContextFile(
   blobId: string,
   fileName: string,
   content: Buffer
-): Promise<{ id: string }[]> {
+): Promise<{ id: string }> {
   const res = await app
     .POST(gql)
     .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
@@ -303,7 +309,7 @@ export async function addContextFile(
         `,
         variables: {
           content: null,
-          options: { contextId, blobId, fileName },
+          options: { contextId, blobId },
         },
       })
     )

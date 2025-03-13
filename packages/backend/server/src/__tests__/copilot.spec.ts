@@ -1,14 +1,20 @@
 import { randomUUID } from 'node:crypto';
 
+import { ProjectRoot } from '@affine-tools/utils/path';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 import Sinon from 'sinon';
 
+import { EventBus } from '../base';
 import { ConfigModule } from '../base/config';
 import { AuthService } from '../core/auth';
 import { QuotaModule } from '../core/quota';
 import { CopilotModule } from '../plugins/copilot';
-import { CopilotContextService } from '../plugins/copilot/context';
+import {
+  CopilotContextDocJob,
+  CopilotContextService,
+} from '../plugins/copilot/context';
+import { MockEmbeddingClient } from '../plugins/copilot/context/embedding';
 import { prompts, PromptService } from '../plugins/copilot/prompt';
 import {
   CopilotProviderService,
@@ -18,6 +24,7 @@ import {
 } from '../plugins/copilot/providers';
 import { CitationParser } from '../plugins/copilot/providers/perplexity';
 import { ChatSessionService } from '../plugins/copilot/session';
+import { CopilotStorage } from '../plugins/copilot/storage';
 import {
   CopilotCapability,
   CopilotProviderType,
@@ -47,10 +54,13 @@ import { MockCopilotTestProvider, WorkflowTestCases } from './utils/copilot';
 const test = ava as TestFn<{
   auth: AuthService;
   module: TestingModule;
+  event: EventBus;
   context: CopilotContextService;
   prompt: PromptService;
   provider: CopilotProviderService;
   session: ChatSessionService;
+  jobs: CopilotContextDocJob;
+  storage: CopilotStorage;
   workflow: CopilotWorkflowService;
   executors: {
     image: CopilotChatImageExecutor;
@@ -85,19 +95,25 @@ test.before(async t => {
   });
 
   const auth = module.get(AuthService);
+  const event = module.get(EventBus);
   const context = module.get(CopilotContextService);
   const prompt = module.get(PromptService);
   const provider = module.get(CopilotProviderService);
   const session = module.get(ChatSessionService);
   const workflow = module.get(CopilotWorkflowService);
+  const jobs = module.get(CopilotContextDocJob);
+  const storage = module.get(CopilotStorage);
 
   t.context.module = module;
   t.context.auth = auth;
+  t.context.event = event;
   t.context.context = context;
   t.context.prompt = prompt;
   t.context.provider = provider;
   t.context.session = session;
   t.context.workflow = workflow;
+  t.context.jobs = jobs;
+  t.context.storage = storage;
   t.context.executors = {
     image: module.get(CopilotChatImageExecutor),
     text: module.get(CopilotChatTextExecutor),
@@ -1276,7 +1292,7 @@ test('CitationParser should not replace chunks of citation already with URLs', t
 
 // ==================== context ====================
 test('should be able to manage context', async t => {
-  const { context, prompt, session } = t.context;
+  const { context, prompt, session, event, jobs, storage } = t.context;
 
   await prompt.set('prompt', 'model', [
     { role: 'system', content: 'hello {{word}}' },
@@ -1287,6 +1303,10 @@ test('should be able to manage context', async t => {
     userId,
     promptName: 'prompt',
   });
+
+  // use mocked embedding client
+  Sinon.stub(context, 'embeddingClient').get(() => new MockEmbeddingClient());
+  Sinon.stub(jobs, 'embeddingClient').get(() => new MockEmbeddingClient());
 
   {
     await t.throwsAsync(
@@ -1310,8 +1330,44 @@ test('should be able to manage context', async t => {
     );
   }
 
+  const fs = await import('node:fs');
+  const buffer = fs.readFileSync(
+    ProjectRoot.join('packages/common/native/fixtures/sample.pdf').toFileUrl()
+  );
+
   {
     const session = await context.create(chatSession);
+
+    await storage.put(userId, session.workspaceId, 'blob', buffer);
+
+    const file = await session.addFile('blob', 'sample.pdf');
+
+    const handler = Sinon.spy(event, 'emit');
+
+    await jobs.embedPendingFile({
+      userId,
+      workspaceId: session.workspaceId,
+      contextId: session.id,
+      blobId: file.blobId,
+      fileId: file.id,
+      fileName: file.name,
+    });
+
+    t.deepEqual(handler.lastCall.args, [
+      'workspace.file.embed.finished',
+      {
+        contextId: session.id,
+        fileId: file.id,
+        chunkSize: 1,
+      },
+    ]);
+
+    const list = session.listFiles();
+    t.deepEqual(
+      list.map(f => f.id),
+      [file.id],
+      'should list file id'
+    );
 
     const docId = randomUUID();
     await session.addDocRecord(docId);
@@ -1320,5 +1376,9 @@ test('should be able to manage context', async t => {
 
     await session.removeDocRecord(docId);
     t.deepEqual(session.listDocs(), [], 'should remove doc id');
+
+    const result = await session.matchFileChunks('test', 1, undefined, 1);
+    t.is(result.length, 1, 'should match context');
+    t.is(result[0].fileId, file.id, 'should match file id');
   }
 });

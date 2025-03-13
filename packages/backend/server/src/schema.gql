@@ -7,6 +7,11 @@ input AddContextDocInput {
   docId: String!
 }
 
+input AddContextFileInput {
+  blobId: String!
+  contextId: String!
+}
+
 type AlreadyInSpaceDataType {
   spaceId: String!
 }
@@ -36,9 +41,28 @@ enum ContextFileStatus {
   processing
 }
 
+type ContextMatchedDocChunk {
+  chunk: SafeInt!
+  content: String!
+  distance: Float
+  docId: String!
+}
+
+type ContextMatchedFileChunk {
+  chunk: SafeInt!
+  content: String!
+  distance: Float
+  fileId: String!
+}
+
+type ContextWorkspaceEmbeddingStatus {
+  embedded: SafeInt!
+  total: SafeInt!
+}
+
 type Copilot {
   """Get the context list of a session"""
-  contexts(contextId: String, sessionId: String!): [CopilotContext!]!
+  contexts(contextId: String, sessionId: String): [CopilotContext!]!
   histories(docId: String, options: QueryChatHistoriesInput): [CopilotHistories!]!
 
   """Get the quota of the user in the workspace"""
@@ -59,6 +83,12 @@ type CopilotContext {
   """list files in context"""
   files: [CopilotContextFile!]!
   id: ID!
+
+  """match file context"""
+  matchContext(content: String!, limit: SafeInt, threshold: Float): [ContextMatchedFileChunk!]!
+
+  """match workspace doc content"""
+  matchWorkspaceContext(content: String!, limit: SafeInt): ContextMatchedDocChunk!
   workspaceId: String!
 }
 
@@ -71,6 +101,7 @@ type CopilotContextFile {
   blobId: String!
   chunkSize: SafeInt!
   createdAt: SafeInt!
+  error: String
   id: ID!
   name: String!
   status: ContextFileStatus!
@@ -79,15 +110,6 @@ type CopilotContextFile {
 type CopilotContextFileNotSupportedDataType {
   fileName: String!
   message: String!
-}
-
-type CopilotContextListItem {
-  blobId: String
-  chunkSize: SafeInt
-  createdAt: SafeInt!
-  id: ID!
-  name: String
-  status: ContextFileStatus
 }
 
 type CopilotDocNotFoundDataType {
@@ -350,6 +372,7 @@ enum ErrorNames {
   COPILOT_ACTION_TAKEN
   COPILOT_CONTEXT_FILE_NOT_SUPPORTED
   COPILOT_DOC_NOT_FOUND
+  COPILOT_EMBEDDING_UNAVAILABLE
   COPILOT_FAILED_TO_CREATE_MESSAGE
   COPILOT_FAILED_TO_GENERATE_TEXT
   COPILOT_FAILED_TO_MATCH_CONTEXT
@@ -772,7 +795,10 @@ type Mutation {
   activateLicense(license: String!, workspaceId: String!): License!
 
   """add a doc to context"""
-  addContextDoc(options: AddContextDocInput!): [CopilotContextListItem!]!
+  addContextDoc(options: AddContextDocInput!): CopilotContextDoc!
+
+  """add a file to context"""
+  addContextFile(content: Upload!, options: AddContextFileInput!): CopilotContextFile!
   addWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Boolean!
   approveMember(userId: String!, workspaceId: String!): Boolean!
 
@@ -841,6 +867,9 @@ type Mutation {
   publishDoc(docId: String!, mode: PublicDocMode = Page, workspaceId: String!): DocType!
   publishPage(mode: PublicDocMode = Page, pageId: String!, workspaceId: String!): DocType! @deprecated(reason: "use publishDoc instead")
 
+  """queue workspace doc embedding"""
+  queueWorkspaceEmbedding(docId: [String!]!, workspaceId: String!): Boolean!
+
   """mark notification as read"""
   readNotification(id: String!): Boolean!
   recoverDoc(guid: String!, timestamp: DateTime!, workspaceId: String!): DateTime!
@@ -851,6 +880,9 @@ type Mutation {
 
   """remove a doc from context"""
   removeContextDoc(options: RemoveContextDocInput!): Boolean!
+
+  """remove a file from context"""
+  removeContextFile(options: RemoveContextFileInput!): Boolean!
   removeWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Boolean!
   resumeSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
   revoke(userId: String!, workspaceId: String!): Boolean!
@@ -1041,6 +1073,9 @@ type Query {
   """Get public user by id"""
   publicUserById(id: String!): PublicUserType
 
+  """query workspace embedding status"""
+  queryWorkspaceEmbeddingStatus(workspaceId: String!): ContextWorkspaceEmbeddingStatus!
+
   """server config"""
   serverConfig: ServerConfigType!
 
@@ -1106,6 +1141,11 @@ type RemoveAvatar {
 input RemoveContextDocInput {
   contextId: String!
   docId: String!
+}
+
+input RemoveContextFileInput {
+  contextId: String!
+  fileId: String!
 }
 
 input RevokeDocUserRoleInput {

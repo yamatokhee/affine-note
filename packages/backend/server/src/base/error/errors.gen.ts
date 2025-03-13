@@ -737,6 +737,12 @@ export class CopilotFailedToMatchContext extends UserFriendlyError {
   }
 }
 
+export class CopilotEmbeddingUnavailable extends UserFriendlyError {
+  constructor(message?: string) {
+    super('action_forbidden', 'copilot_embedding_unavailable', message);
+  }
+}
+
 export class BlobQuotaExceeded extends UserFriendlyError {
   constructor(message?: string) {
     super('quota_exceeded', 'blob_quota_exceeded', message);
@@ -976,6 +982,7 @@ export enum ErrorNames {
   COPILOT_CONTEXT_FILE_NOT_SUPPORTED,
   COPILOT_FAILED_TO_MODIFY_CONTEXT,
   COPILOT_FAILED_TO_MATCH_CONTEXT,
+  COPILOT_EMBEDDING_UNAVAILABLE,
   BLOB_QUOTA_EXCEEDED,
   MEMBER_QUOTA_EXCEEDED,
   COPILOT_QUOTA_EXCEEDED,
