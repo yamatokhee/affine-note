@@ -39,6 +39,7 @@ import type {
   MenuContext,
   MenuItemGroup,
 } from '@blocksuite/affine/components/toolbar';
+import { watch } from '@blocksuite/affine/global/lit';
 import {
   BookmarkBlockModel,
   EmbedLinkedDocModel,
@@ -52,13 +53,16 @@ import { getSelectedModelsCommand } from '@blocksuite/affine/shared/commands';
 import { ImageSelection } from '@blocksuite/affine/shared/selection';
 import {
   ActionPlacement,
+  FeatureFlagService,
   GenerateDocUrlProvider,
+  isRemovedUserInfo,
   type OpenDocMode,
   type ToolbarAction,
   type ToolbarActionGroup,
   type ToolbarContext,
   type ToolbarModuleConfig,
   ToolbarModuleExtension,
+  UserProvider,
 } from '@blocksuite/affine/shared/services';
 import { matchModels } from '@blocksuite/affine/shared/utils';
 import type { ExtensionType } from '@blocksuite/affine/store';
@@ -73,11 +77,13 @@ import {
   OpenInNewIcon,
   SplitViewIcon,
 } from '@blocksuite/icons/lit';
+import { computed } from '@preact/signals-core';
 import type { FrameworkProvider } from '@toeverything/infra';
 import { html } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { keyed } from 'lit/directives/keyed.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 import { createCopyAsPngMenuItem } from './copy-as-image';
 
@@ -293,6 +299,77 @@ function createToolbarMoreMenuConfigV2(baseUrl?: string) {
                 .catch(console.error);
 
               track.doc.editor.toolbar.copyBlockToLink({ type });
+            },
+          },
+        ],
+      },
+      {
+        placement: ActionPlacement.More,
+        id: 'z.block-meta',
+        actions: [
+          {
+            id: 'block-meta-display',
+            when: cx => {
+              const featureFlag = cx.std.get(FeatureFlagService);
+              const isEnabled = featureFlag.getFlag('enable_block_meta');
+              if (!isEnabled) return false;
+
+              // only display when one block is selected by block selection
+              const { selection, getCurrentBlockBy } = cx;
+              const hasBlockSelection =
+                selection.filter(BlockSelection).length === 1;
+              if (!hasBlockSelection) return false;
+              const block = getCurrentBlockBy.call(cx, BlockSelection);
+              if (!block) return false;
+
+              const createdAt = 'meta:createdAt';
+              const createdBy = 'meta:createdBy';
+              return (
+                createdAt in block.model &&
+                block.model[createdAt] !== undefined &&
+                createdBy in block.model &&
+                block.model[createdBy] !== undefined &&
+                typeof block.model[createdBy] === 'string' &&
+                typeof block.model[createdAt] === 'number'
+              );
+            },
+            content: cx => {
+              const model = cx.getCurrentModelBy(BlockSelection);
+              if (!model) return null;
+              const createdAt = 'meta:createdAt';
+              if (!(createdAt in model)) return null;
+              const createdBy = 'meta:createdBy';
+              if (!(createdBy in model)) return null;
+              const createdByUserId = model[createdBy] as string;
+              const createdAtTimestamp = model[createdAt] as number;
+              const date = new Date(createdAtTimestamp);
+              const userProvider = cx.std.get(UserProvider);
+              userProvider.revalidateUserInfo(createdByUserId);
+              const userSignal = userProvider.userInfo$(createdByUserId);
+              userSignal.subscribe(console.log);
+              const user = computed(() => {
+                const value = userSignal.value;
+                if (!value) return 'Unknown User';
+                const removed = isRemovedUserInfo(value);
+                if (removed) return 'Deleted User';
+                return value.name;
+              });
+              const createdAtString = date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+              });
+              const wrapperStyle = {
+                padding: '4px 8px',
+                fontSize: '12px',
+              };
+              return html`<div style=${styleMap(wrapperStyle)}>
+                <div>Created by ${watch(user)}</div>
+                <div>${createdAtString}</div>
+              </div>`;
             },
           },
         ],
