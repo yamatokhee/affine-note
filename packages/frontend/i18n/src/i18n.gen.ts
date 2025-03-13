@@ -578,6 +578,14 @@ export function useAFFiNEI18N(): {
       */
     ["Zoom out"](): string;
     /**
+      * `Unknown User`
+      */
+    ["Unknown User"](): string;
+    /**
+      * `Deleted User`
+      */
+    ["Deleted User"](): string;
+    /**
       * `all`
       */
     all(): string;
@@ -3105,6 +3113,12 @@ export function useAFFiNEI18N(): {
       * `Select all`
       */
     ["com.affine.page.group-header.select-all"](): string;
+    /**
+      * `Created by {{name}}`
+      */
+    ["com.affine.page.toolbar.created_by"](options: {
+        readonly name: string;
+    }): string;
     /**
       * `Doc mode`
       */

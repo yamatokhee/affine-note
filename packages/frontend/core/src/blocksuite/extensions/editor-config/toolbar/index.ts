@@ -6,7 +6,7 @@ import {
 import { WorkspaceServerService } from '@affine/core/modules/cloud';
 import { EditorService } from '@affine/core/modules/editor';
 import { copyLinkToBlockStdScopeClipboard } from '@affine/core/utils/clipboard';
-import { I18n } from '@affine/i18n';
+import { I18n, i18nTime } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
   BlockFlavourIdentifier,
@@ -346,28 +346,36 @@ function createToolbarMoreMenuConfigV2(baseUrl?: string) {
               const userProvider = cx.std.get(UserProvider);
               userProvider.revalidateUserInfo(createdByUserId);
               const userSignal = userProvider.userInfo$(createdByUserId);
-              userSignal.subscribe(console.log);
-              const user = computed(() => {
+              const name = computed(() => {
                 const value = userSignal.value;
-                if (!value) return 'Unknown User';
+                if (!value) return I18n['Unknown User']();
                 const removed = isRemovedUserInfo(value);
-                if (removed) return 'Deleted User';
+                if (removed) {
+                  return I18n['Deleted User']();
+                }
                 return value.name;
               });
-              const createdAtString = date.toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true,
+              const user = computed(() => {
+                return I18n.t('com.affine.page.toolbar.created_by', {
+                  name: name.value,
+                });
+              });
+              const createdAtString = i18nTime(date.toISOString(), {
+                relative: {
+                  max: [1, 'day'],
+                  accuracy: 'minute',
+                  weekday: true,
+                },
+                absolute: {
+                  accuracy: 'minute',
+                },
               });
               const wrapperStyle = {
                 padding: '4px 8px',
                 fontSize: '12px',
               };
               return html`<div style=${styleMap(wrapperStyle)}>
-                <div>Created by ${watch(user)}</div>
+                <div>${watch(user)}</div>
                 <div>${createdAtString}</div>
               </div>`;
             },
