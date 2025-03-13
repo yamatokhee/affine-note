@@ -2597,6 +2597,15 @@ export type DeleteWorkspaceMutation = {
   deleteWorkspace: boolean;
 };
 
+export type DisableUserMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type DisableUserMutation = {
+  __typename?: 'Mutation';
+  banUser: { __typename?: 'UserType'; email: string; disabled: boolean };
+};
+
 export type GetDocRolePermissionsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   docId: Scalars['String']['input'];
@@ -2626,6 +2635,15 @@ export type GetDocRolePermissionsQuery = {
       };
     };
   };
+};
+
+export type EnableUserMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type EnableUserMutation = {
+  __typename?: 'Mutation';
+  enableUser: { __typename?: 'UserType'; email: string; disabled: boolean };
 };
 
 export type CredentialsRequirementsFragment = {
@@ -3195,6 +3213,7 @@ export type ListUsersQuery = {
     id: string;
     name: string;
     email: string;
+    disabled: boolean;
     features: Array<FeatureType>;
     hasPassword: boolean | null;
     emailVerified: boolean;
@@ -4151,6 +4170,16 @@ export type Mutations =
       name: 'deleteWorkspaceMutation';
       variables: DeleteWorkspaceMutationVariables;
       response: DeleteWorkspaceMutation;
+    }
+  | {
+      name: 'disableUserMutation';
+      variables: DisableUserMutationVariables;
+      response: DisableUserMutation;
+    }
+  | {
+      name: 'enableUserMutation';
+      variables: EnableUserMutationVariables;
+      response: EnableUserMutation;
     }
   | {
       name: 'generateLicenseKeyMutation';
