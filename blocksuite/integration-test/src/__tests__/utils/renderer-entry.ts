@@ -26,7 +26,9 @@ async function init() {
   addSampleNotes(doc, 100);
   doc.load();
 
-  const renderer = editor.std.get(ViewportTurboRendererIdentifier);
+  const renderer = editor.std.get(
+    ViewportTurboRendererIdentifier
+  ) as ViewportTurboRendererExtension;
   window.renderer = renderer;
 }
 

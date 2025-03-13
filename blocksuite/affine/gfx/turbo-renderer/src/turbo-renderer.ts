@@ -1,14 +1,11 @@
+import { ConfigExtensionFactory } from '@blocksuite/block-std';
 import {
-  ConfigExtensionFactory,
-  LifeCycleWatcher,
-  LifeCycleWatcherIdentifier,
-  StdIdentifier,
-} from '@blocksuite/block-std';
-import {
-  GfxControllerIdentifier,
+  type GfxController,
+  GfxExtension,
+  GfxExtensionIdentifier,
   type GfxViewportElement,
 } from '@blocksuite/block-std/gfx';
-import type { Container, ServiceIdentifier } from '@blocksuite/global/di';
+import type { Container } from '@blocksuite/global/di';
 import { createIdentifier } from '@blocksuite/global/di';
 import { DisposableGroup } from '@blocksuite/global/disposable';
 import debounce from 'lodash-es/debounce';
@@ -45,7 +42,9 @@ export const BlockPainterConfigIdentifier =
 export const TurboRendererConfigFactory =
   ConfigExtensionFactory<TurboRendererConfig>('viewport-turbo-renderer');
 
-export class ViewportTurboRendererExtension extends LifeCycleWatcher {
+export class ViewportTurboRendererExtension extends GfxExtension {
+  static override key = 'viewportTurboRenderer';
+
   public state: RenderingState = 'inactive';
   public readonly canvas: HTMLCanvasElement = document.createElement('canvas');
   private readonly worker: Worker = new Worker(workerUrl, { type: 'module' });
@@ -55,8 +54,16 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   private bitmap: ImageBitmap | null = null;
   private viewportElement: GfxViewportElement | null = null;
 
+  static override extendGfx(gfx: GfxController) {
+    Object.defineProperty(gfx, 'turboRenderer', {
+      get() {
+        return gfx.std.get(ViewportTurboRendererIdentifier);
+      },
+    });
+  }
+
   static override setup(di: Container) {
-    di.addImpl(ViewportTurboRendererIdentifier, this, [StdIdentifier]);
+    super.setup(di);
   }
 
   get options(): RendererOptions {
@@ -133,10 +140,6 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     this.canvas.remove();
     this.disposables.dispose();
     this.setState('inactive');
-  }
-
-  get gfx() {
-    return this.std.get(GfxControllerIdentifier);
   }
 
   get viewport() {
@@ -357,6 +360,6 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 }
 
-export const ViewportTurboRendererIdentifier = LifeCycleWatcherIdentifier(
-  'ViewportTurboRenderer'
-) as ServiceIdentifier<ViewportTurboRendererExtension>;
+export const ViewportTurboRendererIdentifier = GfxExtensionIdentifier(
+  'viewportTurboRenderer'
+);
