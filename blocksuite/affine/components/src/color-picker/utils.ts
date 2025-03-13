@@ -1,7 +1,7 @@
 // https://www.w3.org/TR/css-color-4/
 
 import type { Color, ColorScheme } from '@blocksuite/affine-model';
-import { clamp } from '@blocksuite/global/gfx';
+import clamp from 'lodash-es/clamp';
 
 import { COLORS, FIRST_COLOR } from './consts.js';
 import type {
@@ -54,7 +54,7 @@ export function linearGradientAt(t: number): Rgb {
 const lerp = (a: number, b: number, t: number) => a + t * (b - a);
 
 export const bound01 = (n: number, max: number) => {
-  n = clamp(0, n, max);
+  n = clamp(n, 0, max);
 
   // Handle floating point rounding errors
   if (Math.abs(n - max) < 0.000001) {
@@ -94,7 +94,7 @@ export const rgbToHsv = ({ r, g, b }: Rgb): Hsv => {
 export const hsvToRgb = ({ h, s, v }: Hsv): Rgb => {
   if (h < 0) h = (h + 1) % 1; // wrap
   h *= 6;
-  s = clamp(0, s, 1);
+  s = clamp(s, 0, 1);
 
   const i = Math.floor(h),
     f = h - i,

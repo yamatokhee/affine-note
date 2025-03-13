@@ -1,6 +1,5 @@
 import type { Color } from '@blocksuite/affine-model';
 import { on, once, stopPropagation } from '@blocksuite/affine-shared/utils';
-import { clamp } from '@blocksuite/global/gfx';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import { batch, computed, signal } from '@preact/signals-core';
 import { html, LitElement } from 'lit';
@@ -9,6 +8,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { live } from 'lit/directives/live.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import clamp from 'lodash-es/clamp';
 
 import { AREA_CIRCLE_R, MATCHERS, SLIDER_CIRCLE_R } from './consts.js';
 import { COLOR_PICKER_STYLE } from './styles.js';
@@ -133,7 +133,7 @@ export class EdgelessColorPicker extends SignalWatcher(
 
   #setAlphaPos(clientX: number) {
     const { left, width } = this.#alphaRect;
-    const x = clamp(0, clientX - left, width);
+    const x = clamp(clientX - left, 0, width);
 
     this.alphaPosX$.value = x;
   }
@@ -141,7 +141,7 @@ export class EdgelessColorPicker extends SignalWatcher(
   #setAlphaPosWithWheel(y: number) {
     const { width } = this.#alphaRect;
     const px = this.alphaPosX$.peek();
-    const ax = clamp(0, px + (y * width) / 100, width);
+    const ax = clamp(px + (y * width) / 100, 0, width);
 
     this.alphaPosX$.value = ax;
   }
@@ -161,7 +161,7 @@ export class EdgelessColorPicker extends SignalWatcher(
 
   #setHuePos(clientX: number) {
     const { left, width } = this.#hueRect;
-    const x = clamp(0, clientX - left, width);
+    const x = clamp(clientX - left, 0, width);
 
     this.huePosX$.value = x;
   }
@@ -169,15 +169,15 @@ export class EdgelessColorPicker extends SignalWatcher(
   #setHuePosWithWheel(y: number) {
     const { width } = this.#hueRect;
     const px = this.huePosX$.peek();
-    const ax = clamp(0, px + (y * width) / 100, width);
+    const ax = clamp(px + (y * width) / 100, 0, width);
 
     this.huePosX$.value = ax;
   }
 
   #setPalettePos(clientX: number, clientY: number) {
     const { left, top, width, height } = this.#paletteRect;
-    const x = clamp(0, clientX - left, width);
-    const y = clamp(0, clientY - top, height);
+    const x = clamp(clientX - left, 0, width);
+    const y = clamp(clientY - top, 0, height);
 
     this.palettePos$.value = { x, y };
   }
@@ -185,8 +185,8 @@ export class EdgelessColorPicker extends SignalWatcher(
   #setPalettePosWithWheel(x: number, y: number) {
     const { width, height } = this.#paletteRect;
     const pos = this.palettePos$.peek();
-    const px = clamp(0, pos.x + (x * width) / 100, width);
-    const py = clamp(0, pos.y + (y * height) / 100, height);
+    const px = clamp(pos.x + (x * width) / 100, 0, width);
+    const py = clamp(pos.y + (y * height) / 100, 0, height);
 
     this.palettePos$.value = { x: px, y: py };
   }
