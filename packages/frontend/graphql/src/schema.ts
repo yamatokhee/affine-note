@@ -3125,6 +3125,18 @@ export type ListHistoryQuery = {
   };
 };
 
+export type ImportUsersMutationVariables = Exact<{
+  input: ImportUsersInput;
+}>;
+
+export type ImportUsersMutation = {
+  __typename?: 'Mutation';
+  importUsers: Array<
+    | { __typename: 'UserImportFailedType'; email: string; error: string }
+    | { __typename: 'UserType'; id: string; name: string; email: string }
+  >;
+};
+
 export type GetInvoicesCountQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetInvoicesCountQuery = {
@@ -4190,6 +4202,11 @@ export type Mutations =
       name: 'grantDocUserRolesMutation';
       variables: GrantDocUserRolesMutationVariables;
       response: GrantDocUserRolesMutation;
+    }
+  | {
+      name: 'importUsersMutation';
+      variables: ImportUsersMutationVariables;
+      response: ImportUsersMutation;
     }
   | {
       name: 'leaveWorkspaceMutation';
