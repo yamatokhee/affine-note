@@ -2143,6 +2143,13 @@ export type AdminServerConfigQuery = {
         maxLength: number;
       };
     };
+    availableUpgrade: {
+      __typename?: 'ReleaseVersionType';
+      changelog: string;
+      version: string;
+      publishedAt: string;
+      url: string;
+    };
   };
 };
 
