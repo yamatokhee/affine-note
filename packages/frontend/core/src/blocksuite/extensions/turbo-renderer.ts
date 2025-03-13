@@ -5,14 +5,10 @@ import {
 import {
   TurboRendererConfigFactory,
   ViewportTurboRendererExtension,
-  ViewportTurboRendererIdentifier,
 } from '@blocksuite/affine/gfx/turbo-renderer';
 
-import { addSampleNotes } from './doc-generator.js';
-import { setupEditor } from './setup.js';
-
-async function init() {
-  setupEditor('edgeless', [
+export function patchTurboRendererExtension() {
+  return [
     ParagraphLayoutHandlerExtension,
     ParagraphPaintConfigExtension,
     TurboRendererConfigFactory({
@@ -22,12 +18,5 @@ async function init() {
       },
     }),
     ViewportTurboRendererExtension,
-  ]);
-  addSampleNotes(doc, 100);
-  doc.load();
-
-  const renderer = editor.std.get(ViewportTurboRendererIdentifier);
-  window.renderer = renderer;
+  ];
 }
-
-init();
