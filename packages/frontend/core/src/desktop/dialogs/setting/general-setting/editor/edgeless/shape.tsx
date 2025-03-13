@@ -72,7 +72,8 @@ export const ShapeSettings = () => {
   const { palettes: textColorPalettes, getCurrentColor: getCurrentTextColor } =
     usePalettes(
       DefaultTheme.ShapeTextColorShortPalettes,
-      DefaultTheme.shapeTextColor
+      DefaultTheme.shapeTextColor,
+      true
     );
 
   const [currentShape, setCurrentShape] = useState<ShapeName>(ShapeType.Rect);
