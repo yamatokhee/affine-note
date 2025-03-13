@@ -21,6 +21,7 @@ import { BookmarkBlockComponent } from '@blocksuite/affine/blocks/bookmark';
 import {
   EmbedFigmaBlockComponent,
   EmbedGithubBlockComponent,
+  EmbedIframeBlockComponent,
   EmbedLinkedDocBlockComponent,
   EmbedLoomBlockComponent,
   EmbedSyncedDocBlockComponent,
@@ -818,6 +819,86 @@ const inlineReferenceToolbarConfig = {
   ],
 } as const satisfies ToolbarModuleConfig;
 
+const embedIframeToolbarConfig = {
+  actions: [
+    {
+      id: 'a.copy-link-and-edit',
+      actions: [
+        {
+          id: 'copy-link',
+          tooltip: 'Copy link',
+          icon: CopyIcon(),
+          run(ctx) {
+            const model = ctx.getCurrentBlockComponentBy(
+              BlockSelection,
+              EmbedIframeBlockComponent
+            )?.model;
+            if (!model) return;
+
+            const { url } = model;
+
+            navigator.clipboard.writeText(url).catch(console.error);
+            toast(ctx.host, 'Copied link to clipboard');
+
+            ctx.track('CopiedLink', {
+              segment: 'doc',
+              page: 'doc editor',
+              module: 'toolbar',
+              category: matchModels(model, [BookmarkBlockModel])
+                ? 'bookmark'
+                : 'link',
+              type: 'card view',
+              control: 'copy link',
+            });
+          },
+        },
+        {
+          id: 'edit',
+          tooltip: 'Edit',
+          icon: EditIcon(),
+          run(ctx) {
+            const component = ctx.getCurrentBlockComponentBy(
+              BlockSelection,
+              EmbedIframeBlockComponent
+            );
+            if (!component) return;
+
+            ctx.hide();
+
+            const model = component.model;
+            const abortController = new AbortController();
+            abortController.signal.onabort = () => ctx.show();
+
+            toggleEmbedCardEditModal(
+              ctx.host,
+              model,
+              'card',
+              undefined,
+              undefined,
+              (_std, _component, props) => {
+                ctx.store.updateBlock(model, props);
+                component.requestUpdate();
+              },
+              abortController
+            );
+
+            ctx.track('OpenedAliasPopup', {
+              segment: 'doc',
+              page: 'doc editor',
+              module: 'toolbar',
+              category: matchModels(model, [BookmarkBlockModel])
+                ? 'bookmark'
+                : 'link',
+              type: 'card view',
+              control: 'edit',
+            });
+          },
+        },
+      ],
+    },
+  ],
+} as const satisfies ToolbarModuleConfig;
+
 export const createCustomToolbarExtension = (
   baseUrl: string
 ): ExtensionType[] => {
@@ -865,6 +946,11 @@ export const createCustomToolbarExtension = (
     ToolbarModuleExtension({
       id: BlockFlavourIdentifier('custom:affine:reference'),
       config: inlineReferenceToolbarConfig,
+    }),
+
+    ToolbarModuleExtension({
+      id: BlockFlavourIdentifier('custom:affine:embed-iframe'),
+      config: embedIframeToolbarConfig,
     }),
   ];
 };

@@ -5404,6 +5404,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.experimental-features.enable-callout.description"](): string;
     /**
+     * Embed Iframe Block
+     */
+    ["com.affine.settings.workspace.experimental-features.enable-embed-iframe-block.name"](): string;
+    /**
+      * `Enables Embed Iframe Block.`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-embed-iframe-block.description"](): string;
+    /**
       * `Emoji Folder Icon`
       */
     ["com.affine.settings.workspace.experimental-features.enable-emoji-folder-icon.name"](): string;
