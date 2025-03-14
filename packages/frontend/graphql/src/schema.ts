@@ -155,6 +155,7 @@ export interface CopilotContext {
 export interface CopilotContextMatchContextArgs {
   content: Scalars['String']['input'];
   limit?: InputMaybe<Scalars['SafeInt']['input']>;
+  threshold?: InputMaybe<Scalars['Float']['input']>;
 }
 
 export interface CopilotContextMatchWorkspaceContextArgs {

@@ -639,9 +639,7 @@ export const getCurrentUserQuery = {
     }
   }
 }`,
-  deprecations: [
-    "'token' is deprecated: use [/api/auth/sign-in?native=true] instead",
-  ],
+  deprecations: ["'token' is deprecated: use [/api/auth/sign-in?native=true] instead"],
 };
 
 export const getDocDefaultRoleQuery = {
@@ -893,10 +891,7 @@ export const getWorkspaceInfoQuery = {
     team
   }
 }`,
-  deprecations: [
-    "'isAdmin' is deprecated: use WorkspaceType[role] instead",
-    "'isOwner' is deprecated: use WorkspaceType[role] instead",
-  ],
+  deprecations: ["'isAdmin' is deprecated: use WorkspaceType[role] instead","'isOwner' is deprecated: use WorkspaceType[role] instead"],
 };
 
 export const getWorkspacePageByIdQuery = {
@@ -1195,9 +1190,7 @@ export const quotaQuery = {
     }
   }
 }`,
-  deprecations: [
-    "'storageQuota' is deprecated: use `UserQuotaType['usedStorageQuota']` instead",
-  ],
+  deprecations: ["'storageQuota' is deprecated: use `UserQuotaType['usedStorageQuota']` instead"],
 };
 
 export const readNotificationMutation = {
@@ -1644,9 +1637,7 @@ export const getWorkspaceRolePermissionsQuery = {
     }
   }
 }`,
-  deprecations: [
-    "'workspaceRolePermissions' is deprecated: use WorkspaceType[permissions] instead",
-  ],
+  deprecations: ["'workspaceRolePermissions' is deprecated: use WorkspaceType[permissions] instead"],
 };
 
 export const approveWorkspaceTeamMemberMutation = {
