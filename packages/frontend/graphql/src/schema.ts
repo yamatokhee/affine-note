@@ -2355,6 +2355,7 @@ export type AddContextFileMutation = {
     createdAt: number;
     name: string;
     chunkSize: number;
+    error: string | null;
     status: ContextFileStatus;
     blobId: string;
   };
@@ -2385,6 +2386,7 @@ export type ListContextFilesQuery = {
           name: string;
           blobId: string;
           chunkSize: number;
+          error: string | null;
           status: ContextFileStatus;
           createdAt: number;
         }>;

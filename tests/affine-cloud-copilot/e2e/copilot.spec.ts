@@ -1040,7 +1040,7 @@ test.describe('chat with doc', () => {
       .nth(0);
     await richText.click(); // Ensure proper focus
     await page.keyboard.type(
-      'AFFiNE AI is an assistant with the ability to create well-structured outlines for any given content.',
+      'AFiAI is an assistant with the ability to create well-structured outlines for any given content.',
       {
         delay: 50,
       }
@@ -1050,21 +1050,18 @@ test.describe('chat with doc', () => {
     // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
     expect(await chip.getAttribute('data-state')).toBe('success');
 
-    await typeChatSequentially(page, 'What is AFFiNE AI?');
+    await typeChatSequentially(page, 'What is AFiAI?');
     await page.keyboard.press('Enter');
     const history = await collectChat(page);
     expect(history[0]).toEqual({
       name: 'You',
-      content: 'What is AFFiNE AI?',
+      content: 'What is AFiAI?',
     });
 
-    expect(history[1].name).toBe(`AFFiNE AI`);
-
-    // TODO(@akumatus): not stable
-    // expect(history[1].name).toBe(`AFFiNE AI\nwith your docs`);
-    // expect(
-    //   await page.locator('chat-panel affine-footnote-node').count()
-    // ).toBeGreaterThan(0);
+    expect(history[1].name).toBe(`AFFiNE AI\nwith your docs`);
+    expect(
+      await page.locator('chat-panel affine-footnote-node').count()
+    ).toBeGreaterThan(0);
     await clearChat(page);
     expect((await collectChat(page)).length).toBe(0);
 

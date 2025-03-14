@@ -15,6 +15,7 @@ query listContextFiles(
           name
           blobId
           chunkSize
+          error
           status
           createdAt
         }

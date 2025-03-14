@@ -170,6 +170,7 @@ export const addContextFileMutation = {
     createdAt
     name
     chunkSize
+    error
     status
     blobId
   }
@@ -193,6 +194,7 @@ export const listContextFilesQuery = {
           name
           blobId
           chunkSize
+          error
           status
           createdAt
         }

@@ -28,6 +28,7 @@ import type {
   DocSearchMenuConfig,
 } from './chat-config';
 import type {
+  ChatChip,
   ChatContextValue,
   ChatItem,
   DocChip,
@@ -180,7 +181,6 @@ export class ChatPanel extends SignalWatcher(
     }
 
     // context initialized, show the chips
-    let chips: (DocChip | FileChip)[] = [];
     const { docs = [], files = [] } =
       (await AIProvider.context?.getContextDocsAndFiles(
         this.doc.workspace.id,
@@ -191,23 +191,34 @@ export class ChatPanel extends SignalWatcher(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
-    chips = list.map(item => {
-      let chip: DocChip | FileChip;
-      if (isDocContext(item)) {
-        chip = {
-          docId: item.id,
-          state: 'processing',
-        };
-      } else {
-        chip = {
-          fileId: item.id,
-          state: item.status === 'finished' ? 'success' : item.status,
-          fileName: item.name,
-          fileType: '',
-        };
-      }
-      return chip;
-    });
+    const chips: ChatChip[] = await Promise.all(
+      list.map(async item => {
+        if (isDocContext(item)) {
+          return {
+            docId: item.id,
+            state: 'processing',
+          } as DocChip;
+        }
+        const file = await this.host.doc.blobSync.get(item.blobId);
+        if (!file) {
+          return {
+            blobId: item.id,
+            file: new File([], item.name),
+            state: 'failed',
+            tooltip: 'File not found in blob storage',
+          } as FileChip;
+        } else {
+          return {
+            file: new File([file], item.name),
+            blobId: item.blobId,
+            fileId: item.id,
+            state: item.status === 'finished' ? 'success' : item.status,
+            tooltip: item.error,
+          } as FileChip;
+        }
+      })
+    );
+
     this.chatContextValue = {
       ...this.chatContextValue,
       chips,
@@ -489,6 +500,7 @@ export class ChatPanel extends SignalWatcher(
       <chat-panel-input
         .chatContextValue=${this.chatContextValue}
         .getSessionId=${this._getSessionId}
+        .getContextId=${this._getContextId}
         .networkSearchConfig=${this.networkSearchConfig}
         .updateContext=${this.updateContext}
         .host=${this.host}

@@ -36,10 +36,17 @@ export type ChatStatus =
 
 export interface DocContext {
   docId: string;
-  plaintext?: string;
-  markdown?: string;
-  images?: File[];
+  refIndex: number;
+  markdown: string;
 }
+
+export type FileContext = {
+  blobId: string;
+  refIndex: number;
+  fileName: string;
+  fileType: string;
+  chunks: string;
+};
 
 export type ChatContextValue = {
   // history messages of the chat
@@ -73,19 +80,19 @@ export interface BaseChip {
    * failed: the chip is failed to process
    */
   state: ChipState;
-  tooltip?: string;
+  tooltip?: string | null;
 }
 
 export interface DocChip extends BaseChip {
   docId: string;
-  markdown?: Signal<string>;
-  tokenCount?: number;
+  markdown?: Signal<string> | null;
+  tokenCount?: number | null;
 }
 
 export interface FileChip extends BaseChip {
-  fileName: string;
-  fileId: string;
-  fileType: string;
+  file: File;
+  fileId?: string | null;
+  blobId?: string | null;
 }
 
 export interface TagChip extends BaseChip {
