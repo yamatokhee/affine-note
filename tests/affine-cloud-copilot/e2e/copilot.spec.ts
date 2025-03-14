@@ -1026,7 +1026,7 @@ test.describe('chat with doc', () => {
     expect(await chipTitle.textContent()).toBe('Untitled');
     let chip = await page.getByTestId('chat-panel-chip');
     // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
-    expect(await chip.getAttribute('data-state')).toBe('success');
+    expect(await chip.getAttribute('data-state')).toBe('finished');
 
     const editorTitle = await page.locator('doc-title .inline-editor').nth(0);
     await editorTitle.pressSequentially('AFFiNE AI', {
@@ -1048,7 +1048,7 @@ test.describe('chat with doc', () => {
 
     expect(await chipTitle.textContent()).toBe('AFFiNE AI');
     // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
-    expect(await chip.getAttribute('data-state')).toBe('success');
+    expect(await chip.getAttribute('data-state')).toBe('finished');
 
     await typeChatSequentially(page, 'What is AFiAI?');
     await page.keyboard.press('Enter');
@@ -1071,6 +1071,6 @@ test.describe('chat with doc', () => {
     expect(await chipTitle.textContent()).toBe('AFFiNE AI');
     const chip2 = await page.getByTestId('chat-panel-chip');
     // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
-    expect(await chip2.getAttribute('data-state')).toBe('success');
+    expect(await chip2.getAttribute('data-state')).toBe('finished');
   });
 });
