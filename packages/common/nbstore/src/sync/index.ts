@@ -23,7 +23,7 @@ export class Sync {
   constructor(readonly storages: PeerStorageOptions<SpaceStorage>) {
     const doc = storages.local.get('doc');
     const blob = storages.local.get('blob');
-    const sync = storages.local.get('sync');
+    const docSync = storages.local.get('docSync');
     const awareness = storages.local.get('awareness');
 
     this.doc = new DocSyncImpl(
@@ -36,7 +36,7 @@ export class Sync {
           ])
         ),
       },
-      sync
+      docSync
     );
     this.blob = new BlobSyncImpl({
       local: blob,

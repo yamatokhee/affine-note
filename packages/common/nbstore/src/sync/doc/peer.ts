@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { Observable, ReplaySubject, share, Subject } from 'rxjs';
 import { diffUpdate, encodeStateVectorFromUpdate, mergeUpdates } from 'yjs';
 
-import type { DocStorage, SyncStorage } from '../../storage';
+import type { DocStorage, DocSyncStorage } from '../../storage';
 import { AsyncPriorityQueue } from '../../utils/async-priority-queue';
 import { ClockMap } from '../../utils/clock';
 import { isEmptyUpdate } from '../../utils/is-empty-update';
@@ -147,7 +147,7 @@ export class DocSyncPeer {
   constructor(
     readonly peerId: string,
     readonly local: DocStorage,
-    readonly syncMetadata: SyncStorage,
+    readonly syncMetadata: DocSyncStorage,
     readonly remote: DocStorage,
     readonly options: DocSyncPeerOptions = {}
   ) {}

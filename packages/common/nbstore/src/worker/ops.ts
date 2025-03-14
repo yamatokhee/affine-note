@@ -45,7 +45,7 @@ interface GroupedWorkerOps {
     listBlobs: [void, ListedBlobRecord[]];
   };
 
-  syncStorage: {
+  docSyncStorage: {
     getPeerPulledRemoteClocks: [{ peer: string }, DocClocks];
     getPeerPulledRemoteClock: [
       { peer: string; docId: string },

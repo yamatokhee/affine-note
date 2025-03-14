@@ -45,8 +45,8 @@ class StoreConsumer {
     return this.ensureSync.blob;
   }
 
-  get syncStorage() {
-    return this.ensureLocal.get('sync');
+  get docSyncStorage() {
+    return this.ensureLocal.get('docSync');
   }
 
   get awarenessStorage() {
@@ -170,25 +170,25 @@ class StoreConsumer {
         this.blobStorage.delete(key, permanently),
       'blobStorage.releaseBlobs': () => this.blobStorage.release(),
       'blobStorage.listBlobs': () => this.blobStorage.list(),
-      'syncStorage.clearClocks': () => this.syncStorage.clearClocks(),
-      'syncStorage.getPeerPulledRemoteClock': ({ peer, docId }) =>
-        this.syncStorage.getPeerPulledRemoteClock(peer, docId),
-      'syncStorage.getPeerPulledRemoteClocks': ({ peer }) =>
-        this.syncStorage.getPeerPulledRemoteClocks(peer),
-      'syncStorage.setPeerPulledRemoteClock': ({ peer, clock }) =>
-        this.syncStorage.setPeerPulledRemoteClock(peer, clock),
-      'syncStorage.getPeerRemoteClock': ({ peer, docId }) =>
-        this.syncStorage.getPeerRemoteClock(peer, docId),
-      'syncStorage.getPeerRemoteClocks': ({ peer }) =>
-        this.syncStorage.getPeerRemoteClocks(peer),
-      'syncStorage.setPeerRemoteClock': ({ peer, clock }) =>
-        this.syncStorage.setPeerRemoteClock(peer, clock),
-      'syncStorage.getPeerPushedClock': ({ peer, docId }) =>
-        this.syncStorage.getPeerPushedClock(peer, docId),
-      'syncStorage.getPeerPushedClocks': ({ peer }) =>
-        this.syncStorage.getPeerPushedClocks(peer),
-      'syncStorage.setPeerPushedClock': ({ peer, clock }) =>
-        this.syncStorage.setPeerPushedClock(peer, clock),
+      'docSyncStorage.clearClocks': () => this.docSyncStorage.clearClocks(),
+      'docSyncStorage.getPeerPulledRemoteClock': ({ peer, docId }) =>
+        this.docSyncStorage.getPeerPulledRemoteClock(peer, docId),
+      'docSyncStorage.getPeerPulledRemoteClocks': ({ peer }) =>
+        this.docSyncStorage.getPeerPulledRemoteClocks(peer),
+      'docSyncStorage.setPeerPulledRemoteClock': ({ peer, clock }) =>
+        this.docSyncStorage.setPeerPulledRemoteClock(peer, clock),
+      'docSyncStorage.getPeerRemoteClock': ({ peer, docId }) =>
+        this.docSyncStorage.getPeerRemoteClock(peer, docId),
+      'docSyncStorage.getPeerRemoteClocks': ({ peer }) =>
+        this.docSyncStorage.getPeerRemoteClocks(peer),
+      'docSyncStorage.setPeerRemoteClock': ({ peer, clock }) =>
+        this.docSyncStorage.setPeerRemoteClock(peer, clock),
+      'docSyncStorage.getPeerPushedClock': ({ peer, docId }) =>
+        this.docSyncStorage.getPeerPushedClock(peer, docId),
+      'docSyncStorage.getPeerPushedClocks': ({ peer }) =>
+        this.docSyncStorage.getPeerPushedClocks(peer),
+      'docSyncStorage.setPeerPushedClock': ({ peer, clock }) =>
+        this.docSyncStorage.setPeerPushedClock(peer, clock),
       'awarenessStorage.update': ({ awareness, origin }) =>
         this.awarenessStorage.update(awareness, origin),
       'awarenessStorage.subscribeUpdate': docId =>
