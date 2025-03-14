@@ -1,3 +1,7 @@
+import { Container, type ServiceProvider } from '@blocksuite/global/di';
+import type { ExtensionType } from '@blocksuite/store';
+
+import { BlockPainterProvider } from '../extension';
 import type {
   BlockLayoutPainter,
   HostToWorkerMessage,
@@ -5,28 +9,25 @@ import type {
   WorkerToHostMessage,
 } from '../types';
 
-class BlockPainterRegistry {
-  private readonly painters = new Map<string, BlockLayoutPainter>();
-
-  register(type: string, painter: BlockLayoutPainter) {
-    this.painters.set(type, painter);
-  }
-
-  getPainter(type: string): BlockLayoutPainter | undefined {
-    return this.painters.get(type);
-  }
-}
-
 export class ViewportLayoutPainter {
   private readonly canvas: OffscreenCanvas = new OffscreenCanvas(0, 0);
   private ctx: OffscreenCanvasRenderingContext2D | null = null;
   private zoom = 1;
-  public readonly registry = new BlockPainterRegistry();
+  public provider: ServiceProvider;
 
-  constructor(painters: Record<string, BlockLayoutPainter>) {
-    Object.entries(painters).forEach(([type, painter]) => {
-      this.registry.register(type, painter);
+  getPainter(type: string): BlockLayoutPainter | undefined {
+    return this.provider.get(BlockPainterProvider(type));
+  }
+
+  constructor(extensions: ExtensionType[]) {
+    const container = new Container();
+
+    extensions.forEach(extension => {
+      extension.setup(container);
     });
+
+    this.provider = container.provider();
+
     self.onmessage = this.handler;
   }
 
@@ -60,7 +61,7 @@ export class ViewportLayoutPainter {
     ctx.scale(this.zoom, this.zoom);
 
     layout.blocks.forEach(blockLayout => {
-      const painter = this.registry.getPainter(blockLayout.type);
+      const painter = this.getPainter(blockLayout.type);
       if (!painter) return;
       painter.paint(ctx, blockLayout, layout.rect.x, layout.rect.y);
     });

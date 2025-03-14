@@ -1,8 +1,9 @@
-import type {
-  BlockLayout,
-  BlockLayoutPainter,
-  TextRect,
-  WorkerToHostMessage,
+import {
+  type BlockLayout,
+  type BlockLayoutPainter,
+  BlockLayoutPainterExtension,
+  type TextRect,
+  type WorkerToHostMessage,
 } from '@blocksuite/affine-gfx-turbo-renderer';
 
 interface SentenceLayout {
@@ -39,7 +40,7 @@ function isParagraphLayout(layout: BlockLayout): layout is ParagraphLayout {
   return layout.type === 'affine:paragraph';
 }
 
-export class ParagraphLayoutPainter implements BlockLayoutPainter {
+class ParagraphLayoutPainter implements BlockLayoutPainter {
   private static readonly supportFontFace =
     typeof FontFace !== 'undefined' &&
     typeof self !== 'undefined' &&
@@ -114,3 +115,8 @@ export class ParagraphLayoutPainter implements BlockLayoutPainter {
     });
   }
 }
+
+export const ParagraphLayoutPainterExtension = BlockLayoutPainterExtension(
+  'affine:paragraph',
+  ParagraphLayoutPainter
+);
