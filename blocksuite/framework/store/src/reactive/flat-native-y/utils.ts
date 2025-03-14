@@ -1,4 +1,6 @@
 import { SYS_KEYS } from '../../consts';
+import { Boxed } from '../boxed';
+import { Text } from '../text';
 import type { UnRecord } from '../types';
 
 export const keyWithoutPrefix = (key: string) => key.replace(/(prop|sys):/, '');
@@ -33,10 +35,16 @@ export function deleteEmptyObject(
   }
 }
 
-export function getFirstKey(key: string) {
+export function getFirstKey(key: string): string {
   const result = key.split('.').at(0);
   if (!result) {
     throw new Error(`Invalid key for: ${key}`);
   }
   return result;
+}
+
+export function bindOnChangeIfNeed(value: unknown, onChange: () => void): void {
+  if (value instanceof Text || Boxed.is(value)) {
+    value.bind(onChange);
+  }
 }
