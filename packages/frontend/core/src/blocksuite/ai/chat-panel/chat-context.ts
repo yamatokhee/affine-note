@@ -61,6 +61,8 @@ export type ChatContextValue = {
   images: File[];
   // chips of workspace doc or user uploaded file
   chips: ChatChip[];
+  // the progress of the embedding
+  embeddingProgress: [number, number];
   abortController: AbortController | null;
 };
 
