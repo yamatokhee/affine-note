@@ -385,6 +385,12 @@ export interface DocHistoryType {
   workspaceId: Scalars['String']['output'];
 }
 
+/** Doc mode */
+export enum DocMode {
+  edgeless = 'edgeless',
+  page = 'page',
+}
+
 export interface DocNotFoundDataType {
   __typename?: 'DocNotFoundDataType';
   docId: Scalars['String']['output'];
@@ -889,6 +895,7 @@ export interface MentionDocInput {
   /** The element id in the doc */
   elementId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
+  mode: DocMode;
   title: Scalars['String']['input'];
 }
 
@@ -897,6 +904,7 @@ export interface MentionDocType {
   blockId: Maybe<Scalars['String']['output']>;
   elementId: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  mode: DocMode;
   title: Scalars['String']['output'];
 }
 
