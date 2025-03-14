@@ -334,9 +334,9 @@ const EDGELESS_INSERT = {
   },
 };
 
-const SAVE_CHAT_TO_BLOCK_ACTION: ChatAction = {
+const SAVE_AS_BLOCK: ChatAction = {
   icon: BlockIcon({ width: '20px', height: '20px' }),
-  title: 'Save chat to block',
+  title: 'Save as block',
   toast: 'Successfully saved chat to a block',
   showWhen: (host: EditorHost) => {
     if (host.std.store.readonly$.value) {
@@ -470,9 +470,9 @@ const ADD_TO_EDGELESS_AS_NOTE = {
   },
 };
 
-const CREATE_AS_DOC = {
+const SAVE_AS_DOC = {
   icon: PageIcon({ width: '20px', height: '20px' }),
-  title: 'Create as a doc',
+  title: 'Save as doc',
   showWhen: () => true,
   toast: 'New doc created',
   handler: (host: EditorHost, content: string) => {
@@ -577,16 +577,13 @@ const CREATE_AS_LINKED_DOC = {
   },
 };
 
-export const PageEditorActions = [
-  PAGE_INSERT,
-  CREATE_AS_DOC,
-  SAVE_CHAT_TO_BLOCK_ACTION,
-];
+export const PageEditorActions = [PAGE_INSERT, SAVE_AS_DOC, SAVE_AS_BLOCK];
 
 export const EdgelessEditorActions = [
   EDGELESS_INSERT,
   ADD_TO_EDGELESS_AS_NOTE,
-  SAVE_CHAT_TO_BLOCK_ACTION,
+  SAVE_AS_DOC,
+  SAVE_AS_BLOCK,
 ];
 
 export const ChatBlockPeekViewActions = [
