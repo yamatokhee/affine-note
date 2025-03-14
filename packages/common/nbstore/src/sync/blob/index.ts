@@ -102,16 +102,42 @@ export class BlobSyncImpl implements BlobSync {
     readonly blobSync: BlobSyncStorage
   ) {}
 
-  downloadBlob(blobId: string) {
+  downloadBlob(blobId: string): Promise<void> {
     const signal = this.abortController.signal;
-    return Promise.race(
-      this.peers.map(p => p.downloadBlob(blobId, signal))
-    ).catch(err => {
-      if (err === MANUALLY_STOP) {
+
+    return new Promise<void>((resolve, reject) => {
+      let completed = 0;
+      const totalPeers = this.peers.length;
+
+      if (totalPeers === 0) {
+        resolve();
         return;
       }
-      // should never reach here, `downloadBlob()` should never throw
-      console.error(err);
+
+      // download from all peers concurrently
+      // resolve if any peer has success
+      this.peers.forEach(peer => {
+        peer
+          .downloadBlob(blobId, signal)
+          .then(result => {
+            if (result === true) {
+              // resolve if the peer has success
+              resolve();
+            }
+          })
+          .catch(err => {
+            // should never throw
+            // unless the signal is aborted
+            reject(err);
+          })
+          .finally(() => {
+            completed++;
+            if (completed === totalPeers) {
+              // resolve if all peers finish
+              resolve();
+            }
+          });
+      });
     });
   }
 

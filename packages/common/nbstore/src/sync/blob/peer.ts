@@ -38,9 +38,15 @@ export class BlobSyncPeer {
     readonly blobSync: BlobSyncStorage
   ) {}
 
-  private readonly downloadingPromise = new Map<string, Promise<void>>();
+  private readonly downloadingPromise = new Map<string, Promise<boolean>>();
 
-  downloadBlob(blobId: string, signal?: AbortSignal): Promise<void> {
+  /**
+   * Downloads a blob from the peer with retry logic
+   * @returns true if the blob is downloaded successfully, false if the blob is not found or encounters an error
+   *
+   * @throws This method will never throw (errors are saved to the sync status) unless the signal is aborted
+   */
+  downloadBlob(blobId: string, signal?: AbortSignal): Promise<boolean> {
     // if the blob is already downloading, return the existing promise
     const existing = this.downloadingPromise.get(blobId);
     if (existing) {
@@ -53,7 +59,7 @@ export class BlobSyncPeer {
       count: this.remote.isReadonly ? 1 : 5, // readonly remote storage will not retry
     };
 
-    const promise = new Promise<void>((resolve, reject) => {
+    const promise = new Promise<boolean>((resolve, reject) => {
       // mark the blob as downloading
       this.status.blobDownloading(blobId);
 
@@ -72,6 +78,7 @@ export class BlobSyncPeer {
               new Date()
             );
             await this.local.set(data, signal);
+            resolve(true);
           } else {
             // if the blob is not found, maybe the uploader have't uploaded the blob yet, we will retry several times
             attempts++;
@@ -82,9 +89,11 @@ export class BlobSyncPeer {
               );
               // eslint-disable-next-line @typescript-eslint/no-misused-promises
               setTimeout(attempt, waitTime);
+            } else {
+              // reach the max retry times, resolve the promise with false
+              resolve(false);
             }
           }
-          resolve();
         } catch (error) {
           // if we encounter any error, reject without retry
           reject(error);
@@ -102,6 +111,7 @@ export class BlobSyncPeer {
           blobId,
           error instanceof Error ? error.message : String(error)
         );
+        return false;
       })
       .finally(() => {
         this.status.blobDownloadFinish(blobId);
