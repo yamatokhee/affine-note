@@ -4,6 +4,7 @@ query listContextDocsAndFiles($workspaceId: String!, $sessionId: String!, $conte
       contexts(sessionId: $sessionId, contextId: $contextId) {
         docs {
           id
+          status
           createdAt
         }
         files {

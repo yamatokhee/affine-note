@@ -35,7 +35,7 @@ type ChatMessage {
   role: String!
 }
 
-enum ContextFileStatus {
+enum ContextEmbedStatus {
   failed
   finished
   processing
@@ -95,6 +95,7 @@ type CopilotContext {
 type CopilotContextDoc {
   createdAt: SafeInt!
   id: ID!
+  status: ContextEmbedStatus
 }
 
 type CopilotContextFile {
@@ -104,7 +105,7 @@ type CopilotContextFile {
   error: String
   id: ID!
   name: String!
-  status: ContextFileStatus!
+  status: ContextEmbedStatus!
 }
 
 type CopilotContextFileNotSupportedDataType {

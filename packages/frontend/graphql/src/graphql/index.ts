@@ -149,6 +149,7 @@ export const addContextDocMutation = {
   addContextDoc(options: $options) {
     id
     createdAt
+    status
   }
 }`,
 };
@@ -240,6 +241,7 @@ export const listContextDocsAndFilesQuery = {
       contexts(sessionId: $sessionId, contextId: $contextId) {
         docs {
           id
+          status
           createdAt
         }
         files {

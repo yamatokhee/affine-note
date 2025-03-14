@@ -73,7 +73,7 @@ export interface ChatMessage {
   role: Scalars['String']['output'];
 }
 
-export enum ContextFileStatus {
+export enum ContextEmbedStatus {
   failed = 'failed',
   finished = 'finished',
   processing = 'processing',
@@ -167,6 +167,7 @@ export interface CopilotContextDoc {
   __typename?: 'CopilotContextDoc';
   createdAt: Scalars['SafeInt']['output'];
   id: Scalars['ID']['output'];
+  status: Maybe<ContextEmbedStatus>;
 }
 
 export interface CopilotContextFile {
@@ -177,7 +178,7 @@ export interface CopilotContextFile {
   error: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  status: ContextFileStatus;
+  status: ContextEmbedStatus;
 }
 
 export interface CopilotContextFileNotSupportedDataType {
@@ -2330,6 +2331,7 @@ export type AddContextDocMutation = {
     __typename?: 'CopilotContextDoc';
     id: string;
     createdAt: number;
+    status: ContextEmbedStatus | null;
   };
 };
 
@@ -2356,7 +2358,7 @@ export type AddContextFileMutation = {
     name: string;
     chunkSize: number;
     error: string | null;
-    status: ContextFileStatus;
+    status: ContextEmbedStatus;
     blobId: string;
   };
 };
@@ -2387,7 +2389,7 @@ export type ListContextFilesQuery = {
           blobId: string;
           chunkSize: number;
           error: string | null;
-          status: ContextFileStatus;
+          status: ContextEmbedStatus;
           createdAt: number;
         }>;
       }>;
@@ -2447,6 +2449,7 @@ export type ListContextDocsAndFilesQuery = {
         docs: Array<{
           __typename?: 'CopilotContextDoc';
           id: string;
+          status: ContextEmbedStatus | null;
           createdAt: number;
         }>;
         files: Array<{
@@ -2456,7 +2459,7 @@ export type ListContextDocsAndFilesQuery = {
           blobId: string;
           chunkSize: number;
           error: string | null;
-          status: ContextFileStatus;
+          status: ContextEmbedStatus;
           createdAt: number;
         }>;
       }>;
