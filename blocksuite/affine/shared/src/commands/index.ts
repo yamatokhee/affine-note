@@ -1,7 +1,7 @@
 export {
   getBlockIndexCommand,
-  getFirstContentBlockCommand,
-  getLastContentBlockCommand,
+  getFirstBlockCommand,
+  getLastBlockCommand,
   getNextBlockCommand,
   getPrevBlockCommand,
   getSelectedBlocksCommand,

@@ -1,35 +1,57 @@
 import type { Command } from '@blocksuite/block-std';
 import type { BlockModel } from '@blocksuite/store';
 
-import { getFirstNoteBlock } from '../../utils';
+type Role = 'content' | 'hub';
 
 /**
- * Get the first content block in the document
+ * Get the first block with specified roles and flavours in the document
  *
  * @param ctx - Command context
  * @param ctx.root - The root note block model
+ * @param ctx.role - The roles to match, can be string or string array. If not provided, default to all supported roles.
+ * @param ctx.flavour - The flavours to match, can be string or string array. If not provided, match any flavour.
  * @param next - Next handler function
- * @returns The first content block model or null
+ * @returns The first block model matched or null
  */
-export const getFirstContentBlockCommand: Command<
+export const getFirstBlockCommand: Command<
   {
     root?: BlockModel;
+    role?: Role | Role[];
+    flavour?: string | string[];
   },
   {
     firstBlock: BlockModel | null;
   }
 > = (ctx, next) => {
-  const doc = ctx.std.host.doc;
-  const noteBlock = ctx.root ?? getFirstNoteBlock(doc);
-  if (!noteBlock) {
+  const root = ctx.root || ctx.std.host.doc.root;
+  if (!root) {
     next({
       firstBlock: null,
     });
     return;
   }
 
-  for (const child of noteBlock.children) {
-    if (child.role === 'content') {
+  const defaultRoles = ['content', 'hub'];
+
+  const rolesToMatch = ctx.role
+    ? Array.isArray(ctx.role)
+      ? ctx.role
+      : [ctx.role]
+    : defaultRoles;
+
+  const flavoursToMatch = ctx.flavour
+    ? Array.isArray(ctx.flavour)
+      ? ctx.flavour
+      : [ctx.flavour]
+    : null;
+
+  for (const child of root.children) {
+    const roleMatches = rolesToMatch.includes(child.role);
+
+    const flavourMatches =
+      !flavoursToMatch || flavoursToMatch.includes(child.flavour);
+
+    if (roleMatches && flavourMatches) {
       next({
         firstBlock: child,
       });

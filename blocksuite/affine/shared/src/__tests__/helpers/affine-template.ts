@@ -1,4 +1,5 @@
 import {
+  DatabaseBlockSchemaExtension,
   ImageBlockSchemaExtension,
   ListBlockSchemaExtension,
   NoteBlockSchemaExtension,
@@ -18,6 +19,7 @@ const extensions = [
   ParagraphBlockSchemaExtension,
   ListBlockSchemaExtension,
   ImageBlockSchemaExtension,
+  DatabaseBlockSchemaExtension,
 ];
 
 // Mapping from tag names to flavours
@@ -27,6 +29,7 @@ const tagToFlavour: Record<string, string> = {
   'affine-paragraph': 'affine:paragraph',
   'affine-list': 'affine:list',
   'affine-image': 'affine:image',
+  'affine-database': 'affine:database',
 };
 
 /**
