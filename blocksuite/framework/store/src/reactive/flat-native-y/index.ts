@@ -1,12 +1,6 @@
-import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { signal } from '@preact/signals-core';
 import type { Subject } from 'rxjs';
-import {
-  Array as YArray,
-  Map as YMap,
-  Text as YText,
-  type YMapEvent,
-} from 'yjs';
+import { Array as YArray, type Map as YMap, type YMapEvent } from 'yjs';
 
 import { BaseReactiveYData } from '../base-reactive-data';
 import { Boxed, type OnBoxedChange } from '../boxed';
@@ -14,6 +8,7 @@ import { y2Native } from '../native-y';
 import { ReactiveYArray } from '../proxy';
 import { type OnTextChange, Text } from '../text';
 import type { ProxyOptions, UnRecord } from '../types';
+import { initializeData } from './initialize';
 import { createProxy } from './proxy';
 import type { OnChange } from './types';
 import {
@@ -137,57 +132,14 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
     };
   };
 
-  private readonly _createDefaultData = (): UnRecord => {
-    const root: UnRecord = {};
-    const transform = this._transform;
-    Array.from(this._ySource.entries()).forEach(([key, value]) => {
-      if (key.startsWith('sys')) {
-        return;
-      }
-      const keys = keyWithoutPrefix(key).split('.');
-      const firstKey = keys[0];
-
-      let finalData = value;
-      if (Boxed.is(value)) {
-        finalData = transform(firstKey, new Boxed(value), value);
-      } else if (value instanceof YArray) {
-        finalData = transform(firstKey, value.toArray(), value);
-      } else if (value instanceof YText) {
-        const next = new Text(value);
-        finalData = transform(firstKey, next, value);
-      } else if (value instanceof YMap) {
-        throw new BlockSuiteError(
-          ErrorCode.ReactiveProxyError,
-          'flatY2Native does not support Y.Map as value of Y.Map'
-        );
-      } else {
-        finalData = transform(firstKey, value, value);
-      }
-      const allLength = keys.length;
-      void keys.reduce((acc: UnRecord, key, index) => {
-        if (!acc[key] && index !== allLength - 1) {
-          const path = keys.slice(0, index + 1).join('.');
-          const data = this._getProxy({} as UnRecord, root, path);
-          acc[key] = data;
-        }
-        if (index === allLength - 1) {
-          acc[key] = finalData;
-        }
-        return acc[key] as UnRecord;
-      }, root);
-    });
-
-    return root;
-  };
-
   private _byPassYjs = false;
 
   private readonly _getProxy = (
     source: UnRecord,
     root: UnRecord,
     path?: string
-  ): UnRecord => {
-    return createProxy({
+  ): UnRecord =>
+    createProxy({
       yMap: this._ySource,
       base: source,
       root,
@@ -201,7 +153,6 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
       stashed: this._stashed,
       initialized: () => this._initialized,
     });
-  };
 
   private readonly _updateWithYjsSkip = (fn: () => void) => {
     this._byPassYjs = true;
@@ -216,7 +167,11 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
   ) {
     super();
     this._initialized = false;
-    const source = this._createDefaultData();
+    const source = initializeData({
+      getProxy: this._getProxy,
+      transform: this._transform,
+      yMap: this._ySource,
+    });
     this._source = source;
 
     const proxy = this._getProxy(source, source);
