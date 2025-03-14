@@ -4,19 +4,13 @@ import { Array as YArray, type Map as YMap, type YMapEvent } from 'yjs';
 
 import { BaseReactiveYData } from '../base-reactive-data';
 import { Boxed, type OnBoxedChange } from '../boxed';
-import { y2Native } from '../native-y';
 import { ReactiveYArray } from '../proxy';
 import { type OnTextChange, Text } from '../text';
 import type { ProxyOptions, UnRecord } from '../types';
 import { initializeData } from './initialize';
 import { createProxy } from './proxy';
 import type { OnChange } from './types';
-import {
-  deleteEmptyObject,
-  getFirstKey,
-  isEmptyObject,
-  keyWithoutPrefix,
-} from './utils';
+import { getYEventHandler } from './y-event-handler';
 
 export class ReactiveFlatYMap extends BaseReactiveYData<
   UnRecord,
@@ -32,72 +26,14 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
     const yMap = this._ySource;
     const proxy = this._proxy;
     this._onObserve(event, () => {
-      event.keysChanged.forEach(key => {
-        const type = event.changes.keys.get(key);
-        if (!type) {
-          return;
-        }
-        if (type.action === 'update' || type.action === 'add') {
-          const value = yMap.get(key);
-          const keyName: string = keyWithoutPrefix(key);
-          const firstKey = getFirstKey(keyName);
-          if (this._stashed.has(firstKey)) {
-            return;
-          }
-          this._updateWithYjsSkip(() => {
-            const keys = keyName.split('.');
-            void keys.reduce((acc, key, index, arr) => {
-              if (!acc[key] && index !== arr.length - 1) {
-                acc[key] = {};
-              }
-              if (index === arr.length - 1) {
-                acc[key] = y2Native(value, {
-                  transform: (value, origin) => {
-                    return this._transform(firstKey, value, origin);
-                  },
-                });
-              }
-              return acc[key] as UnRecord;
-            }, proxy as UnRecord);
-          });
-          this._onChange?.(firstKey, false);
-          return;
-        }
-        if (type.action === 'delete') {
-          const keyName: string = keyWithoutPrefix(key);
-          const firstKey = getFirstKey(keyName);
-          if (this._stashed.has(firstKey)) {
-            return;
-          }
-          this._updateWithYjsSkip(() => {
-            const keys = keyName.split('.');
-            void keys.reduce((acc, key, index) => {
-              if (index === keys.length - 1) {
-                delete acc[key];
-                let curr = acc;
-                let parentKey = keys[index - 1];
-                let parent = proxy as UnRecord;
-                let path = keys.slice(0, -2);
-
-                for (let i = keys.length - 2; i > 0; i--) {
-                  for (const pathKey of path) {
-                    parent = parent[pathKey] as UnRecord;
-                  }
-                  if (!isEmptyObject(curr)) {
-                    break;
-                  }
-                  deleteEmptyObject(curr, parentKey, parent);
-                  curr = parent;
-                  parentKey = keys[i - 1];
-                  path = path.slice(0, -1);
-                  parent = proxy as UnRecord;
-                }
-              }
-              return acc[key] as UnRecord;
-            }, proxy as UnRecord);
-          });
-          return;
-        }
+      getYEventHandler({
+        yMap,
+        proxy,
+        stashed: this._stashed,
+        updateWithYjsSkip: this._updateWithYjsSkip,
+        transform: this._transform,
+        onChange: this._onChange,
+        event,
       });
     });
   };
