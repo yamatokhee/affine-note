@@ -2363,40 +2363,6 @@ export type AddContextFileMutation = {
   };
 };
 
-export type ListContextFilesQueryVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-  sessionId: Scalars['String']['input'];
-  contextId: Scalars['String']['input'];
-}>;
-
-export type ListContextFilesQuery = {
-  __typename?: 'Query';
-  currentUser: {
-    __typename?: 'UserType';
-    copilot: {
-      __typename?: 'Copilot';
-      contexts: Array<{
-        __typename?: 'CopilotContext';
-        docs: Array<{
-          __typename?: 'CopilotContextDoc';
-          id: string;
-          createdAt: number;
-        }>;
-        files: Array<{
-          __typename?: 'CopilotContextFile';
-          id: string;
-          name: string;
-          blobId: string;
-          chunkSize: number;
-          error: string | null;
-          status: ContextEmbedStatus;
-          createdAt: number;
-        }>;
-      }>;
-    };
-  } | null;
-};
-
 export type MatchContextQueryVariables = Exact<{
   contextId: Scalars['String']['input'];
   content: Scalars['String']['input'];
@@ -2432,13 +2398,13 @@ export type RemoveContextFileMutation = {
   removeContextFile: boolean;
 };
 
-export type ListContextDocsAndFilesQueryVariables = Exact<{
+export type ListContextObjectQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   sessionId: Scalars['String']['input'];
   contextId: Scalars['String']['input'];
 }>;
 
-export type ListContextDocsAndFilesQuery = {
+export type ListContextObjectQuery = {
   __typename?: 'Query';
   currentUser: {
     __typename?: 'UserType';
@@ -4029,19 +3995,14 @@ export type Queries =
       response: ListBlobsQuery;
     }
   | {
-      name: 'listContextFilesQuery';
-      variables: ListContextFilesQueryVariables;
-      response: ListContextFilesQuery;
-    }
-  | {
       name: 'matchContextQuery';
       variables: MatchContextQueryVariables;
       response: MatchContextQuery;
     }
   | {
-      name: 'listContextDocsAndFilesQuery';
-      variables: ListContextDocsAndFilesQueryVariables;
-      response: ListContextDocsAndFilesQuery;
+      name: 'listContextObjectQuery';
+      variables: ListContextObjectQueryVariables;
+      response: ListContextObjectQuery;
     }
   | {
       name: 'listContextQuery';
