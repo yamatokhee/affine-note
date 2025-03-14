@@ -4,7 +4,7 @@ import {
   loginUser,
   loginUserDirectly,
 } from '@affine-test/kit/utils/cloud';
-import { getPageMode } from '@affine-test/kit/utils/editor';
+import { focusDocTitle, getPageMode } from '@affine-test/kit/utils/editor';
 import { openHomePage, setCoreUrl } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
@@ -258,20 +258,106 @@ test.describe('chat panel', () => {
     expect((await collectChat(page))[1].content).not.toBe(content);
   });
 
-  test('can be insert below', async ({ page }) => {
+  test('can be inserted below the current selected block', async ({ page }) => {
     await page.reload();
     await clickSideBarAllPageButton(page);
     await page.waitForTimeout(200);
     await createLocalWorkspace({ name: 'test' }, page);
     await clickNewPageButton(page);
+
+    // create tow blocks
+    await focusToEditor(page);
+    await page.keyboard.type('hello');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('world');
+
+    // focus to hello
+    await page.waitForSelector('affine-paragraph');
+    const paragraphs = await page.$$('affine-paragraph');
+    await paragraphs[0].click();
+
     await makeChat(page, 'hello');
     const content = (await collectChat(page))[1].content;
-    await focusToEditor(page);
-    // insert below
-    await page.getByTestId('action-insert-below').click();
-    await page.waitForSelector('affine-toolbar-widget editor-toolbar');
+    await paragraphs[0].click();
+
+    await page.getByTestId('action-insert').click();
+
     const editorContent = await getEditorContent(page);
-    expect(editorContent).toBe(content);
+    expect(editorContent).toBe(`hello\n${content}\nworld`);
+  });
+
+  test('can be inserted below the last block if nothing selected', async ({
+    page,
+  }) => {
+    await page.reload();
+    await clickSideBarAllPageButton(page);
+    await page.waitForTimeout(200);
+    await createLocalWorkspace({ name: 'test' }, page);
+    await clickNewPageButton(page);
+
+    // create tow blocks
+    await focusToEditor(page);
+    await page.keyboard.type('hello');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('world');
+
+    // focus to hello
+    await page.waitForSelector('affine-paragraph');
+
+    await makeChat(page, 'hello');
+    const content = (await collectChat(page))[1].content;
+
+    await focusDocTitle(page);
+
+    await page.getByTestId('action-insert').click();
+
+    const editorContent = await getEditorContent(page);
+    expect(editorContent).toBe(`hello\nworld\n${content}`);
+  });
+
+  test('can be inserted as a new note if no note selected in edgeless mode', async ({
+    page,
+  }) => {
+    await page.reload();
+    await clickSideBarAllPageButton(page);
+    await page.waitForTimeout(200);
+    await createLocalWorkspace({ name: 'test' }, page);
+    await clickNewPageButton(page);
+    await switchToEdgelessMode(page);
+
+    // delete default note
+    await (await page.waitForSelector('affine-edgeless-note')).click();
+    page.keyboard.press('Delete');
+
+    // insert as a new note
+    await makeChat(page, 'hello');
+    const content = (await collectChat(page))[1].content;
+    await page.getByTestId('action-insert').click();
+
+    const edgelessNode = await page.waitForSelector('affine-edgeless-note');
+    expect(await edgelessNode.innerText()).toBe(content);
+  });
+
+  test('can be inserted into selected note in edgeless mode', async ({
+    page,
+  }) => {
+    await page.reload();
+    await clickSideBarAllPageButton(page);
+    await page.waitForTimeout(200);
+    await createLocalWorkspace({ name: 'test' }, page);
+    await clickNewPageButton(page);
+    await switchToEdgelessMode(page);
+
+    // select
+    const note = await page.waitForSelector('affine-edgeless-note');
+    await note.click();
+
+    // insert as a new note
+    await makeChat(page, 'hello');
+    const content = (await collectChat(page))[1].content;
+    await page.getByTestId('action-insert').click();
+
+    expect(await note.innerText()).toContain(content);
   });
 
   test('can be add to edgeless as node', async ({ page }) => {
