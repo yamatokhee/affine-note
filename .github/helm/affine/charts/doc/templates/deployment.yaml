@@ -75,6 +75,28 @@ spec:
             value: "{{ .Values.app.host }}"
           - name: AFFINE_SERVER_HTTPS
             value: "{{ .Values.app.https }}"
+          {{ if .Values.app.copilot.enabled }}
+          - name: COPILOT_OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.app.copilot.secretName }}"
+                key: openaiSecret
+          - name: COPILOT_FAL_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.app.copilot.secretName }}"
+                key: falSecret
+          - name: COPILOT_PERPLEXITY_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.app.copilot.secretName }}"
+                key: perplexitySecret
+          - name: COPILOT_UNSPLASH_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.app.copilot.secretName }}"
+                key: unsplashSecret
+          {{ end }}
           ports:
             - name: http
               containerPort: {{ .Values.global.docService.port }}
