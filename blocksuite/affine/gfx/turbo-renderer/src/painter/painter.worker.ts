@@ -17,11 +17,18 @@ class BlockPainterRegistry {
   }
 }
 
-class ViewportLayoutPainter {
+export class ViewportLayoutPainter {
   private readonly canvas: OffscreenCanvas = new OffscreenCanvas(0, 0);
   private ctx: OffscreenCanvasRenderingContext2D | null = null;
   private zoom = 1;
   public readonly registry = new BlockPainterRegistry();
+
+  constructor(painters: Record<string, BlockLayoutPainter>) {
+    Object.entries(painters).forEach(([type, painter]) => {
+      this.registry.register(type, painter);
+    });
+    self.onmessage = this.handler;
+  }
 
   setSize(layoutRectW: number, layoutRectH: number, dpr: number, zoom: number) {
     const width = layoutRectW * dpr * zoom;
@@ -66,26 +73,16 @@ class ViewportLayoutPainter {
     };
     self.postMessage(message, { transfer: [bitmap] });
   }
+
+  handler = async (e: MessageEvent<HostToWorkerMessage>) => {
+    const { type, data } = e.data;
+    switch (type) {
+      case 'paintLayout': {
+        const { layout, width, height, dpr, zoom, version } = data;
+        this.setSize(width, height, dpr, zoom);
+        this.paint(layout, version);
+        break;
+      }
+    }
+  };
 }
-
-const painter = new ViewportLayoutPainter();
-
-self.onmessage = async (e: MessageEvent<HostToWorkerMessage>) => {
-  const { type, data } = e.data;
-
-  switch (type) {
-    case 'paintLayout': {
-      const { layout, width, height, dpr, zoom, version } = data;
-      painter.setSize(width, height, dpr, zoom);
-      painter.paint(layout, version);
-      break;
-    }
-    case 'registerPainter': {
-      const { painterConfigs } = data;
-      painterConfigs.forEach(async ({ type, path }) => {
-        painter.registry.register(type, new (await import(path)).default());
-      });
-      break;
-    }
-  }
-};

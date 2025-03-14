@@ -6,7 +6,6 @@ import {
   type GfxViewportElement,
 } from '@blocksuite/block-std/gfx';
 import type { Container } from '@blocksuite/global/di';
-import { createIdentifier } from '@blocksuite/global/di';
 import { DisposableGroup } from '@blocksuite/global/disposable';
 import debounce from 'lodash-es/debounce';
 
@@ -18,9 +17,7 @@ import {
   syncCanvasSize,
 } from './renderer-utils';
 import type {
-  BlockPainterConfig,
   MessagePaint,
-  MessageRegisterPainter,
   RendererOptions,
   RenderingState,
   TurboRendererConfig,
@@ -29,15 +26,11 @@ import type {
 } from './types';
 
 const debug = false; // Toggle for debug logs
-const workerUrl = new URL('./painter/painter.worker.ts', import.meta.url);
 
 const defaultOptions: RendererOptions = {
   zoomThreshold: 1, // With high enough zoom, fallback to DOM rendering
   debounceTime: 1000, // During this period, fallback to DOM
 };
-
-export const BlockPainterConfigIdentifier =
-  createIdentifier<BlockPainterConfig>('block-painter-config');
 
 export const TurboRendererConfigFactory =
   ConfigExtensionFactory<TurboRendererConfig>('viewport-turbo-renderer');
@@ -47,12 +40,23 @@ export class ViewportTurboRendererExtension extends GfxExtension {
 
   public state: RenderingState = 'inactive';
   public readonly canvas: HTMLCanvasElement = document.createElement('canvas');
-  private readonly worker: Worker = new Worker(workerUrl, { type: 'module' });
+  private readonly worker: Worker;
   private readonly disposables = new DisposableGroup();
   private layoutCacheData: ViewportLayout | null = null;
   private layoutVersion = 0;
   private bitmap: ImageBitmap | null = null;
   private viewportElement: GfxViewportElement | null = null;
+
+  constructor(gfx: GfxController) {
+    super(gfx);
+
+    const id = TurboRendererConfigFactory.identifier;
+    const config = this.std.getOptional(id);
+    if (!config) {
+      throw new Error('TurboRendererConfig not found');
+    }
+    this.worker = config.painterWorkerEntry();
+  }
 
   static override extendGfx(gfx: GfxController) {
     Object.defineProperty(gfx, 'turboRenderer', {
@@ -73,13 +77,6 @@ export class ViewportTurboRendererExtension extends GfxExtension {
       ...defaultOptions,
       ...options,
     };
-  }
-
-  get painterConfigs() {
-    const painterConfigMap = this.std.provider.getAll(
-      BlockPainterConfigIdentifier
-    );
-    return Array.from(painterConfigMap.values());
   }
 
   override mounted() {
@@ -123,13 +120,6 @@ export class ViewportTurboRendererExtension extends GfxExtension {
     this.disposables.add(
       this.std.store.slots.blockUpdated.subscribe(() => this.invalidate())
     );
-
-    const painterConfigs = this.painterConfigs;
-    const message: MessageRegisterPainter = {
-      type: 'registerPainter',
-      data: { painterConfigs },
-    };
-    this.worker.postMessage(message);
   }
 
   override unmounted() {
