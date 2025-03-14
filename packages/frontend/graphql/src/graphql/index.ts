@@ -1107,6 +1107,14 @@ export const listUsersQuery = {
 }`,
 };
 
+export const mentionUserMutation = {
+  id: 'mentionUserMutation' as const,
+  op: 'mentionUser',
+  query: `mutation mentionUser($input: MentionInput!) {
+  mentionUser(input: $input)
+}`,
+};
+
 export const notificationCountQuery = {
   id: 'notificationCountQuery' as const,
   op: 'notificationCount',

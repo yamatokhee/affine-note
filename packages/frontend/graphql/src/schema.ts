@@ -3424,6 +3424,15 @@ export type ListUsersQuery = {
   }>;
 };
 
+export type MentionUserMutationVariables = Exact<{
+  input: MentionInput;
+}>;
+
+export type MentionUserMutation = {
+  __typename?: 'Mutation';
+  mentionUser: string;
+};
+
 export type NotificationCountQueryVariables = Exact<{ [key: string]: never }>;
 
 export type NotificationCountQuery = {
@@ -4433,6 +4442,11 @@ export type Mutations =
       name: 'leaveWorkspaceMutation';
       variables: LeaveWorkspaceMutationVariables;
       response: LeaveWorkspaceMutation;
+    }
+  | {
+      name: 'mentionUserMutation';
+      variables: MentionUserMutationVariables;
+      response: MentionUserMutation;
     }
   | {
       name: 'publishPageMutation';
