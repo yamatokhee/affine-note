@@ -75,7 +75,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
   }
 
   open = () => {
-    const link = this.model.url;
+    const link = this.model.props.url;
     window.open(link, '_blank');
   };
 
@@ -95,7 +95,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
         );
       }
 
-      const { url } = this.model;
+      const { url } = this.model.props;
       if (!url) {
         throw new BlockSuiteError(
           ErrorCode.ValueNotExists,
@@ -110,7 +110,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
       ]);
 
       // if the embed data is not found, and the iframeUrl is not set, throw an error
-      const currentIframeUrl = this.model.iframeUrl;
+      const currentIframeUrl = this.model.props.iframeUrl;
       if (!embedData && !currentIframeUrl) {
         throw new BlockSuiteError(
           ErrorCode.ValueNotExists,
@@ -172,7 +172,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
   };
 
   private readonly _renderIframe = () => {
-    const { iframeUrl } = this.model;
+    const { iframeUrl } = this.model.props;
     const {
       widthPercent,
       heightInNote,
@@ -226,13 +226,13 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
 
     this.contentEditable = 'false';
 
-    if (!this.model.iframeUrl) {
+    if (!this.model.props.iframeUrl) {
       this.doc.withoutTransact(() => {
         this.refreshData().catch(console.error);
       });
     } else {
       // update iframe options, to ensure the iframe is rendered with the correct options
-      this._updateIframeOptions(this.model.url);
+      this._updateIframeOptions(this.model.props.url);
       this.status$.value = 'success';
     }
 

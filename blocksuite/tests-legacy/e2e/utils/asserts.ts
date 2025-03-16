@@ -363,7 +363,7 @@ export async function assertRichTextModelType(
       if (!block) {
         throw new Error('block component is undefined');
       }
-      return (block.model as BlockModel<{ type: string }>).type;
+      return (block.model as BlockModel<{ type: string }>).props.type;
     },
     { index, BLOCK_ID_ATTR }
   );
@@ -509,7 +509,7 @@ export async function assertBlockType(
 
       const model = element.model;
       // @ts-ignore
-      return model.type;
+      return model.props.type;
     },
     { id }
   );
@@ -574,7 +574,7 @@ export async function assertBlockProps(
       const model = element.model as BlockModel;
       return Object.fromEntries(
         // @ts-ignore
-        Object.keys(props).map(key => [key, (model[key] as unknown).toString()])
+        Object.keys(props).map(key => [key, model.props[key].toString()])
       );
     },
     [id, props] as const
@@ -590,7 +590,7 @@ export async function assertBlockTypes(page: Page, blockTypes: string[]) {
       Array.from(elements)
         .slice(2)
         // @ts-ignore
-        .map(el => el.model.type)
+        .map(el => el.model.props.type)
     );
   });
   expect(actual).toEqual(blockTypes);

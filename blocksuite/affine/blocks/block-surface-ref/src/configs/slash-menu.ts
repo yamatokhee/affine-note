@@ -23,7 +23,7 @@ const surfaceRefSlashMenuConfig: SlashMenuConfig = {
       .map(block => block.model as FrameBlockModel);
 
     const frameItems = frameModels.map<SlashMenuActionItem>(frameModel => ({
-      name: 'Frame: ' + frameModel.title,
+      name: 'Frame: ' + frameModel.props.title,
       icon: FrameIcon(),
       group: `5_Document Group & Frame@${index++}`,
       tooltip: {

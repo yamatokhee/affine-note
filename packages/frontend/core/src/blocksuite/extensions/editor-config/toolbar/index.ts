@@ -410,7 +410,7 @@ function createExternalLinkableToolbarConfig(
               )?.model;
               if (!model) return;
 
-              const { url } = model;
+              const { url } = model.props;
 
               navigator.clipboard.writeText(url).catch(console.error);
               toast(ctx.host, 'Copied link to clipboard');
@@ -523,7 +523,7 @@ function createOpenDocActionGroup(
           return {
             ...action,
             disabled: shouldOpenInActiveView
-              ? component.model.pageId === ctx.store.id
+              ? component.model.props.pageId === ctx.store.id
               : false,
             when:
               allowed &&
@@ -590,7 +590,7 @@ const embedLinkedDocToolbarConfig = {
             );
             if (!model) return;
 
-            const { pageId, params } = model;
+            const { pageId, params } = model.props;
 
             const url = ctx.std
               .getOptional(GenerateDocUrlProvider)
@@ -625,7 +625,7 @@ const embedLinkedDocToolbarConfig = {
             ctx.hide();
 
             const model = component.model;
-            const doc = ctx.workspace.getDoc(model.pageId);
+            const doc = ctx.workspace.getDoc(model.props.pageId);
             const abortController = new AbortController();
             abortController.signal.onabort = () => ctx.show();
 
@@ -683,7 +683,7 @@ const embedSyncedDocToolbarConfig = {
             );
             if (!model) return;
 
-            const { pageId, params } = model;
+            const { pageId, params } = model.props;
 
             const url = ctx.std
               .getOptional(GenerateDocUrlProvider)
@@ -718,7 +718,7 @@ const embedSyncedDocToolbarConfig = {
             ctx.hide();
 
             const model = component.model;
-            const doc = ctx.workspace.getDoc(model.pageId);
+            const doc = ctx.workspace.getDoc(model.props.pageId);
             const abortController = new AbortController();
             abortController.signal.onabort = () => ctx.show();
 
@@ -920,7 +920,7 @@ const embedIframeToolbarConfig = {
             )?.model;
             if (!model) return;
 
-            const { url } = model;
+            const { url } = model.props;
 
             navigator.clipboard.writeText(url).catch(console.error);
             toast(ctx.host, 'Copied link to clipboard');

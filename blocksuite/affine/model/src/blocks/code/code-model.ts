@@ -37,6 +37,4 @@ export const CodeBlockSchema = defineBlockSchema({
 
 export const CodeBlockSchemaExtension = BlockSchemaExtension(CodeBlockSchema);
 
-export class CodeBlockModel extends BlockModel<CodeBlockProps> {
-  override text!: Text;
-}
+export class CodeBlockModel extends BlockModel<CodeBlockProps> {}

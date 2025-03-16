@@ -154,14 +154,14 @@ export class NoteSlicer extends WidgetComponent<
       index: originIndex,
       xywh,
       background,
-      children,
       displayMode,
-    } = this._anchorNote;
+    } = this._anchorNote.props;
+    const { children } = this._anchorNote;
     const {
       collapse: _,
       collapsedHeight: __,
       ...restOfEdgeless
-    } = this._anchorNote.edgeless;
+    } = this._anchorNote.props.edgeless;
     const anchorBlockId = this._noteBlockIds[this._activeSlicerIndex];
     if (!anchorBlockId) return;
     const sliceIndex = children.findIndex(block => block.id === anchorBlockId);

@@ -44,11 +44,11 @@ export class AIChatBlockPeekView extends LitElement {
   }
 
   private get parentSessionId() {
-    return this.parentModel.sessionId;
+    return this.parentModel.props.sessionId;
   }
 
   private get historyMessagesString() {
-    return this.parentModel.messages;
+    return this.parentModel.props.messages;
   }
 
   private get parentChatBlockId() {
@@ -56,11 +56,11 @@ export class AIChatBlockPeekView extends LitElement {
   }
 
   private get parentRootDocId() {
-    return this.parentModel.rootDocId;
+    return this.parentModel.props.rootDocId;
   }
 
   private get parentRootWorkspaceId() {
-    return this.parentModel.rootWorkspaceId;
+    return this.parentModel.props.rootWorkspaceId;
   }
 
   private _textRendererOptions: TextRendererOptions = {};

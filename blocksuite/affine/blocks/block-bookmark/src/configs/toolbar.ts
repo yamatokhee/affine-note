@@ -43,7 +43,7 @@ export const builtinToolbarConfig = {
         );
         if (!model) return null;
 
-        const { url } = model;
+        const { url } = model.props;
 
         return html`<affine-link-preview .url=${url}></affine-link-preview>`;
       },
@@ -61,7 +61,8 @@ export const builtinToolbarConfig = {
             );
             if (!model) return;
 
-            const { title, caption, url, parent } = model;
+            const { title, caption, url } = model.props;
+            const { parent } = model;
             const index = parent?.children.indexOf(model);
 
             const yText = new Y.Text();
@@ -103,7 +104,7 @@ export const builtinToolbarConfig = {
 
             const options = ctx.std
               .get(EmbedOptionProvider)
-              .getEmbedBlockOptions(model.url);
+              .getEmbedBlockOptions(model.props.url);
 
             return options?.viewType !== 'embed';
           },
@@ -114,7 +115,8 @@ export const builtinToolbarConfig = {
             );
             if (!model) return;
 
-            const { caption, url, style, parent } = model;
+            const { caption, url, style } = model.props;
+            const { parent } = model;
             const index = parent?.children.indexOf(model);
 
             const options = ctx.std
@@ -232,7 +234,7 @@ export const builtinToolbarConfig = {
             .actions=${actions}
             .context=${ctx}
             .toggle=${toggle}
-            .style$=${model.style$}
+            .style$=${model.props.style$}
           ></affine-card-style-dropdown-menu>`
         )}`;
       },

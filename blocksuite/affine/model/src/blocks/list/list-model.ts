@@ -44,6 +44,4 @@ export const ListBlockSchema = defineBlockSchema({
 
 export const ListBlockSchemaExtension = BlockSchemaExtension(ListBlockSchema);
 
-export class ListBlockModel extends BlockModel<ListProps> {
-  override text!: Text;
-}
+export class ListBlockModel extends BlockModel<ListProps> {}

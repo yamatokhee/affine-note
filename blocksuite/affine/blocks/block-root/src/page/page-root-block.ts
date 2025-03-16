@@ -238,7 +238,7 @@ export class PageRootBlockComponent extends BlockComponent<
         const blocks = this.model.children
           .filter(model => {
             if (matchModels(model, [NoteBlockModel])) {
-              if (model.displayMode === NoteDisplayMode.EdgelessOnly)
+              if (model.props.displayMode === NoteDisplayMode.EdgelessOnly)
                 return false;
 
               return true;
@@ -332,7 +332,7 @@ export class PageRootBlockComponent extends BlockComponent<
       const notes = this.model.children.filter(
         (child): child is NoteBlockModel =>
           child instanceof NoteBlockModel &&
-          child.displayMode !== NoteDisplayMode.EdgelessOnly
+          child.props.displayMode !== NoteDisplayMode.EdgelessOnly
       );
 
       // make sure there is a block can be focused
@@ -358,7 +358,7 @@ export class PageRootBlockComponent extends BlockComponent<
         if (
           !lastBlock ||
           !matchModels(lastBlock, [ParagraphBlockModel]) ||
-          lastBlock.text.length !== 0
+          lastBlock.props.text.length !== 0
         ) {
           this.std.command.exec(appendParagraphCommand);
         }
@@ -436,7 +436,8 @@ export class PageRootBlockComponent extends BlockComponent<
       const isNote = matchModels(child, [NoteBlockModel]);
       const note = child as NoteBlockModel;
       const displayOnEdgeless =
-        !!note.displayMode && note.displayMode === NoteDisplayMode.EdgelessOnly;
+        !!note.props.displayMode &&
+        note.props.displayMode === NoteDisplayMode.EdgelessOnly;
       // Should remove deprecated `hidden` property in the future
       return !(isNote && displayOnEdgeless);
     });
