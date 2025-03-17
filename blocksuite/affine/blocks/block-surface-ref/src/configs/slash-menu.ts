@@ -1,23 +1,55 @@
 import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
-import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
-import { type FrameBlockModel, NoteBlockModel } from '@blocksuite/affine-model';
-import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
-import { matchModels } from '@blocksuite/affine-shared/utils';
+import { EdgelessCRUDExtension } from '@blocksuite/affine-block-surface';
+import { MindmapStyle } from '@blocksuite/affine-model';
 import {
   type SlashMenuActionItem,
   type SlashMenuConfig,
   SlashMenuConfigExtension,
   type SlashMenuItem,
 } from '@blocksuite/affine-widget-slash-menu';
+import { BlockSelection } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
-import { FrameIcon, GroupingIcon } from '@blocksuite/icons/lit';
+import { FrameIcon, GroupingIcon, MindmapIcon } from '@blocksuite/icons/lit';
 
 import { insertSurfaceRefBlockCommand } from '../commands';
 import { EdgelessTooltip } from './tooltips';
 
 const surfaceRefSlashMenuConfig: SlashMenuConfig = {
-  items: ({ std }) => {
+  items: ({ std, model }) => {
+    const crud = std.get(EdgelessCRUDExtension);
+    const frameMgr = std.get(EdgelessFrameManagerIdentifier);
+
+    const findSpace = (bound: Bound) => {
+      const padding = 20;
+      const gfx = std.get(GfxControllerIdentifier);
+      let elementInFrameBound = gfx.grid.search(bound);
+      while (elementInFrameBound.length > 0) {
+        const rightElement = elementInFrameBound.reduce((a, b) => {
+          return a.x + a.w > b.x + b.w ? a : b;
+        });
+        bound.x = rightElement.x + rightElement.w + padding;
+        elementInFrameBound = gfx.grid.search(bound);
+      }
+      return bound;
+    };
+
+    const insertSurfaceRefAndSelect = (reference: string) => {
+      const [_, result] = std.command.exec(insertSurfaceRefBlockCommand, {
+        reference,
+        place: 'after',
+        removeEmptyLine: true,
+        selectedModels: [model],
+      });
+      if (!result.insertedSurfaceRefBlockId) return;
+
+      std.selection.set([
+        std.selection.create(BlockSelection, {
+          blockId: result.insertedSurfaceRefBlockId,
+        }),
+      ]);
+    };
+
     let index = 0;
 
     const insertBlankFrameItem: SlashMenuItem = {
@@ -26,56 +58,72 @@ const surfaceRefSlashMenuConfig: SlashMenuConfig = {
       icon: FrameIcon(),
       tooltip: {
         figure: EdgelessTooltip,
-        caption: 'Edgeless',
+        caption: 'Frame',
       },
       group: `5_Edgeless Element@${index++}`,
-      action: ({ std, model }) => {
-        const { root } = std.store;
-        if (!root) return;
-
-        const pageBlock = root.children.find(
-          (model): model is NoteBlockModel =>
-            matchModels(model, [NoteBlockModel]) && model.isPageBlock()
-        );
-        if (!pageBlock) return;
-
-        const top = pageBlock.x;
-        const right = pageBlock.x + pageBlock.w;
-        const padding = 20;
-
-        let frameBound = Bound.fromXYWH([right + padding, top, 1600, 900]);
-        const gfx = std.get(GfxControllerIdentifier);
-
-        // Find a space to insert the frame
-        let elementInFrameBound = gfx.grid.search(frameBound);
-        while (elementInFrameBound.length > 0) {
-          const rightElement = elementInFrameBound.reduce((a, b) => {
-            return a.x + a.w > b.x + b.w ? a : b;
-          });
-          frameBound.x = rightElement.x + rightElement.w + padding;
-          elementInFrameBound = gfx.grid.search(frameBound);
-        }
-
-        const frameMgr = std.get(EdgelessFrameManagerIdentifier);
+      action: () => {
+        const frameBound = findSpace(Bound.fromXYWH([0, 0, 1600, 900]));
         const frame = frameMgr.createFrameOnBound(frameBound);
-
-        std.command.exec(insertSurfaceRefBlockCommand, {
-          reference: frame.id,
-          place: 'after',
-          removeEmptyLine: true,
-          selectedModels: [model],
-        });
+        insertSurfaceRefAndSelect(frame.id);
       },
     };
 
-    const surfaceModel = getSurfaceBlock(std.store);
-    if (!surfaceModel) return [];
+    const insertMindMapItem: SlashMenuItem = {
+      name: 'Mind Map',
+      description: 'Insert a mind map',
+      icon: MindmapIcon(),
+      tooltip: {
+        figure: EdgelessTooltip,
+        caption: 'Edgeless',
+      },
+      group: `5_Edgeless Element@${index++}`,
+      action: () => {
+        const bound = findSpace(Bound.fromXYWH([0, 0, 200, 200]));
+        const { x, y, h } = bound;
 
-    const frameModels = std.store
-      .getBlocksByFlavour('affine:frame')
-      .map(block => block.model as FrameBlockModel);
+        const rootW = 145;
+        const rootH = 50;
 
-    const frameItems = frameModels.map<SlashMenuActionItem>(frameModel => ({
+        const nodeW = 80;
+        const nodeH = 35;
+
+        const centerVertical = y + h / 2;
+        const rootX = x;
+        const rootY = centerVertical - rootH / 2;
+
+        type MindMapNode = {
+          children: MindMapNode[];
+          text: string;
+          xywh: string;
+        };
+
+        const root: MindMapNode = {
+          children: [],
+          text: 'Mind Map',
+          xywh: `[${rootX},${rootY},${rootW},${rootH}]`,
+        };
+
+        for (let i = 0; i < 3; i++) {
+          const nodeX = x + rootW + 300;
+          const nodeY = centerVertical - nodeH / 2 + (i - 1) * 50;
+          root.children.push({
+            children: [],
+            text: 'Text',
+            xywh: `[${nodeX},${nodeY},${nodeW},${nodeH}]`,
+          });
+        }
+
+        const mindmapId = crud.addElement('mindmap', {
+          style: MindmapStyle.ONE,
+          children: root,
+        });
+        if (!mindmapId) return;
+
+        insertSurfaceRefAndSelect(mindmapId);
+      },
+    };
+
+    const frameItems = frameMgr.frames.map<SlashMenuActionItem>(frameModel => ({
       name: 'Frame: ' + frameModel.props.title,
       icon: FrameIcon(),
       group: `5_Edgeless Element@${index++}`,
@@ -83,20 +131,12 @@ const surfaceRefSlashMenuConfig: SlashMenuConfig = {
         figure: EdgelessTooltip,
         caption: 'Edgeless',
       },
-      action: ({ std }) => {
-        std.command
-          .chain()
-          .pipe(getSelectedModelsCommand)
-          .pipe(insertSurfaceRefBlockCommand, {
-            reference: frameModel.id,
-            place: 'after',
-            removeEmptyLine: true,
-          })
-          .run();
+      action: () => {
+        insertSurfaceRefAndSelect(frameModel.id);
       },
     }));
 
-    const groupElements = surfaceModel.getElementsByType('group');
+    const groupElements = crud.getElementsByType('group');
     const groupItems = groupElements.map<SlashMenuActionItem>(group => ({
       name: 'Group: ' + group.title.toString(),
       icon: GroupingIcon(),
@@ -105,20 +145,17 @@ const surfaceRefSlashMenuConfig: SlashMenuConfig = {
         figure: EdgelessTooltip,
         caption: 'Edgeless',
       },
-      action: ({ std }) => {
-        std.command
-          .chain()
-          .pipe(getSelectedModelsCommand)
-          .pipe(insertSurfaceRefBlockCommand, {
-            reference: group.id,
-            place: 'after',
-            removeEmptyLine: true,
-          })
-          .run();
+      action: () => {
+        insertSurfaceRefAndSelect(group.id);
       },
     }));
 
-    return [insertBlankFrameItem, ...frameItems, ...groupItems];
+    return [
+      insertBlankFrameItem,
+      insertMindMapItem,
+      ...frameItems,
+      ...groupItems,
+    ];
   },
 };
 
