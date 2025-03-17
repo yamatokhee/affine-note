@@ -12,6 +12,12 @@ input AddContextFileInput {
   contextId: String!
 }
 
+input AddRemoveContextCategoryInput {
+  categoryId: String!
+  contextId: String!
+  type: ContextCategories!
+}
+
 type AlreadyInSpaceDataType {
   spaceId: String!
 }
@@ -33,6 +39,11 @@ type ChatMessage {
   id: ID
   params: JSON
   role: String!
+}
+
+enum ContextCategories {
+  Collection
+  Tag
 }
 
 enum ContextEmbedStatus {
@@ -90,6 +101,12 @@ type CopilotContext {
   """match workspace doc content"""
   matchWorkspaceContext(content: String!, limit: SafeInt): ContextMatchedDocChunk!
   workspaceId: String!
+}
+
+type CopilotContextCategory {
+  createdAt: SafeInt!
+  id: ID!
+  type: ContextCategories!
 }
 
 type CopilotContextDoc {
@@ -803,6 +820,9 @@ type Mutation {
   acceptInviteById(inviteId: String!, sendAcceptMail: Boolean, workspaceId: String!): Boolean!
   activateLicense(license: String!, workspaceId: String!): License!
 
+  """add a category to context"""
+  addContextCategory(options: AddRemoveContextCategoryInput!): CopilotContextCategory!
+
   """add a doc to context"""
   addContextDoc(options: AddContextDocInput!): CopilotContextDoc!
 
@@ -886,6 +906,9 @@ type Mutation {
 
   """Remove user avatar"""
   removeAvatar: RemoveAvatar!
+
+  """remove a category from context"""
+  removeContextCategory(options: AddRemoveContextCategoryInput!): Boolean!
 
   """remove a doc from context"""
   removeContextDoc(options: RemoveContextDocInput!): Boolean!
