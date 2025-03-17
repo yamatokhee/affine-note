@@ -325,23 +325,23 @@ function createToolbarMoreMenuConfigV2(baseUrl?: string) {
               const createdAt = 'meta:createdAt';
               const createdBy = 'meta:createdBy';
               return (
-                createdAt in block.model &&
-                block.model[createdAt] !== undefined &&
-                createdBy in block.model &&
-                block.model[createdBy] !== undefined &&
-                typeof block.model[createdBy] === 'string' &&
-                typeof block.model[createdAt] === 'number'
+                createdAt in block.model.props &&
+                block.model.props[createdAt] !== undefined &&
+                createdBy in block.model.props &&
+                block.model.props[createdBy] !== undefined &&
+                typeof block.model.props[createdBy] === 'string' &&
+                typeof block.model.props[createdAt] === 'number'
               );
             },
             content: cx => {
               const model = cx.getCurrentModelBy(BlockSelection);
               if (!model) return null;
               const createdAt = 'meta:createdAt';
-              if (!(createdAt in model)) return null;
+              if (!(createdAt in model.props)) return null;
               const createdBy = 'meta:createdBy';
-              if (!(createdBy in model)) return null;
-              const createdByUserId = model[createdBy] as string;
-              const createdAtTimestamp = model[createdAt] as number;
+              if (!(createdBy in model.props)) return null;
+              const createdByUserId = model.props[createdBy] as string;
+              const createdAtTimestamp = model.props[createdAt] as number;
               const date = new Date(createdAtTimestamp);
               const userProvider = cx.std.get(UserProvider);
               userProvider.revalidateUserInfo(createdByUserId);
