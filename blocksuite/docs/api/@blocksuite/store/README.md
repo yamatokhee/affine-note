@@ -10,3 +10,7 @@
 
 - [Extension](classes/Extension.md)
 - [StoreExtension](classes/StoreExtension.md)
+
+## Store
+
+- [Store](classes/Store.md)

@@ -337,7 +337,7 @@ export async function initEmptyDatabaseState(page: Page, rootId?: string) {
       },
       noteId
     );
-    const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
+    const model = doc.getModelById(databaseId) as DatabaseBlockModel;
     const datasource =
       new window.$blocksuite.blocks.database.DatabaseBlockDataSource(model);
     datasource.viewManager.viewAdd('table');
@@ -373,7 +373,7 @@ export async function initKanbanViewState(
         },
         noteId
       );
-      const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
+      const model = doc.getModelById(databaseId) as DatabaseBlockModel;
       const datasource =
         new window.$blocksuite.blocks.database.DatabaseBlockDataSource(model);
       const rowIds = config.rows.map(rowText => {
@@ -432,7 +432,7 @@ export async function initEmptyDatabaseWithParagraphState(
       },
       noteId
     );
-    const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
+    const model = doc.getModelById(databaseId) as DatabaseBlockModel;
     const datasource =
       new window.$blocksuite.blocks.database.DatabaseBlockDataSource(model);
     datasource.viewManager.viewAdd('table');

@@ -10,7 +10,8 @@
     "excludeProtected": true,
     "excludeExternals": true,
     "externalPattern": ["node_modules/**/*"],
-    "disableSources": true
+    "disableSources": true,
+    "categoryOrder": ["*", "Other"]
   },
   "readme": "none",
   "plugin": ["typedoc-plugin-markdown"],
