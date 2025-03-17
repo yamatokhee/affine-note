@@ -45,7 +45,7 @@ const FILE_NAME = 'test-card-1.png';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FILE_PATH = path.resolve(
   __dirname,
-  `../../playground/public/${FILE_NAME}`
+  `../../../blocksuite/playground/public/${FILE_NAME}`
 );
 
 function getAttachment(page: Page) {

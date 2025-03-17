@@ -633,14 +633,6 @@ export const PackageList = [
     ],
   },
   {
-    location: 'blocksuite/tests-legacy',
-    name: '@blocksuite/legacy-e2e',
-    workspaceDependencies: [
-      'blocksuite/affine/all',
-      'blocksuite/integration-test',
-    ],
-  },
-  {
     location: 'docs/reference',
     name: '@affine/docs',
     workspaceDependencies: [],
@@ -881,6 +873,14 @@ export const PackageList = [
     workspaceDependencies: ['tests/kit'],
   },
   {
+    location: 'tests/blocksuite',
+    name: '@affine-test/blocksuite',
+    workspaceDependencies: [
+      'blocksuite/affine/all',
+      'blocksuite/integration-test',
+    ],
+  },
+  {
     location: 'tests/kit',
     name: '@affine-test/kit',
     workspaceDependencies: ['tools/utils', 'blocksuite/affine/all'],
@@ -972,7 +972,6 @@ export type PackageName =
   | '@blocksuite/sync'
   | '@blocksuite/integration-test'
   | '@blocksuite/playground'
-  | '@blocksuite/legacy-e2e'
   | '@affine/docs'
   | '@affine/server-native'
   | '@affine/server'
@@ -1003,6 +1002,7 @@ export type PackageName =
   | '@affine-test/affine-desktop-cloud'
   | '@affine-test/affine-local'
   | '@affine-test/affine-mobile'
+  | '@affine-test/blocksuite'
   | '@affine-test/kit'
   | '@types/build-config'
   | '@types/affine__env'

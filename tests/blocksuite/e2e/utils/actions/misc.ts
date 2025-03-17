@@ -799,7 +799,7 @@ export async function getClipboardHTML(page: Page) {
 
         format(node.children[i] as HTMLElement, level);
 
-        if (node.lastElementChild == node.children[i]) {
+        if (node.lastElementChild === node.children[i]) {
           textNode = document.createTextNode('\n' + indentAfter);
           node.append(textNode);
         }

@@ -1,5 +1,5 @@
 {
-  "name": "@blocksuite/legacy-e2e",
+  "name": "@affine-test/blocksuite",
   "private": true,
   "type": "module",
   "main": "index.js",
