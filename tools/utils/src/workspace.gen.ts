@@ -584,6 +584,11 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/docs',
+    name: '@blocksuite/bs-docs',
+    workspaceDependencies: ['blocksuite/affine/all'],
+  },
+  {
     location: 'blocksuite/framework/block-std',
     name: '@blocksuite/block-std',
     workspaceDependencies: [
@@ -966,6 +971,7 @@ export type PackageName =
   | '@blocksuite/affine-widget-scroll-anchoring'
   | '@blocksuite/affine-widget-slash-menu'
   | '@blocksuite/affine-widget-toolbar'
+  | '@blocksuite/bs-docs'
   | '@blocksuite/block-std'
   | '@blocksuite/global'
   | '@blocksuite/inline'
