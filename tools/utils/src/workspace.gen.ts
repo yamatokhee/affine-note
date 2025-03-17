@@ -336,6 +336,7 @@ export const PackageList = [
     location: 'blocksuite/affine/blocks/block-surface-ref',
     name: '@blocksuite/affine-block-surface-ref',
     workspaceDependencies: [
+      'blocksuite/affine/blocks/block-frame',
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
       'blocksuite/affine/model',

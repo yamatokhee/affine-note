@@ -2692,6 +2692,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-block-surface-ref@workspace:blocksuite/affine/blocks/block-surface-ref"
   dependencies:
+    "@blocksuite/affine-block-frame": "workspace:*"
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
