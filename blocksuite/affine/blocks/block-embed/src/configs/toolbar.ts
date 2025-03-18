@@ -52,7 +52,7 @@ export function createBuiltinToolbarConfigForExternal(
       {
         id: 'a.preview',
         content(ctx) {
-          const model = ctx.getCurrentBlockBy(BlockSelection)?.model;
+          const model = ctx.getCurrentModel();
           if (!model || !isExternalEmbedModel(model)) return null;
 
           const { url } = model.props;
@@ -72,7 +72,7 @@ export function createBuiltinToolbarConfigForExternal(
             id: 'inline',
             label: 'Inline view',
             run(ctx) {
-              const model = ctx.getCurrentBlockBy(BlockSelection)?.model;
+              const model = ctx.getCurrentModel();
               if (!model || !isExternalEmbedModel(model)) return;
 
               const { title, caption, url: link } = model.props;
@@ -105,7 +105,7 @@ export function createBuiltinToolbarConfigForExternal(
             id: 'card',
             label: 'Card view',
             disabled(ctx) {
-              const model = ctx.getCurrentBlockBy(BlockSelection)?.model;
+              const model = ctx.getCurrentModel();
               if (!model || !isExternalEmbedModel(model)) return true;
 
               const { url } = model.props;
@@ -116,7 +116,7 @@ export function createBuiltinToolbarConfigForExternal(
               return options?.viewType === 'card';
             },
             run(ctx) {
-              const model = ctx.getCurrentBlockBy(BlockSelection)?.model;
+              const model = ctx.getCurrentModel();
               if (!model || !isExternalEmbedModel(model)) return;
 
               const { url, caption } = model.props;
@@ -165,7 +165,7 @@ export function createBuiltinToolbarConfigForExternal(
             id: 'embed',
             label: 'Embed view',
             disabled(ctx) {
-              const model = ctx.getCurrentBlockBy(BlockSelection)?.model;
+              const model = ctx.getCurrentModel();
               if (!model || !isExternalEmbedModel(model)) return false;
 
               const { url } = model.props;
@@ -176,7 +176,7 @@ export function createBuiltinToolbarConfigForExternal(
               return options?.viewType === 'embed';
             },
             when(ctx) {
-              const model = ctx.getCurrentBlockBy(BlockSelection)?.model;
+              const model = ctx.getCurrentModel();
               if (!model || !isExternalEmbedModel(model)) return false;
 
               const { url } = model.props;
@@ -187,7 +187,7 @@ export function createBuiltinToolbarConfigForExternal(
               return options?.viewType === 'embed';
             },
             run(ctx) {
-              const model = ctx.getCurrentBlockBy(BlockSelection)?.model;
+              const model = ctx.getCurrentModel();
               if (!model || !isExternalEmbedModel(model)) return;
 
               const { url, caption } = model.props;
@@ -231,7 +231,7 @@ export function createBuiltinToolbarConfigForExternal(
           },
         ],
         content(ctx) {
-          const model = ctx.getCurrentBlockBy(BlockSelection)?.model;
+          const model = ctx.getCurrentModel();
           if (!model || !isExternalEmbedModel(model)) return null;
 
           const { url } = model.props;
@@ -322,10 +322,7 @@ export function createBuiltinToolbarConfigForExternal(
         tooltip: 'Caption',
         icon: CaptionIcon(),
         run(ctx) {
-          const component = ctx.getCurrentBlockComponentBy(
-            BlockSelection,
-            klass
-          );
+          const component = ctx.getCurrentBlockComponentBy(klass);
           if (!component) return;
 
           component.captionEditor?.show();
@@ -378,10 +375,7 @@ export function createBuiltinToolbarConfigForExternal(
         label: 'Reload',
         icon: ResetIcon(),
         run(ctx) {
-          const component = ctx.getCurrentBlockComponentBy(
-            BlockSelection,
-            klass
-          );
+          const component = ctx.getCurrentBlockComponentBy(klass);
           component?.refreshData();
         },
       },
