@@ -1053,6 +1053,8 @@ export interface Mutation {
   updateRuntimeConfig: ServerRuntimeConfigType;
   /** update multiple server runtime configurable settings */
   updateRuntimeConfigs: Array<ServerRuntimeConfigType>;
+  /** Update user settings */
+  updateSettings: Scalars['Boolean']['output'];
   updateSubscriptionRecurring: SubscriptionType;
   /** Update an user */
   updateUser: UserType;
@@ -1370,6 +1372,10 @@ export interface MutationUpdateRuntimeConfigArgs {
 
 export interface MutationUpdateRuntimeConfigsArgs {
   updates: Scalars['JSONObject']['input'];
+}
+
+export interface MutationUpdateSettingsArgs {
+  input: UpdateSettingsInput;
 }
 
 export interface MutationUpdateSubscriptionRecurringArgs {
@@ -1756,6 +1762,14 @@ export interface ServerServiceConfig {
   name: Scalars['String']['output'];
 }
 
+export interface SettingsType {
+  __typename?: 'SettingsType';
+  /** Receive invitation email */
+  receiveInvitationEmail: Scalars['Boolean']['output'];
+  /** Receive mention email */
+  receiveMentionEmail: Scalars['Boolean']['output'];
+}
+
 export interface SpaceAccessDeniedDataType {
   __typename?: 'SpaceAccessDeniedDataType';
   spaceId: Scalars['String']['output'];
@@ -1897,6 +1911,13 @@ export interface UpdateDocUserRoleInput {
   workspaceId: Scalars['String']['input'];
 }
 
+export interface UpdateSettingsInput {
+  /** Receive invitation email */
+  receiveInvitationEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive mention email */
+  receiveMentionEmail?: InputMaybe<Scalars['Boolean']['input']>;
+}
+
 export interface UpdateUserInput {
   /** User name */
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1983,6 +2004,8 @@ export interface UserType {
   notifications: PaginatedNotificationObjectType;
   quota: UserQuotaType;
   quotaUsage: UserQuotaUsageType;
+  /** Get user settings */
+  settings: SettingsType;
   subscriptions: Array<SubscriptionType>;
   /** @deprecated use [/api/auth/sign-in?native=true] instead */
   token: TokenType;

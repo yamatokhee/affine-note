@@ -943,6 +943,9 @@ type Mutation {
 
   """update multiple server runtime configurable settings"""
   updateRuntimeConfigs(updates: JSONObject!): [ServerRuntimeConfigType!]!
+
+  """Update user settings"""
+  updateSettings(input: UpdateSettingsInput!): Boolean!
   updateSubscriptionRecurring(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, recurring: SubscriptionRecurring!, workspaceId: String): SubscriptionType!
 
   """Update an user"""
@@ -1278,6 +1281,14 @@ type ServerServiceConfig {
   name: String!
 }
 
+type SettingsType {
+  """Receive invitation email"""
+  receiveInvitationEmail: Boolean!
+
+  """Receive mention email"""
+  receiveMentionEmail: Boolean!
+}
+
 type SpaceAccessDeniedDataType {
   spaceId: String!
 }
@@ -1403,6 +1414,14 @@ input UpdateDocUserRoleInput {
   workspaceId: String!
 }
 
+input UpdateSettingsInput {
+  """Receive invitation email"""
+  receiveInvitationEmail: Boolean
+
+  """Receive mention email"""
+  receiveMentionEmail: Boolean
+}
+
 input UpdateUserInput {
   """User name"""
   name: String
@@ -1495,6 +1514,9 @@ type UserType {
   notifications(pagination: PaginationInput!): PaginatedNotificationObjectType!
   quota: UserQuotaType!
   quotaUsage: UserQuotaUsageType!
+
+  """Get user settings"""
+  settings: SettingsType!
   subscriptions: [SubscriptionType!]!
   token: tokenType! @deprecated(reason: "use [/api/auth/sign-in?native=true] instead")
 }
