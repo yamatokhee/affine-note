@@ -759,6 +759,12 @@ export class BlobQuotaExceeded extends UserFriendlyError {
   }
 }
 
+export class StorageQuotaExceeded extends UserFriendlyError {
+  constructor(message?: string) {
+    super('quota_exceeded', 'storage_quota_exceeded', message);
+  }
+}
+
 export class MemberQuotaExceeded extends UserFriendlyError {
   constructor(message?: string) {
     super('quota_exceeded', 'member_quota_exceeded', message);
@@ -995,6 +1001,7 @@ export enum ErrorNames {
   COPILOT_FAILED_TO_MATCH_CONTEXT,
   COPILOT_EMBEDDING_UNAVAILABLE,
   BLOB_QUOTA_EXCEEDED,
+  STORAGE_QUOTA_EXCEEDED,
   MEMBER_QUOTA_EXCEEDED,
   COPILOT_QUOTA_EXCEEDED,
   RUNTIME_CONFIG_NOT_FOUND,

@@ -7726,9 +7726,13 @@ export function useAFFiNEI18N(): {
       */
     ["error.COPILOT_EMBEDDING_UNAVAILABLE"](): string;
     /**
-      * `You have exceeded your blob storage quota.`
+      * `You have exceeded your blob size quota.`
       */
     ["error.BLOB_QUOTA_EXCEEDED"](): string;
+    /**
+      * `You have exceeded your storage quota.`
+      */
+    ["error.STORAGE_QUOTA_EXCEEDED"](): string;
     /**
       * `You have exceeded your workspace member quota.`
       */
