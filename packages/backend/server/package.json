@@ -66,6 +66,7 @@
     "@socket.io/redis-adapter": "^8.3.0",
     "bullmq": "^5.40.2",
     "cookie-parser": "^1.4.7",
+    "date-fns": "^4.0.0",
     "dotenv": "^16.4.7",
     "eventemitter2": "^6.4.9",
     "eventsource-parser": "^3.0.0",
