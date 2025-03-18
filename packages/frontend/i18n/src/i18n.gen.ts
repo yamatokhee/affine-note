@@ -3256,6 +3256,12 @@ export function useAFFiNEI18N(): {
         readonly due: string;
     }): string;
     /**
+      * `Your recent payment failed, the next payment date is {{due}}.`
+      */
+    ["com.affine.payment.billing-tip.past-due"](options: {
+        readonly due: string;
+    }): string;
+    /**
       * `You are currently on the Free plan.`
       */
     ["com.affine.payment.ai.pricing-plan.caption-free"](): string;
@@ -3310,6 +3316,18 @@ export function useAFFiNEI18N(): {
         used: string;
         limit: string;
     }>): string;
+    /**
+      * `Active`
+      */
+    ["com.affine.payment.subscription-status.active"](): string;
+    /**
+      * `Past-due bill`
+      */
+    ["com.affine.payment.subscription-status.past-due"](): string;
+    /**
+      * `Trialing`
+      */
+    ["com.affine.payment.subscription-status.trialing"](): string;
     /**
       * `Unlimited local workspaces`
       */
