@@ -14,3 +14,4 @@
 ## Store
 
 - [Store](classes/Store.md)
+- [StoreSlots](interfaces/StoreSlots.md)
