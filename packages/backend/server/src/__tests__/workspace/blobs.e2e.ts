@@ -169,3 +169,15 @@ test('should accept blob even storage out of quota if workspace has unlimited fe
   await t.notThrowsAsync(setBlob(app, workspace.id, buffer));
   await t.notThrowsAsync(setBlob(app, workspace.id, buffer));
 });
+
+test('should throw error when blob size large than max file size', async t => {
+  await app.signup();
+
+  const workspace = await createWorkspace(app);
+
+  const buffer = Buffer.from(new Uint8Array(1024 * 1024 * 11));
+  await t.throwsAsync(setBlob(app, workspace.id, buffer), {
+    message:
+      'HTTP request error, message: File truncated as it exceeds the 10485760 byte size limit.',
+  });
+});

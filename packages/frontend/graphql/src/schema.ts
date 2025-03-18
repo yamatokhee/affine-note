@@ -489,6 +489,7 @@ export type ErrorDataUnion =
   | ExpectToRevokeDocUserRolesDataType
   | ExpectToUpdateDocUserRoleDataType
   | GraphqlBadRequestDataType
+  | HttpRequestErrorDataType
   | InvalidEmailDataType
   | InvalidHistoryTimestampDataType
   | InvalidLicenseUpdateParamsDataType
@@ -569,6 +570,7 @@ export enum ErrorNames {
   FAILED_TO_SAVE_UPDATES = 'FAILED_TO_SAVE_UPDATES',
   FAILED_TO_UPSERT_SNAPSHOT = 'FAILED_TO_UPSERT_SNAPSHOT',
   GRAPHQL_BAD_REQUEST = 'GRAPHQL_BAD_REQUEST',
+  HTTP_REQUEST_ERROR = 'HTTP_REQUEST_ERROR',
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
   INVALID_AUTH_STATE = 'INVALID_AUTH_STATE',
   INVALID_CHECKOUT_PARAMETERS = 'INVALID_CHECKOUT_PARAMETERS',
@@ -694,6 +696,11 @@ export interface GrantedDocUserTypeEdge {
 export interface GraphqlBadRequestDataType {
   __typename?: 'GraphqlBadRequestDataType';
   code: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+}
+
+export interface HttpRequestErrorDataType {
+  __typename?: 'HttpRequestErrorDataType';
   message: Scalars['String']['output'];
 }
 

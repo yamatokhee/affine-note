@@ -1813,6 +1813,7 @@
   "error.NOT_FOUND": "Resource not found.",
   "error.BAD_REQUEST": "Bad request.",
   "error.GRAPHQL_BAD_REQUEST": "GraphQL bad request, code: {{code}}, {{message}}",
+  "error.HTTP_REQUEST_ERROR": "HTTP request error, message: {{message}}",
   "error.QUERY_TOO_LONG": "Query is too long, max length is {{max}}.",
   "error.VALIDATION_ERROR": "Validation error, errors: {{errors}}",
   "error.USER_NOT_FOUND": "User not found.",

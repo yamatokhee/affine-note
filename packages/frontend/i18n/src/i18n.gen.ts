@@ -7283,6 +7283,12 @@ export function useAFFiNEI18N(): {
         message: string;
     }>): string;
     /**
+      * `HTTP request error, message: {{message}}`
+      */
+    ["error.HTTP_REQUEST_ERROR"](options: {
+        readonly message: string;
+    }): string;
+    /**
       * `Query is too long, max length is {{max}}.`
       */
     ["error.QUERY_TOO_LONG"](options: {
