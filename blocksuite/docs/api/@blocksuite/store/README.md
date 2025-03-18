@@ -11,6 +11,11 @@
 - [Extension](classes/Extension.md)
 - [StoreExtension](classes/StoreExtension.md)
 
+## Reactive
+
+- [Boxed](classes/Boxed.md)
+- [Text](classes/Text.md)
+
 ## Store
 
 - [Store](classes/Store.md)

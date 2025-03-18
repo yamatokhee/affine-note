@@ -151,8 +151,6 @@ export type StoreSlots = Doc['slots'] & {
    */
   rootDeleted: Subject<string>;
   /**
-   *
-   * @summary
    * This fires when a block is updated via API call or has just been updated from existing ydoc.
    *
    * The payload can have three types:

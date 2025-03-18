@@ -23,6 +23,13 @@ You can also use rxjs operators to handle the events.
 
 > **blockUpdated**: `Subject`\<`StoreBlockUpdatedPayloads`\>
 
+This fires when a block is updated via API call or has just been updated from existing ydoc.
+
+The payload can have three types:
+- add: When a new block is added
+- delete: When a block is removed
+- update: When a block's properties are modified
+
 ***
 
 ### historyUpdated
