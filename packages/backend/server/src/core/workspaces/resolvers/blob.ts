@@ -16,6 +16,7 @@ import type { FileUpload } from '../../../base';
 import {
   BlobQuotaExceeded,
   CloudThrottlerGuard,
+  readBuffer,
   StorageQuotaExceeded,
 } from '../../../base';
 import { CurrentUser } from '../../auth';
@@ -102,35 +103,8 @@ export class WorkspaceBlobResolver {
     } else if (result?.storageQuotaExceeded) {
       throw new StorageQuotaExceeded();
     }
-    const buffer = await new Promise<Buffer>((resolve, reject) => {
-      const stream = blob.createReadStream();
-      const chunks: Uint8Array[] = [];
-      stream.on('data', chunk => {
-        chunks.push(chunk);
 
-        // check size after receive each chunk to avoid unnecessary memory usage
-        const bufferSize = chunks.reduce((acc, cur) => acc + cur.length, 0);
-        result = checkExceeded(bufferSize);
-        if (result?.blobQuotaExceeded) {
-          reject(new BlobQuotaExceeded());
-        } else if (result?.storageQuotaExceeded) {
-          reject(new StorageQuotaExceeded());
-        }
-      });
-      stream.on('error', reject);
-      stream.on('end', () => {
-        const buffer = Buffer.concat(chunks);
-
-        result = checkExceeded(buffer.length);
-        if (result?.blobQuotaExceeded) {
-          reject(new BlobQuotaExceeded());
-        } else if (result?.storageQuotaExceeded) {
-          reject(new StorageQuotaExceeded());
-        } else {
-          resolve(buffer);
-        }
-      });
-    });
+    const buffer = await readBuffer(blob.createReadStream(), checkExceeded);
 
     await this.storage.put(workspaceId, blob.filename, buffer);
     return blob.filename;
