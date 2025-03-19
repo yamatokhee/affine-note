@@ -201,11 +201,12 @@ export async function dragView(
   to: IVec,
   editorIndex = 0
 ) {
+  const steps = 10;
   const [x1, y1] = await toViewCoord(page, from, editorIndex);
   const [x2, y2] = await toViewCoord(page, to, editorIndex);
   await page.mouse.move(x1, y1);
   await page.mouse.down();
-  await page.mouse.move(x2, y2);
+  await page.mouse.move(x2, y2, { steps });
   await page.mouse.up();
 }
 
