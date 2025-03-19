@@ -11,7 +11,7 @@ import { FootNoteNodeConfigIdentifier } from './nodes/footnote-node/footnote-con
 import { builtinInlineLinkToolbarConfig } from './nodes/link-node/configs/toolbar.js';
 import { builtinInlineReferenceToolbarConfig } from './nodes/reference-node/configs/toolbar.js';
 import {
-  ReferenceNodeConfigIdentifier,
+  ReferenceNodeConfigExtension,
   ReferenceNodeConfigProvider,
 } from './nodes/reference-node/reference-config.js';
 
@@ -123,7 +123,8 @@ export const ReferenceInlineSpecExtension = InlineSpecExtension(
   provider => {
     const std = provider.get(StdIdentifier);
     const configProvider = new ReferenceNodeConfigProvider(std);
-    const config = provider.getOptional(ReferenceNodeConfigIdentifier) ?? {};
+    const config =
+      provider.getOptional(ReferenceNodeConfigExtension.identifier) ?? {};
     if (config.customContent) {
       configProvider.setCustomContent(config.customContent);
     }

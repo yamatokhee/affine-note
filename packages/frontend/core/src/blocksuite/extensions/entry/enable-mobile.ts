@@ -1,12 +1,13 @@
 import { VirtualKeyboardProvider } from '@affine/core/mobile/modules/virtual-keyboard';
 import {
   type BlockStdScope,
-  ConfigIdentifier,
   LifeCycleWatcher,
   LifeCycleWatcherIdentifier,
 } from '@blocksuite/affine/block-std';
-import type { CodeBlockConfig } from '@blocksuite/affine/blocks/code';
-import { codeToolbarWidget } from '@blocksuite/affine/blocks/code';
+import {
+  CodeBlockConfigExtension,
+  codeToolbarWidget,
+} from '@blocksuite/affine/blocks/code';
 import { imageToolbarWidget } from '@blocksuite/affine/blocks/image';
 import { ParagraphBlockConfigExtension } from '@blocksuite/affine/blocks/paragraph';
 import { surfaceRefToolbarWidget } from '@blocksuite/affine/blocks/surface-ref';
@@ -15,10 +16,6 @@ import type {
   ServiceIdentifier,
 } from '@blocksuite/affine/global/di';
 import { DisposableGroup } from '@blocksuite/affine/global/disposable';
-import {
-  type ReferenceNodeConfig,
-  ReferenceNodeConfigIdentifier,
-} from '@blocksuite/affine/rich-text';
 import {
   DocModeProvider,
   FeatureFlagService,
@@ -41,33 +38,6 @@ class MobileSpecsPatches extends LifeCycleWatcher {
     featureFlagService.setFlag('enable_mobile_keyboard_toolbar', true);
     featureFlagService.setFlag('enable_mobile_linked_doc_menu', true);
   }
-
-  static override setup(di: Container) {
-    super.setup(di);
-
-    // Hide reference popup on mobile.
-    {
-      const prev = di.getFactory(ReferenceNodeConfigIdentifier);
-      di.override(ReferenceNodeConfigIdentifier, provider => {
-        return {
-          ...prev?.(provider),
-          hidePopup: true,
-        } satisfies ReferenceNodeConfig;
-      });
-    }
-
-    // Hide number lines for code block on mobile.
-    {
-      const codeConfigIdentifier = ConfigIdentifier('affine:code');
-      const prev = di.getFactory(codeConfigIdentifier);
-      di.override(codeConfigIdentifier, provider => {
-        return {
-          ...prev?.(provider),
-          showLineNumbers: false,
-        } satisfies CodeBlockConfig;
-      });
-    }
-  }
 }
 
 const mobileParagraphConfig = ParagraphBlockConfigExtension({
@@ -84,6 +54,10 @@ const mobileParagraphConfig = ParagraphBlockConfigExtension({
     };
     return placeholders[model.props.type];
   },
+});
+
+const mobileCodeConfig = CodeBlockConfigExtension({
+  showLineNumbers: false,
 });
 
 function KeyboardToolbarExtension(framework: FrameworkProvider): ExtensionType {
@@ -169,5 +143,6 @@ export function enableMobileExtension(
     MobileSpecsPatches,
     KeyboardToolbarExtension(framework),
     mobileParagraphConfig,
+    mobileCodeConfig,
   ]);
 }
