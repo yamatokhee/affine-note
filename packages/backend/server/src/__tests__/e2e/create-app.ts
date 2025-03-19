@@ -13,6 +13,8 @@ import {
 } from '../../base';
 import { SocketIoAdapter } from '../../base/websocket';
 import { AuthGuard } from '../../core/auth';
+import { Mailer } from '../../core/mail';
+import { MockMailer } from '../mocks';
 import { TEST_LOG_LEVEL } from '../utils';
 
 interface TestingAppMetadata {
@@ -21,6 +23,10 @@ interface TestingAppMetadata {
 }
 
 export class TestingApp extends NestApplication {
+  get mails() {
+    return this.get(Mailer, { strict: false }) as MockMailer;
+  }
+
   async [Symbol.asyncDispose]() {
     await this.close();
   }

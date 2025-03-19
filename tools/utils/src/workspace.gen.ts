@@ -654,7 +654,6 @@ export const PackageList = [
     location: 'packages/backend/server',
     name: '@affine/server',
     workspaceDependencies: [
-      'tests/kit',
       'tools/cli',
       'tools/utils',
       'packages/backend/native',

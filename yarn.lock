@@ -842,7 +842,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/server@workspace:packages/backend/server"
   dependencies:
-    "@affine-test/kit": "workspace:*"
     "@affine-tools/cli": "workspace:*"
     "@affine-tools/utils": "workspace:*"
     "@affine/server-native": "workspace:*"

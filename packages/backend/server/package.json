@@ -112,7 +112,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@affine-test/kit": "workspace:*",
     "@affine-tools/cli": "workspace:*",
     "@affine-tools/utils": "workspace:*",
     "@affine/server-native": "workspace:*",
