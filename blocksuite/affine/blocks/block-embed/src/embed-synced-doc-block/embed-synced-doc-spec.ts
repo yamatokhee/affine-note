@@ -5,13 +5,11 @@ import { literal } from 'lit/static-html.js';
 
 import { EmbedSyncedDocBlockAdapterExtensions } from './adapters/extension';
 import { createBuiltinToolbarConfigExtension } from './configs/toolbar';
-import { EmbedSyncedDocBlockService } from './embed-synced-doc-service';
 
 const flavour = EmbedSyncedDocBlockSchema.model.flavour;
 
 export const EmbedSyncedDocBlockSpec: ExtensionType[] = [
   FlavourExtension(flavour),
-  EmbedSyncedDocBlockService,
   BlockViewExtension(flavour, model => {
     return model.parent?.flavour === 'affine:surface'
       ? literal`affine-embed-edgeless-synced-doc-block`

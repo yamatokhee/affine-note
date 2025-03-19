@@ -12,7 +12,7 @@ import { ImageBlockAdapterExtensions } from './adapters/extension';
 import { imageSlashMenuConfig } from './configs/slash-menu';
 import { createBuiltinToolbarConfigExtension } from './configs/toolbar';
 import { ImageProxyService } from './image-proxy-service';
-import { ImageBlockService, ImageDropOption } from './image-service';
+import { ImageDropOption } from './image-service';
 
 const flavour = ImageBlockSchema.model.flavour;
 
@@ -24,7 +24,6 @@ export const imageToolbarWidget = WidgetViewExtension(
 
 export const ImageBlockSpec: ExtensionType[] = [
   FlavourExtension(flavour),
-  ImageBlockService,
   BlockViewExtension(flavour, model => {
     const parent = model.doc.getParent(model.id);
 

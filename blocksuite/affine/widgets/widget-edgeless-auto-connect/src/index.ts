@@ -195,6 +195,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<RootBlockModel> {
     const notes = root.children.filter(child =>
       matchModels(child, [NoteBlockModel])
     );
+
     const edgelessOnlyNotesSet = new Set<NoteBlockModel>();
 
     notes.forEach(note => {
