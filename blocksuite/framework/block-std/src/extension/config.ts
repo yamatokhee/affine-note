@@ -32,7 +32,7 @@ export function ConfigExtensionFactory<Config extends Record<string, any>>(
   const identifier = ConfigIdentifier(flavor) as ServiceIdentifier<Config>;
   const extensionFactory = (config: Config): ExtensionType => ({
     setup: di => {
-      di.addImpl(ConfigIdentifier(flavor), () => config);
+      di.override(ConfigIdentifier(flavor), () => config);
     },
   });
   extensionFactory.identifier = identifier;

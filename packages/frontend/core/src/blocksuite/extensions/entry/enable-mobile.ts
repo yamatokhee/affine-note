@@ -8,7 +8,7 @@ import {
 import type { CodeBlockConfig } from '@blocksuite/affine/blocks/code';
 import { codeToolbarWidget } from '@blocksuite/affine/blocks/code';
 import { imageToolbarWidget } from '@blocksuite/affine/blocks/image';
-import { ParagraphBlockService } from '@blocksuite/affine/blocks/paragraph';
+import { ParagraphBlockConfigExtension } from '@blocksuite/affine/blocks/paragraph';
 import { surfaceRefToolbarWidget } from '@blocksuite/affine/blocks/surface-ref';
 import type {
   Container,
@@ -68,29 +68,23 @@ class MobileSpecsPatches extends LifeCycleWatcher {
       });
     }
   }
-
-  override mounted() {
-    // remove slash placeholder for mobile: `type / ...`
-    {
-      const paragraphService = this.std.get(ParagraphBlockService);
-      if (!paragraphService) return;
-
-      paragraphService.placeholderGenerator = model => {
-        const placeholders = {
-          text: '',
-          h1: 'Heading 1',
-          h2: 'Heading 2',
-          h3: 'Heading 3',
-          h4: 'Heading 4',
-          h5: 'Heading 5',
-          h6: 'Heading 6',
-          quote: '',
-        };
-        return placeholders[model.props.type];
-      };
-    }
-  }
 }
+
+const mobileParagraphConfig = ParagraphBlockConfigExtension({
+  getPlaceholder: model => {
+    const placeholders = {
+      text: '',
+      h1: 'Heading 1',
+      h2: 'Heading 2',
+      h3: 'Heading 3',
+      h4: 'Heading 4',
+      h5: 'Heading 5',
+      h6: 'Heading 6',
+      quote: '',
+    };
+    return placeholders[model.props.type];
+  },
+});
 
 function KeyboardToolbarExtension(framework: FrameworkProvider): ExtensionType {
   const affineVirtualKeyboardProvider = framework.get(VirtualKeyboardProvider);
@@ -171,5 +165,9 @@ export function enableMobileExtension(
   specBuilder.omit(surfaceRefToolbarWidget);
   specBuilder.omit(toolbarWidget);
   specBuilder.omit(SlashMenuExtension);
-  specBuilder.extend([MobileSpecsPatches, KeyboardToolbarExtension(framework)]);
+  specBuilder.extend([
+    MobileSpecsPatches,
+    KeyboardToolbarExtension(framework),
+    mobileParagraphConfig,
+  ]);
 }

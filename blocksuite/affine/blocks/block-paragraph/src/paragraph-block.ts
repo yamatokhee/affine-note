@@ -25,13 +25,10 @@ import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
-import type { ParagraphBlockService } from './paragraph-service.js';
+import { ParagraphBlockConfigExtension } from './paragraph-block-config.js';
 import { paragraphBlockStyles } from './styles.js';
 
-export class ParagraphBlockComponent extends CaptionedBlockComponent<
-  ParagraphBlockModel,
-  ParagraphBlockService
-> {
+export class ParagraphBlockComponent extends CaptionedBlockComponent<ParagraphBlockModel> {
   static override styles = paragraphBlockStyles;
 
   focused$ = computed(() => {
@@ -58,6 +55,12 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
     }
     return false;
   };
+
+  private get _placeholder() {
+    return this.std
+      .get(ParagraphBlockConfigExtension.identifier)
+      ?.getPlaceholder(this.model);
+  }
 
   get attributeRenderer() {
     return this.inlineManager.getRenderer();
@@ -309,7 +312,7 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
                     visible: this._displayPlaceholder.value,
                   })}
                 >
-                  ${this.service.placeholderGenerator(this.model)}
+                  ${this._placeholder}
                 </div>
               `}
         </div>
