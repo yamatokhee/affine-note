@@ -1,9 +1,9 @@
 import type { BaseSelection, BlockModel } from '@blocksuite/store';
 import throttle from 'lodash-es/throttle';
 
-import { TextSelection } from '../selection/index.js';
-import type { BlockComponent } from '../view/element/block-component.js';
-import { BLOCK_ID_ATTR } from '../view/index.js';
+import { TextSelection } from '../../selection/index.js';
+import type { BlockComponent } from '../../view/element/block-component.js';
+import { BLOCK_ID_ATTR } from '../../view/index.js';
 import { isActiveInEditor } from './active.js';
 import { RANGE_SYNC_EXCLUDE_ATTR } from './consts.js';
 import type { RangeManager } from './range-manager.js';

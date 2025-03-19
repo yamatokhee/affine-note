@@ -1,8 +1,8 @@
 import type { InlineRange, InlineRangeProvider } from '@blocksuite/inline';
 import { signal } from '@preact/signals-core';
 
-import { TextSelection } from '../selection/index.js';
-import type { BlockComponent } from '../view/element/block-component.js';
+import { TextSelection } from '../../selection/index.js';
+import type { BlockComponent } from '../../view/element/block-component.js';
 import { isActiveInEditor } from './active.js';
 
 export const getInlineRangeProvider: (
