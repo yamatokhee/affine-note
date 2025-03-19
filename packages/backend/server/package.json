@@ -150,6 +150,7 @@
     ],
     "env": {
       "NODE_ENV": "development",
+      "AFFINE_ENV": "dev",
       "AFFINE_SERVER_EXTERNAL_URL": "http://localhost:8080",
       "DEBUG": "affine:*",
       "FORCE_COLOR": true,
