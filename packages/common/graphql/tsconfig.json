@@ -7,8 +7,8 @@
     "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
   },
   "references": [
-    { "path": "../../common/debug" },
-    { "path": "../../common/env" },
-    { "path": "../../common/error" }
+    { "path": "../debug" },
+    { "path": "../env" },
+    { "path": "../error" }
   ]
 }

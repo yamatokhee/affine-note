@@ -656,6 +656,7 @@ export const PackageList = [
     workspaceDependencies: [
       'tools/cli',
       'tools/utils',
+      'packages/common/graphql',
       'packages/backend/native',
     ],
   },
@@ -675,6 +676,15 @@ export const PackageList = [
     workspaceDependencies: [],
   },
   {
+    location: 'packages/common/graphql',
+    name: '@affine/graphql',
+    workspaceDependencies: [
+      'packages/common/debug',
+      'packages/common/env',
+      'packages/common/error',
+    ],
+  },
+  {
     location: 'packages/common/infra',
     name: '@toeverything/infra',
     workspaceDependencies: [
@@ -690,7 +700,7 @@ export const PackageList = [
     workspaceDependencies: [
       'packages/common/infra',
       'packages/common/error',
-      'packages/frontend/graphql',
+      'packages/common/graphql',
     ],
   },
   {
@@ -699,7 +709,7 @@ export const PackageList = [
     workspaceDependencies: [
       'packages/frontend/component',
       'packages/frontend/core',
-      'packages/frontend/graphql',
+      'packages/common/graphql',
       'packages/common/infra',
     ],
   },
@@ -783,7 +793,7 @@ export const PackageList = [
       'packages/common/debug',
       'packages/frontend/electron-api',
       'packages/common/error',
-      'packages/frontend/graphql',
+      'packages/common/graphql',
       'packages/frontend/i18n',
       'tools/utils',
       'blocksuite/affine/all',
@@ -798,7 +808,7 @@ export const PackageList = [
       'packages/frontend/electron-api',
       'packages/common/env',
       'packages/common/error',
-      'packages/frontend/graphql',
+      'packages/common/graphql',
       'packages/frontend/i18n',
       'packages/common/nbstore',
       'packages/frontend/templates',
@@ -811,15 +821,6 @@ export const PackageList = [
     location: 'packages/frontend/electron-api',
     name: '@affine/electron-api',
     workspaceDependencies: ['packages/frontend/apps/electron'],
-  },
-  {
-    location: 'packages/frontend/graphql',
-    name: '@affine/graphql',
-    workspaceDependencies: [
-      'packages/common/debug',
-      'packages/common/env',
-      'packages/common/error',
-    ],
   },
   {
     location: 'packages/frontend/i18n',
@@ -987,6 +988,7 @@ export type PackageName =
   | '@affine/debug'
   | '@affine/env'
   | '@affine/error'
+  | '@affine/graphql'
   | '@toeverything/infra'
   | '@affine/nbstore'
   | '@affine/admin'
@@ -999,7 +1001,6 @@ export type PackageName =
   | '@affine/component'
   | '@affine/core'
   | '@affine/electron-api'
-  | '@affine/graphql'
   | '@affine/i18n'
   | '@affine/media-capture-playground'
   | '@affine/native'

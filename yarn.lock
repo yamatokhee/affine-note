@@ -596,9 +596,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@affine/graphql@workspace:*, @affine/graphql@workspace:packages/frontend/graphql":
+"@affine/graphql@workspace:*, @affine/graphql@workspace:packages/common/graphql":
   version: 0.0.0-use.local
-  resolution: "@affine/graphql@workspace:packages/frontend/graphql"
+  resolution: "@affine/graphql@workspace:packages/common/graphql"
   dependencies:
     "@affine/debug": "workspace:*"
     "@affine/env": "workspace:*"
@@ -844,6 +844,7 @@ __metadata:
   dependencies:
     "@affine-tools/cli": "workspace:*"
     "@affine-tools/utils": "workspace:*"
+    "@affine/graphql": "workspace:*"
     "@affine/server-native": "workspace:*"
     "@ai-sdk/google": "npm:^1.1.19"
     "@apollo/server": "npm:^4.11.2"
