@@ -9,23 +9,23 @@ import {
 } from './adapters/index';
 import { NoteSlashMenuConfigExtension } from './configs/slash-menu';
 import { createBuiltinToolbarConfigExtension } from './configs/toolbar';
-import { NoteBlockService } from './note-service';
+import { NoteKeymapExtension } from './note-keymap.js';
 
 const flavour = NoteBlockSchema.model.flavour;
 
 export const NoteBlockSpec: ExtensionType[] = [
   FlavourExtension(flavour),
-  NoteBlockService,
   BlockViewExtension(flavour, literal`affine-note`),
   DocNoteBlockAdapterExtensions,
   NoteSlashMenuConfigExtension,
+  NoteKeymapExtension,
 ].flat();
 
 export const EdgelessNoteBlockSpec: ExtensionType[] = [
   FlavourExtension(flavour),
-  NoteBlockService,
   BlockViewExtension(flavour, literal`affine-edgeless-note`),
   EdgelessNoteBlockAdapterExtensions,
   NoteSlashMenuConfigExtension,
   createBuiltinToolbarConfigExtension(flavour),
+  NoteKeymapExtension,
 ].flat();

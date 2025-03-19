@@ -14,18 +14,21 @@ import {
   getPrevBlockCommand,
   getTextSelectionCommand,
 } from '@blocksuite/affine-shared/commands';
-import { matchModels } from '@blocksuite/affine-shared/utils';
+import {
+  asyncGetBlockComponent,
+  matchModels,
+} from '@blocksuite/affine-shared/utils';
 import {
   type BlockComponent,
   BlockSelection,
-  BlockService,
   type BlockStdScope,
   type Chain,
+  KeymapExtension,
   TextSelection,
   type UIEventHandler,
   type UIEventStateContext,
 } from '@blocksuite/block-std';
-import type { BaseSelection, BlockModel } from '@blocksuite/store';
+import type { BaseSelection } from '@blocksuite/store';
 
 import {
   dedentBlocks,
@@ -38,8 +41,8 @@ import {
 import { moveBlockConfigs } from './move-block';
 import { quickActionConfig } from './quick-action';
 
-export class NoteBlockService extends BlockService {
-  static override readonly flavour = NoteBlockSchema.model.flavour;
+class NoteKeymap {
+  constructor(readonly std: BlockStdScope) {}
 
   private _anchorSel: BlockSelection | null = null;
 
@@ -116,18 +119,23 @@ export class NoteBlockService extends BlockService {
                       }
 
                       const [codeModel] = newModels;
-                      onModelElementUpdated(ctx.std, codeModel, codeElement => {
-                        this._std.selection.setGroup('note', [
-                          this._std.selection.create(TextSelection, {
-                            from: {
-                              blockId: codeElement.blockId,
-                              index: 0,
-                              length: codeModel.text?.length ?? 0,
-                            },
-                            to: null,
-                          }),
-                        ]);
-                      }).catch(console.error);
+                      asyncGetBlockComponent(ctx.std.host, codeModel.id)
+                        .then(codeElement => {
+                          if (!codeElement) {
+                            return;
+                          }
+                          this._std.selection.setGroup('note', [
+                            this._std.selection.create(TextSelection, {
+                              from: {
+                                blockId: codeElement.blockId,
+                                index: 0,
+                                length: codeModel.text?.length ?? 0,
+                              },
+                              to: null,
+                            }),
+                          ]);
+                        })
+                        .catch(console.error);
 
                       next();
                     })
@@ -468,6 +476,7 @@ export class NoteBlockService extends BlockService {
 
         event.preventDefault();
         selection.setGroup('note', [sel]);
+        this._reset();
 
         return next();
       })
@@ -554,17 +563,8 @@ export class NoteBlockService extends BlockService {
     return this.std;
   }
 
-  override mounted() {
-    super.mounted();
-    this.handleEvent('keyDown', ctx => {
-      const state = ctx.get('keyboardState');
-      if (['Control', 'Meta', 'Shift'].includes(state.raw.key)) {
-        return;
-      }
-      this._reset();
-    });
-
-    this.bindHotKey({
+  get hotKeys(): Record<string, UIEventHandler> {
+    return {
       ...this._bindMoveBlockHotKey(),
       ...this._bindQuickActionHotKey(),
       ...this._bindTextConversionHotKey(),
@@ -599,22 +599,13 @@ export class NoteBlockService extends BlockService {
       Escape: this._onEsc,
       Enter: this._onEnter,
       'Mod-a': this._onSelectAll,
-    });
+    };
   }
 }
 
-async function onModelElementUpdated(
-  std: BlockStdScope,
-  model: BlockModel,
-  callback: (block: BlockComponent) => void
-) {
-  const page = model.doc;
-  if (!page.root) return;
-
-  const rootComponent = std.view.getBlock(page.root.id);
-  if (!rootComponent) return;
-  await rootComponent.updateComplete;
-
-  const element = std.view.getBlock(model.id);
-  if (element) callback(element);
-}
+export const NoteKeymapExtension = KeymapExtension(
+  std => new NoteKeymap(std).hotKeys,
+  {
+    flavour: NoteBlockSchema.model.flavour,
+  }
+);
