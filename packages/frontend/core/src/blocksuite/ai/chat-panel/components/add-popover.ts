@@ -1,4 +1,5 @@
 import { toast } from '@affine/component';
+import type { TagMeta } from '@affine/core/components/page-list';
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { scrollbarStyle } from '@blocksuite/affine/shared/styles';
@@ -13,7 +14,7 @@ import type { DocMeta } from '@blocksuite/store';
 import { css, html, type TemplateResult } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
-import type { DocSearchMenuConfig } from '../chat-config';
+import type { SearchMenuConfig } from '../chat-config';
 import type { ChatChip } from '../chat-context';
 
 enum AddPopoverMode {
@@ -107,9 +108,19 @@ export class ChatPanelAddPopover extends SignalWatcher(
   private accessor _query = '';
 
   @state()
-  private accessor _docGroup: MenuGroup = {
+  private accessor _searchGroup: MenuGroup = {
     name: 'No Result',
     items: [],
+  };
+
+  private readonly _toggleMode = (mode: AddPopoverMode) => {
+    this._mode = mode;
+    this._activatedIndex = 0;
+    this._query = '';
+    this._updateSearchGroup();
+    requestAnimationFrame(() => {
+      this.searchInput.focus();
+    });
   };
 
   private readonly tcGroup: MenuGroup = {
@@ -120,7 +131,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
         name: 'Tags',
         icon: TagsIcon(),
         action: () => {
-          this._mode = AddPopoverMode.Tags;
+          this._toggleMode(AddPopoverMode.Tags);
         },
       },
       {
@@ -128,7 +139,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
         name: 'Collections',
         icon: CollectionsIcon(),
         action: () => {
-          this._mode = AddPopoverMode.Collections;
+          this._toggleMode(AddPopoverMode.Collections);
         },
       },
     ],
@@ -163,14 +174,14 @@ export class ChatPanelAddPopover extends SignalWatcher(
   private get _menuGroup() {
     switch (this._mode) {
       case AddPopoverMode.Tags:
-        return [];
+        return [this._searchGroup];
       case AddPopoverMode.Collections:
-        return [];
+        return [this._searchGroup];
       default:
         if (this._query) {
-          return [this._docGroup, this.uploadGroup];
+          return [this._searchGroup, this.uploadGroup];
         }
-        return [this._docGroup, this.tcGroup, this.uploadGroup];
+        return [this._searchGroup, this.tcGroup, this.uploadGroup];
     }
   }
 
@@ -187,7 +198,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
   private accessor _mode: AddPopoverMode = AddPopoverMode.Default;
 
   @property({ attribute: false })
-  accessor docSearchMenuConfig!: DocSearchMenuConfig;
+  accessor searchMenuConfig!: SearchMenuConfig;
 
   @property({ attribute: false })
   accessor addChip!: (chip: ChatChip) => void;
@@ -200,7 +211,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
 
   override connectedCallback() {
     super.connectedCallback();
-    this._updateDocGroup();
+    this._updateSearchGroup();
     this.addEventListener('keydown', this._handleKeyDown);
   }
 
@@ -291,15 +302,25 @@ export class ChatPanelAddPopover extends SignalWatcher(
   private _onInput(event: Event) {
     this._query = (event.target as HTMLInputElement).value;
     this._activatedIndex = 0;
-    this._updateDocGroup();
+    this._updateSearchGroup();
   }
 
-  private _updateDocGroup() {
-    this._docGroup = this.docSearchMenuConfig.getDocMenuGroup(
-      this._query,
-      this._addDocChip,
-      this.abortController.signal
-    );
+  private _updateSearchGroup() {
+    switch (this._mode) {
+      case AddPopoverMode.Tags:
+        this._searchGroup = this.searchMenuConfig.getTagMenuGroup(
+          this._query,
+          this._addTagChip,
+          this.abortController.signal
+        );
+        break;
+      default:
+        this._searchGroup = this.searchMenuConfig.getDocMenuGroup(
+          this._query,
+          this._addDocChip,
+          this.abortController.signal
+        );
+    }
   }
 
   private readonly _addDocChip = (meta: DocMeta) => {
@@ -307,6 +328,10 @@ export class ChatPanelAddPopover extends SignalWatcher(
       docId: meta.id,
       state: 'processing',
     });
+    this.abortController.abort();
+  };
+
+  private readonly _addTagChip = (_tag: TagMeta) => {
     this.abortController.abort();
   };
 

@@ -6830,6 +6830,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.editor.at-menu.recent-docs"](): string;
     /**
+      * `Tags`
+      */
+    ["com.affine.editor.at-menu.tags"](): string;
+    /**
       * `Loading...`
       */
     ["com.affine.editor.at-menu.loading"](): string;
