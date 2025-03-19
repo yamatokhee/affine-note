@@ -94,6 +94,11 @@ export class ChatPanelAddPopover extends SignalWatcher(
       font-size: var(--affine-font-sm);
       color: var(--affine-text-secondary-color);
     }
+    .item-suffix {
+      margin-left: auto;
+      font-size: var(--affine-font-xs);
+      color: var(--affine-text-secondary-color);
+    }
 
     ${scrollbarStyle('.add-popover')}
   `;
@@ -155,8 +160,28 @@ export class ChatPanelAddPopover extends SignalWatcher(
     ],
   };
 
+  private get _menuGroup() {
+    switch (this._mode) {
+      case AddPopoverMode.Tags:
+        return [];
+      case AddPopoverMode.Collections:
+        return [];
+      default:
+        if (this._query) {
+          return [this._docGroup, this.uploadGroup];
+        }
+        return [this._docGroup, this.tcGroup, this.uploadGroup];
+    }
+  }
+
+  private get _flattenMenuGroup() {
+    return this._menuGroup.flatMap(group => {
+      return Array.isArray(group.items) ? group.items : group.items.value;
+    });
+  }
+
   @state()
-  private accessor _activatedItemIndex = 0;
+  private accessor _activatedIndex = 0;
 
   @state()
   private accessor _mode: AddPopoverMode = AddPopoverMode.Default;
@@ -176,6 +201,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
   override connectedCallback() {
     super.connectedCallback();
     this._updateDocGroup();
+    this.addEventListener('keydown', this._handleKeyDown);
   }
 
   override firstUpdated() {
@@ -184,11 +210,15 @@ export class ChatPanelAddPopover extends SignalWatcher(
     });
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('keydown', this._handleKeyDown);
+  }
+
   override render() {
-    const groups = this._getMenuGroup();
     return html`<div class="add-popover">
       ${this._renderSearchInput()} ${this._renderDivider()}
-      ${this._renderMenuGroup(groups)}
+      ${this._renderMenuGroup(this._menuGroup)}
     </div>`;
   }
 
@@ -238,40 +268,29 @@ export class ChatPanelAddPopover extends SignalWatcher(
   private _renderMenuItems(items: MenuItem[], startIndex: number) {
     return html`<div>
       ${items.length > 0
-        ? items.map(({ key, name, icon, action }, idx) => {
+        ? items.map(({ key, name, icon, action, suffix }, idx) => {
             const curIdx = startIndex + idx;
             return html`<icon-button
               width="280px"
               height="30px"
               data-id=${key}
+              data-index=${curIdx}
               .text=${name}
-              hover=${this._activatedItemIndex === curIdx}
+              hover=${this._activatedIndex === curIdx}
               @click=${() => action()?.catch(console.error)}
-              @mousemove=${() => (this._activatedItemIndex = curIdx)}
+              @mousemove=${() => (this._activatedIndex = curIdx)}
             >
               ${icon}
+              ${suffix ? html`<div class="item-suffix">${suffix}</div>` : ''}
             </icon-button>`;
           })
         : html`<div class="no-result">No Result</div>`}
     </div>`;
   }
 
-  private _getMenuGroup() {
-    switch (this._mode) {
-      case AddPopoverMode.Tags:
-        return [];
-      case AddPopoverMode.Collections:
-        return [];
-      default:
-        if (this._query) {
-          return [this._docGroup, this.uploadGroup];
-        }
-        return [this._docGroup, this.tcGroup, this.uploadGroup];
-    }
-  }
-
   private _onInput(event: Event) {
     this._query = (event.target as HTMLInputElement).value;
+    this._activatedIndex = 0;
     this._updateDocGroup();
   }
 
@@ -290,4 +309,46 @@ export class ChatPanelAddPopover extends SignalWatcher(
     });
     this.abortController.abort();
   };
+
+  private readonly _handleKeyDown = (event: KeyboardEvent) => {
+    if (event.isComposing) return;
+
+    const { key } = event;
+
+    if (key === 'ArrowDown' || key === 'ArrowUp') {
+      event.preventDefault();
+      const totalItems = this._flattenMenuGroup.length;
+      if (totalItems === 0) return;
+
+      if (key === 'ArrowDown') {
+        this._activatedIndex = (this._activatedIndex + 1) % totalItems;
+      } else if (key === 'ArrowUp') {
+        this._activatedIndex =
+          (this._activatedIndex - 1 + totalItems) % totalItems;
+      }
+      this._scrollItemIntoView();
+    } else if (key === 'Enter') {
+      event.preventDefault();
+      this._flattenMenuGroup[this._activatedIndex]
+        .action()
+        ?.catch(console.error);
+    } else if (key === 'Escape') {
+      event.preventDefault();
+      this.abortController.abort();
+    }
+  };
+
+  private _scrollItemIntoView() {
+    requestAnimationFrame(() => {
+      const element = this.renderRoot.querySelector(
+        `[data-index="${this._activatedIndex}"]`
+      );
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
+      }
+    });
+  }
 }
