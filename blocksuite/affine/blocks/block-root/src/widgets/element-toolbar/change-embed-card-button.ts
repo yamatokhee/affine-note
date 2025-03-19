@@ -616,7 +616,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
         .contentPadding=${'8px'}
         .button=${html`
           <editor-icon-button
-            aria-label="Open"
+            aria-label="Open doc"
             .justify=${'space-between'}
             .labelHeight=${'20px'}
           >
