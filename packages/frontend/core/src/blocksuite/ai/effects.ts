@@ -23,9 +23,11 @@ import { ActionMindmap } from './chat-panel/actions/mindmap';
 import { ActionSlides } from './chat-panel/actions/slides';
 import { ActionText } from './chat-panel/actions/text';
 import { AILoading } from './chat-panel/ai-loading';
+import { ChatPanelAssistantMessage } from './chat-panel/chat-panel-assistant-message';
 import { ChatPanelChips } from './chat-panel/chat-panel-chips';
 import { ChatPanelInput } from './chat-panel/chat-panel-input';
 import { ChatPanelMessages } from './chat-panel/chat-panel-messages';
+import { ChatPanelUserMessage } from './chat-panel/chat-panel-user-message';
 import { ChatPanelAddPopover } from './chat-panel/components/add-popover';
 import { ChatPanelChip } from './chat-panel/components/chip';
 import { ChatPanelCollectionChip } from './chat-panel/components/collection-chip';
@@ -89,6 +91,11 @@ export function registerAIEffects() {
   customElements.define('action-slides', ActionSlides);
   customElements.define('action-text', ActionText);
   customElements.define('ai-loading', AILoading);
+  customElements.define(
+    'chat-panel-assistant-message',
+    ChatPanelAssistantMessage
+  );
+  customElements.define('chat-panel-user-message', ChatPanelUserMessage);
   customElements.define('chat-panel-input', ChatPanelInput);
   customElements.define('chat-panel-messages', ChatPanelMessages);
   customElements.define('chat-panel', ChatPanel);
