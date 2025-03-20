@@ -8,11 +8,8 @@
   "include": ["./src"],
   "references": [
     { "path": "../../components" },
-    { "path": "../footnote" },
-    { "path": "../link" },
     { "path": "../reference" },
     { "path": "../../model" },
-    { "path": "../../rich-text" },
     { "path": "../../shared" },
     { "path": "../../../framework/block-std" },
     { "path": "../../../framework/global" },

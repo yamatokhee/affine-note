@@ -30,6 +30,7 @@ export const PackageList = [
       'blocksuite/affine/fragments/fragment-outline',
       'blocksuite/affine/gfx/text',
       'blocksuite/affine/gfx/turbo-renderer',
+      'blocksuite/affine/inlines/footnote',
       'blocksuite/affine/inlines/link',
       'blocksuite/affine/inlines/preset',
       'blocksuite/affine/inlines/reference',
@@ -456,6 +457,19 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/inlines/footnote',
+    name: '@blocksuite/affine-inline-footnote',
+    workspaceDependencies: [
+      'blocksuite/affine/components',
+      'blocksuite/affine/inlines/reference',
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/inlines/link',
     name: '@blocksuite/affine-inline-link',
     workspaceDependencies: [
@@ -473,6 +487,7 @@ export const PackageList = [
     name: '@blocksuite/affine-inline-preset',
     workspaceDependencies: [
       'blocksuite/affine/components',
+      'blocksuite/affine/inlines/footnote',
       'blocksuite/affine/inlines/link',
       'blocksuite/affine/inlines/reference',
       'blocksuite/affine/model',
@@ -989,6 +1004,7 @@ export type PackageName =
   | '@blocksuite/affine-fragment-outline'
   | '@blocksuite/affine-gfx-text'
   | '@blocksuite/affine-gfx-turbo-renderer'
+  | '@blocksuite/affine-inline-footnote'
   | '@blocksuite/affine-inline-link'
   | '@blocksuite/affine-inline-preset'
   | '@blocksuite/affine-inline-reference'

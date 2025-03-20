@@ -3010,6 +3010,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blocksuite/affine-inline-footnote@workspace:*, @blocksuite/affine-inline-footnote@workspace:blocksuite/affine/inlines/footnote":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-inline-footnote@workspace:blocksuite/affine/inlines/footnote"
+  dependencies:
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-inline-reference": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/icons": "npm:^2.2.6"
+    "@blocksuite/store": "workspace:*"
+    "@floating-ui/dom": "npm:^1.6.13"
+    "@lit/context": "npm:^1.1.2"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@toeverything/theme": "npm:^1.1.12"
+    "@types/lodash-es": "npm:^4.17.12"
+    collapse-white-space: "npm:^2.1.0"
+    date-fns: "npm:^4.0.0"
+    lit: "npm:^3.2.0"
+    lit-html: "npm:^3.2.1"
+    lodash-es: "npm:^4.17.21"
+    rxjs: "npm:^7.8.1"
+    yjs: "npm:^13.6.21"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@blocksuite/affine-inline-link@workspace:*, @blocksuite/affine-inline-link@workspace:blocksuite/affine/inlines/link":
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-inline-link@workspace:blocksuite/affine/inlines/link"
@@ -3043,6 +3071,7 @@ __metadata:
   resolution: "@blocksuite/affine-inline-preset@workspace:blocksuite/affine/inlines/preset"
   dependencies:
     "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-inline-footnote": "workspace:*"
     "@blocksuite/affine-inline-link": "workspace:*"
     "@blocksuite/affine-inline-reference": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
@@ -3369,6 +3398,7 @@ __metadata:
     "@blocksuite/affine-fragment-outline": "workspace:*"
     "@blocksuite/affine-gfx-text": "workspace:*"
     "@blocksuite/affine-gfx-turbo-renderer": "workspace:*"
+    "@blocksuite/affine-inline-footnote": "workspace:*"
     "@blocksuite/affine-inline-link": "workspace:*"
     "@blocksuite/affine-inline-preset": "workspace:*"
     "@blocksuite/affine-inline-reference": "workspace:*"
