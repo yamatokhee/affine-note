@@ -13,7 +13,7 @@ import { Bound } from '@blocksuite/global/gfx';
 import { EditIcon, PageIcon, UngroupIcon } from '@blocksuite/icons/lit';
 
 import { mountGroupTitleEditor } from '../../utils/text';
-import { getEdgelessWith } from './utils';
+import { getEdgelessWith, getRootBlock } from './utils';
 
 export const builtinGroupToolbarConfig = {
   actions: [
@@ -70,10 +70,10 @@ export const builtinGroupToolbarConfig = {
         const model = ctx.getCurrentModelByType(GroupElementModel);
         if (!model) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
+        const rootBlock = getRootBlock(ctx);
+        if (!rootBlock) return;
 
-        mountGroupTitleEditor(model, edgeless);
+        mountGroupTitleEditor(model, rootBlock);
       },
     },
     {

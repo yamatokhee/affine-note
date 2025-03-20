@@ -1,4 +1,4 @@
-import { FrameBlockSchema } from '@blocksuite/affine-model';
+import { frameToolbarExtension } from '@blocksuite/affine-block-frame';
 import { ToolbarModuleExtension } from '@blocksuite/affine-shared/services';
 import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import type { ExtensionType } from '@blocksuite/store';
@@ -6,7 +6,6 @@ import type { ExtensionType } from '@blocksuite/store';
 import { builtinBrushToolbarConfig } from './brush';
 import { builtinConnectorToolbarConfig } from './connector';
 import { builtinEdgelessTextToolbarConfig } from './edgeless-text';
-import { createFrameToolbarConfig } from './frame';
 import { builtinGroupToolbarConfig } from './group';
 import { builtinMindmapToolbarConfig } from './mindmap';
 import { builtinLockedToolbarConfig, builtinMiscToolbarConfig } from './misc';
@@ -14,7 +13,7 @@ import { builtinShapeToolbarConfig } from './shape';
 import { builtinTextToolbarConfig } from './text';
 
 export const EdgelessElementToolbarExtension: ExtensionType[] = [
-  createFrameToolbarConfig(FrameBlockSchema.model.flavour),
+  frameToolbarExtension,
 
   ToolbarModuleExtension({
     id: BlockFlavourIdentifier('affine:surface:group'),

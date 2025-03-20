@@ -28,7 +28,6 @@ import {
   EdgelessSelectedRectWidget,
 } from './edgeless/components/rects/edgeless-selected-rect.js';
 import { EdgelessConnectorLabelEditor } from './edgeless/components/text/edgeless-connector-label-editor.js';
-import { EdgelessFrameTitleEditor } from './edgeless/components/text/edgeless-frame-title-editor.js';
 import { EdgelessGroupTitleEditor } from './edgeless/components/text/edgeless-group-title-editor.js';
 import { EdgelessShapeTextEditor } from './edgeless/components/text/edgeless-shape-text-editor.js';
 import { EdgelessBrushMenu } from './edgeless/components/toolbar/brush/brush-menu.js';
@@ -239,10 +238,6 @@ function registerEdgelessEditorComponents() {
     'edgeless-group-title-editor',
     EdgelessGroupTitleEditor
   );
-  customElements.define(
-    'edgeless-frame-title-editor',
-    EdgelessFrameTitleEditor
-  );
 }
 
 function registerMiscComponents() {
@@ -324,7 +319,6 @@ declare global {
     'edgeless-dragging-area-rect': EdgelessDraggingAreaRectWidget;
     'edgeless-selected-rect': EdgelessSelectedRectWidget;
     'edgeless-connector-label-editor': EdgelessConnectorLabelEditor;
-    'edgeless-frame-title-editor': EdgelessFrameTitleEditor;
     'edgeless-group-title-editor': EdgelessGroupTitleEditor;
     'edgeless-shape-text-editor': EdgelessShapeTextEditor;
     'edgeless-toolbar-widget': EdgelessToolbarWidget;

@@ -1,8 +1,3 @@
-import {
-  type EdgelessFrameManager,
-  type FrameOverlay,
-  isFrameBlock,
-} from '@blocksuite/affine-block-frame';
 import { OverlayIdentifier } from '@blocksuite/affine-block-surface';
 import {
   type FrameBlockModel,
@@ -17,6 +12,12 @@ import {
   GfxExtensionIdentifier,
   TransformExtension,
 } from '@blocksuite/block-std/gfx';
+
+import {
+  type EdgelessFrameManager,
+  type FrameOverlay,
+  isFrameBlock,
+} from './frame-manager';
 
 export class FrameHighlightManager extends TransformExtension {
   static override key = 'frame-highlight-manager';

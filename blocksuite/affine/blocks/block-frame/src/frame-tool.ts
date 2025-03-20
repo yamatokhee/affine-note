@@ -1,7 +1,3 @@
-import {
-  EdgelessFrameManagerIdentifier,
-  type FrameOverlay,
-} from '@blocksuite/affine-block-frame';
 import { OverlayIdentifier } from '@blocksuite/affine-block-surface';
 import type { FrameBlockModel } from '@blocksuite/affine-model';
 import {
@@ -14,6 +10,11 @@ import type { IPoint, IVec } from '@blocksuite/global/gfx';
 import { Bound, Vec } from '@blocksuite/global/gfx';
 import { Text } from '@blocksuite/store';
 import * as Y from 'yjs';
+
+import {
+  EdgelessFrameManagerIdentifier,
+  type FrameOverlay,
+} from './frame-manager';
 
 export class FrameTool extends BaseTool {
   static override toolName = 'frame';
@@ -40,6 +41,7 @@ export class FrameTool extends BaseTool {
       this.doc.transact(() => {
         frame.pop('xywh');
       });
+      // @ts-expect-error TODO: refactor gfx tool
       this.gfx.tool.setTool('default');
       this.gfx.selection.set({
         elements: [frame.id],
@@ -104,11 +106,5 @@ export class FrameTool extends BaseTool {
     this.doc.captureSync();
     const { point } = e;
     this._startPoint = this._toModelCoord(point);
-  }
-}
-
-declare module '@blocksuite/block-std/gfx' {
-  interface GfxToolsMap {
-    frame: FrameTool;
   }
 }

@@ -195,6 +195,7 @@ export const PackageList = [
       'blocksuite/affine/components',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
+      'blocksuite/affine/widgets/widget-frame-title',
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',
       'blocksuite/framework/inline',
@@ -531,6 +532,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/components',
       'blocksuite/affine/model',
+      'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',

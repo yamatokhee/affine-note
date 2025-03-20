@@ -29,6 +29,7 @@ import {
   handleNativeRangeAtPoint,
   resetNativeSelection,
 } from '@blocksuite/affine-shared/utils';
+import { mountFrameTitleEditor } from '@blocksuite/affine-widget-frame-title';
 import type { BlockComponent, PointerEventState } from '@blocksuite/block-std';
 import {
   BaseTool,
@@ -51,7 +52,6 @@ import { calPanDelta } from '../utils/panning-utils.js';
 import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
 import {
   mountConnectorLabelEditor,
-  mountFrameTitleEditor,
   mountGroupTitleEditor,
   mountShapeTextEditor,
 } from '../utils/text.js';

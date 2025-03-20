@@ -54,7 +54,7 @@ import { mountConnectorLabelEditor } from '../../utils/text';
 import { LINE_STYLE_LIST } from './consts';
 import { createTextActions } from './text-common';
 import type { MenuItem } from './types';
-import { getEdgelessWith, renderMenu } from './utils';
+import { getRootBlock, renderMenu } from './utils';
 
 const FRONT_ENDPOINT_STYLE_LIST = [
   {
@@ -333,10 +333,10 @@ export const builtinConnectorToolbarConfig = {
         const rootModel = ctx.store.root;
         if (!rootModel) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
+        const rootBlock = getRootBlock(ctx);
+        if (!rootBlock) return;
 
-        mountConnectorLabelEditor(model, edgeless);
+        mountConnectorLabelEditor(model, rootBlock);
       },
     },
     // id: `g.text`

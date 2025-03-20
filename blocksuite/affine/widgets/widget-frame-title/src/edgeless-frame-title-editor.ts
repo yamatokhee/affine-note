@@ -1,11 +1,6 @@
 import { FrameBlockModel } from '@blocksuite/affine-model';
 import type { RichText } from '@blocksuite/affine-rich-text';
 import {
-  AFFINE_FRAME_TITLE_WIDGET,
-  type AffineFrameTitleWidget,
-  frameTitleStyleVars,
-} from '@blocksuite/affine-widget-frame-title';
-import {
   type BlockComponent,
   RANGE_SYNC_EXCLUDE_ATTR,
   ShadowlessElement,
@@ -17,6 +12,12 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { css, html, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+
+import {
+  AFFINE_FRAME_TITLE_WIDGET,
+  type AffineFrameTitleWidget,
+} from './affine-frame-title-widget';
+import { frameTitleStyleVars } from './styles';
 
 export class EdgelessFrameTitleEditor extends WithDisposable(
   ShadowlessElement

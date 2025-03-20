@@ -1,5 +1,6 @@
 import { EditorChevronDown } from '@blocksuite/affine-components/toolbar';
 import type { ToolbarContext } from '@blocksuite/affine-shared/services';
+import type { BlockComponent } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -76,4 +77,11 @@ export function getEdgelessWith(ctx: ToolbarContext) {
   }
 
   return edgeless;
+}
+
+export function getRootBlock(ctx: ToolbarContext): BlockComponent | null {
+  const rootModel = ctx.store.root;
+  if (!rootModel) return null;
+
+  return ctx.view.getBlock(rootModel.id);
 }

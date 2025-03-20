@@ -1,4 +1,3 @@
-import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import {
   packColor,
@@ -9,6 +8,7 @@ import {
   DEFAULT_NOTE_HEIGHT,
   DefaultTheme,
   FrameBlockModel,
+  FrameBlockSchema,
   NoteBlockModel,
   NoteBlockSchema,
   NoteDisplayMode,
@@ -16,6 +16,7 @@ import {
   SurfaceRefBlockSchema,
 } from '@blocksuite/affine-model';
 import {
+  type ToolbarContext,
   type ToolbarModuleConfig,
   ToolbarModuleExtension,
 } from '@blocksuite/affine-shared/services';
@@ -23,14 +24,25 @@ import {
   getMostCommonResolvedValue,
   matchModels,
 } from '@blocksuite/affine-shared/utils';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
+import { mountFrameTitleEditor } from '@blocksuite/affine-widget-frame-title';
+import {
+  type BlockComponent,
+  BlockFlavourIdentifier,
+} from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import { EditIcon, PageIcon, UngroupIcon } from '@blocksuite/icons/lit';
 import type { ExtensionType } from '@blocksuite/store';
 import { html } from 'lit';
 
-import { mountFrameTitleEditor } from '../../utils/text';
-import { getEdgelessWith } from './utils';
+import { EdgelessFrameManagerIdentifier } from './frame-manager';
+
+function getRootBlock(ctx: ToolbarContext): BlockComponent | null {
+  const rootModel = ctx.store.root;
+  if (!rootModel) return null;
+
+  return ctx.view.getBlock(rootModel.id);
+}
 
 const builtinSurfaceToolbarConfig = {
   actions: [
@@ -87,10 +99,10 @@ const builtinSurfaceToolbarConfig = {
         const model = ctx.getCurrentModelByType(FrameBlockModel);
         if (!model) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
+        const rootBlock = getRootBlock(ctx);
+        if (!rootBlock) return;
 
-        mountFrameTitleEditor(model, edgeless);
+        mountFrameTitleEditor(model, rootBlock);
       },
     },
     {
@@ -101,8 +113,8 @@ const builtinSurfaceToolbarConfig = {
         const models = ctx.getSurfaceModelsByType(FrameBlockModel);
         if (!models.length) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
+        const crud = ctx.std.get(EdgelessCRUDIdentifier);
+        const gfx = ctx.std.get(GfxControllerIdentifier);
 
         ctx.store.captureSync();
 
@@ -113,10 +125,10 @@ const builtinSurfaceToolbarConfig = {
         }
 
         for (const model of models) {
-          edgeless.service.removeElement(model);
+          crud.removeElement(model.id);
         }
 
-        edgeless.service.selection.clear();
+        gfx.selection.clear();
       },
     },
     {
@@ -172,7 +184,7 @@ const builtinSurfaceToolbarConfig = {
   when: ctx => ctx.getSurfaceModelsByType(FrameBlockModel).length > 0,
 } as const satisfies ToolbarModuleConfig;
 
-export const createFrameToolbarConfig = (flavour: string): ExtensionType => {
+const createFrameToolbarConfig = (flavour: string): ExtensionType => {
   const name = flavour.split(':').pop();
 
   return ToolbarModuleExtension({
@@ -180,3 +192,7 @@ export const createFrameToolbarConfig = (flavour: string): ExtensionType => {
     config: builtinSurfaceToolbarConfig,
   });
 };
+
+export const frameToolbarExtension = createFrameToolbarConfig(
+  FrameBlockSchema.model.flavour
+);

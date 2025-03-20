@@ -43,7 +43,7 @@ import {
   createMindmapStyleActionMenu,
 } from './mindmap';
 import { createTextActions } from './text-common';
-import { getEdgelessWith, renderMenu } from './utils';
+import { getRootBlock, renderMenu } from './utils';
 
 export const builtinShapeToolbarConfig = {
   actions: [
@@ -316,10 +316,10 @@ export const builtinShapeToolbarConfig = {
         const model = ctx.getCurrentModelByType(ShapeElementModel);
         if (!model) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
+        const rootBlock = getRootBlock(ctx);
+        if (!rootBlock) return;
 
-        mountShapeTextEditor(model, edgeless);
+        mountShapeTextEditor(model, rootBlock);
       },
     },
     // id: `g.text`

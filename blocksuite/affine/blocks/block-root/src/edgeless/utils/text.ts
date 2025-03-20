@@ -1,7 +1,6 @@
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type {
   ConnectorElementModel,
-  FrameBlockModel,
   GroupElementModel,
 } from '@blocksuite/affine-model';
 import { ShapeElementModel } from '@blocksuite/affine-model';
@@ -13,7 +12,6 @@ import { Bound } from '@blocksuite/global/gfx';
 import * as Y from 'yjs';
 
 import { EdgelessConnectorLabelEditor } from '../components/text/edgeless-connector-label-editor.js';
-import { EdgelessFrameTitleEditor } from '../components/text/edgeless-frame-title-editor.js';
 import { EdgelessGroupTitleEditor } from '../components/text/edgeless-group-title-editor.js';
 import { EdgelessShapeTextEditor } from '../components/text/edgeless-shape-text-editor.js';
 
@@ -58,33 +56,6 @@ export function mountShapeTextEditor(
   shapeEditor.mountEditor = mountShapeTextEditor;
 
   mountElm.append(shapeEditor);
-}
-
-export function mountFrameTitleEditor(
-  frame: FrameBlockModel,
-  edgeless: BlockComponent
-) {
-  const mountElm = edgeless.querySelector('.edgeless-mount-point');
-  if (!mountElm) {
-    throw new BlockSuiteError(
-      ErrorCode.ValueNotExists,
-      "edgeless block's mount point does not exist"
-    );
-  }
-
-  const gfx = edgeless.std.get(GfxControllerIdentifier);
-
-  gfx.tool.setTool('default');
-  gfx.selection.set({
-    elements: [frame.id],
-    editing: true,
-  });
-
-  const frameEditor = new EdgelessFrameTitleEditor();
-  frameEditor.frameModel = frame;
-  frameEditor.edgeless = edgeless;
-
-  mountElm.append(frameEditor);
 }
 
 export function mountGroupTitleEditor(
