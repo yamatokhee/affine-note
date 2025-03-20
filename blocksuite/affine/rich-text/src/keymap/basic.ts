@@ -18,14 +18,14 @@ export const textCommonKeymap = (
     ArrowUp: () => {
       const text = std.selection.find(TextSelection);
       if (!text) return;
-      const inline = getInlineEditorByModel(std.host, text.from.blockId);
+      const inline = getInlineEditorByModel(std, text.from.blockId);
       if (!inline) return;
       return !inline.isFirstLine(inline.getInlineRange());
     },
     ArrowDown: () => {
       const text = std.selection.find(TextSelection);
       if (!text) return;
-      const inline = getInlineEditorByModel(std.host, text.from.blockId);
+      const inline = getInlineEditorByModel(std, text.from.blockId);
       if (!inline) return;
       return !inline.isLastLine(inline.getInlineRange());
     },

@@ -28,7 +28,7 @@ export const bracketKeymap = (
           if (!model) return;
           if (!matchModels(model, [CodeBlockModel])) return;
           const inlineEditor = getInlineEditorByModel(
-            std.host,
+            std,
             textSelection.from.blockId
           );
           if (!inlineEditor) return;
@@ -61,7 +61,7 @@ export const bracketKeymap = (
           ctx.get('keyboardState').raw.preventDefault();
 
           const inlineEditor = getInlineEditorByModel(
-            std.host,
+            std,
             textSelection.from.blockId
           );
           if (!inlineEditor) return;
@@ -107,7 +107,7 @@ export const bracketKeymap = (
 
       ctx.get('keyboardState').raw.preventDefault();
       const inlineEditor = getInlineEditorByModel(
-        std.host,
+        std,
         textSelection.from.blockId
       );
       if (!inlineEditor) return;

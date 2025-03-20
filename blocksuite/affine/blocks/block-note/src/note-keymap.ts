@@ -119,7 +119,7 @@ class NoteKeymap {
                       }
 
                       const [codeModel] = newModels;
-                      asyncGetBlockComponent(ctx.std.host, codeModel.id)
+                      asyncGetBlockComponent(ctx.std, codeModel.id)
                         .then(codeElement => {
                           if (!codeElement) {
                             return;

@@ -83,10 +83,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
           matchModels(model.parent, [CalloutBlockModel])
         )
           return;
-        const inlineEditor = getInlineEditorByModel(
-          std.host,
-          text.from.blockId
-        );
+        const inlineEditor = getInlineEditorByModel(std, text.from.blockId);
         const inlineRange = inlineEditor?.getInlineRange();
         if (!inlineRange || !inlineEditor) return;
         const raw = ctx.get('keyboardState').raw;
@@ -115,10 +112,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
           matchModels(model.parent, [CalloutBlockModel])
         )
           return;
-        const inlineEditor = getInlineEditorByModel(
-          std.host,
-          text.from.blockId
-        );
+        const inlineEditor = getInlineEditorByModel(std, text.from.blockId);
         const inlineRange = inlineEditor?.getInlineRange();
         if (!inlineRange || !inlineEditor) return;
 

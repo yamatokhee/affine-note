@@ -37,7 +37,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         description: formatDate(now),
         group: '6_Date@0',
         action: ({ std, model }) => {
-          insertContent(std.host, model, formatDate(now));
+          insertContent(std, model, formatDate(now));
         },
       },
       {
@@ -49,7 +49,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         action: ({ std, model }) => {
           const tomorrow = new Date();
           tomorrow.setDate(tomorrow.getDate() + 1);
-          insertContent(std.host, model, formatDate(tomorrow));
+          insertContent(std, model, formatDate(tomorrow));
         },
       },
       {
@@ -61,7 +61,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         action: ({ std, model }) => {
           const yesterday = new Date();
           yesterday.setDate(yesterday.getDate() - 1);
-          insertContent(std.host, model, formatDate(yesterday));
+          insertContent(std, model, formatDate(yesterday));
         },
       },
       {
@@ -71,7 +71,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         description: formatTime(now),
         group: '6_Date@3',
         action: ({ std, model }) => {
-          insertContent(std.host, model, formatTime(now));
+          insertContent(std, model, formatTime(now));
         },
       },
       {

@@ -318,7 +318,7 @@ const pageToolGroup: KeyboardToolPanelGroup = {
           .pipe(({ selectedModels }) => {
             const newDoc = createDefaultDoc(std.store.workspace);
             if (!selectedModels?.length) return;
-            insertContent(std.host, selectedModels[0], REFERENCE_NODE, {
+            insertContent(std, selectedModels[0], REFERENCE_NODE, {
               reference: {
                 type: 'LinkedPage',
                 pageId: newDoc.id,
@@ -360,9 +360,9 @@ const pageToolGroup: KeyboardToolPanelGroup = {
             if (!selectedModels?.length) return;
 
             const currentModel = selectedModels[0];
-            insertContent(std.host, currentModel, triggerKey);
+            insertContent(std, currentModel, triggerKey);
 
-            const inlineEditor = getInlineEditorByModel(std.host, currentModel);
+            const inlineEditor = getInlineEditorByModel(std, currentModel);
             // Wait for range to be updated
             if (inlineEditor) {
               const subscription = inlineEditor.slots.inlineRangeSync.subscribe(
@@ -702,7 +702,7 @@ const dateToolGroup: KeyboardToolPanelGroup = {
         const model = selectedModels?.[0];
         if (!model) return;
 
-        insertContent(std.host, model, formatDate(new Date()));
+        insertContent(std, model, formatDate(new Date()));
       },
     },
     {
@@ -717,7 +717,7 @@ const dateToolGroup: KeyboardToolPanelGroup = {
 
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        insertContent(std.host, model, formatDate(tomorrow));
+        insertContent(std, model, formatDate(tomorrow));
       },
     },
     {
@@ -732,7 +732,7 @@ const dateToolGroup: KeyboardToolPanelGroup = {
 
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        insertContent(std.host, model, formatDate(yesterday));
+        insertContent(std, model, formatDate(yesterday));
       },
     },
     {
@@ -745,7 +745,7 @@ const dateToolGroup: KeyboardToolPanelGroup = {
         const model = selectedModels?.[0];
         if (!model) return;
 
-        insertContent(std.host, model, formatTime(new Date()));
+        insertContent(std, model, formatTime(new Date()));
       },
     },
   ],

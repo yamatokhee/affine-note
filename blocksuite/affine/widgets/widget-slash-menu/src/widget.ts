@@ -39,10 +39,7 @@ const showSlashMenu = debounce(
       disposables.dispose()
     );
 
-    const inlineEditor = getInlineEditorByModel(
-      context.std.host,
-      context.model
-    );
+    const inlineEditor = getInlineEditorByModel(context.std, context.model);
     if (!inlineEditor) return;
     const slashMenu = new SlashMenu(inlineEditor, abortController);
     disposables.add(() => slashMenu.remove());
@@ -84,7 +81,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
     const model = this.host.doc.getBlock(textSelection.blockId)?.model;
     if (!model) return;
 
-    return getInlineEditorByModel(this.host, model);
+    return getInlineEditorByModel(this.std, model);
   };
 
   private readonly _handleInput = (

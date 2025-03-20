@@ -7,8 +7,8 @@ import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import {
   BLOCK_ID_ATTR,
   type BlockComponent,
+  type BlockStdScope,
   type Chain,
-  type EditorHost,
   type InitCommandCtx,
 } from '@blocksuite/block-std';
 import {
@@ -233,7 +233,7 @@ export function clearMarksOnDiscontinuousInput(
 }
 
 export function insertContent(
-  editorHost: EditorHost,
+  std: BlockStdScope,
   model: BlockModel,
   text: string,
   attributes?: AffineTextAttributes
@@ -242,7 +242,7 @@ export function insertContent(
     console.error("Can't insert text! Text not found");
     return;
   }
-  const inlineEditor = getInlineEditorByModel(editorHost, model);
+  const inlineEditor = getInlineEditorByModel(std, model);
   if (!inlineEditor) {
     console.error("Can't insert text! Inline editor not found");
     return;
