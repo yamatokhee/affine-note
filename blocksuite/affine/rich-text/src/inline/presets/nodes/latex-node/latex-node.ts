@@ -6,12 +6,12 @@ import {
   type BlockStdScope,
   ShadowlessElement,
 } from '@blocksuite/block-std';
-import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import {
   type InlineEditor,
   ZERO_WIDTH_NON_JOINER,
   ZERO_WIDTH_SPACE,
-} from '@blocksuite/inline';
+} from '@blocksuite/block-std/inline';
+import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import type { DeltaInsert } from '@blocksuite/store';
 import { signal } from '@preact/signals-core';
 import katex from 'katex';

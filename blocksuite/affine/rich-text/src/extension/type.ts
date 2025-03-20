@@ -2,7 +2,7 @@ import type {
   AttributeRenderer,
   InlineEditor,
   InlineRange,
-} from '@blocksuite/inline';
+} from '@blocksuite/block-std/inline';
 import type { BaseTextAttributes, DeltaInsert } from '@blocksuite/store';
 import type * as Y from 'yjs';
 import type { ZodTypeAny } from 'zod';

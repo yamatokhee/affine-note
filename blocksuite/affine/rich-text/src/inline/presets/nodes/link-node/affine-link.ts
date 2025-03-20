@@ -7,12 +7,12 @@ import {
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import type { BlockComponent, BlockStdScope } from '@blocksuite/block-std';
 import { BLOCK_ID_ATTR, ShadowlessElement } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/lit';
 import {
   INLINE_ROOT_ATTR,
   type InlineRootElement,
   ZERO_WIDTH_SPACE,
-} from '@blocksuite/inline';
+} from '@blocksuite/block-std/inline';
+import { WithDisposable } from '@blocksuite/global/lit';
 import type { DeltaInsert } from '@blocksuite/store';
 import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';

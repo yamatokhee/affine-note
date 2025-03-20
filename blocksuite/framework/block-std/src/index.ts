@@ -3,7 +3,6 @@ export * from './command/index.js';
 export * from './event/index.js';
 export * from './extension/index.js';
 export * from './identifier.js';
-export * from './inline/index.js';
 export * from './scope/index.js';
 export * from './selection/index.js';
 export * from './spec/index.js';

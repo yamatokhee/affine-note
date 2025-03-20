@@ -16,8 +16,11 @@ import {
   getViewportElement,
 } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent } from '@blocksuite/block-std';
-import { getInlineRangeProvider, TextSelection } from '@blocksuite/block-std';
-import type { InlineRangeProvider } from '@blocksuite/inline';
+import { TextSelection } from '@blocksuite/block-std';
+import {
+  getInlineRangeProvider,
+  type InlineRangeProvider,
+} from '@blocksuite/block-std/inline';
 import { computed, effect, signal } from '@preact/signals-core';
 import { html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';

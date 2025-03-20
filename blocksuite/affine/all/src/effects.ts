@@ -55,13 +55,11 @@ import { effects as widgetSlashMenuEffects } from '@blocksuite/affine-widget-sla
 import { effects as widgetToolbarEffects } from '@blocksuite/affine-widget-toolbar/effects';
 import { effects as stdEffects } from '@blocksuite/block-std/effects';
 import { effects as dataViewEffects } from '@blocksuite/data-view/effects';
-import { effects as inlineEffects } from '@blocksuite/inline/effects';
 
 import { registerSpecs } from './extensions/register.js';
 
 export declare const _GLOBAL_:
   | typeof stdEffects
-  | typeof inlineEffects
   | typeof dataViewEffects
   | typeof richTextEffects
   | typeof blockNoteEffects
@@ -111,7 +109,6 @@ export function effects() {
   registerSpecs();
 
   stdEffects();
-  inlineEffects();
 
   dataViewEffects();
   richTextEffects();

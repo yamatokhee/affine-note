@@ -5,8 +5,8 @@ import type {
   EditorHost,
   TextSelection,
 } from '@blocksuite/affine/block-std';
+import type { InlineRootElement } from '@blocksuite/affine/block-std/inline';
 import type { EdgelessNoteBackground } from '@blocksuite/affine/blocks/note';
-import type { InlineRootElement } from '@blocksuite/affine/inline';
 import type { NoteBlockModel, RootBlockModel } from '@blocksuite/affine/model';
 import type {
   AffineInlineEditor,

@@ -1,12 +1,12 @@
 import '@shoelace-style/shoelace';
 
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
+import { effects } from '@blocksuite/affine/block-std/effects';
 import {
   type AttributeRenderer,
   InlineEditor,
   ZERO_WIDTH_NON_JOINER,
-} from '@blocksuite/affine/inline';
-import { effects } from '@blocksuite/affine/inline/effects';
+} from '@blocksuite/affine/block-std/inline';
 import {
   type BaseTextAttributes,
   baseTextAttributes,

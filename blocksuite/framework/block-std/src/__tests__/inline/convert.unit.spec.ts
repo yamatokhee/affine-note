@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 import {
   deltaInsertsToChunks,
   transformDelta,
-} from '../utils/delta-convert.js';
+} from '../../inline/utils/delta-convert.js';
 
 test('transformDelta', () => {
   expect(

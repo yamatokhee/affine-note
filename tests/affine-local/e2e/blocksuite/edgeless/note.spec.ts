@@ -234,7 +234,7 @@ test.describe('edgeless note element toolbar', () => {
     await createEdgelessNoteBlock(page, [100, 100]);
     await page.waitForSelector('.affine-paragraph-placeholder.visible');
     await page.keyboard.type('Note 2');
-    await clickView(page, [0, 0]);
+    await clickView(page, [0, 300]);
     await clickView(page, [100, 100]);
 
     const toolbar = locateToolbar(page);

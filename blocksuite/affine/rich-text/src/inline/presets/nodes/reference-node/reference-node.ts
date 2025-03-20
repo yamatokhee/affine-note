@@ -16,14 +16,14 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent, BlockStdScope } from '@blocksuite/block-std';
 import { BLOCK_ID_ATTR, ShadowlessElement } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/lit';
-import { LinkedPageIcon } from '@blocksuite/icons/lit';
 import {
   INLINE_ROOT_ATTR,
   type InlineRootElement,
   ZERO_WIDTH_NON_JOINER,
   ZERO_WIDTH_SPACE,
-} from '@blocksuite/inline';
+} from '@blocksuite/block-std/inline';
+import { WithDisposable } from '@blocksuite/global/lit';
+import { LinkedPageIcon } from '@blocksuite/icons/lit';
 import type { DeltaInsert, DocMeta, Store } from '@blocksuite/store';
 import { css, html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';

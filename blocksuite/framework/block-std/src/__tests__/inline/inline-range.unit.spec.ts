@@ -12,7 +12,7 @@ import {
   isInlineRangeIntersect,
   isPoint,
   mergeInlineRange,
-} from '../utils/inline-range.js';
+} from '../../inline/utils/inline-range.js';
 
 test('isInlineRangeContain', () => {
   expect(

@@ -8,13 +8,13 @@ import {
   ShadowlessElement,
   TextSelection,
 } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/lit';
 import {
   INLINE_ROOT_ATTR,
   type InlineRootElement,
   ZERO_WIDTH_NON_JOINER,
   ZERO_WIDTH_SPACE,
-} from '@blocksuite/inline';
+} from '@blocksuite/block-std/inline';
+import { WithDisposable } from '@blocksuite/global/lit';
 import type { DeltaInsert } from '@blocksuite/store';
 import { shift } from '@floating-ui/dom';
 import { baseTheme } from '@toeverything/theme';

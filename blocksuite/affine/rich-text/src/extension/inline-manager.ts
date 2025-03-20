@@ -1,13 +1,13 @@
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
 import {
+  type AttributeRenderer,
+  getDefaultAttributeRenderer,
+} from '@blocksuite/block-std/inline';
+import {
   createIdentifier,
   type ServiceIdentifier,
 } from '@blocksuite/global/di';
-import {
-  type AttributeRenderer,
-  getDefaultAttributeRenderer,
-} from '@blocksuite/inline';
 import {
   baseTextAttributes,
   type DeltaInsert,
