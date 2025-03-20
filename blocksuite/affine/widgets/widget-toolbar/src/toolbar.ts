@@ -157,6 +157,9 @@ export class AffineToolbarWidget extends WidgetComponent {
         .map(id => gfx.getElementById(id))
         .filter(model => model !== null) as GfxModel[];
 
+      // Should double check
+      activated &&= Boolean(elements.length);
+
       hasLocked = elements.some(e => e.isLocked());
 
       const grouped = groupBy(
