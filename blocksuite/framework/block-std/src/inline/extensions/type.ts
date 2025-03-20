@@ -8,12 +8,12 @@ import type * as Y from 'yjs';
 import type { ZodTypeAny } from 'zod';
 
 export type InlineSpecs<
-  AffineTextAttributes extends BaseTextAttributes = BaseTextAttributes,
+  TextAttributes extends BaseTextAttributes = BaseTextAttributes,
 > = {
-  name: keyof AffineTextAttributes | string;
+  name: keyof TextAttributes | string;
   schema: ZodTypeAny;
-  match: (delta: DeltaInsert<AffineTextAttributes>) => boolean;
-  renderer: AttributeRenderer<AffineTextAttributes>;
+  match: (delta: DeltaInsert<TextAttributes>) => boolean;
+  renderer: AttributeRenderer<TextAttributes>;
   embed?: boolean;
 };
 

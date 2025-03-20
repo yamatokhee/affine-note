@@ -3,6 +3,7 @@ import { ShadowlessElement } from '@blocksuite/block-std';
 import {
   type AttributeRenderer,
   InlineEditor,
+  type InlineMarkdownMatch,
   type InlineRange,
   type InlineRangeProvider,
   type VLine,
@@ -17,7 +18,6 @@ import { classMap } from 'lit/directives/class-map.js';
 import * as Y from 'yjs';
 import { z } from 'zod';
 
-import type { InlineMarkdownMatch } from './extension/type.js';
 import { onVBeforeinput, onVCompositionEnd } from './hooks.js';
 import type { AffineInlineEditor } from './inline/index.js';
 

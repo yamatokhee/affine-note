@@ -2,14 +2,14 @@ import { FootNoteSchema, ReferenceInfoSchema } from '@blocksuite/affine-model';
 import { ToolbarModuleExtension } from '@blocksuite/affine-shared/services';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { BlockFlavourIdentifier, StdIdentifier } from '@blocksuite/block-std';
-import type {
-  InlineEditor,
-  InlineRootElement,
+import {
+  type InlineEditor,
+  type InlineRootElement,
+  InlineSpecExtension,
 } from '@blocksuite/block-std/inline';
 import { html } from 'lit';
 import { z } from 'zod';
 
-import { InlineSpecExtension } from '../../extension/index.js';
 import { FootNoteNodeConfigIdentifier } from './nodes/footnote-node/footnote-config.js';
 import { builtinInlineLinkToolbarConfig } from './nodes/link-node/configs/toolbar.js';
 import { builtinInlineReferenceToolbarConfig } from './nodes/reference-node/configs/toolbar.js';
@@ -21,86 +21,92 @@ import {
 export type AffineInlineEditor = InlineEditor<AffineTextAttributes>;
 export type AffineInlineRootElement = InlineRootElement<AffineTextAttributes>;
 
-export const BoldInlineSpecExtension = InlineSpecExtension({
-  name: 'bold',
-  schema: z.literal(true).optional().nullable().catch(undefined),
-  match: delta => {
-    return !!delta.attributes?.bold;
-  },
-  renderer: ({ delta }) => {
-    return html`<affine-text .delta=${delta}></affine-text>`;
-  },
-});
+export const BoldInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>({
+    name: 'bold',
+    schema: z.literal(true).optional().nullable().catch(undefined),
+    match: delta => {
+      return !!delta.attributes?.bold;
+    },
+    renderer: ({ delta }) => {
+      return html`<affine-text .delta=${delta}></affine-text>`;
+    },
+  });
 
-export const ItalicInlineSpecExtension = InlineSpecExtension({
-  name: 'italic',
-  schema: z.literal(true).optional().nullable().catch(undefined),
-  match: delta => {
-    return !!delta.attributes?.italic;
-  },
-  renderer: ({ delta }) => {
-    return html`<affine-text .delta=${delta}></affine-text>`;
-  },
-});
+export const ItalicInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>({
+    name: 'italic',
+    schema: z.literal(true).optional().nullable().catch(undefined),
+    match: delta => {
+      return !!delta.attributes?.italic;
+    },
+    renderer: ({ delta }) => {
+      return html`<affine-text .delta=${delta}></affine-text>`;
+    },
+  });
 
-export const UnderlineInlineSpecExtension = InlineSpecExtension({
-  name: 'underline',
-  schema: z.literal(true).optional().nullable().catch(undefined),
-  match: delta => {
-    return !!delta.attributes?.underline;
-  },
-  renderer: ({ delta }) => {
-    return html`<affine-text .delta=${delta}></affine-text>`;
-  },
-});
+export const UnderlineInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>({
+    name: 'underline',
+    schema: z.literal(true).optional().nullable().catch(undefined),
+    match: delta => {
+      return !!delta.attributes?.underline;
+    },
+    renderer: ({ delta }) => {
+      return html`<affine-text .delta=${delta}></affine-text>`;
+    },
+  });
 
-export const StrikeInlineSpecExtension = InlineSpecExtension({
-  name: 'strike',
-  schema: z.literal(true).optional().nullable().catch(undefined),
-  match: delta => {
-    return !!delta.attributes?.strike;
-  },
-  renderer: ({ delta }) => {
-    return html`<affine-text .delta=${delta}></affine-text>`;
-  },
-});
+export const StrikeInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>({
+    name: 'strike',
+    schema: z.literal(true).optional().nullable().catch(undefined),
+    match: delta => {
+      return !!delta.attributes?.strike;
+    },
+    renderer: ({ delta }) => {
+      return html`<affine-text .delta=${delta}></affine-text>`;
+    },
+  });
 
-export const CodeInlineSpecExtension = InlineSpecExtension({
-  name: 'code',
-  schema: z.literal(true).optional().nullable().catch(undefined),
-  match: delta => {
-    return !!delta.attributes?.code;
-  },
-  renderer: ({ delta }) => {
-    return html`<affine-text .delta=${delta}></affine-text>`;
-  },
-});
+export const CodeInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>({
+    name: 'code',
+    schema: z.literal(true).optional().nullable().catch(undefined),
+    match: delta => {
+      return !!delta.attributes?.code;
+    },
+    renderer: ({ delta }) => {
+      return html`<affine-text .delta=${delta}></affine-text>`;
+    },
+  });
 
-export const BackgroundInlineSpecExtension = InlineSpecExtension({
-  name: 'background',
-  schema: z.string().optional().nullable().catch(undefined),
-  match: delta => {
-    return !!delta.attributes?.background;
-  },
-  renderer: ({ delta }) => {
-    return html`<affine-text .delta=${delta}></affine-text>`;
-  },
-});
+export const BackgroundInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>({
+    name: 'background',
+    schema: z.string().optional().nullable().catch(undefined),
+    match: delta => {
+      return !!delta.attributes?.background;
+    },
+    renderer: ({ delta }) => {
+      return html`<affine-text .delta=${delta}></affine-text>`;
+    },
+  });
 
-export const ColorInlineSpecExtension = InlineSpecExtension({
-  name: 'color',
-  schema: z.string().optional().nullable().catch(undefined),
-  match: delta => {
-    return !!delta.attributes?.color;
-  },
-  renderer: ({ delta }) => {
-    return html`<affine-text .delta=${delta}></affine-text>`;
-  },
-});
+export const ColorInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>({
+    name: 'color',
+    schema: z.string().optional().nullable().catch(undefined),
+    match: delta => {
+      return !!delta.attributes?.color;
+    },
+    renderer: ({ delta }) => {
+      return html`<affine-text .delta=${delta}></affine-text>`;
+    },
+  });
 
-export const LatexInlineSpecExtension = InlineSpecExtension(
-  'latex',
-  provider => {
+export const LatexInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>('latex', provider => {
     const std = provider.get(StdIdentifier);
     return {
       name: 'latex',
@@ -118,12 +124,10 @@ export const LatexInlineSpecExtension = InlineSpecExtension(
       },
       embed: true,
     };
-  }
-);
+  });
 
-export const ReferenceInlineSpecExtension = InlineSpecExtension(
-  'reference',
-  provider => {
+export const ReferenceInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>('reference', provider => {
     const std = provider.get(StdIdentifier);
     const configProvider = new ReferenceNodeConfigProvider(std);
     const config =
@@ -164,35 +168,35 @@ export const ReferenceInlineSpecExtension = InlineSpecExtension(
       },
       embed: true,
     };
-  }
-);
+  });
 
-export const LinkInlineSpecExtension = InlineSpecExtension('link', provider => {
-  const std = provider.get(StdIdentifier);
-  return {
-    name: 'link',
-    schema: z.string().optional().nullable().catch(undefined),
-    match: delta => {
-      return !!delta.attributes?.link;
-    },
+export const LinkInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>('link', provider => {
+    const std = provider.get(StdIdentifier);
+    return {
+      name: 'link',
+      schema: z.string().optional().nullable().catch(undefined),
+      match: delta => {
+        return !!delta.attributes?.link;
+      },
+      renderer: ({ delta }) => {
+        return html`<affine-link .std=${std} .delta=${delta}></affine-link>`;
+      },
+    };
+  });
+
+export const LatexEditorUnitSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>({
+    name: 'latex-editor-unit',
+    schema: z.undefined(),
+    match: () => true,
     renderer: ({ delta }) => {
-      return html`<affine-link .std=${std} .delta=${delta}></affine-link>`;
+      return html`<latex-editor-unit .delta=${delta}></latex-editor-unit>`;
     },
-  };
-});
+  });
 
-export const LatexEditorUnitSpecExtension = InlineSpecExtension({
-  name: 'latex-editor-unit',
-  schema: z.undefined(),
-  match: () => true,
-  renderer: ({ delta }) => {
-    return html`<latex-editor-unit .delta=${delta}></latex-editor-unit>`;
-  },
-});
-
-export const FootNoteInlineSpecExtension = InlineSpecExtension(
-  'footnote',
-  provider => {
+export const FootNoteInlineSpecExtension =
+  InlineSpecExtension<AffineTextAttributes>('footnote', provider => {
     const std = provider.get(StdIdentifier);
     const config =
       provider.getOptional(FootNoteNodeConfigIdentifier) ?? undefined;
@@ -211,8 +215,7 @@ export const FootNoteInlineSpecExtension = InlineSpecExtension(
       },
       embed: true,
     };
-  }
-);
+  });
 
 export const InlineSpecExtensions = [
   BoldInlineSpecExtension,

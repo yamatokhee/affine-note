@@ -1,7 +1,9 @@
 import { ColorScheme } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { unsafeCSSVar } from '@blocksuite/affine-shared/theme';
+import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { type BlockStdScope, ShadowlessElement } from '@blocksuite/block-std';
+import { InlineManagerExtension } from '@blocksuite/block-std/inline';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import { noop } from '@blocksuite/global/utils';
 import { DoneIcon } from '@blocksuite/icons/lit';
@@ -11,14 +13,14 @@ import { property } from 'lit/decorators.js';
 import { codeToTokensBase, type ThemedToken } from 'shiki';
 import * as Y from 'yjs';
 
-import { InlineManagerExtension } from '../../../../extension/index.js';
 import { LatexEditorUnitSpecExtension } from '../../affine-inline-specs.js';
 
-export const LatexEditorInlineManagerExtension = InlineManagerExtension({
-  id: 'latex-inline-editor',
-  enableMarkdown: false,
-  specs: [LatexEditorUnitSpecExtension.identifier],
-});
+export const LatexEditorInlineManagerExtension =
+  InlineManagerExtension<AffineTextAttributes>({
+    id: 'latex-inline-editor',
+    enableMarkdown: false,
+    specs: [LatexEditorUnitSpecExtension.identifier],
+  });
 
 export class LatexEditorMenu extends SignalWatcher(
   WithDisposable(ShadowlessElement)
