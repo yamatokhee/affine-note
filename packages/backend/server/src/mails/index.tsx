@@ -1,5 +1,6 @@
 import { render as rawRender } from '@react-email/components';
 
+import { Mention } from './docs';
 import {
   TeamBecomeAdmin,
   TeamBecomeCollaborator,
@@ -111,6 +112,13 @@ export const Renderers = {
   OwnershipReceived: make(
     OwnershipReceived,
     props => `You are now the owner of ${props.workspace.name}`
+  ),
+  //#endregion
+
+  //#region Doc
+  Mention: make(
+    Mention,
+    props => `${props.user.email} mentioned you in ${props.doc.title}`
   ),
   //#endregion
 
