@@ -1,5 +1,6 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { WithDisposable } from '@blocksuite/affine/global/lit';
+import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine/shared/theme';
 import {
   ArrowDownBigIcon as ArrowDownIcon,
   ArrowUpBigIcon as ArrowUpIcon,
@@ -68,7 +69,7 @@ export class ActionWrapper extends WithDisposable(LitElement) {
       margin-bottom: 12px;
 
       svg {
-        color: var(--affine-primary-color);
+        color: ${unsafeCSSVar('primaryColor')};
       }
 
       div:last-child {
@@ -85,18 +86,21 @@ export class ActionWrapper extends WithDisposable(LitElement) {
 
     .answer-prompt {
       padding: 8px;
-      background-color: var(--affine-background-secondary-color);
+      background-color: ${unsafeCSSVarV2('block/callout/background/grey')};
       display: flex;
       flex-direction: column;
       gap: 4px;
       font-size: 14px;
       font-weight: 400;
-      color: var(--affine-text-primary-color);
+      color: ${unsafeCSSVarV2('text/primary')};
+      max-height: 500px;
+      overflow-y: auto;
+      border-radius: 4px;
 
       .subtitle {
         font-size: 12px;
         font-weight: 500;
-        color: var(--affine-text-secondary-color);
+        color: ${unsafeCSSVarV2('text/secondary')};
         height: 20px;
         line-height: 20px;
       }
@@ -104,6 +108,17 @@ export class ActionWrapper extends WithDisposable(LitElement) {
       .prompt {
         margin-top: 12px;
       }
+    }
+
+    .answer-prompt::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .answer-prompt::-webkit-scrollbar-thumb {
+      background-color: ${unsafeCSSVar('borderColor')};
+    }
+    .answer-prompt::-webkit-scrollbar-track {
+      background: transparent;
     }
   `;
 
