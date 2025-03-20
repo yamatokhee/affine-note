@@ -2,26 +2,22 @@ use std::{ffi::c_void, ptr, sync::Arc};
 
 use block2::{Block, RcBlock};
 use core_foundation::{
-  array::CFArray,
   base::{CFType, ItemRef, TCFType},
-  boolean::CFBoolean,
   dictionary::CFDictionary,
   string::CFString,
   uuid::CFUUID,
 };
 use coreaudio::sys::{
-  kAudioAggregateDeviceIsPrivateKey, kAudioAggregateDeviceIsStackedKey,
-  kAudioAggregateDeviceMainSubDeviceKey, kAudioAggregateDeviceNameKey,
-  kAudioAggregateDeviceSubDeviceListKey, kAudioAggregateDeviceTapAutoStartKey,
-  kAudioAggregateDeviceTapListKey, kAudioAggregateDeviceUIDKey,
-  kAudioDevicePropertyAvailableNominalSampleRates, kAudioDevicePropertyNominalSampleRate,
-  kAudioHardwareNoError, kAudioHardwarePropertyDefaultInputDevice,
-  kAudioHardwarePropertyDefaultSystemOutputDevice, kAudioObjectPropertyElementMain,
-  kAudioObjectPropertyScopeGlobal, kAudioSubDeviceUIDKey, kAudioSubTapDriftCompensationKey,
-  kAudioSubTapUIDKey, AudioDeviceCreateIOProcIDWithBlock, AudioDeviceDestroyIOProcID,
-  AudioDeviceIOProcID, AudioDeviceStart, AudioDeviceStop, AudioHardwareCreateAggregateDevice,
-  AudioHardwareDestroyAggregateDevice, AudioObjectGetPropertyData, AudioObjectGetPropertyDataSize,
-  AudioObjectID, AudioObjectPropertyAddress, AudioObjectSetPropertyData, AudioTimeStamp, OSStatus,
+  kAudioAggregateDeviceClockDeviceKey, kAudioAggregateDeviceIsPrivateKey,
+  kAudioAggregateDeviceIsStackedKey, kAudioAggregateDeviceMainSubDeviceKey,
+  kAudioAggregateDeviceNameKey, kAudioAggregateDeviceSubDeviceListKey,
+  kAudioAggregateDeviceTapAutoStartKey, kAudioAggregateDeviceTapListKey,
+  kAudioAggregateDeviceUIDKey, kAudioDevicePropertyNominalSampleRate, kAudioHardwareBadDeviceError,
+  kAudioHardwareBadStreamError, kAudioHardwareNoError, kAudioHardwarePropertyDefaultInputDevice,
+  kAudioHardwarePropertyDefaultSystemOutputDevice, kAudioSubDeviceUIDKey, kAudioSubTapUIDKey,
+  AudioDeviceCreateIOProcIDWithBlock, AudioDeviceDestroyIOProcID, AudioDeviceIOProcID,
+  AudioDeviceStart, AudioDeviceStop, AudioHardwareCreateAggregateDevice,
+  AudioHardwareDestroyAggregateDevice, AudioObjectID, AudioTimeStamp, OSStatus,
 };
 use napi::{
   bindgen_prelude::Float32Array,
@@ -29,15 +25,17 @@ use napi::{
   Result,
 };
 use napi_derive::napi;
-use objc2::{runtime::AnyObject, Encode, Encoding, RefEncode};
+use objc2::runtime::AnyObject;
 
 use crate::{
-  audio_stream_basic_desc::read_audio_stream_basic_description,
+  audio_buffer::InputAndOutputAudioBufferList,
   ca_tap_description::CATapDescription,
+  cf_types::CFDictionaryBuilder,
   device::{get_device_audio_id, get_device_uid},
   error::CoreAudioError,
   queue::create_audio_tap_queue,
   screen_capture_kit::TappableApplication,
+  utils::{cfstring_from_bytes_with_nul, get_global_main_property},
 };
 
 extern "C" {
@@ -47,54 +45,6 @@ extern "C" {
   ) -> OSStatus;
 
   fn AudioHardwareDestroyProcessTap(tapID: AudioObjectID) -> OSStatus;
-}
-
-/// [Apple's documentation](https://developer.apple.com/documentation/coreaudiotypes/audiobuffer?language=objc)
-#[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[allow(non_snake_case)]
-pub struct AudioBuffer {
-  pub mNumberChannels: u32,
-  pub mDataByteSize: u32,
-  pub mData: *mut c_void,
-}
-
-// Define a struct to represent sample rate ranges
-#[repr(C)]
-#[allow(non_snake_case)]
-struct AudioValueRange {
-  mMinimum: f64,
-  mMaximum: f64,
-}
-
-unsafe impl Encode for AudioBuffer {
-  const ENCODING: Encoding = Encoding::Struct(
-    "AudioBuffer",
-    &[<u32>::ENCODING, <u32>::ENCODING, <*mut c_void>::ENCODING],
-  );
-}
-
-unsafe impl RefEncode for AudioBuffer {
-  const ENCODING_REF: Encoding = Encoding::Pointer(&Self::ENCODING);
-}
-
-#[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[allow(non_snake_case)]
-pub struct AudioBufferList {
-  pub mNumberBuffers: u32,
-  pub mBuffers: [AudioBuffer; 1],
-}
-
-unsafe impl Encode for AudioBufferList {
-  const ENCODING: Encoding = Encoding::Struct(
-    "AudioBufferList",
-    &[<u32>::ENCODING, <[AudioBuffer; 1]>::ENCODING],
-  );
-}
-
-unsafe impl RefEncode for AudioBufferList {
-  const ENCODING_REF: Encoding = Encoding::Pointer(&Self::ENCODING);
 }
 
 // Audio statistics structure to track audio format information
@@ -108,7 +58,7 @@ pub struct AggregateDevice {
   pub tap_id: AudioObjectID,
   pub id: AudioObjectID,
   pub audio_stats: Option<AudioStats>,
-  pub input_device_id: Option<AudioObjectID>,
+  pub input_device_id: AudioObjectID,
   pub output_device_id: Option<AudioObjectID>,
   pub input_proc_id: Option<AudioDeviceIOProcID>,
   pub output_proc_id: Option<AudioDeviceIOProcID>,
@@ -127,7 +77,11 @@ impl AggregateDevice {
       return Err(CoreAudioError::CreateProcessTapFailed(status).into());
     }
 
-    let description_dict = Self::create_aggregate_description(tap_id, tap_description.get_uuid()?)?;
+    let (input_device_id, default_input_uid) =
+      get_device_uid(kAudioHardwarePropertyDefaultInputDevice)?;
+
+    let description_dict =
+      Self::create_aggregate_description(tap_id, tap_description.get_uuid()?, default_input_uid)?;
 
     let mut aggregate_device_id: AudioObjectID = 0;
 
@@ -146,43 +100,7 @@ impl AggregateDevice {
       tap_id,
       id: aggregate_device_id,
       audio_stats: None,
-      input_device_id: None,
-      output_device_id: None,
-      input_proc_id: None,
-      output_proc_id: None,
-    })
-  }
-
-  pub fn new_from_object_id(object_id: AudioObjectID) -> Result<Self> {
-    let mut tap_id: AudioObjectID = 0;
-
-    let tap_description = CATapDescription::init_stereo_mixdown_of_processes(object_id)?;
-    let status = unsafe { AudioHardwareCreateProcessTap(tap_description.inner, &mut tap_id) };
-
-    if status != 0 {
-      return Err(CoreAudioError::CreateProcessTapFailed(status).into());
-    }
-
-    let description_dict = Self::create_aggregate_description(tap_id, tap_description.get_uuid()?)?;
-
-    let mut aggregate_device_id: AudioObjectID = 0;
-
-    let status = unsafe {
-      AudioHardwareCreateAggregateDevice(
-        description_dict.as_concrete_TypeRef().cast(),
-        &mut aggregate_device_id,
-      )
-    };
-
-    if status != 0 {
-      return Err(CoreAudioError::CreateAggregateDeviceFailed(status).into());
-    }
-
-    Ok(Self {
-      tap_id,
-      id: aggregate_device_id,
-      audio_stats: None,
-      input_device_id: None,
+      input_device_id,
       output_device_id: None,
       input_proc_id: None,
       output_proc_id: None,
@@ -200,12 +118,14 @@ impl AggregateDevice {
     }
 
     // Get the default input device (microphone) UID and ID
-    let input_device_id = get_device_audio_id(kAudioHardwarePropertyDefaultInputDevice)?;
+    let (input_device_id, default_input_uid) =
+      get_device_uid(kAudioHardwarePropertyDefaultInputDevice)?;
 
     // Get the default output device ID
     let output_device_id = get_device_audio_id(kAudioHardwarePropertyDefaultSystemOutputDevice)?;
 
-    let description_dict = Self::create_aggregate_description(tap_id, tap_description.get_uuid()?)?;
+    let description_dict =
+      Self::create_aggregate_description(tap_id, tap_description.get_uuid()?, default_input_uid)?;
 
     let mut aggregate_device_id: AudioObjectID = 0;
 
@@ -226,7 +146,7 @@ impl AggregateDevice {
       tap_id,
       id: aggregate_device_id,
       audio_stats: None,
-      input_device_id: Some(input_device_id),
+      input_device_id,
       output_device_id: Some(output_device_id),
       input_proc_id: None,
       output_proc_id: None,
@@ -234,7 +154,7 @@ impl AggregateDevice {
 
     // Configure the aggregate device to ensure proper handling of both input and
     // output
-    device.configure_aggregate_device()?;
+    device.get_aggregate_device_stats()?;
 
     // Activate both the input and output devices and store their proc IDs
     let input_proc_id = device.activate_audio_device(input_device_id)?;
@@ -246,173 +166,18 @@ impl AggregateDevice {
     Ok(device)
   }
 
-  // Configures the aggregate device to ensure proper handling of both input and
-  // output streams
-  fn configure_aggregate_device(&self) -> Result<AudioStats> {
-    // Read the current audio format to ensure it's properly configured
-    let audio_format = read_audio_stream_basic_description(self.tap_id)?;
+  fn get_aggregate_device_stats(&self) -> Result<AudioStats> {
+    let mut sample_rate: f64 = 0.0;
+    get_global_main_property(
+      self.id,
+      kAudioDevicePropertyNominalSampleRate,
+      &mut sample_rate,
+    )?;
 
-    // Create initial audio stats with the actual sample rate but always use mono
-    let initial_sample_rate = audio_format.0.mSampleRate;
-    let mut audio_stats = AudioStats {
-      sample_rate: initial_sample_rate,
-      channels: 1, // Always set to 1 channel (mono)
+    let audio_stats = AudioStats {
+      sample_rate,
+      channels: 1, // we combined the stereo pcm data into a single channel
     };
-
-    // Set the preferred sample rate on the device
-    // This is similar to how Screen Capture Kit allows setting the sample rate
-    let preferred_sample_rate = initial_sample_rate; // Use the device's current sample rate
-
-    // First, check if the preferred sample rate is available
-    let mut is_sample_rate_available = false;
-    let mut best_available_rate = preferred_sample_rate; // Default to preferred rate
-
-    unsafe {
-      // Get the available sample rates
-      let address = AudioObjectPropertyAddress {
-        mSelector: kAudioDevicePropertyAvailableNominalSampleRates,
-        mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain,
-      };
-
-      // Get the size of the property data
-      let mut data_size: u32 = 0;
-      let status = AudioObjectGetPropertyDataSize(
-        self.id,
-        &address as *const AudioObjectPropertyAddress,
-        0,
-        std::ptr::null(),
-        &mut data_size as *mut u32,
-      );
-
-      if status == 0 && data_size > 0 {
-        // Calculate how many ranges we have
-        let range_count = data_size as usize / std::mem::size_of::<AudioValueRange>();
-
-        // Allocate memory for the ranges
-        let mut ranges: Vec<AudioValueRange> = Vec::with_capacity(range_count);
-        ranges.set_len(range_count);
-
-        // Get the available sample rates
-        let status = AudioObjectGetPropertyData(
-          self.id,
-          &address as *const AudioObjectPropertyAddress,
-          0,
-          std::ptr::null(),
-          &mut data_size as *mut u32,
-          ranges.as_mut_ptr() as *mut std::ffi::c_void,
-        );
-
-        if status == 0 {
-          // Check if our preferred sample rate is within any of the available ranges
-          for range in &ranges {
-            if preferred_sample_rate >= range.mMinimum && preferred_sample_rate <= range.mMaximum {
-              is_sample_rate_available = true;
-              break;
-            }
-          }
-
-          // If not available, find the best available rate
-          if !is_sample_rate_available && !ranges.is_empty() {
-            // Common preferred sample rates in order of preference
-            let common_rates = [48000.0, 44100.0, 96000.0, 88200.0, 24000.0, 22050.0];
-            let mut found_common_rate = false;
-
-            // First try to find a common rate that's available
-            for &rate in &common_rates {
-              for range in &ranges {
-                if rate >= range.mMinimum && rate <= range.mMaximum {
-                  best_available_rate = rate;
-                  found_common_rate = true;
-                  break;
-                }
-              }
-              if found_common_rate {
-                break;
-              }
-            }
-
-            // If no common rate is available, use the highest available rate
-            if !found_common_rate {
-              // Find the highest available rate
-              for range in &ranges {
-                // Use the maximum of the range as our best available rate
-                if range.mMaximum > best_available_rate {
-                  best_available_rate = range.mMaximum;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Set the sample rate to either the preferred rate or the best available rate
-    let sample_rate_to_set = if is_sample_rate_available {
-      preferred_sample_rate
-    } else {
-      best_available_rate
-    };
-
-    let status = unsafe {
-      // Note on scope usage:
-      // We use kAudioObjectPropertyScopeGlobal here because it works reliably for
-      // setting the nominal sample rate on the device. While
-      // kAudioObjectPropertyScopeInput or kAudioObjectPropertyScopeOutput might
-      // also work in some cases (as mentioned in the comments),
-      // kAudioObjectPropertyScopeGlobal is the most consistent approach.
-      //
-      // The CoreAudio documentation doesn't explicitly specify which scope to use
-      // with kAudioDevicePropertyNominalSampleRate, but in practice,
-      // kAudioObjectPropertyScopeGlobal ensures the sample rate is set for the
-      // entire device, affecting both input and output.
-      let address = AudioObjectPropertyAddress {
-        mSelector: kAudioDevicePropertyNominalSampleRate,
-        mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain,
-      };
-
-      // Set the sample rate property
-      AudioObjectSetPropertyData(
-        self.id,
-        &address as *const AudioObjectPropertyAddress,
-        0,
-        std::ptr::null(),
-        std::mem::size_of::<f64>() as u32,
-        &sample_rate_to_set as *const f64 as *const std::ffi::c_void,
-      )
-    };
-
-    // Update the audio_stats with the actual sample rate that was set if successful
-    if status == 0 {
-      audio_stats.sample_rate = sample_rate_to_set;
-
-      // Verify the actual sample rate by reading it back
-      unsafe {
-        let address = AudioObjectPropertyAddress {
-          mSelector: kAudioDevicePropertyNominalSampleRate,
-          mScope: kAudioObjectPropertyScopeGlobal,
-          mElement: kAudioObjectPropertyElementMain,
-        };
-
-        let mut actual_rate: f64 = 0.0;
-        let mut data_size = std::mem::size_of::<f64>() as u32;
-
-        let status = AudioObjectGetPropertyData(
-          self.id,
-          &address as *const AudioObjectPropertyAddress,
-          0,
-          std::ptr::null(),
-          &mut data_size as *mut u32,
-          &mut actual_rate as *mut f64 as *mut std::ffi::c_void,
-        );
-
-        if status == 0 {
-          // Update with the verified rate
-          audio_stats.sample_rate = actual_rate;
-        }
-      }
-    }
 
     Ok(audio_stats)
   }
@@ -459,13 +224,23 @@ impl AggregateDevice {
     &mut self,
     audio_stream_callback: Arc<ThreadsafeFunction<Float32Array, (), Float32Array, true>>,
   ) -> Result<AudioTapStream> {
-    // Configure the aggregate device and get audio stats before starting
-    let audio_stats = self.configure_aggregate_device()?;
-    self.audio_stats = Some(audio_stats);
-    let audio_stats_clone = audio_stats;
+    let mut audio_stats = self.get_aggregate_device_stats()?;
 
     let queue = create_audio_tap_queue();
     let mut in_proc_id: AudioDeviceIOProcID = None;
+    let mut input_device_sample_rate: f64 = 0.0;
+    get_global_main_property(
+      self.input_device_id,
+      kAudioDevicePropertyNominalSampleRate,
+      &mut input_device_sample_rate,
+    )?;
+    let output_sample_rate = audio_stats.sample_rate;
+    let target_sample_rate = input_device_sample_rate.max(output_sample_rate);
+
+    audio_stats.sample_rate = target_sample_rate;
+
+    let audio_stats_clone = audio_stats;
+    self.audio_stats = Some(audio_stats);
 
     let in_io_block: RcBlock<
       dyn Fn(*mut c_void, *mut c_void, *mut c_void, *mut c_void, *mut c_void) -> i32,
@@ -473,7 +248,7 @@ impl AggregateDevice {
       move |_in_now: *mut c_void,
             in_input_data: *mut c_void,
             in_input_time: *mut c_void,
-            _out_output_data: *mut c_void,
+            _in_output_data: *mut c_void,
             _in_output_time: *mut c_void| {
         let AudioTimeStamp { mSampleTime, .. } = unsafe { &*in_input_time.cast() };
 
@@ -481,43 +256,25 @@ impl AggregateDevice {
         if *mSampleTime < 0.0 {
           return kAudioHardwareNoError as i32;
         }
-        let AudioBufferList { mBuffers, .. } =
-          unsafe { &mut *in_input_data.cast::<AudioBufferList>() };
-        let [AudioBuffer {
-          mData,
-          mNumberChannels,
-          mDataByteSize,
-        }] = mBuffers;
-        // Only create slice if we have valid data
-        if !mData.is_null() && *mDataByteSize > 0 {
-          // Calculate total number of samples (total bytes / bytes per sample)
-          let total_samples = *mDataByteSize as usize / 4; // 4 bytes per f32
+        let Ok(dua_audio_buffer_list) =
+          (unsafe { InputAndOutputAudioBufferList::from_raw(in_input_data) })
+        else {
+          return kAudioHardwareBadDeviceError as i32;
+        };
 
-          // Create a slice of all samples
-          let samples: &[f32] =
-            unsafe { std::slice::from_raw_parts(mData.cast::<f32>(), total_samples) };
+        let Ok(mixed_samples) = dua_audio_buffer_list.mix_input_and_output(
+          target_sample_rate,
+          input_device_sample_rate,
+          output_sample_rate,
+        ) else {
+          return kAudioHardwareBadStreamError as i32;
+        };
 
-          // Check the channel count and data format
-          let channel_count = *mNumberChannels as usize;
-
-          // Process the audio based on channel count
-          let processed_samples: Vec<f32>;
-
-          if channel_count > 1 {
-            // For stereo, samples are interleaved: [L, R, L, R, ...]
-            // We need to average each pair to get mono
-            processed_samples = process_mixed_audio(samples, channel_count);
-          } else {
-            // For mono, just copy the samples
-            processed_samples = samples.to_vec();
-          }
-
-          // Send the processed audio data to JavaScript
-          audio_stream_callback.call(
-            Ok(processed_samples.into()),
-            ThreadsafeFunctionCallMode::NonBlocking,
-          );
-        }
+        // Send the processed audio data to JavaScript
+        audio_stream_callback.call(
+          Ok(mixed_samples.into()),
+          ThreadsafeFunctionCallMode::NonBlocking,
+        );
 
         kAudioHardwareNoError as i32
       },
@@ -559,97 +316,61 @@ impl AggregateDevice {
   fn create_aggregate_description(
     tap_id: AudioObjectID,
     tap_uuid_string: ItemRef<CFString>,
+    input_device_id: CFString,
   ) -> Result<CFDictionary<CFType, CFType>> {
-    let system_output_uid = get_device_uid(kAudioHardwarePropertyDefaultSystemOutputDevice)?;
-    let default_input_uid = get_device_uid(kAudioHardwarePropertyDefaultInputDevice)?;
-
     let aggregate_device_name = CFString::new(&format!("Tap-{}", tap_id));
     let aggregate_device_uid: uuid::Uuid = CFUUID::new().into();
     let aggregate_device_uid_string = aggregate_device_uid.to_string();
 
-    // Sub-device UID key and dictionary
-    let sub_device_output_dict = CFDictionary::from_CFType_pairs(&[
-      (
-        cfstring_from_bytes_with_nul(kAudioSubDeviceUIDKey).as_CFType(),
-        system_output_uid.as_CFType(),
-      ),
-      // Explicitly mark this as an output device
-      (
-        CFString::new("com.apple.audio.roles").as_CFType(),
-        CFString::new("output").as_CFType(),
-      ),
-    ]);
+    let (_, output_device_uid) = get_device_uid(kAudioHardwarePropertyDefaultSystemOutputDevice)?;
 
-    let sub_device_input_dict = CFDictionary::from_CFType_pairs(&[
-      (
-        cfstring_from_bytes_with_nul(kAudioSubDeviceUIDKey).as_CFType(),
-        default_input_uid.as_CFType(),
-      ),
-      // Explicitly mark this as an input device
-      (
-        CFString::new("com.apple.audio.roles").as_CFType(),
-        CFString::new("input").as_CFType(),
-      ),
-    ]);
+    let sub_device_input_dict = CFDictionary::from_CFType_pairs(&[(
+      cfstring_from_bytes_with_nul(kAudioSubDeviceUIDKey).as_CFType(),
+      input_device_id.as_CFType(),
+    )]);
 
-    let tap_device_dict = CFDictionary::from_CFType_pairs(&[
-      (
-        cfstring_from_bytes_with_nul(kAudioSubTapDriftCompensationKey).as_CFType(),
-        CFBoolean::false_value().as_CFType(),
-      ),
-      (
-        cfstring_from_bytes_with_nul(kAudioSubTapUIDKey).as_CFType(),
-        tap_uuid_string.as_CFType(),
-      ),
-    ]);
+    let tap_device_dict = CFDictionary::from_CFType_pairs(&[(
+      cfstring_from_bytes_with_nul(kAudioSubTapUIDKey).as_CFType(),
+      tap_uuid_string.as_CFType(),
+    )]);
 
-    // Put input device first in the list to prioritize it
-    let capture_device_list = vec![sub_device_input_dict, sub_device_output_dict];
-
-    // Sub-device list
-    let sub_device_list = CFArray::from_CFTypes(&capture_device_list);
-
-    let tap_list = CFArray::from_CFTypes(&[tap_device_dict]);
+    let capture_device_list = vec![sub_device_input_dict];
 
     // Create the aggregate device description dictionary with a balanced
     // configuration
-    let description_dict = CFDictionary::from_CFType_pairs(&[
-      (
-        cfstring_from_bytes_with_nul(kAudioAggregateDeviceNameKey).as_CFType(),
-        aggregate_device_name.as_CFType(),
-      ),
-      (
-        cfstring_from_bytes_with_nul(kAudioAggregateDeviceUIDKey).as_CFType(),
-        CFString::new(aggregate_device_uid_string.as_str()).as_CFType(),
-      ),
-      (
-        cfstring_from_bytes_with_nul(kAudioAggregateDeviceMainSubDeviceKey).as_CFType(),
-        // Use a balanced approach that includes both input and output
-        // but prioritize input for microphone capture
-        default_input_uid.as_CFType(),
-      ),
-      (
-        cfstring_from_bytes_with_nul(kAudioAggregateDeviceIsPrivateKey).as_CFType(),
-        CFBoolean::true_value().as_CFType(),
-      ),
-      (
-        cfstring_from_bytes_with_nul(kAudioAggregateDeviceIsStackedKey).as_CFType(),
-        CFBoolean::false_value().as_CFType(),
-      ),
-      (
-        cfstring_from_bytes_with_nul(kAudioAggregateDeviceTapAutoStartKey).as_CFType(),
-        CFBoolean::true_value().as_CFType(),
-      ),
-      (
-        cfstring_from_bytes_with_nul(kAudioAggregateDeviceSubDeviceListKey).as_CFType(),
-        sub_device_list.as_CFType(),
-      ),
-      (
-        cfstring_from_bytes_with_nul(kAudioAggregateDeviceTapListKey).as_CFType(),
-        tap_list.as_CFType(),
-      ),
-    ]);
-    Ok(description_dict)
+
+    let mut cf_dict_builder = CFDictionaryBuilder::new();
+
+    cf_dict_builder
+      .add(
+        kAudioAggregateDeviceNameKey.as_slice(),
+        aggregate_device_name,
+      )
+      .add(
+        kAudioAggregateDeviceUIDKey.as_slice(),
+        aggregate_device_uid_string,
+      )
+      .add(
+        kAudioAggregateDeviceMainSubDeviceKey.as_slice(),
+        output_device_uid,
+      )
+      .add(kAudioAggregateDeviceIsPrivateKey.as_slice(), true)
+      .add(kAudioAggregateDeviceIsStackedKey.as_slice(), false)
+      .add(kAudioAggregateDeviceTapAutoStartKey.as_slice(), true)
+      .add(
+        kAudioAggregateDeviceSubDeviceListKey.as_slice(),
+        capture_device_list,
+      )
+      .add(
+        kAudioAggregateDeviceClockDeviceKey.as_slice(),
+        input_device_id,
+      )
+      .add(
+        kAudioAggregateDeviceTapListKey.as_slice(),
+        vec![tap_device_dict],
+      );
+
+    Ok(cf_dict_builder.build())
   }
 }
 
@@ -659,7 +380,7 @@ pub struct AudioTapStream {
   in_proc_id: AudioDeviceIOProcID,
   stop_called: bool,
   audio_stats: AudioStats,
-  input_device_id: Option<AudioObjectID>,
+  input_device_id: AudioObjectID,
   output_device_id: Option<AudioObjectID>,
   input_proc_id: Option<AudioDeviceIOProcID>,
   output_proc_id: Option<AudioDeviceIOProcID>,
@@ -681,11 +402,9 @@ impl AudioTapStream {
     }
 
     // Stop the input device if it was activated
-    if let Some(input_id) = self.input_device_id {
-      if let Some(proc_id) = self.input_proc_id {
-        let _ = unsafe { AudioDeviceStop(input_id, proc_id) };
-        let _ = unsafe { AudioDeviceDestroyIOProcID(input_id, proc_id) };
-      }
+    if let Some(proc_id) = self.input_proc_id {
+      let _ = unsafe { AudioDeviceStop(self.input_device_id, proc_id) };
+      let _ = unsafe { AudioDeviceDestroyIOProcID(self.input_device_id, proc_id) };
     }
 
     // Stop the output device if it was activated
@@ -726,30 +445,4 @@ impl AudioTapStream {
   pub fn get_channels(&self) -> u32 {
     self.audio_stats.channels
   }
-}
-
-fn cfstring_from_bytes_with_nul(bytes: &'static [u8]) -> CFString {
-  CFString::new(
-    unsafe { std::ffi::CStr::from_bytes_with_nul_unchecked(bytes) }
-      .to_string_lossy()
-      .as_ref(),
-  )
-}
-
-// Process mixed audio from multiple channels
-fn process_mixed_audio(samples: &[f32], channel_count: usize) -> Vec<f32> {
-  // For stereo or multi-channel audio, we need to mix down to mono
-  let samples_per_channel = samples.len() / channel_count;
-  let mut mixed_samples = Vec::with_capacity(samples_per_channel);
-
-  for i in 0..samples_per_channel {
-    let mut sample_sum = 0.0;
-    for c in 0..channel_count {
-      sample_sum += samples[i * channel_count + c];
-    }
-    // Average the samples from all channels
-    mixed_samples.push(sample_sum / channel_count as f32);
-  }
-
-  mixed_samples
 }
