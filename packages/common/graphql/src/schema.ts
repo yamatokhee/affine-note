@@ -53,6 +53,14 @@ export interface AddRemoveContextCategoryInput {
   type: ContextCategories;
 }
 
+export enum AiJobStatus {
+  claimed = 'claimed',
+  failed = 'failed',
+  finished = 'finished',
+  pending = 'pending',
+  running = 'running',
+}
+
 export interface AlreadyInSpaceDataType {
   __typename?: 'AlreadyInSpaceDataType';
   spaceId: Scalars['String']['output'];
@@ -114,6 +122,7 @@ export interface ContextWorkspaceEmbeddingStatus {
 
 export interface Copilot {
   __typename?: 'Copilot';
+  audioTranscription: Array<TranscriptionResultType>;
   /** Get the context list of a session */
   contexts: Array<CopilotContext>;
   histories: Array<CopilotHistories>;
@@ -127,6 +136,10 @@ export interface Copilot {
   /** Get the session list in the workspace */
   sessions: Array<CopilotSessionType>;
   workspaceId: Maybe<Scalars['ID']['output']>;
+}
+
+export interface CopilotAudioTranscriptionArgs {
+  jobId?: InputMaybe<Scalars['String']['input']>;
 }
 
 export interface CopilotContextsArgs {
@@ -550,6 +563,7 @@ export enum ErrorNames {
   COPILOT_QUOTA_EXCEEDED = 'COPILOT_QUOTA_EXCEEDED',
   COPILOT_SESSION_DELETED = 'COPILOT_SESSION_DELETED',
   COPILOT_SESSION_NOT_FOUND = 'COPILOT_SESSION_NOT_FOUND',
+  COPILOT_TRANSCRIPTION_JOB_EXISTS = 'COPILOT_TRANSCRIPTION_JOB_EXISTS',
   CUSTOMER_PORTAL_CREATE_FAILED = 'CUSTOMER_PORTAL_CREATE_FAILED',
   DOC_ACTION_DENIED = 'DOC_ACTION_DENIED',
   DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER = 'DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER',
@@ -977,6 +991,7 @@ export interface Mutation {
   cancelSubscription: SubscriptionType;
   changeEmail: UserType;
   changePassword: Scalars['Boolean']['output'];
+  claimAudioTranscription: Maybe<TranscriptionResultType>;
   /** Cleanup sessions */
   cleanupCopilotSession: Array<Scalars['String']['output']>;
   /** Create change password url */
@@ -1050,6 +1065,7 @@ export interface Mutation {
   sendVerifyChangeEmail: Scalars['Boolean']['output'];
   sendVerifyEmail: Scalars['Boolean']['output'];
   setBlob: Scalars['String']['output'];
+  submitAudioTranscription: Maybe<TranscriptionResultType>;
   /** Update a copilot prompt */
   updateCopilotPrompt: CopilotPromptType;
   /** Update a chat session */
@@ -1128,6 +1144,10 @@ export interface MutationChangePasswordArgs {
   newPassword: Scalars['String']['input'];
   token: Scalars['String']['input'];
   userId?: InputMaybe<Scalars['String']['input']>;
+}
+
+export interface MutationClaimAudioTranscriptionArgs {
+  jobId: Scalars['String']['input'];
 }
 
 export interface MutationCleanupCopilotSessionArgs {
@@ -1349,6 +1369,12 @@ export interface MutationSendVerifyEmailArgs {
 
 export interface MutationSetBlobArgs {
   blob: Scalars['Upload']['input'];
+  workspaceId: Scalars['String']['input'];
+}
+
+export interface MutationSubmitAudioTranscriptionArgs {
+  blob: Scalars['Upload']['input'];
+  blobId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 }
 
@@ -1876,6 +1902,22 @@ export interface SubscriptionType {
 export enum SubscriptionVariant {
   EA = 'EA',
   Onetime = 'Onetime',
+}
+
+export interface TranscriptionItemType {
+  __typename?: 'TranscriptionItemType';
+  end: Scalars['String']['output'];
+  speaker: Scalars['String']['output'];
+  start: Scalars['String']['output'];
+  transcription: Scalars['String']['output'];
+}
+
+export interface TranscriptionResultType {
+  __typename?: 'TranscriptionResultType';
+  id: Scalars['ID']['output'];
+  status: AiJobStatus;
+  summary: Maybe<Scalars['String']['output']>;
+  transcription: Maybe<Array<TranscriptionItemType>>;
 }
 
 export type UnionNotificationBodyType =
@@ -2646,6 +2688,70 @@ export type GetCopilotHistoriesQuery = {
           attachments: Array<string> | null;
           createdAt: string;
         }>;
+      }>;
+    };
+  } | null;
+};
+
+export type SubmitAudioTranscriptionMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  blobId: Scalars['String']['input'];
+  blob: Scalars['Upload']['input'];
+}>;
+
+export type SubmitAudioTranscriptionMutation = {
+  __typename?: 'Mutation';
+  submitAudioTranscription: {
+    __typename?: 'TranscriptionResultType';
+    id: string;
+    status: AiJobStatus;
+  } | null;
+};
+
+export type ClaimAudioTranscriptionMutationVariables = Exact<{
+  jobId: Scalars['String']['input'];
+}>;
+
+export type ClaimAudioTranscriptionMutation = {
+  __typename?: 'Mutation';
+  claimAudioTranscription: {
+    __typename?: 'TranscriptionResultType';
+    id: string;
+    status: AiJobStatus;
+    summary: string | null;
+    transcription: Array<{
+      __typename?: 'TranscriptionItemType';
+      speaker: string;
+      start: string;
+      end: string;
+      transcription: string;
+    }> | null;
+  } | null;
+};
+
+export type GetAudioTranscriptionQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  jobId: Scalars['String']['input'];
+}>;
+
+export type GetAudioTranscriptionQuery = {
+  __typename?: 'Query';
+  currentUser: {
+    __typename?: 'UserType';
+    copilot: {
+      __typename?: 'Copilot';
+      audioTranscription: Array<{
+        __typename?: 'TranscriptionResultType';
+        id: string;
+        status: AiJobStatus;
+        summary: string | null;
+        transcription: Array<{
+          __typename?: 'TranscriptionItemType';
+          speaker: string;
+          start: string;
+          end: string;
+          transcription: string;
+        }> | null;
       }>;
     };
   } | null;
@@ -4154,6 +4260,11 @@ export type Queries =
       response: GetCopilotHistoriesQuery;
     }
   | {
+      name: 'getAudioTranscriptionQuery';
+      variables: GetAudioTranscriptionQueryVariables;
+      response: GetAudioTranscriptionQuery;
+    }
+  | {
       name: 'getPromptsQuery';
       variables: GetPromptsQueryVariables;
       response: GetPromptsQuery;
@@ -4459,6 +4570,16 @@ export type Mutations =
       name: 'queueWorkspaceEmbeddingMutation';
       variables: QueueWorkspaceEmbeddingMutationVariables;
       response: QueueWorkspaceEmbeddingMutation;
+    }
+  | {
+      name: 'submitAudioTranscriptionMutation';
+      variables: SubmitAudioTranscriptionMutationVariables;
+      response: SubmitAudioTranscriptionMutation;
+    }
+  | {
+      name: 'claimAudioTranscriptionMutation';
+      variables: ClaimAudioTranscriptionMutationVariables;
+      response: ClaimAudioTranscriptionMutation;
     }
   | {
       name: 'createCopilotMessageMutation';

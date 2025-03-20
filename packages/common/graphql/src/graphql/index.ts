@@ -349,6 +349,62 @@ export const getCopilotHistoriesQuery = {
 }`,
 };
 
+export const submitAudioTranscriptionMutation = {
+  id: 'submitAudioTranscriptionMutation' as const,
+  op: 'submitAudioTranscription',
+  query: `mutation submitAudioTranscription($workspaceId: String!, $blobId: String!, $blob: Upload!) {
+  submitAudioTranscription(
+    blob: $blob
+    blobId: $blobId
+    workspaceId: $workspaceId
+  ) {
+    id
+    status
+  }
+}`,
+  file: true,
+};
+
+export const claimAudioTranscriptionMutation = {
+  id: 'claimAudioTranscriptionMutation' as const,
+  op: 'claimAudioTranscription',
+  query: `mutation claimAudioTranscription($jobId: String!) {
+  claimAudioTranscription(jobId: $jobId) {
+    id
+    status
+    transcription {
+      speaker
+      start
+      end
+      transcription
+    }
+    summary
+  }
+}`,
+};
+
+export const getAudioTranscriptionQuery = {
+  id: 'getAudioTranscriptionQuery' as const,
+  op: 'getAudioTranscription',
+  query: `query getAudioTranscription($workspaceId: String!, $jobId: String!) {
+  currentUser {
+    copilot(workspaceId: $workspaceId) {
+      audioTranscription(jobId: $jobId) {
+        id
+        status
+        transcription {
+          speaker
+          start
+          end
+          transcription
+        }
+        summary
+      }
+    }
+  }
+}`,
+};
+
 export const createCopilotMessageMutation = {
   id: 'createCopilotMessageMutation' as const,
   op: 'createCopilotMessage',

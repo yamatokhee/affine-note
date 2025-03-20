@@ -1,4 +1,10 @@
-import { AiJobStatus, AiJobType, PrismaClient } from '@prisma/client';
+import {
+  AiJobStatus,
+  AiJobType,
+  PrismaClient,
+  User,
+  Workspace,
+} from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
 import { Config } from '../../base';
@@ -28,8 +34,15 @@ test.before(async t => {
   t.context.module = module;
 });
 
+let user: User;
+let workspace: Workspace;
+
 test.beforeEach(async t => {
   await t.context.module.initTestingDB();
+  user = await t.context.user.create({
+    email: 'test@affine.pro',
+  });
+  workspace = await t.context.workspace.create(user.id);
 });
 
 test.after(async t => {
@@ -37,11 +50,6 @@ test.after(async t => {
 });
 
 test('should create a copilot job', async t => {
-  const user = await t.context.user.create({
-    email: 'test@affine.pro',
-  });
-  const workspace = await t.context.workspace.create(user.id);
-
   const data = {
     workspaceId: workspace.id,
     blobId: 'blob-id',
@@ -71,10 +79,6 @@ test('should get null for non-exist job', async t => {
 });
 
 test('should update job', async t => {
-  const user = await t.context.user.create({
-    email: 'test@affine.pro',
-  });
-  const workspace = await t.context.workspace.create(user.id);
   const { id: jobId } = await t.context.copilotJob.create({
     workspaceId: workspace.id,
     blobId: 'blob-id',
@@ -97,10 +101,6 @@ test('should update job', async t => {
 });
 
 test('should claim job', async t => {
-  const user = await t.context.user.create({
-    email: 'test@affine.pro',
-  });
-  const workspace = await t.context.workspace.create(user.id);
   const { id: jobId } = await t.context.copilotJob.create({
     workspaceId: workspace.id,
     blobId: 'blob-id',
