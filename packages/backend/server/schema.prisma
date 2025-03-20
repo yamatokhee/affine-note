@@ -472,6 +472,7 @@ model AiWorkspaceEmbedding {
   snapshot Snapshot @relation(fields: [workspaceId, docId], references: [workspaceId, id], onDelete: Cascade)
 
   @@id([workspaceId, docId])
+  @@unique([workspaceId, docId, chunk])
   @@index([embedding], map: "ai_workspace_embeddings_idx")
   @@map("ai_workspace_embeddings")
 }
