@@ -4652,6 +4652,34 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.selector-tag.search.placeholder"](): string;
     /**
+      * `Notifications`
+      */
+    ["com.affine.setting.notifications"](): string;
+    /**
+      * `Notifications`
+      */
+    ["com.affine.setting.notifications.header.title"](): string;
+    /**
+      * `Email notifications`
+      */
+    ["com.affine.setting.notifications.email.title"](): string;
+    /**
+      * `Mention`
+      */
+    ["com.affine.setting.notifications.email.mention.title"](): string;
+    /**
+      * `You will be notified through email when other members of the workspace @ you.`
+      */
+    ["com.affine.setting.notifications.email.mention.subtitle"](): string;
+    /**
+      * `Invites`
+      */
+    ["com.affine.setting.notifications.email.invites.title"](): string;
+    /**
+      * `Invitation related messages will be sent through emails.`
+      */
+    ["com.affine.setting.notifications.email.invites.subtitle"](): string;
+    /**
       * `Account settings`
       */
     ["com.affine.setting.account"](): string;
