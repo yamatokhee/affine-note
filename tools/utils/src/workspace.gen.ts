@@ -707,6 +707,7 @@ export const PackageList = [
     workspaceDependencies: [
       'packages/frontend/component',
       'packages/frontend/core',
+      'packages/common/debug',
       'packages/frontend/electron-api',
       'packages/frontend/i18n',
       'packages/common/nbstore',

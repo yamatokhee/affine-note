@@ -89,6 +89,7 @@ export const AttachmentBlockSchema = defineBlockSchema({
       'affine:paragraph',
       'affine:list',
     ],
+    children: ['@attachment-viewer'],
   },
   transformer: transformerConfigs =>
     new AttachmentBlockTransformer(transformerConfigs),
