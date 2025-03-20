@@ -66,6 +66,7 @@ export const memberDeleteIcon = style({
 
 export const memberPreviewContainer = style({
   display: 'flex',
+  gap: '4px',
   alignItems: 'center',
   overflow: 'hidden',
   padding: '2px',
@@ -73,14 +74,6 @@ export const memberPreviewContainer = style({
   border: `1px solid transparent`,
   borderColor: cssVarV2.layer.insideBorder.blackBorder,
   backgroundColor: cssVarV2.button.secondary,
-});
-
-export const memberPreview = style({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  fontSize: '14px',
-  lineHeight: '22px',
 });
 
 export const memberItem = style({
@@ -92,20 +85,12 @@ export const memberItem = style({
   borderRadius: '4px',
 });
 
-export const memberItemContent = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  overflow: 'hidden',
-});
-
 export const memberName = style({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  fontSize: '12px',
-  lineHeight: '20px',
-  padding: '0 4px',
+  fontSize: '14px',
+  lineHeight: '22px',
   flex: 1,
 });
 
@@ -118,9 +103,9 @@ export const avatar = style({
 
 export const loadingContainer = style({
   display: 'flex',
-  justifyContent: 'center',
   alignItems: 'center',
-  padding: '16px',
+  padding: '4px 0',
+  gap: '8px',
 });
 
 export const noResultContainer = style({

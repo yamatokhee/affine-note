@@ -27,7 +27,6 @@ import {
   generateFractionalIndexingKeyBetween,
   useService,
 } from '@toeverything/infra';
-import { cssVarV2 } from '@toeverything/theme/v2';
 import { fileTypeFromBuffer, type FileTypeResult } from 'file-type';
 import { nanoid } from 'nanoid';
 import type { ForwardRefRenderFunction, MouseEvent, ReactNode } from 'react';
@@ -41,6 +40,8 @@ import {
 
 import { WorkspaceDialogService } from '../../../../modules/dialogs';
 import { useSignalValue } from '../../../../modules/doc-info/utils';
+import { CircularProgress } from '../../components/loading';
+import { progressIconContainer } from '../../components/loading.css';
 import type {
   FileCellJsonValueType,
   FileCellRawValueType,
@@ -198,38 +199,6 @@ type FileItemUploadingType = {
   order: string;
 };
 type FileItemRenderType = FileItemDoneType | FileItemUploadingType;
-const CircularProgress = ({ progress }: { progress: number }) => {
-  const circumference = 2 * Math.PI * 10;
-
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      className={styles.progressSvg}
-    >
-      <circle
-        cx="12"
-        cy="12"
-        r="10"
-        fill="none"
-        stroke={cssVarV2.loading.background}
-        strokeWidth="4"
-      />
-      <circle
-        cx="12"
-        cy="12"
-        r="10"
-        fill="none"
-        stroke={cssVarV2.loading.foreground}
-        strokeWidth="4"
-        strokeDasharray={`${(progress / 100) * circumference} ${circumference}`}
-        strokeLinecap="round"
-        className={styles.progressCircle}
-      />
-    </svg>
-  );
-};
 
 class FileCellManager {
   private readonly cell: Cell<FileCellRawValueType, FileCellJsonValueType, {}>;
@@ -481,7 +450,7 @@ const useFilePreview = (
   if (uploadProgress != null) {
     return {
       preview: (
-        <div className={styles.progressIconContainer}>
+        <div className={progressIconContainer}>
           <CircularProgress progress={uploadProgress.progress} />
         </div>
       ),

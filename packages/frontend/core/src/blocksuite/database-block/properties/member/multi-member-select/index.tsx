@@ -15,6 +15,7 @@ import {
 } from 'react';
 
 import { useSignalValue } from '../../../../../modules/doc-info/utils';
+import { Spinner } from '../../../components/loading';
 import * as styles from './style.css';
 
 type BaseOptions = {
@@ -315,14 +316,17 @@ export const MultiMemberSelect: React.FC<MemberManagerOptions> = props => {
         <input
           ref={inputRef}
           className={styles.memberSearchInput}
-          placeholder="Search members..."
+          placeholder={selectedMembers.length > 0 ? '' : 'Search members...'}
           value={memberManager.userListService.searchText$.value}
           onChange={handleInputChange}
         />
       </div>
       <div className={styles.memberListContainer} ref={memberListRef}>
         {isLoading ? (
-          <div className={styles.loadingContainer}>Loading...</div>
+          <div className={styles.loadingContainer}>
+            <Spinner />
+            Loading...
+          </div>
         ) : filteredMemberList.length === 0 ? (
           <div className={styles.noResultContainer}>No results</div>
         ) : (

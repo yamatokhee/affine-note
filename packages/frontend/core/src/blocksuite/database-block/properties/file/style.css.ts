@@ -104,23 +104,6 @@ export const fileItemImagePreview = style({
   borderRadius: '2px',
 });
 
-export const progressIconContainer = style({
-  position: 'relative',
-  width: '24px',
-  height: '24px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-});
-
-export const progressSvg = style({
-  transform: 'rotate(-90deg)',
-});
-
-export const progressCircle = style({
-  transition: 'stroke-dasharray 0.3s ease-in-out',
-});
-
 export const imagePreviewIcon = style({
   borderRadius: '2px',
   height: '100%',
