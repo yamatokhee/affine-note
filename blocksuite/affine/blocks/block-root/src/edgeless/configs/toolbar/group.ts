@@ -9,11 +9,12 @@ import {
 } from '@blocksuite/affine-model';
 import { type ToolbarModuleConfig } from '@blocksuite/affine-shared/services';
 import { matchModels } from '@blocksuite/affine-shared/utils';
+import { getRootBlock } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { Bound } from '@blocksuite/global/gfx';
 import { EditIcon, PageIcon, UngroupIcon } from '@blocksuite/icons/lit';
 
+import { EdgelessRootService } from '../../edgeless-root-service';
 import { mountGroupTitleEditor } from '../../utils/text';
-import { getEdgelessWith, getRootBlock } from './utils';
 
 export const builtinGroupToolbarConfig = {
   actions: [
@@ -84,11 +85,10 @@ export const builtinGroupToolbarConfig = {
         const models = ctx.getSurfaceModelsByType(GroupElementModel);
         if (!models.length) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
+        const edgelessService = ctx.std.get(EdgelessRootService);
 
         for (const model of models) {
-          edgeless.service.ungroup(model);
+          edgelessService.ungroup(model);
         }
       },
     },

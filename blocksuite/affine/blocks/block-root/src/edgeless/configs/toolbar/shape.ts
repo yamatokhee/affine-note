@@ -34,18 +34,21 @@ import type {
   ToolbarModuleConfig,
 } from '@blocksuite/affine-shared/services';
 import { getMostCommonValue } from '@blocksuite/affine-shared/utils';
+import {
+  createTextActions,
+  getRootBlock,
+  LINE_STYLE_LIST,
+  renderMenu,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import { Bound } from '@blocksuite/global/gfx';
 import { AddTextIcon, ShapeIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 import isEqual from 'lodash-es/isEqual';
 
-import { LINE_STYLE_LIST } from './consts';
 import {
   createMindmapLayoutActionMenu,
   createMindmapStyleActionMenu,
 } from './mindmap';
-import { createTextActions } from './text-common';
-import { getRootBlock, renderMenu } from './utils';
 
 export const builtinShapeToolbarConfig = {
   actions: [

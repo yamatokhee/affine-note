@@ -1,4 +1,8 @@
-import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
+import {
+  EdgelessCRUDIdentifier,
+  getSurfaceComponent,
+} from '@blocksuite/affine-block-surface';
 import {
   ConnectorElementModel,
   DEFAULT_CONNECTOR_MODE,
@@ -25,9 +29,9 @@ import {
 } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 
+import { EdgelessRootService } from '../../edgeless-root-service';
 import { renderAlignmentMenu } from './alignment';
 import { moreActions } from './more';
-import { getEdgelessWith } from './utils';
 
 export const builtinMiscToolbarConfig = {
   actions: [
@@ -88,14 +92,16 @@ export const builtinMiscToolbarConfig = {
         const models = ctx.getSurfaceModels();
         if (models.length < 2) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
+        const surface = getSurfaceComponent(ctx.std);
+        if (!surface) return;
 
-        const frame = edgeless.service.frame.createFrameOnSelected();
+        const frameManager = ctx.std.get(EdgelessFrameManagerIdentifier);
+
+        const frame = frameManager.createFrameOnSelected();
         if (!frame) return;
 
         // TODO(@fundon): should be a command
-        edgeless.surface.fitToViewport(Bound.deserialize(frame.xywh));
+        surface.fitToViewport(Bound.deserialize(frame.xywh));
 
         ctx.track('CanvasElementAdded', {
           control: 'context-menu',
@@ -131,11 +137,10 @@ export const builtinMiscToolbarConfig = {
         const models = ctx.getSurfaceModels();
         if (models.length < 2) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
+        const service = ctx.std.get(EdgelessRootService);
 
         // TODO(@fundon): should be a command
-        edgeless.service.createGroupFromSelected();
+        service.createGroupFromSelected();
       },
     },
     {
@@ -216,9 +221,6 @@ export const builtinMiscToolbarConfig = {
         const models = ctx.getSurfaceModels();
         if (!models.length) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
-
         // get most top selected elements(*) from tree, like in a tree below
         //         G0
         //        /  \
@@ -266,10 +268,8 @@ export const builtinMiscToolbarConfig = {
           return;
         }
 
-        const groupId = edgeless.service.createGroup([
-          topElement,
-          ...otherElements,
-        ]);
+        const service = ctx.std.get(EdgelessRootService);
+        const groupId = service.createGroup([topElement, ...otherElements]);
 
         if (groupId) {
           const element = ctx.std
@@ -325,9 +325,6 @@ export const builtinLockedToolbarConfig = {
         const models = ctx.getSurfaceModels();
         if (!models.length) return;
 
-        const edgeless = getEdgelessWith(ctx);
-        if (!edgeless) return;
-
         const elements = new Set(
           models.map(model =>
             ctx.matchModel(model.group, MindmapElementModel)
@@ -338,9 +335,11 @@ export const builtinLockedToolbarConfig = {
 
         ctx.store.captureSync();
 
+        const service = ctx.std.get(EdgelessRootService);
+
         for (const element of elements) {
           if (element instanceof GroupElementModel) {
-            edgeless.service.ungroup(element);
+            service.ungroup(element);
           } else {
             element.lockedBySelf = false;
           }

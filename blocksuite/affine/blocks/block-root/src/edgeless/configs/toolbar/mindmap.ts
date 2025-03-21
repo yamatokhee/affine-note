@@ -14,10 +14,11 @@ import type {
   ToolbarModuleConfig,
 } from '@blocksuite/affine-shared/services';
 import { getMostCommonValue } from '@blocksuite/affine-shared/utils';
+import {
+  type MenuItem,
+  renderMenu,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import { RadiantIcon, RightLayoutIcon, StyleIcon } from '@blocksuite/icons/lit';
-
-import type { MenuItem } from './types';
-import { renderMenu } from './utils';
 
 const MINDMAP_STYLE_LIST = [
   {

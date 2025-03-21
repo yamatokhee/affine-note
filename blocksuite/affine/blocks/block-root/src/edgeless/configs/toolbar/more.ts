@@ -7,7 +7,10 @@ import {
 } from '@blocksuite/affine-block-embed';
 import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
 import { ImageBlockComponent } from '@blocksuite/affine-block-image';
-import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+import {
+  EdgelessCRUDIdentifier,
+  getSurfaceComponent,
+} from '@blocksuite/affine-block-surface';
 import {
   AttachmentBlockModel,
   BookmarkBlockModel,
@@ -42,6 +45,7 @@ import {
   ResetIcon,
 } from '@blocksuite/icons/lit';
 
+import { EdgelessRootService } from '../../edgeless-root-service';
 import { duplicate } from '../../utils/clipboard-utils';
 import { getSortedCloneElements } from '../../utils/clone-utils';
 import { moveConnectors } from '../../utils/connector';
@@ -67,10 +71,10 @@ export const moreActions = [
             .createFrameOnSelected();
           if (!frame) return;
 
-          const edgeless = getEdgelessWith(ctx);
-          if (!edgeless) return;
+          const surface = getSurfaceComponent(ctx.std);
+          if (!surface) return;
 
-          edgeless.surface.fitToViewport(Bound.deserialize(frame.xywh));
+          surface.fitToViewport(Bound.deserialize(frame.xywh));
 
           ctx.track('CanvasElementAdded', {
             control: 'context-menu',
@@ -88,10 +92,8 @@ export const moreActions = [
           return !models.some(model => ctx.matchModel(model, FrameBlockModel));
         },
         run(ctx) {
-          const edgeless = getEdgelessWith(ctx);
-          if (!edgeless) return;
-
-          edgeless.service.createGroupFromSelected();
+          const service = ctx.std.get(EdgelessRootService);
+          service.createGroupFromSelected();
         },
       },
     ],

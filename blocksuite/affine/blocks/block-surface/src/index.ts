@@ -88,6 +88,7 @@ export {
   getBgGridGap,
   getLastPropsKey,
   getSurfaceBlock,
+  getSurfaceComponent,
   normalizeWheelDeltaY,
 } from './utils';
 export * from './utils/mindmap/style-svg';

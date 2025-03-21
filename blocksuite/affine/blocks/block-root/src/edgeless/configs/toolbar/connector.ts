@@ -30,6 +30,13 @@ import {
   getMostCommonResolvedValue,
   getMostCommonValue,
 } from '@blocksuite/affine-shared/utils';
+import type { MenuItem } from '@blocksuite/affine-widget-edgeless-toolbar';
+import {
+  createTextActions,
+  getRootBlock,
+  LINE_STYLE_LIST,
+  renderMenu,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import { Bound } from '@blocksuite/global/gfx';
 import {
   AddTextIcon,
@@ -51,10 +58,6 @@ import { html } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { mountConnectorLabelEditor } from '../../utils/text';
-import { LINE_STYLE_LIST } from './consts';
-import { createTextActions } from './text-common';
-import type { MenuItem } from './types';
-import { getRootBlock, renderMenu } from './utils';
 
 const FRONT_ENDPOINT_STYLE_LIST = [
   {

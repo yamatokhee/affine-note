@@ -4,9 +4,8 @@ import {
 } from '@blocksuite/affine-block-surface';
 import { TextElementModel } from '@blocksuite/affine-model';
 import { type ToolbarModuleConfig } from '@blocksuite/affine-shared/services';
+import { createTextActions } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { Bound } from '@blocksuite/global/gfx';
-
-import { createTextActions } from './text-common';
 
 export const builtinTextToolbarConfig = {
   actions: createTextActions(TextElementModel, 'text', (ctx, model, props) => {
