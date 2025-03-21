@@ -5,7 +5,10 @@ import {
   FeatureFlagService,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
-import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
+import {
+  EdgelessDraggableElementController,
+  EdgelessToolbarToolMixin,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { BlockStdScope } from '@blocksuite/block-std';
 import { modelContext, stdContext } from '@blocksuite/block-std';
 import { ErrorCode } from '@blocksuite/global/exceptions';
@@ -19,7 +22,6 @@ import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { EdgelessRootBlockComponent } from '../../../index.js';
-import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
 import { getMindMaps, type ToolbarMindmapItem } from './assets.js';
 import { mediaRender, textRender } from './basket-elements.js';
 import { importMindMapIcon, mindmapMenuMediaIcon, textIcon } from './icons.js';

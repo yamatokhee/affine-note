@@ -10,6 +10,7 @@ import {
   requestConnectedFrame,
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
+import { EdgelessDraggableElementController } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { BlockComponent } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import type { Bound } from '@blocksuite/global/gfx';
@@ -22,7 +23,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 
 import { EdgelessRootService } from '../../../edgeless-root-service.js';
-import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
 import { builtInTemplates } from './builtin-templates.js';
 import { defaultPreview, Triangle } from './cards.js';
 import type { Template } from './template-type.js';

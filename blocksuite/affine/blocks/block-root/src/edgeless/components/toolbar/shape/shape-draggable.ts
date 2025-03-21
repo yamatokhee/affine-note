@@ -19,7 +19,10 @@ import {
   ThemeProvider,
   ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
-import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
+import {
+  EdgelessDraggableElementController,
+  EdgelessToolbarToolMixin,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import { SignalWatcher } from '@blocksuite/global/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -27,7 +30,6 @@ import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
 import type { DraggableShape } from './utils.js';
 import { buildVariablesObject } from './utils.js';
 

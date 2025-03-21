@@ -1,3 +1,4 @@
+import type { ShapeName } from '@blocksuite/affine-model';
 import {
   EditPropsStore,
   ThemeProvider,
@@ -11,7 +12,6 @@ import {
   render,
 } from 'lit';
 
-import type { DraggableShape } from '../../shape/utils.js';
 import {
   type ElementDragEvent,
   mouseResolver,
@@ -131,7 +131,8 @@ export class EdgelessDraggableElementController<T>
     overlay.element.style.setProperty('--translate-y', `${offsetPos.y}px`);
     overlay.transitionWrapper.style.transformOrigin = `${ox} ${oy}`;
 
-    const shapeName = (elementInfo as ElementInfo<DraggableShape>).data.name;
+    const shapeName = (elementInfo as ElementInfo<{ name: ShapeName }>).data
+      .name;
     const { fillColor, strokeColor } =
       edgeless.host.std.get(EditPropsStore).lastProps$.value[
         `shape:${shapeName}`

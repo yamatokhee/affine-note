@@ -8,7 +8,10 @@ import {
   ThemeProvider,
   ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
-import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
+import {
+  EdgelessDraggableElementController,
+  EdgelessToolbarToolMixin,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import type { Bound } from '@blocksuite/global/gfx';
 import { SignalWatcher } from '@blocksuite/global/lit';
@@ -19,7 +22,6 @@ import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
 import { getMindMaps } from './assets.js';
 import {
   type DraggableTool,
