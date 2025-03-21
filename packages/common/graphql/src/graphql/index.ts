@@ -137,11 +137,16 @@ export const changePasswordMutation = {
 export const addContextCategoryMutation = {
   id: 'addContextCategoryMutation' as const,
   op: 'addContextCategory',
-  query: `mutation addContextCategory($options: AddRemoveContextCategoryInput!) {
+  query: `mutation addContextCategory($options: AddContextCategoryInput!) {
   addContextCategory(options: $options) {
     id
     createdAt
     type
+    docs {
+      id
+      createdAt
+      status
+    }
   }
 }`,
 };
@@ -149,7 +154,7 @@ export const addContextCategoryMutation = {
 export const removeContextCategoryMutation = {
   id: 'removeContextCategoryMutation' as const,
   op: 'removeContextCategory',
-  query: `mutation removeContextCategory($options: AddRemoveContextCategoryInput!) {
+  query: `mutation removeContextCategory($options: RemoveContextCategoryInput!) {
   removeContextCategory(options: $options)
 }`,
 };
@@ -170,6 +175,7 @@ export const addContextDocMutation = {
     id
     createdAt
     status
+    error
   }
 }`,
 };
@@ -236,6 +242,7 @@ export const listContextObjectQuery = {
         docs {
           id
           status
+          error
           createdAt
         }
         files {
@@ -245,6 +252,22 @@ export const listContextObjectQuery = {
           chunkSize
           error
           status
+          createdAt
+        }
+        tags {
+          id
+          docs {
+            id
+            status
+          }
+          createdAt
+        }
+        collections {
+          id
+          docs {
+            id
+            status
+          }
           createdAt
         }
       }

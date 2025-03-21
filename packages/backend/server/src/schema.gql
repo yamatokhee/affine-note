@@ -2,6 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AddContextCategoryInput {
+  categoryId: String!
+  contextId: String!
+  docs: [String!]
+  type: ContextCategories!
+}
+
 input AddContextDocInput {
   contextId: String!
   docId: String!
@@ -10,12 +17,6 @@ input AddContextDocInput {
 input AddContextFileInput {
   blobId: String!
   contextId: String!
-}
-
-input AddRemoveContextCategoryInput {
-  categoryId: String!
-  contextId: String!
-  type: ContextCategories!
 }
 
 enum AiJobStatus {
@@ -98,6 +99,9 @@ type Copilot {
 }
 
 type CopilotContext {
+  """list collections in context"""
+  collections: [CopilotContextCategory!]!
+
   """list files in context"""
   docs: [CopilotContextDoc!]!
 
@@ -110,17 +114,22 @@ type CopilotContext {
 
   """match workspace doc content"""
   matchWorkspaceContext(content: String!, limit: SafeInt): ContextMatchedDocChunk!
+
+  """list tags in context"""
+  tags: [CopilotContextCategory!]!
   workspaceId: String!
 }
 
 type CopilotContextCategory {
   createdAt: SafeInt!
+  docs: [CopilotDocType!]!
   id: ID!
   type: ContextCategories!
 }
 
 type CopilotContextDoc {
   createdAt: SafeInt!
+  error: String
   id: ID!
   status: ContextEmbedStatus
 }
@@ -142,6 +151,12 @@ type CopilotContextFileNotSupportedDataType {
 
 type CopilotDocNotFoundDataType {
   docId: String!
+}
+
+type CopilotDocType {
+  createdAt: SafeInt!
+  id: ID!
+  status: ContextEmbedStatus
 }
 
 type CopilotFailedToMatchContextDataType {
@@ -405,6 +420,7 @@ enum ErrorNames {
   CAPTCHA_VERIFICATION_FAILED
   COPILOT_ACTION_TAKEN
   COPILOT_CONTEXT_FILE_NOT_SUPPORTED
+  COPILOT_DOCS_NOT_FOUND
   COPILOT_DOC_NOT_FOUND
   COPILOT_EMBEDDING_UNAVAILABLE
   COPILOT_FAILED_TO_CREATE_MESSAGE
@@ -838,7 +854,7 @@ type Mutation {
   activateLicense(license: String!, workspaceId: String!): License!
 
   """add a category to context"""
-  addContextCategory(options: AddRemoveContextCategoryInput!): CopilotContextCategory!
+  addContextCategory(options: AddContextCategoryInput!): CopilotContextCategory!
 
   """add a doc to context"""
   addContextDoc(options: AddContextDocInput!): CopilotContextDoc!
@@ -926,7 +942,7 @@ type Mutation {
   removeAvatar: RemoveAvatar!
 
   """remove a category from context"""
-  removeContextCategory(options: AddRemoveContextCategoryInput!): Boolean!
+  removeContextCategory(options: RemoveContextCategoryInput!): Boolean!
 
   """remove a doc from context"""
   removeContextDoc(options: RemoveContextDocInput!): Boolean!
@@ -1190,6 +1206,12 @@ type ReleaseVersionType {
 
 type RemoveAvatar {
   success: Boolean!
+}
+
+input RemoveContextCategoryInput {
+  categoryId: String!
+  contextId: String!
+  type: ContextCategories!
 }
 
 input RemoveContextDocInput {

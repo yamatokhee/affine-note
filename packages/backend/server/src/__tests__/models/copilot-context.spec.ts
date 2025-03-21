@@ -84,6 +84,7 @@ test('should update context', async t => {
   const doc = {
     id: docId,
     createdAt: Date.now(),
+    status: null,
   };
   config?.docs.push(doc);
   await t.context.copilotContext.update(contextId, { config });
@@ -96,16 +97,20 @@ test('should insert embedding by doc id', async t => {
   const { id: contextId } = await t.context.copilotContext.create(session.id);
 
   {
-    await t.context.copilotContext.insertEmbedding(contextId, 'file-id', [
-      {
-        index: 0,
-        content: 'content',
-        embedding: Array.from({ length: 512 }, () => 1),
-      },
-    ]);
+    await t.context.copilotContext.insertContentEmbedding(
+      contextId,
+      'file-id',
+      [
+        {
+          index: 0,
+          content: 'content',
+          embedding: Array.from({ length: 512 }, () => 1),
+        },
+      ]
+    );
 
     {
-      const ret = await t.context.copilotContext.matchEmbedding(
+      const ret = await t.context.copilotContext.matchContentEmbedding(
         Array.from({ length: 512 }, () => 0.9),
         contextId,
         1,
@@ -117,7 +122,7 @@ test('should insert embedding by doc id', async t => {
 
     {
       await t.context.copilotContext.deleteEmbedding(contextId, 'file-id');
-      const ret = await t.context.copilotContext.matchEmbedding(
+      const ret = await t.context.copilotContext.matchContentEmbedding(
         Array.from({ length: 512 }, () => 0.9),
         contextId,
         1,

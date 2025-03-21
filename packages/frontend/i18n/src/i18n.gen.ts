@@ -7817,6 +7817,10 @@ export function useAFFiNEI18N(): {
         readonly docId: string;
     }): string;
     /**
+      * `Some docs not found.`
+      */
+    ["error.COPILOT_DOCS_NOT_FOUND"](): string;
+    /**
       * `Copilot message {{messageId}} not found.`
       */
     ["error.COPILOT_MESSAGE_NOT_FOUND"](options: {

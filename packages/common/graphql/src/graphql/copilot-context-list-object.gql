@@ -9,6 +9,7 @@ query listContextObject(
         docs {
           id
           status
+          error
           createdAt
         }
         files {
@@ -18,6 +19,22 @@ query listContextObject(
           chunkSize
           error
           status
+          createdAt
+        }
+        tags {
+          id
+          docs {
+            id
+            status
+          }
+          createdAt
+        }
+        collections {
+          id
+          docs {
+            id
+            status
+          }
           createdAt
         }
       }

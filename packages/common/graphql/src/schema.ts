@@ -37,6 +37,13 @@ export interface Scalars {
   Upload: { input: File; output: File };
 }
 
+export interface AddContextCategoryInput {
+  categoryId: Scalars['String']['input'];
+  contextId: Scalars['String']['input'];
+  docs?: InputMaybe<Array<Scalars['String']['input']>>;
+  type: ContextCategories;
+}
+
 export interface AddContextDocInput {
   contextId: Scalars['String']['input'];
   docId: Scalars['String']['input'];
@@ -45,12 +52,6 @@ export interface AddContextDocInput {
 export interface AddContextFileInput {
   blobId: Scalars['String']['input'];
   contextId: Scalars['String']['input'];
-}
-
-export interface AddRemoveContextCategoryInput {
-  categoryId: Scalars['String']['input'];
-  contextId: Scalars['String']['input'];
-  type: ContextCategories;
 }
 
 export enum AiJobStatus {
@@ -164,6 +165,8 @@ export interface CopilotSessionsArgs {
 
 export interface CopilotContext {
   __typename?: 'CopilotContext';
+  /** list collections in context */
+  collections: Array<CopilotContextCategory>;
   /** list files in context */
   docs: Array<CopilotContextDoc>;
   /** list files in context */
@@ -173,6 +176,8 @@ export interface CopilotContext {
   matchContext: Array<ContextMatchedFileChunk>;
   /** match workspace doc content */
   matchWorkspaceContext: ContextMatchedDocChunk;
+  /** list tags in context */
+  tags: Array<CopilotContextCategory>;
   workspaceId: Scalars['String']['output'];
 }
 
@@ -190,6 +195,7 @@ export interface CopilotContextMatchWorkspaceContextArgs {
 export interface CopilotContextCategory {
   __typename?: 'CopilotContextCategory';
   createdAt: Scalars['SafeInt']['output'];
+  docs: Array<CopilotDocType>;
   id: Scalars['ID']['output'];
   type: ContextCategories;
 }
@@ -197,6 +203,7 @@ export interface CopilotContextCategory {
 export interface CopilotContextDoc {
   __typename?: 'CopilotContextDoc';
   createdAt: Scalars['SafeInt']['output'];
+  error: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   status: Maybe<ContextEmbedStatus>;
 }
@@ -221,6 +228,13 @@ export interface CopilotContextFileNotSupportedDataType {
 export interface CopilotDocNotFoundDataType {
   __typename?: 'CopilotDocNotFoundDataType';
   docId: Scalars['String']['output'];
+}
+
+export interface CopilotDocType {
+  __typename?: 'CopilotDocType';
+  createdAt: Scalars['SafeInt']['output'];
+  id: Scalars['ID']['output'];
+  status: Maybe<ContextEmbedStatus>;
 }
 
 export interface CopilotFailedToMatchContextDataType {
@@ -549,6 +563,7 @@ export enum ErrorNames {
   CAPTCHA_VERIFICATION_FAILED = 'CAPTCHA_VERIFICATION_FAILED',
   COPILOT_ACTION_TAKEN = 'COPILOT_ACTION_TAKEN',
   COPILOT_CONTEXT_FILE_NOT_SUPPORTED = 'COPILOT_CONTEXT_FILE_NOT_SUPPORTED',
+  COPILOT_DOCS_NOT_FOUND = 'COPILOT_DOCS_NOT_FOUND',
   COPILOT_DOC_NOT_FOUND = 'COPILOT_DOC_NOT_FOUND',
   COPILOT_EMBEDDING_UNAVAILABLE = 'COPILOT_EMBEDDING_UNAVAILABLE',
   COPILOT_FAILED_TO_CREATE_MESSAGE = 'COPILOT_FAILED_TO_CREATE_MESSAGE',
@@ -1103,7 +1118,7 @@ export interface MutationActivateLicenseArgs {
 }
 
 export interface MutationAddContextCategoryArgs {
-  options: AddRemoveContextCategoryInput;
+  options: AddContextCategoryInput;
 }
 
 export interface MutationAddContextDocArgs {
@@ -1297,7 +1312,7 @@ export interface MutationReleaseDeletedBlobsArgs {
 }
 
 export interface MutationRemoveContextCategoryArgs {
-  options: AddRemoveContextCategoryInput;
+  options: RemoveContextCategoryInput;
 }
 
 export interface MutationRemoveContextDocArgs {
@@ -1693,6 +1708,12 @@ export interface ReleaseVersionType {
 export interface RemoveAvatar {
   __typename?: 'RemoveAvatar';
   success: Scalars['Boolean']['output'];
+}
+
+export interface RemoveContextCategoryInput {
+  categoryId: Scalars['String']['input'];
+  contextId: Scalars['String']['input'];
+  type: ContextCategories;
 }
 
 export interface RemoveContextDocInput {
@@ -2423,7 +2444,7 @@ export type ChangePasswordMutation = {
 };
 
 export type AddContextCategoryMutationVariables = Exact<{
-  options: AddRemoveContextCategoryInput;
+  options: AddContextCategoryInput;
 }>;
 
 export type AddContextCategoryMutation = {
@@ -2433,11 +2454,17 @@ export type AddContextCategoryMutation = {
     id: string;
     createdAt: number;
     type: ContextCategories;
+    docs: Array<{
+      __typename?: 'CopilotDocType';
+      id: string;
+      createdAt: number;
+      status: ContextEmbedStatus | null;
+    }>;
   };
 };
 
 export type RemoveContextCategoryMutationVariables = Exact<{
-  options: AddRemoveContextCategoryInput;
+  options: RemoveContextCategoryInput;
 }>;
 
 export type RemoveContextCategoryMutation = {
@@ -2466,6 +2493,7 @@ export type AddContextDocMutation = {
     id: string;
     createdAt: number;
     status: ContextEmbedStatus | null;
+    error: string | null;
   };
 };
 
@@ -2550,6 +2578,7 @@ export type ListContextObjectQuery = {
           __typename?: 'CopilotContextDoc';
           id: string;
           status: ContextEmbedStatus | null;
+          error: string | null;
           createdAt: number;
         }>;
         files: Array<{
@@ -2561,6 +2590,26 @@ export type ListContextObjectQuery = {
           error: string | null;
           status: ContextEmbedStatus;
           createdAt: number;
+        }>;
+        tags: Array<{
+          __typename?: 'CopilotContextCategory';
+          id: string;
+          createdAt: number;
+          docs: Array<{
+            __typename?: 'CopilotDocType';
+            id: string;
+            status: ContextEmbedStatus | null;
+          }>;
+        }>;
+        collections: Array<{
+          __typename?: 'CopilotContextCategory';
+          id: string;
+          createdAt: number;
+          docs: Array<{
+            __typename?: 'CopilotDocType';
+            id: string;
+            status: ContextEmbedStatus | null;
+          }>;
         }>;
       }>;
     };

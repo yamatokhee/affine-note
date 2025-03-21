@@ -1928,6 +1928,7 @@
   "error.UNSPLASH_IS_NOT_CONFIGURED": "Unsplash is not configured.",
   "error.COPILOT_ACTION_TAKEN": "Action has been taken, no more messages allowed.",
   "error.COPILOT_DOC_NOT_FOUND": "Doc {{docId}} not found.",
+  "error.COPILOT_DOCS_NOT_FOUND": "Some docs not found.",
   "error.COPILOT_MESSAGE_NOT_FOUND": "Copilot message {{messageId}} not found.",
   "error.COPILOT_PROMPT_NOT_FOUND": "Copilot prompt {{name}} not found.",
   "error.COPILOT_PROMPT_INVALID": "Copilot prompt is invalid.",
