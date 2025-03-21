@@ -2,7 +2,7 @@ import { toURLSearchParams } from '@affine/core/modules/navigation';
 import type { ReferenceParams } from '@blocksuite/affine/model';
 import { fromPromise, OnEvent, Service } from '@toeverything/infra';
 import { isEmpty, omit } from 'lodash-es';
-import { map, type Observable, switchMap } from 'rxjs';
+import { map, type Observable, of, switchMap } from 'rxjs';
 import { z } from 'zod';
 
 import type { WorkspaceService } from '../../workspace';
@@ -134,7 +134,12 @@ export class DocsSearchService extends Service {
       );
   }
 
-  watchRefsFrom(docId: string) {
+  watchRefsFrom(ids: string | string[]) {
+    const docIds = Array.isArray(ids) ? ids : [ids];
+    if (docIds.length === 0) {
+      return of([]);
+    }
+
     return this.indexer.blockIndex
       .search$(
         {
@@ -142,9 +147,13 @@ export class DocsSearchService extends Service {
           occur: 'must',
           queries: [
             {
-              type: 'match',
-              field: 'docId',
-              match: docId,
+              type: 'boolean',
+              occur: 'should',
+              queries: docIds.map(id => ({
+                type: 'match',
+                field: 'docId',
+                match: id,
+              })),
             },
             {
               type: 'exists',
@@ -171,7 +180,7 @@ export class DocsSearchService extends Service {
                       ? [JSON.parse(ref)]
                       : ref.map(item => JSON.parse(item));
                   })
-                  .filter(ref => ref.docId !== docId)
+                  .filter(ref => !docIds.includes(ref.docId))
                   .map(ref => [ref.docId, ref])
               ).values()
             );
