@@ -9,6 +9,7 @@
   "references": [
     { "path": "../../components" },
     { "path": "../footnote" },
+    { "path": "../latex" },
     { "path": "../link" },
     { "path": "../reference" },
     { "path": "../../model" },

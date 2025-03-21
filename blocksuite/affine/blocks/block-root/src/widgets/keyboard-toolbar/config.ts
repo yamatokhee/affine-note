@@ -20,13 +20,13 @@ import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
 import { toggleEmbedCardCreateModal } from '@blocksuite/affine-components/embed-card-modal';
 import { toast } from '@blocksuite/affine-components/toast';
+import { insertInlineLatex } from '@blocksuite/affine-inline-latex';
 import { toggleLink } from '@blocksuite/affine-inline-link';
 import {
   formatBlockCommand,
   formatNativeCommand,
   formatTextCommand,
   getTextStyle,
-  insertInlineLatex,
   toggleBold,
   toggleCode,
   toggleItalic,

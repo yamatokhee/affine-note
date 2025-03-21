@@ -31,6 +31,7 @@ export const PackageList = [
       'blocksuite/affine/gfx/text',
       'blocksuite/affine/gfx/turbo-renderer',
       'blocksuite/affine/inlines/footnote',
+      'blocksuite/affine/inlines/latex',
       'blocksuite/affine/inlines/link',
       'blocksuite/affine/inlines/preset',
       'blocksuite/affine/inlines/reference',
@@ -101,6 +102,7 @@ export const PackageList = [
     name: '@blocksuite/affine-block-code',
     workspaceDependencies: [
       'blocksuite/affine/components',
+      'blocksuite/affine/inlines/latex',
       'blocksuite/affine/inlines/link',
       'blocksuite/affine/inlines/preset',
       'blocksuite/affine/model',
@@ -223,7 +225,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/blocks/block-note',
       'blocksuite/affine/components',
-      'blocksuite/affine/inlines/preset',
+      'blocksuite/affine/inlines/latex',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
@@ -302,6 +304,7 @@ export const PackageList = [
       'blocksuite/affine/components',
       'blocksuite/affine/fragments/fragment-doc-title',
       'blocksuite/affine/gfx/text',
+      'blocksuite/affine/inlines/latex',
       'blocksuite/affine/inlines/link',
       'blocksuite/affine/inlines/preset',
       'blocksuite/affine/inlines/reference',
@@ -470,6 +473,20 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/inlines/latex',
+    name: '@blocksuite/affine-inline-latex',
+    workspaceDependencies: [
+      'blocksuite/affine/components',
+      'blocksuite/affine/inlines/reference',
+      'blocksuite/affine/model',
+      'blocksuite/affine/rich-text',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/inlines/link',
     name: '@blocksuite/affine-inline-link',
     workspaceDependencies: [
@@ -488,6 +505,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/components',
       'blocksuite/affine/inlines/footnote',
+      'blocksuite/affine/inlines/latex',
       'blocksuite/affine/inlines/link',
       'blocksuite/affine/inlines/reference',
       'blocksuite/affine/model',
@@ -1005,6 +1023,7 @@ export type PackageName =
   | '@blocksuite/affine-gfx-text'
   | '@blocksuite/affine-gfx-turbo-renderer'
   | '@blocksuite/affine-inline-footnote'
+  | '@blocksuite/affine-inline-latex'
   | '@blocksuite/affine-inline-link'
   | '@blocksuite/affine-inline-preset'
   | '@blocksuite/affine-inline-reference'

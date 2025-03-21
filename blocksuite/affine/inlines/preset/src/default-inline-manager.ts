@@ -1,4 +1,5 @@
 import { FootNoteInlineSpecExtension } from '@blocksuite/affine-inline-footnote';
+import { LatexInlineSpecExtension } from '@blocksuite/affine-inline-latex';
 import { LinkInlineSpecExtension } from '@blocksuite/affine-inline-link';
 import { ReferenceInlineSpecExtension } from '@blocksuite/affine-inline-reference';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
@@ -10,7 +11,6 @@ import {
   CodeInlineSpecExtension,
   ColorInlineSpecExtension,
   ItalicInlineSpecExtension,
-  LatexInlineSpecExtension,
   StrikeInlineSpecExtension,
   UnderlineInlineSpecExtension,
 } from './inline-spec';
