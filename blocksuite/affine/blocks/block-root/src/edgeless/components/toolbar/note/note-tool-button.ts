@@ -1,3 +1,7 @@
+import {
+  createPopper,
+  type MenuPopper,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { PageIcon } from '@blocksuite/icons/lit';
 import { effect } from '@preact/signals-core';
@@ -5,7 +9,6 @@ import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
-import { createPopper, type MenuPopper } from '../common/create-popper.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 import type { EdgelessNoteMenu } from './note-menu.js';
 

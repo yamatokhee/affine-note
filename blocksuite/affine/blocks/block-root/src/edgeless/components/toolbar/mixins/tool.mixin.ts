@@ -1,4 +1,13 @@
 import type { ColorScheme } from '@blocksuite/affine-model';
+import {
+  createPopper,
+  edgelessToolbarContext,
+  type EdgelessToolbarSlots,
+  edgelessToolbarSlotsContext,
+  edgelessToolbarThemeContext,
+  type EdgelessToolbarWidget,
+  type MenuPopper,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import type {
   GfxToolsFullOption,
   GfxToolsFullOptionValue,
@@ -17,14 +26,6 @@ import type { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
 import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
-import { createPopper, type MenuPopper } from '../common/create-popper.js';
-import {
-  edgelessToolbarContext,
-  type EdgelessToolbarSlots,
-  edgelessToolbarSlotsContext,
-  edgelessToolbarThemeContext,
-} from '../context.js';
-import type { EdgelessToolbarWidget } from '../edgeless-toolbar.js';
 
 type ValueOf<T> = T[keyof T];
 

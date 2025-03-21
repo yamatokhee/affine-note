@@ -88,6 +88,7 @@
     { "path": "./blocksuite/affine/shared" },
     { "path": "./blocksuite/affine/widgets/widget-drag-handle" },
     { "path": "./blocksuite/affine/widgets/widget-edgeless-auto-connect" },
+    { "path": "./blocksuite/affine/widgets/widget-edgeless-toolbar" },
     { "path": "./blocksuite/affine/widgets/widget-frame-title" },
     { "path": "./blocksuite/affine/widgets/widget-remote-selection" },
     { "path": "./blocksuite/affine/widgets/widget-scroll-anchoring" },

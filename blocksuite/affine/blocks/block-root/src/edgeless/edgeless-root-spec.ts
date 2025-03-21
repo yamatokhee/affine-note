@@ -1,5 +1,6 @@
 import { ViewportElementExtension } from '@blocksuite/affine-shared/services';
 import { autoConnectWidget } from '@blocksuite/affine-widget-edgeless-auto-connect';
+import { edgelessToolbarWidget } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { frameTitleWidget } from '@blocksuite/affine-widget-frame-title';
 import { edgelessRemoteSelectionWidget } from '@blocksuite/affine-widget-remote-selection';
 import {
@@ -20,7 +21,6 @@ import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from '../widgets/edgeless-zoom-to
 import { NOTE_SLICER_WIDGET } from './components/note-slicer/index.js';
 import { EDGELESS_DRAGGING_AREA_WIDGET } from './components/rects/edgeless-dragging-area-rect.js';
 import { EDGELESS_SELECTED_RECT_WIDGET } from './components/rects/edgeless-selected-rect.js';
-import { EDGELESS_TOOLBAR_WIDGET } from './components/toolbar/edgeless-toolbar.js';
 import { quickTools, seniorTools } from './components/toolbar/tools.js';
 import { EdgelessRootService } from './edgeless-root-service.js';
 
@@ -43,11 +43,6 @@ export const edgelessSelectedRectWidget = WidgetViewExtension(
   'affine:page',
   EDGELESS_SELECTED_RECT_WIDGET,
   literal`${unsafeStatic(EDGELESS_SELECTED_RECT_WIDGET)}`
-);
-export const edgelessToolbarWidget = WidgetViewExtension(
-  'affine:page',
-  EDGELESS_TOOLBAR_WIDGET,
-  literal`${unsafeStatic(EDGELESS_TOOLBAR_WIDGET)}`
 );
 
 class EdgelessLocker extends LifeCycleWatcher {

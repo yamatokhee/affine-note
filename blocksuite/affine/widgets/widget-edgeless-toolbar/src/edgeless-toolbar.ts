@@ -15,7 +15,7 @@ import {
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
-import { WidgetComponent } from '@blocksuite/block-std';
+import { WidgetComponent, WidgetViewExtension } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import {
   ArrowLeftSmallIcon,
@@ -29,16 +29,17 @@ import { baseTheme, cssVar } from '@toeverything/theme';
 import { css, html, nothing, unsafeCSS } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { cache } from 'lit/directives/cache.js';
+import { literal, unsafeStatic } from 'lit/static-html.js';
 import debounce from 'lodash-es/debounce';
 import { Subject } from 'rxjs';
 
-import type { MenuPopper } from './common/create-popper.js';
 import {
   edgelessToolbarContext,
   type EdgelessToolbarSlots,
   edgelessToolbarSlotsContext,
   edgelessToolbarThemeContext,
 } from './context.js';
+import type { MenuPopper } from './create-popper.js';
 import {
   QuickToolIdentifier,
   SeniorToolIdentifier,
@@ -431,7 +432,8 @@ export class EdgelessToolbarWidget extends WidgetComponent<RootBlockModel> {
   }
 
   get edgelessTool() {
-    return this.gfx.tool.currentToolOption$.value;
+    // FIXME: maybe we need to fix this type
+    return this.gfx.tool.currentToolOption$.value as { type: string };
   }
 
   get gfx() {
@@ -610,6 +612,7 @@ export class EdgelessToolbarWidget extends WidgetComponent<RootBlockModel> {
               }
               return;
             }
+            // @ts-expect-error FIXME: resolve after gfx tool refactor
             this.gfx.tool.setTool('default');
           },
         },
@@ -721,3 +724,9 @@ export class EdgelessToolbarWidget extends WidgetComponent<RootBlockModel> {
   @query('.edgeless-toolbar-container')
   accessor toolbarContainer!: HTMLElement;
 }
+
+export const edgelessToolbarWidget = WidgetViewExtension(
+  'affine:page',
+  EDGELESS_TOOLBAR_WIDGET,
+  literal`${unsafeStatic(EDGELESS_TOOLBAR_WIDGET)}`
+);

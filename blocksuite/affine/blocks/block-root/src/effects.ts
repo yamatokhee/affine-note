@@ -1,10 +1,9 @@
 import { effects as gfxShapeEffects } from '@blocksuite/affine-gfx-shape/effects';
 import { effects as gfxCanvasTextEffects } from '@blocksuite/affine-gfx-text/effects';
+import { effects as widgetEdgelessToolbarEffects } from '@blocksuite/affine-widget-edgeless-toolbar/effects';
 
 import { EdgelessAutoCompletePanel } from './edgeless/components/auto-complete/auto-complete-panel.js';
 import { EdgelessAutoComplete } from './edgeless/components/auto-complete/edgeless-auto-complete.js';
-import { EdgelessToolIconButton } from './edgeless/components/buttons/tool-icon-button.js';
-import { EdgelessToolbarButton } from './edgeless/components/buttons/toolbar-button.js';
 import { EdgelessConnectorHandle } from './edgeless/components/connector/connector-handle.js';
 import {
   NOTE_SLICER_WIDGET,
@@ -36,7 +35,6 @@ import { ToolbarArrowUpIcon } from './edgeless/components/toolbar/common/toolbar
 import { EdgelessConnectorMenu } from './edgeless/components/toolbar/connector/connector-menu.js';
 import { EdgelessConnectorToolButton } from './edgeless/components/toolbar/connector/connector-tool-button.js';
 import { EdgelessDefaultToolButton } from './edgeless/components/toolbar/default/default-tool-button.js';
-import { EdgelessToolbarWidget } from './edgeless/components/toolbar/edgeless-toolbar.js';
 import { EdgelessEraserToolButton } from './edgeless/components/toolbar/eraser/eraser-tool-button.js';
 import { EdgelessFrameMenu } from './edgeless/components/toolbar/frame/frame-menu.js';
 import { EdgelessFrameToolButton } from './edgeless/components/toolbar/frame/frame-tool-button.js';
@@ -63,7 +61,6 @@ import { EdgelessTextMenu } from './edgeless/components/toolbar/text/text-menu.j
 import {
   AffineImageToolbarWidget,
   AffineModalWidget,
-  EDGELESS_TOOLBAR_WIDGET,
   EdgelessRootBlockComponent,
   EdgelessRootPreviewBlockComponent,
   PageRootBlockComponent,
@@ -103,6 +100,7 @@ export function effects() {
   // Run other effects
   widgetMobileToolbarEffects();
   widgetLinkedDocEffects();
+  widgetEdgelessToolbarEffects();
 
   // Register components by category
   registerRootComponents();
@@ -183,9 +181,6 @@ function registerEdgelessToolbarComponents() {
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
 
   // Toolbar components
-  customElements.define(EDGELESS_TOOLBAR_WIDGET, EdgelessToolbarWidget);
-  customElements.define('edgeless-toolbar-button', EdgelessToolbarButton);
-  customElements.define('edgeless-tool-icon-button', EdgelessToolIconButton);
   customElements.define(
     'edgeless-toolbar-shape-draggable',
     EdgelessToolbarShapeDraggable
@@ -290,8 +285,6 @@ declare global {
     'affine-edgeless-root-preview': EdgelessRootPreviewBlockComponent;
     'edgeless-auto-complete-panel': EdgelessAutoCompletePanel;
     'edgeless-auto-complete': EdgelessAutoComplete;
-    'edgeless-tool-icon-button': EdgelessToolIconButton;
-    'edgeless-toolbar-button': EdgelessToolbarButton;
     'edgeless-connector-handle': EdgelessConnectorHandle;
     'note-slicer': NoteSlicer;
     'edgeless-font-family-panel': EdgelessFontFamilyPanel;
@@ -308,7 +301,6 @@ declare global {
     'edgeless-selected-rect': EdgelessSelectedRectWidget;
     'edgeless-connector-label-editor': EdgelessConnectorLabelEditor;
     'edgeless-group-title-editor': EdgelessGroupTitleEditor;
-    'edgeless-toolbar-widget': EdgelessToolbarWidget;
     'presentation-toolbar': PresentationToolbar;
     'edgeless-brush-menu': EdgelessBrushMenu;
     'edgeless-brush-tool-button': EdgelessBrushToolButton;

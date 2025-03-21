@@ -1,6 +1,9 @@
+import {
+  QuickToolExtension,
+  SeniorToolExtension,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import { html } from 'lit';
 
-import { QuickToolExtension, SeniorToolExtension } from './extension/index.js';
 import { buildFrameDenseMenu } from './frame/frame-dense-menu.js';
 import { buildLinkDenseMenu } from './link/link-dense-menu.js';
 

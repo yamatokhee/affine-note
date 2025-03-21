@@ -41,6 +41,7 @@ export const PackageList = [
       'blocksuite/affine/shared',
       'blocksuite/affine/widgets/widget-drag-handle',
       'blocksuite/affine/widgets/widget-edgeless-auto-connect',
+      'blocksuite/affine/widgets/widget-edgeless-toolbar',
       'blocksuite/affine/widgets/widget-frame-title',
       'blocksuite/affine/widgets/widget-remote-selection',
       'blocksuite/affine/widgets/widget-scroll-anchoring',
@@ -315,6 +316,7 @@ export const PackageList = [
       'blocksuite/affine/shared',
       'blocksuite/affine/widgets/widget-drag-handle',
       'blocksuite/affine/widgets/widget-edgeless-auto-connect',
+      'blocksuite/affine/widgets/widget-edgeless-toolbar',
       'blocksuite/affine/widgets/widget-frame-title',
       'blocksuite/affine/widgets/widget-remote-selection',
       'blocksuite/affine/widgets/widget-scroll-anchoring',
@@ -600,6 +602,19 @@ export const PackageList = [
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
       'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+    ],
+  },
+  {
+    location: 'blocksuite/affine/widgets/widget-edgeless-toolbar',
+    name: '@blocksuite/affine-widget-edgeless-toolbar',
+    workspaceDependencies: [
+      'blocksuite/affine/blocks/block-surface',
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',
@@ -1049,6 +1064,7 @@ export type PackageName =
   | '@blocksuite/affine-shared'
   | '@blocksuite/affine-widget-drag-handle'
   | '@blocksuite/affine-widget-edgeless-auto-connect'
+  | '@blocksuite/affine-widget-edgeless-toolbar'
   | '@blocksuite/affine-widget-frame-title'
   | '@blocksuite/affine-widget-remote-selection'
   | '@blocksuite/affine-widget-scroll-anchoring'
