@@ -3,6 +3,12 @@ import {
   EdgelessCRUDIdentifier,
 } from '@blocksuite/affine-block-surface';
 import {
+  ellipseSvg,
+  roundedSvg,
+  ShapeTool,
+  triangleSvg,
+} from '@blocksuite/affine-gfx-shape';
+import {
   getShapeRadius,
   getShapeType,
   ShapeType,
@@ -20,10 +26,8 @@ import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { ShapeTool } from '../../../gfx-tool/shape-tool.js';
 import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
-import { ellipseSvg, roundedSvg, triangleSvg } from './icons.js';
 import type { DraggableShape } from './utils.js';
 import { buildVariablesObject } from './utils.js';
 

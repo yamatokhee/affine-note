@@ -1,5 +1,6 @@
 import {
   CanvasElementType,
+  EXCLUDING_MOUSE_OUT_CLASS_LIST,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine-block-surface';
 import type { ShapeElementModel, ShapeName } from '@blocksuite/affine-model';
@@ -17,12 +18,11 @@ import { Bound } from '@blocksuite/global/gfx';
 import { effect } from '@preact/signals-core';
 
 import {
-  EXCLUDING_MOUSE_OUT_CLASS_LIST,
   SHAPE_OVERLAY_HEIGHT,
   SHAPE_OVERLAY_OPTIONS,
   SHAPE_OVERLAY_WIDTH,
-} from '../utils/consts.js';
-import { ShapeOverlay } from '../utils/tool-overlay.js';
+} from './consts.js';
+import { ShapeOverlay } from './overlay/shape-overlay.js';
 
 export type ShapeToolOption = {
   shapeName: ShapeName;
@@ -181,6 +181,7 @@ export class ShapeTool extends BaseTool<ShapeToolOption> {
     const element = this.gfx.getElementById(id);
     if (!element) return;
 
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
     this.gfx.tool.setTool('default');
     this.gfx.selection.set({
       elements: [element.id],
@@ -257,6 +258,7 @@ export class ShapeTool extends BaseTool<ShapeToolOption> {
     const element = this.gfx.getElementById(id);
     if (!element) return;
 
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
     this.controller.setTool('default');
     this.gfx.selection.set({
       elements: [element.id],

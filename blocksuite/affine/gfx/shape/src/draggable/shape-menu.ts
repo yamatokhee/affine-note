@@ -12,6 +12,8 @@ import {
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
+import type { BlockComponent } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import { StyleGeneralIcon, StyleScribbleIcon } from '@blocksuite/icons/lit';
 import { computed, effect, type Signal, signal } from '@preact/signals-core';
@@ -19,8 +21,7 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 
-import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
-import { ShapeComponentConfig } from './shape-menu-config.js';
+import { ShapeComponentConfig } from '../toolbar';
 
 export class EdgelessShapeMenu extends SignalWatcher(
   WithDisposable(LitElement)
@@ -55,7 +56,7 @@ export class EdgelessShapeMenu extends SignalWatcher(
   private readonly _shapeName$: Signal<ShapeName> = signal(ShapeType.Rect);
 
   @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
+  accessor edgeless!: BlockComponent;
 
   private readonly _props$ = computed(() => {
     const shapeName: ShapeName = this._shapeName$.value;
@@ -109,9 +110,10 @@ export class EdgelessShapeMenu extends SignalWatcher(
   override connectedCallback(): void {
     super.connectedCallback();
 
+    const gfx = this.edgeless.std.get(GfxControllerIdentifier);
     this._disposables.add(
       effect(() => {
-        const value = this.edgeless.gfx.tool.currentToolOption$.value;
+        const value = gfx.tool.currentToolOption$.value;
 
         if (value && value.type === 'shape') {
           this._shapeName$.value = value.shapeName;

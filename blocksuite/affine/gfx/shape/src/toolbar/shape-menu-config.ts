@@ -1,3 +1,4 @@
+import type { ShapeToolOption } from '@blocksuite/affine-gfx-shape';
 import { ShapeType } from '@blocksuite/affine-model';
 import {
   DiamondIcon,
@@ -8,7 +9,6 @@ import {
 } from '@blocksuite/icons/lit';
 import type { TemplateResult } from 'lit';
 
-import type { ShapeToolOption } from '../../../gfx-tool/shape-tool';
 import {
   ScribbledDiamondIcon,
   ScribbledEllipseIcon,

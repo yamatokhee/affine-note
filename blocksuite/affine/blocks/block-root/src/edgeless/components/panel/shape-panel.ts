@@ -1,11 +1,12 @@
+import {
+  ShapeComponentConfig,
+  type ShapeTool,
+} from '@blocksuite/affine-gfx-shape';
 import { ShapeStyle } from '@blocksuite/affine-model';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { Subject } from 'rxjs';
-
-import type { ShapeTool } from '../../gfx-tool/shape-tool.js';
-import { ShapeComponentConfig } from '../toolbar/shape/shape-menu-config.js';
 
 export class EdgelessShapePanel extends LitElement {
   static override styles = css`

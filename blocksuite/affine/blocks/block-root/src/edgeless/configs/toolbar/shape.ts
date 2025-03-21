@@ -8,6 +8,11 @@ import {
 } from '@blocksuite/affine-components/color-picker';
 import type { LineDetailType } from '@blocksuite/affine-components/edgeless-line-styles-panel';
 import {
+  mountShapeTextEditor,
+  ShapeComponentConfig,
+  type ShapeToolOption,
+} from '@blocksuite/affine-gfx-shape';
+import {
   type Color,
   DefaultTheme,
   FontFamily,
@@ -34,9 +39,6 @@ import { AddTextIcon, ShapeIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 import isEqual from 'lodash-es/isEqual';
 
-import type { ShapeToolOption } from '../..';
-import { ShapeComponentConfig } from '../../components/toolbar/shape/shape-menu-config';
-import { mountShapeTextEditor } from '../../utils/text';
 import { LINE_STYLE_LIST } from './consts';
 import {
   createMindmapLayoutActionMenu,

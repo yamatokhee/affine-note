@@ -75,6 +75,7 @@
     { "path": "./blocksuite/affine/fragments/fragment-doc-title" },
     { "path": "./blocksuite/affine/fragments/fragment-frame-panel" },
     { "path": "./blocksuite/affine/fragments/fragment-outline" },
+    { "path": "./blocksuite/affine/gfx/shape" },
     { "path": "./blocksuite/affine/gfx/text" },
     { "path": "./blocksuite/affine/gfx/turbo-renderer" },
     { "path": "./blocksuite/affine/inlines/footnote" },

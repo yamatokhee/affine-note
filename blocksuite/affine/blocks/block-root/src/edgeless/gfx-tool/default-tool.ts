@@ -8,6 +8,7 @@ import {
   isNoteBlock,
   OverlayIdentifier,
 } from '@blocksuite/affine-block-surface';
+import { mountShapeTextEditor } from '@blocksuite/affine-gfx-shape';
 import { addText, mountTextElementEditor } from '@blocksuite/affine-gfx-text';
 import type {
   EdgelessTextBlockModel,
@@ -53,7 +54,6 @@ import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
 import {
   mountConnectorLabelEditor,
   mountGroupTitleEditor,
-  mountShapeTextEditor,
 } from '../utils/text.js';
 import { DefaultModeDragType } from './default-tool-ext/ext.js';
 

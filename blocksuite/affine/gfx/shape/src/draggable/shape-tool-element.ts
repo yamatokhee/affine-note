@@ -8,6 +8,8 @@ import {
   type ShapeName,
   type ShapeStyle,
 } from '@blocksuite/affine-model';
+import type { BlockComponent } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import { WithDisposable } from '@blocksuite/global/lit';
 import { sleep } from '@blocksuite/global/utils';
@@ -20,10 +22,9 @@ import {
 } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
-import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
-import { ShapeTool } from '../../../gfx-tool/shape-tool.js';
+import { ShapeTool } from '../shape-tool';
 
-export interface Shape {
+interface Shape {
   name: ShapeName;
   svg: TemplateResult<1>;
 }
@@ -76,13 +77,17 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     return this.edgeless.std.get(EdgelessCRUDIdentifier);
   }
 
+  get gfx() {
+    return this.edgeless.std.get(GfxControllerIdentifier);
+  }
+
   private readonly _addShape = (coord: Coord, padding: Coord) => {
     const width = 100;
     const height = 100;
     const { x: edgelessX, y: edgelessY } =
       this.edgeless.getBoundingClientRect();
-    const zoom = this.edgeless.service.viewport.zoom;
-    const [modelX, modelY] = this.edgeless.service.viewport.toModelCoord(
+    const zoom = this.gfx.viewport.zoom;
+    const [modelX, modelY] = this.gfx.viewport.toModelCoord(
       coord.x - edgelessX - width * padding.x * zoom,
       coord.y - edgelessY - height * padding.y * zoom
     );
@@ -104,7 +109,8 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
       return;
     }
     this._dragging = false;
-    this.edgeless.gfx.tool.setTool('default');
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
+    this.gfx.tool.setTool('default');
     if (this._isOutside) {
       const rect = this._shapeElement.getBoundingClientRect();
       this._backupShapeElement.style.setProperty('transition', 'none');
@@ -131,7 +137,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     if (!this._dragging) {
       return;
     }
-    const controller = this.edgeless.gfx.tool.currentTool$.peek();
+    const controller = this.gfx.tool.currentTool$.peek();
     if (controller instanceof ShapeTool) {
       controller.clearOverlay();
     }
@@ -298,7 +304,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
   private accessor _startCoord: Coord = { x: -1, y: -1 };
 
   @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
+  accessor edgeless!: BlockComponent;
 
   @property({ attribute: false })
   accessor getContainerRect!: () => DOMRect;

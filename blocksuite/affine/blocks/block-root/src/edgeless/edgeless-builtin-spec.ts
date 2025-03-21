@@ -4,6 +4,7 @@ import {
   PresentTool,
 } from '@blocksuite/affine-block-frame';
 import { ConnectionOverlay } from '@blocksuite/affine-block-surface';
+import { ShapeTool } from '@blocksuite/affine-gfx-shape';
 import { TextTool } from '@blocksuite/affine-gfx-text';
 import {
   CanvasEventHandler,
@@ -25,7 +26,6 @@ import { EraserTool } from './gfx-tool/eraser-tool.js';
 import { LassoTool } from './gfx-tool/lasso-tool.js';
 import { NoteTool } from './gfx-tool/note-tool.js';
 import { PanTool } from './gfx-tool/pan-tool.js';
-import { ShapeTool } from './gfx-tool/shape-tool.js';
 import { TemplateTool } from './gfx-tool/template-tool.js';
 import { EditPropsMiddlewareBuilder } from './middlewares/base.js';
 import { SnapOverlay } from './utils/snap-manager.js';

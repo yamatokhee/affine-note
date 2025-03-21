@@ -1,8 +1,8 @@
+import { ShapeTool } from '@blocksuite/affine-gfx-shape';
 import { type ShapeName, ShapeType } from '@blocksuite/affine-model';
 import { SignalWatcher } from '@blocksuite/global/lit';
 import { css, html, LitElement } from 'lit';
 
-import { ShapeTool } from '../../../gfx-tool/shape-tool.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import type { DraggableShape } from './utils.js';
 

@@ -1,6 +1,5 @@
+import type { ShapeToolOption } from '@blocksuite/affine-gfx-shape';
 import { render, type TemplateResult } from 'lit';
-
-import type { ShapeToolOption } from '../../../gfx-tool/shape-tool.js';
 
 type TransformState = {
   /** horizental offset base on center */

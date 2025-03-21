@@ -1,3 +1,4 @@
+import { effects as gfxShapeEffects } from '@blocksuite/affine-gfx-shape/effects';
 import { effects as gfxCanvasTextEffects } from '@blocksuite/affine-gfx-text/effects';
 
 import { EdgelessAutoCompletePanel } from './edgeless/components/auto-complete/auto-complete-panel.js';
@@ -28,7 +29,6 @@ import {
 } from './edgeless/components/rects/edgeless-selected-rect.js';
 import { EdgelessConnectorLabelEditor } from './edgeless/components/text/edgeless-connector-label-editor.js';
 import { EdgelessGroupTitleEditor } from './edgeless/components/text/edgeless-group-title-editor.js';
-import { EdgelessShapeTextEditor } from './edgeless/components/text/edgeless-shape-text-editor.js';
 import { EdgelessBrushMenu } from './edgeless/components/toolbar/brush/brush-menu.js';
 import { EdgelessBrushToolButton } from './edgeless/components/toolbar/brush/brush-tool-button.js';
 import { EdgelessSlideMenu } from './edgeless/components/toolbar/common/slide-menu.js';
@@ -54,9 +54,7 @@ import { EdgelessNavigatorSettingButton } from './edgeless/components/toolbar/pr
 import { EdgelessPresentButton } from './edgeless/components/toolbar/present/present-button.js';
 import { PresentationToolbar } from './edgeless/components/toolbar/presentation-toolbar.js';
 import { EdgelessToolbarShapeDraggable } from './edgeless/components/toolbar/shape/shape-draggable.js';
-import { EdgelessShapeMenu } from './edgeless/components/toolbar/shape/shape-menu.js';
 import { EdgelessShapeToolButton } from './edgeless/components/toolbar/shape/shape-tool-button.js';
-import { EdgelessShapeToolElement } from './edgeless/components/toolbar/shape/shape-tool-element.js';
 import { OverlayScrollbar } from './edgeless/components/toolbar/template/overlay-scrollbar.js';
 import { AffineTemplateLoading } from './edgeless/components/toolbar/template/template-loading.js';
 import { EdgelessTemplatePanel } from './edgeless/components/toolbar/template/template-panel.js';
@@ -128,6 +126,7 @@ function registerRootComponents() {
 
 function registerGfxEffects() {
   gfxCanvasTextEffects();
+  gfxShapeEffects();
 }
 
 function registerWidgets() {
@@ -180,7 +179,6 @@ function registerEdgelessToolbarComponents() {
   customElements.define('edgeless-frame-menu', EdgelessFrameMenu);
   customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);
   customElements.define('edgeless-note-menu', EdgelessNoteMenu);
-  customElements.define('edgeless-shape-menu', EdgelessShapeMenu);
   customElements.define('edgeless-text-menu', EdgelessTextMenu);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
 
@@ -231,7 +229,6 @@ function registerEdgelessEditorComponents() {
     'edgeless-connector-label-editor',
     EdgelessConnectorLabelEditor
   );
-  customElements.define('edgeless-shape-text-editor', EdgelessShapeTextEditor);
   customElements.define(
     'edgeless-group-title-editor',
     EdgelessGroupTitleEditor
@@ -283,12 +280,6 @@ function registerMiscComponents() {
   // Mindmap components
   customElements.define('mindmap-import-placeholder', MindMapPlaceholder);
 
-  // Shape components
-  customElements.define(
-    'edgeless-shape-tool-element',
-    EdgelessShapeToolElement
-  );
-
   // Connector components
   customElements.define('edgeless-connector-handle', EdgelessConnectorHandle);
 }
@@ -317,7 +308,6 @@ declare global {
     'edgeless-selected-rect': EdgelessSelectedRectWidget;
     'edgeless-connector-label-editor': EdgelessConnectorLabelEditor;
     'edgeless-group-title-editor': EdgelessGroupTitleEditor;
-    'edgeless-shape-text-editor': EdgelessShapeTextEditor;
     'edgeless-toolbar-widget': EdgelessToolbarWidget;
     'presentation-toolbar': PresentationToolbar;
     'edgeless-brush-menu': EdgelessBrushMenu;
@@ -341,9 +331,7 @@ declare global {
     'edgeless-navigator-setting-button': EdgelessNavigatorSettingButton;
     'edgeless-present-button': EdgelessPresentButton;
     'edgeless-toolbar-shape-draggable': EdgelessToolbarShapeDraggable;
-    'edgeless-shape-menu': EdgelessShapeMenu;
     'edgeless-shape-tool-button': EdgelessShapeToolButton;
-    'edgeless-shape-tool-element': EdgelessShapeToolElement;
     'overlay-scrollbar': OverlayScrollbar;
     'affine-template-loading': AffineTemplateLoading;
     'edgeless-templates-panel': EdgelessTemplatePanel;
