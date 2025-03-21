@@ -51,8 +51,6 @@ import { EdgelessFrameOrderMenu } from './edgeless/components/toolbar/present/fr
 import { EdgelessNavigatorSettingButton } from './edgeless/components/toolbar/present/navigator-setting-button.js';
 import { EdgelessPresentButton } from './edgeless/components/toolbar/present/present-button.js';
 import { PresentationToolbar } from './edgeless/components/toolbar/presentation-toolbar.js';
-import { EdgelessToolbarShapeDraggable } from './edgeless/components/toolbar/shape/shape-draggable.js';
-import { EdgelessShapeToolButton } from './edgeless/components/toolbar/shape/shape-tool-button.js';
 import { OverlayScrollbar } from './edgeless/components/toolbar/template/overlay-scrollbar.js';
 import { AffineTemplateLoading } from './edgeless/components/toolbar/template/template-loading.js';
 import { EdgelessTemplatePanel } from './edgeless/components/toolbar/template/template-panel.js';
@@ -168,7 +166,6 @@ function registerEdgelessToolbarComponents() {
     EdgelessMindmapToolButton
   );
   customElements.define('edgeless-note-tool-button', EdgelessNoteToolButton);
-  customElements.define('edgeless-shape-tool-button', EdgelessShapeToolButton);
   customElements.define('edgeless-template-button', EdgelessTemplateButton);
 
   // Menus
@@ -181,10 +178,6 @@ function registerEdgelessToolbarComponents() {
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
 
   // Toolbar components
-  customElements.define(
-    'edgeless-toolbar-shape-draggable',
-    EdgelessToolbarShapeDraggable
-  );
   customElements.define('toolbar-arrow-up-icon', ToolbarArrowUpIcon);
 
   // Frame order components
@@ -322,8 +315,6 @@ declare global {
     'edgeless-frame-order-menu': EdgelessFrameOrderMenu;
     'edgeless-navigator-setting-button': EdgelessNavigatorSettingButton;
     'edgeless-present-button': EdgelessPresentButton;
-    'edgeless-toolbar-shape-draggable': EdgelessToolbarShapeDraggable;
-    'edgeless-shape-tool-button': EdgelessShapeToolButton;
     'overlay-scrollbar': OverlayScrollbar;
     'affine-template-loading': AffineTemplateLoading;
     'edgeless-templates-panel': EdgelessTemplatePanel;

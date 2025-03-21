@@ -1,4 +1,9 @@
-import { EdgelessShapeMenu, EdgelessShapeToolElement } from './draggable';
+import {
+  EdgelessShapeMenu,
+  EdgelessShapeToolButton,
+  EdgelessShapeToolElement,
+  EdgelessToolbarShapeDraggable,
+} from './draggable';
 import { EdgelessShapeTextEditor } from './text/edgeless-shape-text-editor';
 
 export function effects() {
@@ -8,6 +13,11 @@ export function effects() {
     'edgeless-shape-tool-element',
     EdgelessShapeToolElement
   );
+  customElements.define('edgeless-shape-tool-button', EdgelessShapeToolButton);
+  customElements.define(
+    'edgeless-toolbar-shape-draggable',
+    EdgelessToolbarShapeDraggable
+  );
 }
 
 declare global {
@@ -15,5 +25,7 @@ declare global {
     'edgeless-shape-text-editor': EdgelessShapeTextEditor;
     'edgeless-shape-menu': EdgelessShapeMenu;
     'edgeless-shape-tool-element': EdgelessShapeToolElement;
+    'edgeless-toolbar-shape-draggable': EdgelessToolbarShapeDraggable;
+    'edgeless-shape-tool-button': EdgelessShapeToolButton;
   }
 }
