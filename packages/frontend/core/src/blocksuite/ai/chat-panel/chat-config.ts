@@ -31,6 +31,15 @@ export interface DocDisplayConfig {
     cleanup: () => void;
   };
   getDoc: (docId: string) => Store | null;
+  getReferenceDocs: (docIds: string[]) => {
+    signal: Signal<
+      Array<{
+        docId: string;
+        title: string;
+      }>
+    >;
+    cleanup: () => void;
+  };
 }
 
 export interface SearchMenuConfig {

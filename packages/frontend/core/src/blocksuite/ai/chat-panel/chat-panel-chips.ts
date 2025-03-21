@@ -3,12 +3,14 @@ import {
   ShadowlessElement,
 } from '@blocksuite/affine/block-std';
 import { createLitPortal } from '@blocksuite/affine/components/portal';
-import { WithDisposable } from '@blocksuite/affine/global/lit';
+import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { PlusIcon } from '@blocksuite/icons/lit';
 import { flip, offset } from '@floating-ui/dom';
+import { type Signal, signal } from '@preact/signals-core';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { isEqual } from 'lodash-es';
 
 import { AIProvider } from '../provider';
 import type { DocDisplayConfig, SearchMenuConfig } from './chat-config';
@@ -28,7 +30,9 @@ import {
 // 100k tokens limit for the docs context
 const MAX_TOKEN_COUNT = 100000;
 
-export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
+export class ChatPanelChips extends SignalWatcher(
+  WithDisposable(ShadowlessElement)
+) {
   static override styles = css`
     .chips-wrapper {
       display: flex;
@@ -83,15 +87,26 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
   @state()
   accessor isCollapsed = false;
 
-  override render() {
-    const isCollapsed =
-      this.isCollapsed &&
-      this.chatContextValue.chips.filter(c => c.state !== 'candidate').length >
-        1;
+  @state()
+  accessor referenceDocs: Signal<
+    Array<{
+      docId: string;
+      title: string;
+    }>
+  > = signal([]);
 
-    const chips = isCollapsed
-      ? this.chatContextValue.chips.slice(0, 1)
-      : this.chatContextValue.chips;
+  private _cleanup: (() => void) | null = null;
+
+  private _docIds: string[] = [];
+
+  override render() {
+    const candidates: DocChip[] = this.referenceDocs.value.map(doc => ({
+      docId: doc.docId,
+      state: 'candidate',
+    }));
+    const allChips = this.chatContextValue.chips.concat(candidates);
+    const isCollapsed = this.isCollapsed && allChips.length > 1;
+    const chips = isCollapsed ? allChips.slice(0, 1) : allChips;
 
     return html` <div class="chips-wrapper">
       <div class="add-button" @click=${this._toggleAddDocMenu}>
@@ -123,7 +138,7 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
       )}
       ${isCollapsed
         ? html`<div class="collapse-button" @click=${this._toggleCollapse}>
-            +${this.chatContextValue.chips.length - 1}
+            +${allChips.length - 1}
           </div>`
         : nothing}
     </div>`;
@@ -137,6 +152,16 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
     ) {
       this.isCollapsed = true;
     }
+
+    // TODO only update when the chips are changed
+    if (_changedProperties.has('chatContextValue')) {
+      this._updateReferenceDocs();
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._cleanup?.();
   }
 
   private readonly _toggleCollapse = () => {
@@ -179,16 +204,7 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
 
   private readonly _addChip = async (chip: ChatChip) => {
     this.isCollapsed = false;
-    if (
-      this.chatContextValue.chips.length === 1 &&
-      this.chatContextValue.chips[0].state === 'candidate'
-    ) {
-      this.updateContext({
-        chips: [chip],
-      });
-      await this._addToContext(chip);
-      return;
-    }
+
     // remove the chip if it already exists
     const chips = this.chatContextValue.chips.filter(item => {
       if (isDocChip(chip)) {
@@ -233,25 +249,20 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
 
   private readonly _removeChip = async (chip: ChatChip) => {
     if (isDocChip(chip)) {
-      const removed = await this._removeFromContext(chip);
-      if (removed) {
-        this.updateContext({
-          chips: this.chatContextValue.chips.filter(item => {
-            return !isDocChip(item) || item.docId !== chip.docId;
-          }),
-        });
-      }
+      this.updateContext({
+        chips: this.chatContextValue.chips.filter(item => {
+          return !isDocChip(item) || item.docId !== chip.docId;
+        }),
+      });
     }
     if (isFileChip(chip)) {
-      const removed = await this._removeFromContext(chip);
-      if (removed) {
-        this.updateContext({
-          chips: this.chatContextValue.chips.filter(item => {
-            return !isFileChip(item) || item.file !== chip.file;
-          }),
-        });
-      }
+      this.updateContext({
+        chips: this.chatContextValue.chips.filter(item => {
+          return !isFileChip(item) || item.file !== chip.file;
+        }),
+      });
     }
+    await this._removeFromContext(chip);
   };
 
   private readonly _addToContext = async (chip: ChatChip) => {
@@ -327,5 +338,21 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
       return acc;
     }, 0);
     return estimatedTokens <= MAX_TOKEN_COUNT;
+  };
+
+  private readonly _updateReferenceDocs = () => {
+    const docIds = this.chatContextValue.chips
+      .filter(isDocChip)
+      .filter(chip => chip.state !== 'candidate')
+      .map(chip => chip.docId);
+    if (isEqual(this._docIds, docIds)) {
+      return;
+    }
+
+    this._cleanup?.();
+    this._docIds = docIds;
+    const { signal, cleanup } = this.docDisplayConfig.getReferenceDocs(docIds);
+    this.referenceDocs = signal;
+    this._cleanup = cleanup;
   };
 }

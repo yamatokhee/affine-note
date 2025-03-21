@@ -177,7 +177,7 @@ export class ChatPanel extends SignalWatcher(
   };
 
   private readonly _initChips = async () => {
-    // context not initialized, show candidate chip
+    // context not initialized
     if (!this._chatSessionId || !this._chatContextId) {
       return;
     }

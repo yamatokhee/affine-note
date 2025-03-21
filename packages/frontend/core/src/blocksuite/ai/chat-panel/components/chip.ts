@@ -1,6 +1,6 @@
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
-import { CloseIcon } from '@blocksuite/icons/lit';
+import { CloseIcon, PlusIcon } from '@blocksuite/icons/lit';
 import { css, html, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 
@@ -18,14 +18,18 @@ export class ChatPanelChip extends SignalWatcher(
       margin: 4px;
       padding: 0 4px;
       border-radius: 4px;
-      border: 1px solid var(--affine-border-color);
+      border: 0.5px solid var(--affine-border-color);
       background: var(--affine-background-primary-color);
       box-sizing: border-box;
     }
     .chip-card[data-state='candidate'] {
-      border-width: 0.5px;
+      border-width: 1px;
       border-style: dashed;
-      background: var(--affine-background-secondary-color);
+      background: var(--affine-tag-white);
+      color: var(--affine-icon-secondary);
+    }
+    .chip-card[data-state='candidate'] svg {
+      color: var(--affine-icon-secondary);
     }
     .chip-card[data-state='failed'] {
       color: var(--affine-error-color);
@@ -91,6 +95,7 @@ export class ChatPanelChip extends SignalWatcher(
   accessor onChipClick: () => void = () => {};
 
   override render() {
+    const isCandidate = this.state === 'candidate';
     return html`
       <div
         class="chip-card"
@@ -104,13 +109,15 @@ export class ChatPanelChip extends SignalWatcher(
           </span>
           <affine-tooltip>${this.tooltip}</affine-tooltip>
         </div>
-        ${this.closeable
-          ? html`
-              <div class="chip-card-close" @click=${this.onChipDelete}>
-                ${CloseIcon()}
-              </div>
-            `
-          : ''}
+        ${isCandidate
+          ? html`${PlusIcon()}`
+          : this.closeable
+            ? html`
+                <div class="chip-card-close" @click=${this.onChipDelete}>
+                  ${CloseIcon()}
+                </div>
+              `
+            : ''}
       </div>
     `;
   }

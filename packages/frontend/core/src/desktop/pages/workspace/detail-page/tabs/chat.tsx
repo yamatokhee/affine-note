@@ -3,6 +3,7 @@ import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-
 import { enableFootnoteConfigExtension } from '@affine/core/blocksuite/extensions';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
+import { DocsSearchService } from '@affine/core/modules/docs-search';
 import { SearchMenuService } from '@affine/core/modules/search-menu/services';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
@@ -54,11 +55,14 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
       chatPanelRef.current = new ChatPanel();
       chatPanelRef.current.host = editor.host;
       chatPanelRef.current.doc = editor.doc;
+
       const searchService = framework.get(AINetworkSearchService);
       const docDisplayMetaService = framework.get(DocDisplayMetaService);
       const workspaceService = framework.get(WorkspaceService);
       const searchMenuService = framework.get(SearchMenuService);
       const workbench = framework.get(WorkbenchService).workbench;
+      const docsSearchService = framework.get(DocsSearchService);
+
       chatPanelRef.current.appSidebarConfig = {
         getWidth: () => {
           const width$ = workbench.sidebarWidth$;
@@ -69,11 +73,13 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
           return createSignalFromObservable(open$, true);
         },
       };
+
       chatPanelRef.current.networkSearchConfig = {
         visible: searchService.visible,
         enabled: searchService.enabled,
         setEnabled: searchService.setEnabled,
       };
+
       chatPanelRef.current.docDisplayConfig = {
         getIcon: (docId: string) => {
           return docDisplayMetaService.icon$(docId, { type: 'lit' }).value;
@@ -86,7 +92,12 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
           const doc = workspaceService.workspace.docCollection.getDoc(docId);
           return doc;
         },
+        getReferenceDocs: (docIds: string[]) => {
+          const docs$ = docsSearchService.watchRefsFrom(docIds);
+          return createSignalFromObservable(docs$, []);
+        },
       };
+
       chatPanelRef.current.searchMenuConfig = {
         getDocMenuGroup: (query, action, abortSignal) => {
           return searchMenuService.getDocMenuGroup(query, action, abortSignal);
@@ -102,10 +113,11 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
           );
         },
       };
-      const previewSpecBuilder = enableFootnoteConfigExtension(
+
+      chatPanelRef.current.previewSpecBuilder = enableFootnoteConfigExtension(
         SpecProvider._.getSpec('preview:page')
       );
-      chatPanelRef.current.previewSpecBuilder = previewSpecBuilder;
+
       containerRef.current?.append(chatPanelRef.current);
     } else {
       chatPanelRef.current.host = editor.host;
