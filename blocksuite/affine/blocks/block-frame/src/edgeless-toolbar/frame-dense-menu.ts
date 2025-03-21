@@ -1,8 +1,8 @@
-import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
 import { menu } from '@blocksuite/affine-components/context-menu';
+import type { DenseMenuBuilder } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { FrameIcon } from '@blocksuite/icons/lit';
 
-import type { DenseMenuBuilder } from '../common/type.js';
+import { EdgelessFrameManagerIdentifier } from '../frame-manager.js';
 import { FrameConfig } from './config.js';
 
 export const buildFrameDenseMenu: DenseMenuBuilder = (edgeless, gfx) =>
@@ -22,6 +22,7 @@ export const buildFrameDenseMenu: DenseMenuBuilder = (edgeless, gfx) =>
             name: `Slide ${config.name}`,
             select: () => {
               const frame = edgeless.std.get(EdgelessFrameManagerIdentifier);
+              // @ts-expect-error FIXME: resolve after gfx tool refactor
               gfx.tool.setTool('default');
               frame.createFrameOnViewportCenter(config.wh);
             },

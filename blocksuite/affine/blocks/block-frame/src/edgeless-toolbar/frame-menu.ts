@@ -1,9 +1,9 @@
-import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
 import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { css, html, LitElement } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 
+import { EdgelessFrameManagerIdentifier } from '../frame-manager.js';
 import { FrameConfig } from './config.js';
 
 export class EdgelessFrameMenu extends EdgelessToolbarToolMixin(LitElement) {
@@ -84,6 +84,7 @@ export class EdgelessFrameMenu extends EdgelessToolbarToolMixin(LitElement) {
             (item, index) => html`
               <div
                 @click=${() => {
+                  // @ts-expect-error FIXME: resolve after gfx tool refactor
                   gfx.tool.setTool('default');
                   frameManager.createFrameOnViewportCenter(item.wh);
                 }}

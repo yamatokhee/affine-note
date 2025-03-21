@@ -36,8 +36,6 @@ import { EdgelessConnectorMenu } from './edgeless/components/toolbar/connector/c
 import { EdgelessConnectorToolButton } from './edgeless/components/toolbar/connector/connector-tool-button.js';
 import { EdgelessDefaultToolButton } from './edgeless/components/toolbar/default/default-tool-button.js';
 import { EdgelessEraserToolButton } from './edgeless/components/toolbar/eraser/eraser-tool-button.js';
-import { EdgelessFrameMenu } from './edgeless/components/toolbar/frame/frame-menu.js';
-import { EdgelessFrameToolButton } from './edgeless/components/toolbar/frame/frame-tool-button.js';
 import { EdgelessLassoToolButton } from './edgeless/components/toolbar/lasso/lasso-tool-button.js';
 import { EdgelessLinkToolButton } from './edgeless/components/toolbar/link/link-tool-button.js';
 import { MindMapPlaceholder } from './edgeless/components/toolbar/mindmap/mindmap-importing-placeholder.js';
@@ -157,7 +155,6 @@ function registerEdgelessToolbarComponents() {
     'edgeless-eraser-tool-button',
     EdgelessEraserToolButton
   );
-  customElements.define('edgeless-frame-tool-button', EdgelessFrameToolButton);
   customElements.define('edgeless-link-tool-button', EdgelessLinkToolButton);
   customElements.define('edgeless-lasso-tool-button', EdgelessLassoToolButton);
   customElements.define(
@@ -170,7 +167,6 @@ function registerEdgelessToolbarComponents() {
   // Menus
   customElements.define('edgeless-brush-menu', EdgelessBrushMenu);
   customElements.define('edgeless-connector-menu', EdgelessConnectorMenu);
-  customElements.define('edgeless-frame-menu', EdgelessFrameMenu);
   customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);
   customElements.define('edgeless-note-menu', EdgelessNoteMenu);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
@@ -301,8 +297,6 @@ declare global {
     'edgeless-connector-tool-button': EdgelessConnectorToolButton;
     'edgeless-default-tool-button': EdgelessDefaultToolButton;
     'edgeless-eraser-tool-button': EdgelessEraserToolButton;
-    'edgeless-frame-menu': EdgelessFrameMenu;
-    'edgeless-frame-tool-button': EdgelessFrameToolButton;
     'edgeless-lasso-tool-button': EdgelessLassoToolButton;
     'edgeless-link-tool-button': EdgelessLinkToolButton;
     'mindmap-import-placeholder': MindMapPlaceholder;

@@ -1,13 +1,12 @@
 import { menu } from '@blocksuite/affine-components/context-menu';
 import { ConnectorMode } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
+import type { DenseMenuBuilder } from '@blocksuite/affine-widget-edgeless-toolbar';
 import {
   ConnectorCIcon,
   ConnectorEIcon,
   ConnectorLIcon,
 } from '@blocksuite/icons/lit';
-
-import type { DenseMenuBuilder } from '../common/type.js';
 
 export const buildConnectorDenseMenu: DenseMenuBuilder = (edgeless, gfx) => {
   const prevMode =

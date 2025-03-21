@@ -2,7 +2,7 @@ import { EdgelessTextBlockModel } from '@blocksuite/affine-model';
 import { type ToolbarModuleConfig } from '@blocksuite/affine-shared/services';
 import { createTextActions } from '@blocksuite/affine-widget-edgeless-toolbar';
 
-export const builtinEdgelessTextToolbarConfig = {
+export const edgelessTextToolbarConfig = {
   // No need to adjust element bounds, which updates itself using ResizeObserver
   actions: createTextActions(EdgelessTextBlockModel, 'edgeless-text'),
 

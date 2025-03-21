@@ -1,10 +1,11 @@
+import { frameQuickTool } from '@blocksuite/affine-block-frame';
+import { shapeSeniorTool } from '@blocksuite/affine-gfx-shape';
 import {
   QuickToolExtension,
   SeniorToolExtension,
 } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { html } from 'lit';
 
-import { buildFrameDenseMenu } from './frame/frame-dense-menu.js';
 import { buildLinkDenseMenu } from './link/link-dense-menu.js';
 
 const defaultQuickTool = QuickToolExtension('default', ({ block }) => {
@@ -13,17 +14,6 @@ const defaultQuickTool = QuickToolExtension('default', ({ block }) => {
     content: html`<edgeless-default-tool-button
       .edgeless=${block}
     ></edgeless-default-tool-button>`,
-  };
-});
-
-const frameQuickTool = QuickToolExtension('frame', ({ block, gfx }) => {
-  return {
-    type: 'frame',
-    content: html`<edgeless-frame-tool-button
-      .edgeless=${block}
-    ></edgeless-frame-tool-button>`,
-    menu: buildFrameDenseMenu(block, gfx),
-    enable: !block.doc.readonly,
   };
 });
 
@@ -68,19 +58,6 @@ const penSeniorTool = SeniorToolExtension('pen', ({ block }) => {
     </div> `,
   };
 });
-
-const shapeSeniorTool = SeniorToolExtension(
-  'shape',
-  ({ block, toolbarContainer }) => {
-    return {
-      name: 'Shape',
-      content: html`<edgeless-shape-tool-button
-        .edgeless=${block}
-        .toolbarContainer=${toolbarContainer}
-      ></edgeless-shape-tool-button>`,
-    };
-  }
-);
 
 const mindMapSeniorTool = SeniorToolExtension(
   'mindMap',
