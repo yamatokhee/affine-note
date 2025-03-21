@@ -69,8 +69,9 @@ export class TableGroup extends SignalWatcher(
 
   private readonly clickAddRow = () => {
     this.view.rowAdd('end', this.group?.key);
+    const selectionController = this.viewEle.selectionController;
+    selectionController.selection = undefined;
     requestAnimationFrame(() => {
-      const selectionController = this.viewEle.selectionController;
       const index = this.view.properties$.value.findIndex(
         v => v.type$.value === 'title'
       );
@@ -87,8 +88,9 @@ export class TableGroup extends SignalWatcher(
 
   private readonly clickAddRowInStart = () => {
     this.view.rowAdd('start', this.group?.key);
+    const selectionController = this.viewEle.selectionController;
+    selectionController.selection = undefined;
     requestAnimationFrame(() => {
-      const selectionController = this.viewEle.selectionController;
       const index = this.view.properties$.value.findIndex(
         v => v.type$.value === 'title'
       );
