@@ -1,4 +1,5 @@
 /* oxlint-disable @typescript-eslint/no-non-null-assertion */
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import {
   type MenuHandler,
   popMenu,
@@ -31,7 +32,6 @@ import { cache } from 'lit/directives/cache.js';
 import debounce from 'lodash-es/debounce';
 import { Subject } from 'rxjs';
 
-import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import type { MenuPopper } from './common/create-popper.js';
 import {
   edgelessToolbarContext,
@@ -39,7 +39,10 @@ import {
   edgelessToolbarSlotsContext,
   edgelessToolbarThemeContext,
 } from './context.js';
-import { getQuickTools, getSeniorTools } from './tools.js';
+import {
+  QuickToolIdentifier,
+  SeniorToolIdentifier,
+} from './extension/index.js';
 
 const TOOLBAR_PADDING_X = 12;
 const TOOLBAR_HEIGHT = 64;
@@ -54,10 +57,7 @@ const DIVIDER_SPACE = 8;
 const SAFE_AREA_WIDTH = 64;
 
 export const EDGELESS_TOOLBAR_WIDGET = 'edgeless-toolbar-widget';
-export class EdgelessToolbarWidget extends WidgetComponent<
-  RootBlockModel,
-  EdgelessRootBlockComponent
-> {
+export class EdgelessToolbarWidget extends WidgetComponent<RootBlockModel> {
   static override styles = css`
     :host {
       font-family: ${unsafeCSS(baseTheme.fontSansFamily)};
@@ -335,10 +335,19 @@ export class EdgelessToolbarWidget extends WidgetComponent<
   }
 
   private get _quickTools() {
-    if (!this.block) {
+    const block = this.block;
+    if (!block) {
       return [];
     }
-    return getQuickTools({ edgeless: this.block });
+    const quickTools = Array.from(
+      this.std.provider.getAll(QuickToolIdentifier).values()
+    );
+    const gfx = this.std.get(GfxControllerIdentifier);
+    return quickTools
+      .map(tool =>
+        tool({ block, gfx, toolbarContainer: this.toolbarContainer })
+      )
+      .filter(({ enable = true }) => enable);
   }
 
   private get _quickToolsWidthTotal() {
@@ -379,13 +388,19 @@ export class EdgelessToolbarWidget extends WidgetComponent<
   }
 
   private get _seniorTools() {
-    if (!this.block) {
+    const block = this.block;
+    if (!block) {
       return [];
     }
-    return getSeniorTools({
-      edgeless: this.block,
-      toolbarContainer: this.toolbarContainer,
-    });
+    const seniorTools = Array.from(
+      this.std.provider.getAll(SeniorToolIdentifier).values()
+    );
+    const gfx = this.std.get(GfxControllerIdentifier);
+    return seniorTools
+      .map(tool =>
+        tool({ block, gfx, toolbarContainer: this.toolbarContainer })
+      )
+      .filter(({ enable = true }) => enable);
   }
 
   private get _seniorToolsWidthTotal() {
@@ -612,27 +627,28 @@ export class EdgelessToolbarWidget extends WidgetComponent<
 
   override firstUpdated() {
     const { _disposables, block, gfx } = this;
-    if (!block) {
-      return;
-    }
+    if (!block) return;
+
+    const slots = this.std.get(EdgelessLegacySlotIdentifier);
+    const editPropsStore = this.std.get(EditPropsStore);
 
     _disposables.add(
       gfx.viewport.viewportUpdated.subscribe(() => this.requestUpdate())
     );
     _disposables.add(
-      block.slots.readonlyUpdated.subscribe(() => {
+      slots.readonlyUpdated.subscribe(() => {
         this.requestUpdate();
       })
     );
     _disposables.add(
-      block.slots.toolbarLocked.subscribe(disabled => {
+      slots.toolbarLocked.subscribe(disabled => {
         this.toggleAttribute('disabled', disabled);
       })
     );
     // This state from `editPropsStore` is not reactive,
     // if the value is updated outside of this component, it will not be reflected.
     _disposables.add(
-      this.std.get(EditPropsStore).slots.storageUpdated.subscribe(({ key }) => {
+      editPropsStore.slots.storageUpdated.subscribe(({ key }) => {
         if (key === 'presentHideToolbar') {
           this.requestUpdate();
         }

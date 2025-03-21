@@ -9,16 +9,16 @@ import {
 
 import type { DenseMenuBuilder } from '../common/type.js';
 
-export const buildConnectorDenseMenu: DenseMenuBuilder = edgeless => {
+export const buildConnectorDenseMenu: DenseMenuBuilder = (edgeless, gfx) => {
   const prevMode =
     edgeless.std.get(EditPropsStore).lastProps$.value.connector.mode;
 
-  const isSelected = edgeless.gfx.tool.currentToolName$.peek() === 'connector';
+  const isSelected = gfx.tool.currentToolName$.peek() === 'connector';
 
   const createSelect =
     (mode: ConnectorMode, record = true) =>
     () => {
-      edgeless.gfx.tool.setTool('connector', {
+      gfx.tool.setTool('connector', {
         mode,
       });
       record &&
