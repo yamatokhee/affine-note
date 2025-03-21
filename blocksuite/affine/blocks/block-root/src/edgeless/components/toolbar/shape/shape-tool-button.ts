@@ -1,9 +1,9 @@
 import { ShapeTool } from '@blocksuite/affine-gfx-shape';
 import { type ShapeName, ShapeType } from '@blocksuite/affine-model';
+import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { SignalWatcher } from '@blocksuite/global/lit';
 import { css, html, LitElement } from 'lit';
 
-import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import type { DraggableShape } from './utils.js';
 
 export class EdgelessShapeToolButton extends EdgelessToolbarToolMixin(
@@ -55,7 +55,7 @@ export class EdgelessShapeToolButton extends EdgelessToolbarToolMixin(
   }
 
   private _updateOverlay() {
-    const controller = this.edgeless.gfx.tool.currentTool$.peek();
+    const controller = this.gfx.tool.currentTool$.peek();
     if (controller instanceof ShapeTool) {
       controller.createOverlay();
     }

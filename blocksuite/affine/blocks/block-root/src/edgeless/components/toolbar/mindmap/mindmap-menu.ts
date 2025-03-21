@@ -5,6 +5,7 @@ import {
   FeatureFlagService,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
+import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { BlockStdScope } from '@blocksuite/block-std';
 import { modelContext, stdContext } from '@blocksuite/block-std';
 import { ErrorCode } from '@blocksuite/global/exceptions';
@@ -19,7 +20,6 @@ import { repeat } from 'lit/directives/repeat.js';
 
 import type { EdgelessRootBlockComponent } from '../../../index.js';
 import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
-import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { getMindMaps, type ToolbarMindmapItem } from './assets.js';
 import { mediaRender, textRender } from './basket-elements.js';
 import { importMindMapIcon, mindmapMenuMediaIcon, textIcon } from './icons.js';
@@ -220,7 +220,6 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
   initDragController() {
     if (this.draggableController || !this.edgeless) return;
     this.draggableController = new EdgelessDraggableElementController(this, {
-      service: this.edgeless.service,
       edgeless: this.edgeless,
       scopeElement: this,
       clickToDrag: true,
@@ -234,13 +233,13 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
       onDrop: (element, bound) => {
         if ('render' in element.data) {
           element.data
-            .render(bound, this.edgeless.service, this.edgeless)
+            .render(bound, this.edgeless)
             .then(id => {
               if (!id) return;
               if (element.data.type === 'mindmap') {
                 this.onActiveStyleChange?.(element.data.style);
                 this.setEdgelessTool({ type: 'default' });
-                this.edgeless.gfx.selection.set({
+                this.gfx.selection.set({
                   elements: [id],
                   editing: false,
                 });

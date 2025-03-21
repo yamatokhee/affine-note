@@ -3,6 +3,7 @@ import {
   ThemeProvider,
   ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import {
   type ReactiveController,
@@ -64,6 +65,10 @@ export class EdgelessDraggableElementController<T>
   ) {
     this.host = host;
     host.addController(this);
+  }
+
+  get gfx() {
+    return this.options.edgeless.std.get(GfxControllerIdentifier);
   }
 
   /**
@@ -146,8 +151,8 @@ export class EdgelessDraggableElementController<T>
   private _onDragEnd() {
     const { overlay, info, options } = this;
     const { startTime, elementInfo, edgelessRect, validMoved } = info;
-    const { service, clickThreshold = 1500 } = options;
-    const zoom = service.viewport.zoom;
+    const { clickThreshold = 1500 } = options;
+    const zoom = this.gfx.viewport.zoom;
 
     if (!validMoved) {
       const duration = Date.now() - startTime;
@@ -168,7 +173,7 @@ export class EdgelessDraggableElementController<T>
 
     if (this.states.dragOut && !this.states.cancelled && overlay) {
       const rect = overlay.transitionWrapper.getBoundingClientRect();
-      const [modelX, modelY] = this.options.service.viewport.toModelCoord(
+      const [modelX, modelY] = this.gfx.viewport.toModelCoord(
         rect.left - edgelessRect.left,
         rect.top - edgelessRect.top
       );
@@ -228,7 +233,7 @@ export class EdgelessDraggableElementController<T>
     overlay.element.style.setProperty('--translate-x', `${offsetX}px`);
     overlay.element.style.setProperty('--translate-y', `${offsetY}px`);
     // - scale shape with scale
-    const zoom = options.service.viewport.zoom;
+    const zoom = this.gfx.viewport.zoom;
     this._updateOverlayScale(zoom);
   }
 
@@ -386,7 +391,7 @@ export class EdgelessDraggableElementController<T>
 
   hostConnected() {
     this.host.disposables.add(
-      this.options.service.viewport.viewportUpdated.subscribe(({ zoom }) => {
+      this.gfx.viewport.viewportUpdated.subscribe(({ zoom }) => {
         this._updateOverlayScale(zoom);
       })
     );

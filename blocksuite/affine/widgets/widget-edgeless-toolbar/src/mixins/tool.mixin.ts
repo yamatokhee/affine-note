@@ -1,17 +1,11 @@
 import type { ColorScheme } from '@blocksuite/affine-model';
+import type { BlockComponent } from '@blocksuite/block-std';
 import {
-  createPopper,
-  edgelessToolbarContext,
-  type EdgelessToolbarSlots,
-  edgelessToolbarSlotsContext,
-  edgelessToolbarThemeContext,
-  type EdgelessToolbarWidget,
-  type MenuPopper,
-} from '@blocksuite/affine-widget-edgeless-toolbar';
-import type {
-  GfxToolsFullOption,
-  GfxToolsFullOptionValue,
-  ToolController,
+  type GfxController,
+  GfxControllerIdentifier,
+  type GfxToolsFullOption,
+  type GfxToolsFullOptionValue,
+  type ToolController,
 } from '@blocksuite/block-std/gfx';
 import {
   // oxlint-disable-next-line no-unused-vars
@@ -25,7 +19,14 @@ import { cssVar } from '@toeverything/theme';
 import type { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
+import {
+  edgelessToolbarContext,
+  type EdgelessToolbarSlots,
+  edgelessToolbarSlotsContext,
+  edgelessToolbarThemeContext,
+} from '../context';
+import { createPopper, type MenuPopper } from '../create-popper';
+import type { EdgelessToolbarWidget } from '../edgeless-toolbar';
 
 type ValueOf<T> = T[keyof T];
 
@@ -34,7 +35,7 @@ export declare abstract class EdgelessToolbarToolClass extends DisposableClass {
 
   createPopper: typeof createPopper;
 
-  edgeless: EdgelessRootBlockComponent;
+  edgeless: BlockComponent;
 
   edgelessTool: GfxToolsFullOptionValue;
 
@@ -43,6 +44,8 @@ export declare abstract class EdgelessToolbarToolClass extends DisposableClass {
   popper: MenuPopper<HTMLElement> | null;
 
   setEdgelessTool: ToolController['setTool'];
+
+  gfx: GfxController;
 
   theme: ColorScheme;
 
@@ -74,18 +77,24 @@ export const EdgelessToolbarToolMixin = <T extends Constructor<LitElement>>(
 
     get active() {
       const { type } = this;
+      // @ts-expect-error FIXME: we need to fix the type of edgelessTool
       const activeType = this.edgelessTool?.type;
 
       return activeType
         ? Array.isArray(type)
-          ? type.includes(activeType)
+          ? // @ts-expect-error FIXME: we need to fix the type of edgelessTool
+            type.includes(activeType)
           : activeType === type
         : false;
     }
 
+    get gfx() {
+      return this.edgeless.std.get(GfxControllerIdentifier);
+    }
+
     get setEdgelessTool() {
       return (...args: Parameters<ToolController['setTool']>) => {
-        this.edgeless.gfx.tool.setTool(
+        this.gfx.tool.setTool(
           // @ts-expect-error FIXME: ts error
           ...args
         );
@@ -100,7 +109,7 @@ export const EdgelessToolbarToolMixin = <T extends Constructor<LitElement>>(
     }
 
     private _updateActiveEdgelessTool() {
-      this.edgelessTool = this.edgeless.gfx.tool.currentToolOption$.value;
+      this.edgelessTool = this.gfx.tool.currentToolOption$.value;
       this._applyActiveStyle();
     }
 
@@ -150,7 +159,7 @@ export const EdgelessToolbarToolMixin = <T extends Constructor<LitElement>>(
     }
 
     @property({ attribute: false })
-    accessor edgeless!: EdgelessRootBlockComponent;
+    accessor edgeless!: BlockComponent;
 
     @state()
     accessor edgelessTool!: ValueOf<GfxToolsFullOption> | null;

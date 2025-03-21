@@ -1,8 +1,7 @@
+import { QuickToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { FrameIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
-
-import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 
 export class EdgelessFrameToolButton extends QuickToolMixin(LitElement) {
   static override styles = css`

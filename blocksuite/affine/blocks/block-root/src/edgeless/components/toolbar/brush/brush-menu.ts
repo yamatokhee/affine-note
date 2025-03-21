@@ -5,13 +5,12 @@ import {
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
+import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { SignalWatcher } from '@blocksuite/global/lit';
 import { computed } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-
-import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 
 export class EdgelessBrushMenu extends EdgelessToolbarToolMixin(
   SignalWatcher(LitElement)

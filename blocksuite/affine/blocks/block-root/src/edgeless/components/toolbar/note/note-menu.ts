@@ -9,6 +9,7 @@ import {
   getImageFilesFromLocal,
   openFileOrFiles,
 } from '@blocksuite/affine-shared/utils';
+import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
@@ -16,7 +17,6 @@ import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
-import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { NOTE_MENU_ITEMS } from './note-menu-config.js';
 
 export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
@@ -60,8 +60,8 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
       maxWidth: MAX_IMAGE_WIDTH,
     });
     this._imageLoading = false;
-    this.edgeless.gfx.tool.setTool('default');
-    this.edgeless.gfx.selection.set({ elements: ids });
+    this.gfx.tool.setTool('default');
+    this.gfx.selection.set({ elements: ids });
   }
 
   private _onHandleLinkButtonClick() {
@@ -93,7 +93,7 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
   override firstUpdated() {
     this.disposables.add(
       effect(() => {
-        const tool = this.edgeless.gfx.tool.currentToolOption$.value;
+        const tool = this.gfx.tool.currentToolOption$.value;
 
         if (tool?.type !== 'affine:note') return;
         this.childFlavour = tool.childFlavour;
@@ -140,7 +140,7 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
                 const file = await openFileOrFiles();
                 if (!file) return;
                 await addAttachments(this.edgeless.std, [file]);
-                this.edgeless.gfx.tool.setTool('default');
+                this.gfx.tool.setTool('default');
                 this.edgeless.std
                   .getOptional(TelemetryProvider)
                   ?.track('CanvasElementAdded', {

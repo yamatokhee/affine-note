@@ -19,6 +19,7 @@ import {
   ThemeProvider,
   ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
+import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { SignalWatcher } from '@blocksuite/global/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -27,7 +28,6 @@ import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
-import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import type { DraggableShape } from './utils.js';
 import { buildVariablesObject } from './utils.js';
 
@@ -152,7 +152,7 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
   }
 
   private _setShapeOverlayLock(lock: boolean) {
-    const controller = this.edgeless.gfx.tool.currentTool$.peek();
+    const controller = this.gfx.tool.currentTool$.peek();
     if (controller instanceof ShapeTool) {
       controller.setDisableOverlay(lock);
     }
@@ -162,7 +162,6 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
     if (!this.edgeless || !this.toolbarContainer) return;
     if (this.draggableController) return;
     this.draggableController = new EdgelessDraggableElementController(this, {
-      service: this.edgeless.service,
       edgeless: this.edgeless,
       scopeElement: this.toolbarContainer,
       standardWidth: 100,
@@ -176,7 +175,7 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
           type: 'shape',
           shapeName,
         });
-        const controller = this.edgeless.gfx.tool.currentTool$.peek();
+        const controller = this.gfx.tool.currentTool$.peek();
         if (controller instanceof ShapeTool) {
           controller.clearOverlay();
         }
@@ -209,8 +208,8 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
         this._setShapeOverlayLock(false);
         this.readyToDrop = false;
 
-        this.edgeless.gfx.tool.setTool('default');
-        this.edgeless.gfx.selection.set({
+        this.gfx.tool.setTool('default');
+        this.gfx.selection.set({
           elements: [id],
           editing: false,
         });
@@ -236,8 +235,9 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
           // `page.keyboard.press('Shift+s')` in playwright will also trigger this 's' key event
           if (ctx.get('keyboardState').raw.shiftKey) return;
 
-          const service = this.edgeless.service;
-          if (service.locked || service.selection.editing) return;
+          const locked = this.gfx.viewport.locked;
+          const selection = this.gfx.selection;
+          if (locked || selection.editing) return;
 
           if (this.readyToDrop) {
             const activeIndex = shapes.findIndex(
@@ -257,7 +257,7 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
             console.error('Edgeless toolbar Shape element not found');
             return;
           }
-          const { x, y } = service.gfx.tool.lastMousePos$.peek();
+          const { x, y } = this.gfx.tool.lastMousePos$.peek();
           const { viewport } = this.edgeless.std.get(ViewportElementProvider);
           const { left, top } = viewport;
           const clientPos = { x: x + left, y: y + top };

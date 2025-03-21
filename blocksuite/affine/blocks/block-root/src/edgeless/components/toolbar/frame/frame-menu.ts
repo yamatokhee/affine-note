@@ -1,8 +1,9 @@
+import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
+import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { css, html, LitElement } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { FrameConfig } from './config.js';
 
 export class EdgelessFrameMenu extends EdgelessToolbarToolMixin(LitElement) {
@@ -66,8 +67,12 @@ export class EdgelessFrameMenu extends EdgelessToolbarToolMixin(LitElement) {
 
   override type: GfxToolsFullOptionValue['type'] = 'frame';
 
+  get frameManager() {
+    return this.edgeless.std.get(EdgelessFrameManagerIdentifier);
+  }
+
   override render() {
-    const { edgeless } = this;
+    const { gfx, frameManager } = this;
     return html`
       <edgeless-slide-menu .showNext=${false}>
         <div class="menu-content">
@@ -79,8 +84,8 @@ export class EdgelessFrameMenu extends EdgelessToolbarToolMixin(LitElement) {
             (item, index) => html`
               <div
                 @click=${() => {
-                  edgeless.gfx.tool.setTool('default');
-                  edgeless.service.frame.createFrameOnViewportCenter(item.wh);
+                  gfx.tool.setTool('default');
+                  frameManager.createFrameOnViewportCenter(item.wh);
                 }}
                 class="frame-add-button ${index}"
                 data-name="${item.name}"

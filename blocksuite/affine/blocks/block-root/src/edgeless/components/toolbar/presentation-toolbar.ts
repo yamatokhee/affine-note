@@ -1,10 +1,16 @@
 import {
+  EdgelessFrameManagerIdentifier,
   isFrameBlock,
   type NavigatorMode,
 } from '@blocksuite/affine-block-frame';
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import { toast } from '@blocksuite/affine-components/toast';
 import type { FrameBlockModel } from '@blocksuite/affine-model';
-import { EditPropsStore } from '@blocksuite/affine-shared/services';
+import {
+  EditPropsStore,
+  ViewportElementProvider,
+} from '@blocksuite/affine-shared/services';
+import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { Bound, clamp } from '@blocksuite/global/gfx';
 import { SignalWatcher } from '@blocksuite/global/lit';
@@ -22,7 +28,6 @@ import { property, state } from 'lit/decorators.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import { launchIntoFullscreen } from '../utils.js';
-import { EdgelessToolbarToolMixin } from './mixins/tool.mixin.js';
 
 export class PresentationToolbar extends EdgelessToolbarToolMixin(
   SignalWatcher(LitElement)
@@ -125,7 +130,7 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
   }
 
   private get _frames(): FrameBlockModel[] {
-    return this.edgeless.service.frames;
+    return this.edgeless.std.get(EdgelessFrameManagerIdentifier).frames;
   }
 
   get dense() {
@@ -134,6 +139,10 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
 
   get host() {
     return this.edgeless.host;
+  }
+
+  get slots() {
+    return this.edgeless.std.get(EdgelessLegacySlotIdentifier);
   }
 
   constructor(edgeless: EdgelessRootBlockComponent) {
@@ -176,7 +185,7 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
 
   private _moveToCurrentFrame() {
     const current = this._currentFrameIndex;
-    const viewport = this.edgeless.service.viewport;
+    const viewport = this.gfx.viewport;
     const frame = this._frames[current];
 
     if (frame) {
@@ -197,7 +206,7 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
       }
 
       viewport.setViewportByBound(bound, [0, 0, 0, 0], false);
-      this.edgeless.slots.navigatorFrameChanged.next(
+      this.slots.navigatorFrameChanged.next(
         this._frames[this._currentFrameIndex]
       );
     }
@@ -235,7 +244,10 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
       document.exitFullscreen().catch(console.error);
       this._fullScreenMode = false;
     } else {
-      launchIntoFullscreen(this.edgeless.viewportElement);
+      const { viewportElement } = this.edgeless.std.get(
+        ViewportElementProvider
+      );
+      launchIntoFullscreen(viewportElement);
       this._fullScreenMode = true;
     }
   }
@@ -243,19 +255,19 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
   override connectedCallback(): void {
     super.connectedCallback();
 
-    const { _disposables, edgeless } = this;
+    const { _disposables } = this;
 
     _disposables.add(
       effect(() => {
-        const currentTool = this.edgeless.gfx.tool.currentToolOption$.value;
+        const currentTool = this.gfx.tool.currentToolOption$.value;
+        const selection = this.gfx.selection;
 
         if (currentTool?.type === 'frameNavigator') {
           this._cachedIndex = this._currentFrameIndex;
           this._navigatorMode = currentTool.mode ?? this._navigatorMode;
-          if (isFrameBlock(edgeless.service.selection.selectedElements[0])) {
+          if (isFrameBlock(selection.selectedElements[0])) {
             this._cachedIndex = this._frames.findIndex(
-              frame =>
-                frame.id === edgeless.service.selection.selectedElements[0].id
+              frame => frame.id === selection.selectedElements[0].id
             );
           }
           if (this._frames.length === 0)
@@ -273,12 +285,12 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
   }
 
   override firstUpdated() {
-    const { _disposables, edgeless } = this;
+    const { _disposables } = this;
 
     this._bindHotKey();
 
     _disposables.add(
-      edgeless.slots.navigatorSettingUpdated.subscribe(({ fillScreen }) => {
+      this.slots.navigatorSettingUpdated.subscribe(({ fillScreen }) => {
         if (fillScreen !== undefined) {
           this._navigatorMode = fillScreen ? 'fill' : 'fit';
         }
@@ -307,7 +319,7 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
       }
 
       setTimeout(() => this._moveToCurrentFrame(), 400);
-      this.edgeless.slots.fullScreenToggled.next();
+      this.slots.fullScreenToggled.next();
     });
 
     this._navigatorMode =

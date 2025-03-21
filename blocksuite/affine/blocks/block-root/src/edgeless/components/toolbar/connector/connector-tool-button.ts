@@ -1,5 +1,6 @@
 import { ConnectorMode, getConnectorModeName } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
+import { QuickToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { SignalWatcher } from '@blocksuite/global/lit';
 import {
   ConnectorCIcon,
@@ -8,8 +9,6 @@ import {
 } from '@blocksuite/icons/lit';
 import { computed } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
-
-import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 
 const IcomMap = {
   [ConnectorMode.Straight]: ConnectorLIcon(),
@@ -65,7 +64,7 @@ export class EdgelessConnectorToolButton extends QuickToolMixin(
         @click=${() => {
           // don't update tool before toggling menu
           this._toggleMenu();
-          this.edgeless.gfx.tool.setTool('connector', {
+          this.gfx.tool.setTool('connector', {
             mode,
           });
         }}

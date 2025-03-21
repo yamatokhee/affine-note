@@ -8,6 +8,7 @@ import {
   ThemeProvider,
   ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
+import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import type { Bound } from '@blocksuite/global/gfx';
 import { SignalWatcher } from '@blocksuite/global/lit';
@@ -19,7 +20,6 @@ import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
-import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { getMindMaps } from './assets.js';
 import {
   type DraggableTool,
@@ -210,7 +210,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
 
           this.tryDisposePopper();
           this.setEdgelessTool({ type: 'default' });
-          this.edgeless.gfx.selection.set({
+          this.gfx.selection.set({
             elements: [element.tree.id],
             editing: false,
           });
@@ -223,7 +223,6 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
     if (!this.edgeless || !this.toolbarContainer) return;
     if (this.draggableController) return;
     this.draggableController = new EdgelessDraggableElementController(this, {
-      service: this.edgeless.service,
       edgeless: this.edgeless,
       scopeElement: this.toolbarContainer,
       standardWidth: 100,
@@ -265,13 +264,13 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
       },
       onDrop: (el, bound) => {
         el.data
-          .render(bound, this.edgeless.service, this.edgeless)
+          .render(bound, this.edgeless)
           .then(id => {
             if (!id) return;
             this.readyToDrop = false;
             if (el.data.name === 'mindmap') {
               this.setEdgelessTool({ type: 'default' });
-              this.edgeless.gfx.selection.set({
+              this.gfx.selection.set({
                 elements: [id],
                 editing: false,
               });
@@ -286,9 +285,10 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
     this.edgeless.bindHotKey(
       {
         m: () => {
-          const service = this.edgeless.service;
-          if (service.locked) return;
-          if (service.selection.editing) return;
+          const gfx = this.gfx;
+          const locked = gfx.viewport.locked;
+          if (locked) return;
+          if (gfx.selection.editing) return;
 
           if (this.readyToDrop) {
             // change the style
@@ -309,7 +309,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
           }
           this.setEdgelessTool({ type: 'empty' });
           const icon = this.mindmapElement;
-          const { x, y } = service.gfx.tool.lastMousePos$.peek();
+          const { x, y } = gfx.tool.lastMousePos$.peek();
           const { viewport } = this.edgeless.std.get(ViewportElementProvider);
           const { left, top } = viewport;
           const clientPos = { x: x + left, y: y + top };

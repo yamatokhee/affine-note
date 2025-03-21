@@ -1,9 +1,10 @@
+import {
+  EdgelessToolbarToolMixin,
+  QuickToolMixin,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { PresentationIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
-
-import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
-import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 
 export class EdgelessPresentButton extends QuickToolMixin(
   EdgelessToolbarToolMixin(LitElement)

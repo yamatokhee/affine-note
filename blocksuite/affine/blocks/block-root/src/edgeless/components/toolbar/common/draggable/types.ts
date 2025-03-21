@@ -1,9 +1,7 @@
+import type { BlockComponent } from '@blocksuite/block-std';
 import type { Bound } from '@blocksuite/global/gfx';
 import type { DisposableClass } from '@blocksuite/global/lit';
 import type { TemplateResult } from 'lit';
-
-import type { EdgelessRootBlockComponent } from '../../../../edgeless-root-block.js';
-import type { EdgelessRootService } from '../../../../edgeless-root-service.js';
 
 export interface EdgelessDraggableElementHost extends DisposableClass {}
 
@@ -25,8 +23,7 @@ export interface OverlayLayer {
 }
 
 export interface EdgelessDraggableElementOptions<T> {
-  edgeless: EdgelessRootBlockComponent;
-  service: EdgelessRootService;
+  edgeless: BlockComponent;
   /**
    * In which element that the target should be dragged out
    * If not provided, recognized as the drag-out whenever dragging
