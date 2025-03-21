@@ -55,7 +55,6 @@ import { OverlayScrollbar } from './edgeless/components/toolbar/template/overlay
 import { AffineTemplateLoading } from './edgeless/components/toolbar/template/template-loading.js';
 import { EdgelessTemplatePanel } from './edgeless/components/toolbar/template/template-panel.js';
 import { EdgelessTemplateButton } from './edgeless/components/toolbar/template/template-tool-button.js';
-import { EdgelessTextMenu } from './edgeless/components/toolbar/text/text-menu.js';
 import {
   AffineImageToolbarWidget,
   AffineModalWidget,
@@ -174,7 +173,6 @@ function registerEdgelessToolbarComponents() {
   customElements.define('edgeless-frame-menu', EdgelessFrameMenu);
   customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);
   customElements.define('edgeless-note-menu', EdgelessNoteMenu);
-  customElements.define('edgeless-text-menu', EdgelessTextMenu);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
 
   // Toolbar components
@@ -318,7 +316,6 @@ declare global {
     'overlay-scrollbar': OverlayScrollbar;
     'affine-template-loading': AffineTemplateLoading;
     'edgeless-templates-panel': EdgelessTemplatePanel;
-    'edgeless-text-menu': EdgelessTextMenu;
     'affine-page-root': PageRootBlockComponent;
     'zoom-bar-toggle-button': ZoomBarToggleButton;
     'edgeless-zoom-toolbar': EdgelessZoomToolbar;

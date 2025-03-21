@@ -1,4 +1,5 @@
 import { frameToolbarExtension } from '@blocksuite/affine-block-frame';
+import { textToolbarConfig } from '@blocksuite/affine-gfx-text';
 import { ToolbarModuleExtension } from '@blocksuite/affine-shared/services';
 import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import type { ExtensionType } from '@blocksuite/store';
@@ -10,7 +11,6 @@ import { builtinGroupToolbarConfig } from './group';
 import { builtinMindmapToolbarConfig } from './mindmap';
 import { builtinLockedToolbarConfig, builtinMiscToolbarConfig } from './misc';
 import { builtinShapeToolbarConfig } from './shape';
-import { builtinTextToolbarConfig } from './text';
 
 export const EdgelessElementToolbarExtension: ExtensionType[] = [
   frameToolbarExtension,
@@ -37,7 +37,7 @@ export const EdgelessElementToolbarExtension: ExtensionType[] = [
 
   ToolbarModuleExtension({
     id: BlockFlavourIdentifier('affine:surface:text'),
-    config: builtinTextToolbarConfig,
+    config: textToolbarConfig,
   }),
 
   ToolbarModuleExtension({

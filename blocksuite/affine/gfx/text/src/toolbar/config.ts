@@ -7,7 +7,7 @@ import { type ToolbarModuleConfig } from '@blocksuite/affine-shared/services';
 import { createTextActions } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { Bound } from '@blocksuite/global/gfx';
 
-export const builtinTextToolbarConfig = {
+export const textToolbarConfig = {
   actions: createTextActions(TextElementModel, 'text', (ctx, model, props) => {
     // No need to adjust element bounds
     if (props['textAlign']) {
