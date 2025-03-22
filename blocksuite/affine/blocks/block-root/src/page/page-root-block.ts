@@ -12,7 +12,6 @@ import {
   PageViewportService,
   ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
-import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
   focusTitle,
   getClosestBlockComponentByPoint,
@@ -158,33 +157,16 @@ export class PageRootBlockComponent extends BlockComponent<
     return getScrollContainer(this);
   }
 
-  get viewport(): Viewport | null {
-    if (!this.viewportElement) {
-      return null;
-    }
-    const {
-      scrollLeft,
-      scrollTop,
-      scrollWidth,
-      scrollHeight,
-      clientWidth,
-      clientHeight,
-    } = this.viewportElement;
-    const { top, left } = this.viewportElement.getBoundingClientRect();
-    return {
-      top,
-      left,
-      scrollLeft,
-      scrollTop,
-      scrollWidth,
-      scrollHeight,
-      clientWidth,
-      clientHeight,
-    };
+  get viewportProvider() {
+    return this.std.get(ViewportElementProvider);
+  }
+
+  get viewport() {
+    return this.viewportProvider.viewport;
   }
 
   get viewportElement(): HTMLElement {
-    return this.std.get(ViewportElementProvider).viewportElement;
+    return this.viewportProvider.viewportElement;
   }
 
   private _createDefaultNoteBlock() {
