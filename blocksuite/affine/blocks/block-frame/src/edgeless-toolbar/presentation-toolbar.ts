@@ -1,8 +1,3 @@
-import {
-  EdgelessFrameManagerIdentifier,
-  isFrameBlock,
-  type NavigatorMode,
-} from '@blocksuite/affine-block-frame';
 import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import { toast } from '@blocksuite/affine-components/toast';
 import type { FrameBlockModel } from '@blocksuite/affine-model';
@@ -11,6 +6,7 @@ import {
   ViewportElementProvider,
 } from '@blocksuite/affine-shared/services';
 import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
+import type { BlockComponent } from '@blocksuite/block-std';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { Bound, clamp } from '@blocksuite/global/gfx';
 import { SignalWatcher } from '@blocksuite/global/lit';
@@ -26,8 +22,11 @@ import { cssVar } from '@toeverything/theme';
 import { css, html, LitElement, nothing, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
-import { launchIntoFullscreen } from '../utils.js';
+import {
+  EdgelessFrameManagerIdentifier,
+  isFrameBlock,
+  type NavigatorMode,
+} from '../frame-manager';
 
 export class PresentationToolbar extends EdgelessToolbarToolMixin(
   SignalWatcher(LitElement)
@@ -145,7 +144,7 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
     return this.edgeless.std.get(EdgelessLegacySlotIdentifier);
   }
 
-  constructor(edgeless: EdgelessRootBlockComponent) {
+  constructor(edgeless: BlockComponent) {
     super();
     this.edgeless = edgeless;
   }
@@ -172,11 +171,11 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
   private _exitPresentation() {
     // When exit presentation mode, we need to set the tool to default or pan
     // And exit fullscreen
-    this.setEdgelessTool(
-      this.edgeless.doc.readonly
-        ? { type: 'pan', panning: false }
-        : { type: 'default' }
-    );
+    const tool = this.edgeless.doc.readonly
+      ? { type: 'pan', panning: false }
+      : { type: 'default' };
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
+    this.setEdgelessTool(tool);
 
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(console.error);
@@ -310,11 +309,11 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
           this.edgelessTool.type === 'frameNavigator' &&
           this._fullScreenMode
         ) {
-          this.setEdgelessTool(
-            this.edgeless.doc.readonly
-              ? { type: 'pan', panning: false }
-              : { type: 'default' }
-          );
+          const tool = this.edgeless.doc.readonly
+            ? { type: 'pan', panning: false }
+            : { type: 'default' };
+          // @ts-expect-error FIXME: resolve after gfx tool refactor
+          this.setEdgelessTool(tool);
         }
       }
 
@@ -458,4 +457,28 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
 
   @property({ type: Boolean })
   accessor settingMenuShow = false;
+}
+
+function launchIntoFullscreen(element: Element) {
+  if (element.requestFullscreen) {
+    element.requestFullscreen().catch(console.error);
+  } else if (
+    'mozRequestFullScreen' in element &&
+    element.mozRequestFullScreen instanceof Function
+  ) {
+    // Firefox
+    element.mozRequestFullScreen();
+  } else if (
+    'webkitRequestFullscreen' in element &&
+    element.webkitRequestFullscreen instanceof Function
+  ) {
+    // Chrome, Safari and Opera
+    element.webkitRequestFullscreen();
+  } else if (
+    'msRequestFullscreen' in element &&
+    element.msRequestFullscreen instanceof Function
+  ) {
+    // IE/Edge
+    element.msRequestFullscreen();
+  }
 }

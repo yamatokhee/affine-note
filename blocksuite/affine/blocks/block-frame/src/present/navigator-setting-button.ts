@@ -1,11 +1,11 @@
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import { createButtonPopper } from '@blocksuite/affine-shared/utils';
+import type { BlockComponent } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/lit';
 import { SettingsIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-
-import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
 
 export class EdgelessNavigatorSettingButton extends WithDisposable(LitElement) {
   static override styles = css`
@@ -73,7 +73,8 @@ export class EdgelessNavigatorSettingButton extends WithDisposable(LitElement) {
 
   private readonly _onBlackBackgroundChange = (checked: boolean) => {
     this.blackBackground = checked;
-    this.edgeless.slots.navigatorSettingUpdated.next({
+    const slots = this.edgeless.std.get(EdgelessLegacySlotIdentifier);
+    slots.navigatorSettingUpdated.next({
       blackBackground: this.blackBackground,
     });
   };
@@ -175,7 +176,7 @@ export class EdgelessNavigatorSettingButton extends WithDisposable(LitElement) {
   accessor blackBackground = true;
 
   @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
+  accessor edgeless!: BlockComponent;
 
   @property({ attribute: false })
   accessor hideToolbar = false;

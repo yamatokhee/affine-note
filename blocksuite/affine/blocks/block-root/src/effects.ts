@@ -42,11 +42,6 @@ import { EdgelessLinkToolButton } from './edgeless/components/toolbar/link/link-
 import { MindMapPlaceholder } from './edgeless/components/toolbar/mindmap/mindmap-importing-placeholder.js';
 import { EdgelessMindmapMenu } from './edgeless/components/toolbar/mindmap/mindmap-menu.js';
 import { EdgelessMindmapToolButton } from './edgeless/components/toolbar/mindmap/mindmap-tool-button.js';
-import { EdgelessFrameOrderButton } from './edgeless/components/toolbar/present/frame-order-button.js';
-import { EdgelessFrameOrderMenu } from './edgeless/components/toolbar/present/frame-order-menu.js';
-import { EdgelessNavigatorSettingButton } from './edgeless/components/toolbar/present/navigator-setting-button.js';
-import { EdgelessPresentButton } from './edgeless/components/toolbar/present/present-button.js';
-import { PresentationToolbar } from './edgeless/components/toolbar/presentation-toolbar.js';
 import { OverlayScrollbar } from './edgeless/components/toolbar/template/overlay-scrollbar.js';
 import { AffineTemplateLoading } from './edgeless/components/toolbar/template/template-loading.js';
 import { EdgelessTemplatePanel } from './edgeless/components/toolbar/template/template-panel.js';
@@ -170,18 +165,6 @@ function registerEdgelessToolbarComponents() {
 
   // Toolbar components
   customElements.define('toolbar-arrow-up-icon', ToolbarArrowUpIcon);
-
-  // Frame order components
-  customElements.define(
-    'edgeless-frame-order-button',
-    EdgelessFrameOrderButton
-  );
-  customElements.define('edgeless-frame-order-menu', EdgelessFrameOrderMenu);
-  customElements.define(
-    'edgeless-navigator-setting-button',
-    EdgelessNavigatorSettingButton
-  );
-  customElements.define('edgeless-present-button', EdgelessPresentButton);
 }
 
 function registerEdgelessPanelComponents() {
@@ -220,7 +203,6 @@ function registerMiscComponents() {
 
   // Toolbar and UI components
   customElements.define('affine-image-toolbar', AffineImageToolbar);
-  customElements.define('presentation-toolbar', PresentationToolbar);
   customElements.define('edgeless-zoom-toolbar', EdgelessZoomToolbar);
   customElements.define('zoom-bar-toggle-button', ZoomBarToggleButton);
   customElements.define('overlay-scrollbar', OverlayScrollbar);
@@ -281,7 +263,6 @@ declare global {
     'edgeless-selected-rect': EdgelessSelectedRectWidget;
     'edgeless-connector-label-editor': EdgelessConnectorLabelEditor;
     'edgeless-group-title-editor': EdgelessGroupTitleEditor;
-    'presentation-toolbar': PresentationToolbar;
     'edgeless-brush-menu': EdgelessBrushMenu;
     'edgeless-brush-tool-button': EdgelessBrushToolButton;
     'edgeless-slide-menu': EdgelessSlideMenu;
@@ -295,9 +276,6 @@ declare global {
     'mindmap-import-placeholder': MindMapPlaceholder;
     'edgeless-mindmap-menu': EdgelessMindmapMenu;
     'edgeless-mindmap-tool-button': EdgelessMindmapToolButton;
-    'edgeless-frame-order-menu': EdgelessFrameOrderMenu;
-    'edgeless-navigator-setting-button': EdgelessNavigatorSettingButton;
-    'edgeless-present-button': EdgelessPresentButton;
     'overlay-scrollbar': OverlayScrollbar;
     'affine-template-loading': AffineTemplateLoading;
     'edgeless-templates-panel': EdgelessTemplatePanel;

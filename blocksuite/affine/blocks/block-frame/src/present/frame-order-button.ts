@@ -1,11 +1,11 @@
 import type { FrameBlockModel } from '@blocksuite/affine-model';
 import { createButtonPopper } from '@blocksuite/affine-shared/utils';
+import type { BlockComponent } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/lit';
 import { LayerIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
 import { property, query } from 'lit/decorators.js';
 
-import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
 import type { EdgelessFrameOrderMenu } from './frame-order-menu.js';
 
 export class EdgelessFrameOrderButton extends WithDisposable(LitElement) {
@@ -69,7 +69,7 @@ export class EdgelessFrameOrderButton extends WithDisposable(LitElement) {
   private accessor _edgelessFrameOrderMenu!: EdgelessFrameOrderMenu;
 
   @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
+  accessor edgeless!: BlockComponent;
 
   @property({ attribute: false })
   accessor frames!: FrameBlockModel[];

@@ -1,4 +1,5 @@
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+import type { BlockComponent } from '@blocksuite/block-std';
 import { generateKeyBetweenV2 } from '@blocksuite/block-std/gfx';
 import { DisposableGroup } from '@blocksuite/global/disposable';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
@@ -6,7 +7,7 @@ import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
+import { EdgelessFrameManagerIdentifier } from '../frame-manager';
 
 export class EdgelessFrameOrderMenu extends SignalWatcher(
   WithDisposable(LitElement)
@@ -100,8 +101,12 @@ export class EdgelessFrameOrderMenu extends SignalWatcher(
     return this.edgeless.std.get(EdgelessCRUDIdentifier);
   }
 
+  private get _frameMgr() {
+    return this.edgeless.std.get(EdgelessFrameManagerIdentifier);
+  }
+
   private get _frames() {
-    return this.edgeless.service.frames;
+    return this._frameMgr.frames;
   }
 
   private _bindEvent() {
@@ -175,7 +180,7 @@ export class EdgelessFrameOrderMenu extends SignalWatcher(
           newIndex !== index &&
           newIndex !== index + 1
         ) {
-          const frameMgr = this.edgeless.service.frame;
+          const frameMgr = this._frameMgr;
           // Legacy compatibility
           frameMgr.refreshLegacyFrameOrder();
 
@@ -253,7 +258,7 @@ export class EdgelessFrameOrderMenu extends SignalWatcher(
   private accessor _indicatorLine!: HTMLDivElement;
 
   @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
+  accessor edgeless!: BlockComponent;
 
   @property({ attribute: false })
   accessor embed = false;
