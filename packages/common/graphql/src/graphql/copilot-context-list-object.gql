@@ -22,18 +22,22 @@ query listContextObject(
           createdAt
         }
         tags {
+          type
           id
           docs {
             id
             status
+            createdAt
           }
           createdAt
         }
         collections {
+          type
           id
           docs {
             id
             status
+            createdAt
           }
           createdAt
         }

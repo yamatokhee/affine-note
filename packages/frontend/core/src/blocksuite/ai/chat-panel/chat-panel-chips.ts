@@ -1,3 +1,5 @@
+import type { TagMeta } from '@affine/core/components/page-list';
+import type { Collection } from '@affine/env/filter';
 import {
   type EditorHost,
   ShadowlessElement,
@@ -17,14 +19,18 @@ import type { DocDisplayConfig, SearchMenuConfig } from './chat-config';
 import type {
   ChatChip,
   ChatContextValue,
+  CollectionChip,
   DocChip,
   FileChip,
+  TagChip,
 } from './chat-context';
 import {
   estimateTokenCount,
   getChipKey,
+  isCollectionChip,
   isDocChip,
   isFileChip,
+  isTagChip,
 } from './components/utils';
 
 // 100k tokens limit for the docs context
@@ -95,6 +101,10 @@ export class ChatPanelChips extends SignalWatcher(
     }>
   > = signal([]);
 
+  private _tags: Signal<TagMeta[]> = signal([]);
+
+  private _collections: Signal<Collection[]> = signal([]);
+
   private _cleanup: (() => void) | null = null;
 
   private _docIds: string[] = [];
@@ -133,6 +143,30 @@ export class ChatPanelChips extends SignalWatcher(
               .removeChip=${this._removeChip}
             ></chat-panel-file-chip>`;
           }
+          if (isTagChip(chip)) {
+            const tag = this._tags.value.find(tag => tag.id === chip.tagId);
+            if (!tag) {
+              return null;
+            }
+            return html`<chat-panel-tag-chip
+              .chip=${chip}
+              .tag=${tag}
+              .removeChip=${this._removeChip}
+            ></chat-panel-tag-chip>`;
+          }
+          if (isCollectionChip(chip)) {
+            const collection = this._collections.value.find(
+              collection => collection.id === chip.collectionId
+            );
+            if (!collection) {
+              return null;
+            }
+            return html`<chat-panel-collection-chip
+              .chip=${chip}
+              .collection=${collection}
+              .removeChip=${this._removeChip}
+            ></chat-panel-collection-chip>`;
+          }
           return null;
         }
       )}
@@ -142,6 +176,17 @@ export class ChatPanelChips extends SignalWatcher(
           </div>`
         : nothing}
     </div>`;
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    const tags = this.docDisplayConfig.getTags();
+    this._tags = tags.signal;
+    this._disposables.add(tags.cleanup);
+
+    const collections = this.docDisplayConfig.getCollections();
+    this._collections = collections.signal;
+    this._disposables.add(collections.cleanup);
   }
 
   protected override updated(_changedProperties: PropertyValues): void {
@@ -204,15 +249,8 @@ export class ChatPanelChips extends SignalWatcher(
 
   private readonly _addChip = async (chip: ChatChip) => {
     this.isCollapsed = false;
-
     // remove the chip if it already exists
-    const chips = this.chatContextValue.chips.filter(item => {
-      if (isDocChip(chip)) {
-        return !isDocChip(item) || item.docId !== chip.docId;
-      } else {
-        return !isFileChip(item) || item.file !== chip.file;
-      }
-    });
+    const chips = this._omitChip(this.chatContextValue.chips, chip);
     this.updateContext({
       chips: [...chips, chip],
     });
@@ -227,13 +265,10 @@ export class ChatPanelChips extends SignalWatcher(
     chip: ChatChip,
     options: Partial<DocChip | FileChip>
   ) => {
-    const index = this.chatContextValue.chips.findIndex(item => {
-      if (isDocChip(chip)) {
-        return isDocChip(item) && item.docId === chip.docId;
-      } else {
-        return isFileChip(item) && item.file === chip.file;
-      }
-    });
+    const index = this._findChipIndex(this.chatContextValue.chips, chip);
+    if (index === -1) {
+      return;
+    }
     const nextChip: ChatChip = {
       ...chip,
       ...options,
@@ -248,21 +283,13 @@ export class ChatPanelChips extends SignalWatcher(
   };
 
   private readonly _removeChip = async (chip: ChatChip) => {
-    if (isDocChip(chip)) {
-      this.updateContext({
-        chips: this.chatContextValue.chips.filter(item => {
-          return !isDocChip(item) || item.docId !== chip.docId;
-        }),
-      });
+    const chips = this._omitChip(this.chatContextValue.chips, chip);
+    this.updateContext({
+      chips,
+    });
+    if (chips.length < this.chatContextValue.chips.length) {
+      await this._removeFromContext(chip);
     }
-    if (isFileChip(chip)) {
-      this.updateContext({
-        chips: this.chatContextValue.chips.filter(item => {
-          return !isFileChip(item) || item.file !== chip.file;
-        }),
-      });
-    }
-    await this._removeFromContext(chip);
   };
 
   private readonly _addToContext = async (chip: ChatChip) => {
@@ -271,29 +298,111 @@ export class ChatPanelChips extends SignalWatcher(
       return;
     }
     if (isDocChip(chip)) {
+      return await this._addDocToContext(chip);
+    }
+    if (isFileChip(chip)) {
+      return await this._addFileToContext(chip);
+    }
+    if (isTagChip(chip)) {
+      return await this._addTagToContext(chip);
+    }
+    if (isCollectionChip(chip)) {
+      return await this._addCollectionToContext(chip);
+    }
+    return null;
+  };
+
+  private readonly _addDocToContext = async (chip: DocChip) => {
+    const contextId = await this.getContextId();
+    if (!contextId || !AIProvider.context) {
+      return;
+    }
+    try {
       await AIProvider.context.addContextDoc({
         contextId,
         docId: chip.docId,
       });
+    } catch (e) {
+      this._updateChip(chip, {
+        state: 'failed',
+        tooltip: e instanceof Error ? e.message : 'Add context doc error',
+      });
     }
-    if (isFileChip(chip)) {
-      try {
-        const blobId = await this.host.doc.blobSync.set(chip.file);
-        const contextFile = await AIProvider.context.addContextFile(chip.file, {
-          contextId,
-          blobId,
-        });
-        this._updateChip(chip, {
-          state: contextFile.status,
-          blobId: contextFile.blobId,
-          fileId: contextFile.id,
-        });
-      } catch (e) {
-        this._updateChip(chip, {
-          state: 'failed',
-          tooltip: e instanceof Error ? e.message : 'Add context file error',
-        });
-      }
+  };
+
+  private readonly _addFileToContext = async (chip: FileChip) => {
+    const contextId = await this.getContextId();
+    if (!contextId || !AIProvider.context) {
+      return;
+    }
+    try {
+      const blobId = await this.host.doc.blobSync.set(chip.file);
+      const contextFile = await AIProvider.context.addContextFile(chip.file, {
+        contextId,
+        blobId,
+      });
+      this._updateChip(chip, {
+        state: contextFile.status,
+        blobId: contextFile.blobId,
+        fileId: contextFile.id,
+      });
+    } catch (e) {
+      this._updateChip(chip, {
+        state: 'failed',
+        tooltip: e instanceof Error ? e.message : 'Add context file error',
+      });
+    }
+  };
+
+  private readonly _addTagToContext = async (chip: TagChip) => {
+    const contextId = await this.getContextId();
+    if (!contextId || !AIProvider.context) {
+      return;
+    }
+    try {
+      // TODO: server side docIds calculation
+      const docIds = this.docDisplayConfig.getTagPageIds(chip.tagId);
+      await AIProvider.context.addContextTag({
+        contextId,
+        tagId: chip.tagId,
+        docIds,
+      });
+      this._updateChip(chip, {
+        state: 'finished',
+      });
+    } catch (e) {
+      this._updateChip(chip, {
+        state: 'failed',
+        tooltip: e instanceof Error ? e.message : 'Add context tag error',
+      });
+    }
+  };
+
+  private readonly _addCollectionToContext = async (chip: CollectionChip) => {
+    const contextId = await this.getContextId();
+    if (!contextId || !AIProvider.context) {
+      return;
+    }
+    try {
+      const collection = this._collections.value.find(
+        collection => collection.id === chip.collectionId
+      );
+      // TODO: server side docIds calculation
+      const docIds = collection?.allowList ?? [];
+      await AIProvider.context.addContextCollection({
+        contextId,
+        collectionId: chip.collectionId,
+        docIds,
+      });
+      this._updateChip(chip, {
+        state: 'finished',
+      });
+    } catch (e) {
+      this._updateChip(chip, {
+        state: 'failed',
+        tooltip:
+          e instanceof Error ? e.message : 'Add context collection error',
+      });
     }
   };
 
@@ -316,6 +425,18 @@ export class ChatPanelChips extends SignalWatcher(
         fileId: chip.fileId,
       });
     }
+    if (isTagChip(chip)) {
+      return await AIProvider.context.removeContextTag({
+        contextId,
+        tagId: chip.tagId,
+      });
+    }
+    if (isCollectionChip(chip)) {
+      return await AIProvider.context.removeContextCollection({
+        contextId,
+        collectionId: chip.collectionId,
+      });
+    }
     return true;
   };
 
@@ -324,7 +445,7 @@ export class ChatPanelChips extends SignalWatcher(
     newTokenCount: number
   ) => {
     const estimatedTokens = this.chatContextValue.chips.reduce((acc, chip) => {
-      if (isFileChip(chip)) {
+      if (isFileChip(chip) || isTagChip(chip) || isCollectionChip(chip)) {
         return acc;
       }
       if (chip.docId === newChip.docId) {
@@ -354,5 +475,45 @@ export class ChatPanelChips extends SignalWatcher(
     const { signal, cleanup } = this.docDisplayConfig.getReferenceDocs(docIds);
     this.referenceDocs = signal;
     this._cleanup = cleanup;
+  };
+
+  private readonly _omitChip = (chips: ChatChip[], chip: ChatChip) => {
+    return chips.filter(item => {
+      if (isDocChip(chip)) {
+        return !isDocChip(item) || item.docId !== chip.docId;
+      }
+      if (isFileChip(chip)) {
+        return !isFileChip(item) || item.file !== chip.file;
+      }
+      if (isTagChip(chip)) {
+        return !isTagChip(item) || item.tagId !== chip.tagId;
+      }
+      if (isCollectionChip(chip)) {
+        return (
+          !isCollectionChip(item) || item.collectionId !== chip.collectionId
+        );
+      }
+      return true;
+    });
+  };
+
+  private readonly _findChipIndex = (chips: ChatChip[], chip: ChatChip) => {
+    return chips.findIndex(item => {
+      if (isDocChip(chip)) {
+        return isDocChip(item) && item.docId === chip.docId;
+      }
+      if (isFileChip(chip)) {
+        return isFileChip(item) && item.file === chip.file;
+      }
+      if (isTagChip(chip)) {
+        return isTagChip(item) && item.tagId === chip.tagId;
+      }
+      if (isCollectionChip(chip)) {
+        return (
+          isCollectionChip(item) && item.collectionId === chip.collectionId
+        );
+      }
+      return -1;
+    });
   };
 }

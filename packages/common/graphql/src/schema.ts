@@ -2593,22 +2593,26 @@ export type ListContextObjectQuery = {
         }>;
         tags: Array<{
           __typename?: 'CopilotContextCategory';
+          type: ContextCategories;
           id: string;
           createdAt: number;
           docs: Array<{
             __typename?: 'CopilotDocType';
             id: string;
             status: ContextEmbedStatus | null;
+            createdAt: number;
           }>;
         }>;
         collections: Array<{
           __typename?: 'CopilotContextCategory';
+          type: ContextCategories;
           id: string;
           createdAt: number;
           docs: Array<{
             __typename?: 'CopilotDocType';
             id: string;
             status: ContextEmbedStatus | null;
+            createdAt: number;
           }>;
         }>;
       }>;

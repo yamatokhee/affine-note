@@ -10,7 +10,7 @@ import throttle from 'lodash-es/throttle';
 
 import { extractMarkdownFromDoc } from '../../utils/extract';
 import type { DocDisplayConfig } from '../chat-config';
-import type { ChatChip, DocChip } from '../chat-context';
+import type { DocChip } from '../chat-context';
 import { estimateTokenCount, getChipIcon, getChipTooltip } from './utils';
 
 const EXTRACT_DOC_THROTTLE = 1000;
@@ -22,13 +22,13 @@ export class ChatPanelDocChip extends SignalWatcher(
   accessor chip!: DocChip;
 
   @property({ attribute: false })
-  accessor addChip!: (chip: ChatChip) => void;
+  accessor addChip!: (chip: DocChip) => void;
 
   @property({ attribute: false })
-  accessor updateChip!: (chip: ChatChip, options: Partial<DocChip>) => void;
+  accessor updateChip!: (chip: DocChip, options: Partial<DocChip>) => void;
 
   @property({ attribute: false })
-  accessor removeChip!: (chip: ChatChip) => void;
+  accessor removeChip!: (chip: DocChip) => void;
 
   @property({ attribute: false })
   accessor checkTokenLimit!: (

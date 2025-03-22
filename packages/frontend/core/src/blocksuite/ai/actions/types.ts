@@ -1,6 +1,7 @@
 import type {
   ChatHistoryOrder,
   ContextMatchedFileChunk,
+  CopilotContextCategory,
   CopilotContextDoc,
   CopilotContextFile,
   CopilotSessionType,
@@ -245,6 +246,8 @@ declare global {
     type AIDocsAndFilesContext = {
       docs: CopilotContextDoc[];
       files: CopilotContextFile[];
+      tags: CopilotContextCategory[];
+      collections: CopilotContextCategory[];
     };
 
     interface AIContextService {
@@ -274,6 +277,24 @@ declare global {
       removeContextFile: (options: {
         contextId: string;
         fileId: string;
+      }) => Promise<boolean>;
+      addContextTag: (options: {
+        contextId: string;
+        tagId: string;
+        docIds: string[];
+      }) => Promise<CopilotContextCategory>;
+      removeContextTag: (options: {
+        contextId: string;
+        tagId: string;
+      }) => Promise<boolean>;
+      addContextCollection: (options: {
+        contextId: string;
+        collectionId: string;
+        docIds: string[];
+      }) => Promise<CopilotContextCategory>;
+      removeContextCollection: (options: {
+        contextId: string;
+        collectionId: string;
       }) => Promise<boolean>;
       getContextDocsAndFiles: (
         workspaceId: string,

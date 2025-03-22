@@ -453,11 +453,19 @@ export class ChatPanelAddPopover extends SignalWatcher(
     this.abortController.abort();
   };
 
-  private readonly _addTagChip = (_tag: TagMeta) => {
+  private readonly _addTagChip = (tag: TagMeta) => {
+    this.addChip({
+      tagId: tag.id,
+      state: 'processing',
+    });
     this.abortController.abort();
   };
 
-  private readonly _addCollectionChip = (_collection: CollectionMeta) => {
+  private readonly _addCollectionChip = (collection: CollectionMeta) => {
+    this.addChip({
+      collectionId: collection.id,
+      state: 'processing',
+    });
     this.abortController.abort();
   };
 

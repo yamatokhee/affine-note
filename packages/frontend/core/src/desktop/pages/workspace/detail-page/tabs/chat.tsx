@@ -2,9 +2,11 @@ import { ChatPanel } from '@affine/core/blocksuite/ai';
 import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
 import { enableFootnoteConfigExtension } from '@affine/core/blocksuite/extensions';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
+import { CollectionService } from '@affine/core/modules/collection';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { DocsSearchService } from '@affine/core/modules/docs-search';
 import { SearchMenuService } from '@affine/core/modules/search-menu/services';
+import { TagService } from '@affine/core/modules/tag';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { RefNodeSlotsProvider } from '@blocksuite/affine/inlines/reference';
@@ -62,7 +64,8 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
       const searchMenuService = framework.get(SearchMenuService);
       const workbench = framework.get(WorkbenchService).workbench;
       const docsSearchService = framework.get(DocsSearchService);
-
+      const tagService = framework.get(TagService);
+      const collectionService = framework.get(CollectionService);
       chatPanelRef.current.appSidebarConfig = {
         getWidth: () => {
           const width$ = workbench.sidebarWidth$;
@@ -95,6 +98,19 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
         getReferenceDocs: (docIds: string[]) => {
           const docs$ = docsSearchService.watchRefsFrom(docIds);
           return createSignalFromObservable(docs$, []);
+        },
+        getTags: () => {
+          const tagMetas$ = tagService.tagList.tagMetas$;
+          return createSignalFromObservable(tagMetas$, []);
+        },
+        getTagPageIds: (tagId: string) => {
+          const tag$ = tagService.tagList.tagByTagId$(tagId);
+          if (!tag$) return [];
+          return tag$.value?.pageIds$.value ?? [];
+        },
+        getCollections: () => {
+          const collections$ = collectionService.collections$;
+          return createSignalFromObservable(collections$, []);
         },
       };
 

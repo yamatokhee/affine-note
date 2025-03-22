@@ -1,8 +1,10 @@
+import type { TagMeta } from '@affine/core/components/page-list';
 import type {
   SearchCollectionMenuAction,
   SearchDocMenuAction,
   SearchTagMenuAction,
 } from '@affine/core/modules/search-menu/services';
+import type { Collection } from '@affine/env/filter';
 import type { LinkedMenuGroup } from '@blocksuite/affine/blocks/root';
 import type { Store } from '@blocksuite/affine/store';
 import type { Signal } from '@preact/signals-core';
@@ -38,6 +40,15 @@ export interface DocDisplayConfig {
         title: string;
       }>
     >;
+    cleanup: () => void;
+  };
+  getTags: () => {
+    signal: Signal<TagMeta[]>;
+    cleanup: () => void;
+  };
+  getTagPageIds: (tagId: string) => string[];
+  getCollections: () => {
+    signal: Signal<Collection[]>;
     cleanup: () => void;
   };
 }

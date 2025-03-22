@@ -83,6 +83,7 @@ export interface BaseChip {
    */
   state: ChipState;
   tooltip?: string | null;
+  createdAt?: number | null;
 }
 
 export interface DocChip extends BaseChip {
@@ -99,13 +100,10 @@ export interface FileChip extends BaseChip {
 
 export interface TagChip extends BaseChip {
   tagId: string;
-  tagName: string;
-  tagColor: string;
 }
 
 export interface CollectionChip extends BaseChip {
   collectionId: string;
-  collectionName: string;
 }
 
-export type ChatChip = DocChip | FileChip;
+export type ChatChip = DocChip | FileChip | TagChip | CollectionChip;

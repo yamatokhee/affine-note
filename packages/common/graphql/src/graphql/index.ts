@@ -255,18 +255,22 @@ export const listContextObjectQuery = {
           createdAt
         }
         tags {
+          type
           id
           docs {
             id
             status
+            createdAt
           }
           createdAt
         }
         collections {
+          type
           id
           docs {
             id
             status
+            createdAt
           }
           createdAt
         }
