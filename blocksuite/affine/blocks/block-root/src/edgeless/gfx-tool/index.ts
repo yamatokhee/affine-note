@@ -1,5 +1,4 @@
 export { BrushTool } from './brush-tool.js';
-export { ConnectorTool, type ConnectorToolOptions } from './connector-tool.js';
 export { DefaultTool } from './default-tool.js';
 export { EmptyTool } from './empty-tool.js';
 export { EraserTool } from './eraser-tool.js';

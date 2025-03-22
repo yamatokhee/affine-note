@@ -2,6 +2,7 @@ import { insertLinkByQuickSearchCommand } from '@blocksuite/affine-block-bookmar
 import { EdgelessTextBlockComponent } from '@blocksuite/affine-block-edgeless-text';
 import { isNoteBlock } from '@blocksuite/affine-block-surface';
 import { toast } from '@blocksuite/affine-components/toast';
+import { mountConnectorLabelEditor } from '@blocksuite/affine-gfx-connector';
 import { mountShapeTextEditor, ShapeTool } from '@blocksuite/affine-gfx-shape';
 import {
   ConnectorElementModel,
@@ -48,7 +49,6 @@ import {
   isSingleMindMapNode,
 } from './utils/mindmap.js';
 import { isCanvasElement } from './utils/query.js';
-import { mountConnectorLabelEditor } from './utils/text.js';
 
 export class EdgelessPageKeyboardManager extends PageKeyboardManager {
   get gfx() {

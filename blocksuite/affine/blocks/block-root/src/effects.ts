@@ -1,3 +1,4 @@
+import { effects as gfxConnectorEffects } from '@blocksuite/affine-gfx-connector/effects';
 import { effects as gfxNoteEffects } from '@blocksuite/affine-gfx-note/effects';
 import { effects as gfxShapeEffects } from '@blocksuite/affine-gfx-shape/effects';
 import { effects as gfxCanvasTextEffects } from '@blocksuite/affine-gfx-text/effects';
@@ -5,18 +6,13 @@ import { effects as widgetEdgelessToolbarEffects } from '@blocksuite/affine-widg
 
 import { EdgelessAutoCompletePanel } from './edgeless/components/auto-complete/auto-complete-panel.js';
 import { EdgelessAutoComplete } from './edgeless/components/auto-complete/edgeless-auto-complete.js';
-import { EdgelessConnectorHandle } from './edgeless/components/connector/connector-handle.js';
 import {
   NOTE_SLICER_WIDGET,
   NoteSlicer,
 } from './edgeless/components/note-slicer/index.js';
 import { EdgelessFontFamilyPanel } from './edgeless/components/panel/font-family-panel.js';
 import { EdgelessFontWeightAndStylePanel } from './edgeless/components/panel/font-weight-and-style-panel.js';
-import { NoteDisplayModePanel } from './edgeless/components/panel/note-display-mode-panel.js';
-import { EdgelessNoteShadowPanel } from './edgeless/components/panel/note-shadow-panel.js';
 import { EdgelessScalePanel } from './edgeless/components/panel/scale-panel.js';
-import { EdgelessShapePanel } from './edgeless/components/panel/shape-panel.js';
-import { EdgelessShapeStylePanel } from './edgeless/components/panel/shape-style-panel.js';
 import { EdgelessSizePanel } from './edgeless/components/panel/size-panel.js';
 import { StrokeStylePanel } from './edgeless/components/panel/stroke-style-panel.js';
 import {
@@ -27,14 +23,11 @@ import {
   EDGELESS_SELECTED_RECT_WIDGET,
   EdgelessSelectedRectWidget,
 } from './edgeless/components/rects/edgeless-selected-rect.js';
-import { EdgelessConnectorLabelEditor } from './edgeless/components/text/edgeless-connector-label-editor.js';
 import { EdgelessGroupTitleEditor } from './edgeless/components/text/edgeless-group-title-editor.js';
 import { EdgelessBrushMenu } from './edgeless/components/toolbar/brush/brush-menu.js';
 import { EdgelessBrushToolButton } from './edgeless/components/toolbar/brush/brush-tool-button.js';
 import { EdgelessSlideMenu } from './edgeless/components/toolbar/common/slide-menu.js';
 import { ToolbarArrowUpIcon } from './edgeless/components/toolbar/common/toolbar-arrow-up-icon.js';
-import { EdgelessConnectorMenu } from './edgeless/components/toolbar/connector/connector-menu.js';
-import { EdgelessConnectorToolButton } from './edgeless/components/toolbar/connector/connector-tool-button.js';
 import { EdgelessDefaultToolButton } from './edgeless/components/toolbar/default/default-tool-button.js';
 import { EdgelessEraserToolButton } from './edgeless/components/toolbar/eraser/eraser-tool-button.js';
 import { EdgelessLassoToolButton } from './edgeless/components/toolbar/lasso/lasso-tool-button.js';
@@ -114,6 +107,7 @@ function registerGfxEffects() {
   gfxCanvasTextEffects();
   gfxShapeEffects();
   gfxNoteEffects();
+  gfxConnectorEffects();
 }
 
 function registerWidgets() {
@@ -138,10 +132,6 @@ function registerEdgelessToolbarComponents() {
   // Tool buttons
   customElements.define('edgeless-brush-tool-button', EdgelessBrushToolButton);
   customElements.define(
-    'edgeless-connector-tool-button',
-    EdgelessConnectorToolButton
-  );
-  customElements.define(
     'edgeless-default-tool-button',
     EdgelessDefaultToolButton
   );
@@ -159,7 +149,6 @@ function registerEdgelessToolbarComponents() {
 
   // Menus
   customElements.define('edgeless-brush-menu', EdgelessBrushMenu);
-  customElements.define('edgeless-connector-menu', EdgelessConnectorMenu);
   customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
 
@@ -172,21 +161,13 @@ function registerEdgelessPanelComponents() {
     'edgeless-font-weight-and-style-panel',
     EdgelessFontWeightAndStylePanel
   );
-  customElements.define('edgeless-note-shadow-panel', EdgelessNoteShadowPanel);
   customElements.define('edgeless-size-panel', EdgelessSizePanel);
   customElements.define('edgeless-scale-panel', EdgelessScalePanel);
   customElements.define('edgeless-font-family-panel', EdgelessFontFamilyPanel);
-  customElements.define('edgeless-shape-panel', EdgelessShapePanel);
-  customElements.define('note-display-mode-panel', NoteDisplayModePanel);
   customElements.define('stroke-style-panel', StrokeStylePanel);
-  customElements.define('edgeless-shape-style-panel', EdgelessShapeStylePanel);
 }
 
 function registerEdgelessEditorComponents() {
-  customElements.define(
-    'edgeless-connector-label-editor',
-    EdgelessConnectorLabelEditor
-  );
   customElements.define(
     'edgeless-group-title-editor',
     EdgelessGroupTitleEditor
@@ -236,9 +217,6 @@ function registerMiscComponents() {
 
   // Mindmap components
   customElements.define('mindmap-import-placeholder', MindMapPlaceholder);
-
-  // Connector components
-  customElements.define('edgeless-connector-handle', EdgelessConnectorHandle);
 }
 
 declare global {
@@ -247,28 +225,20 @@ declare global {
     'affine-edgeless-root-preview': EdgelessRootPreviewBlockComponent;
     'edgeless-auto-complete-panel': EdgelessAutoCompletePanel;
     'edgeless-auto-complete': EdgelessAutoComplete;
-    'edgeless-connector-handle': EdgelessConnectorHandle;
     'note-slicer': NoteSlicer;
     'edgeless-font-family-panel': EdgelessFontFamilyPanel;
     'edgeless-font-weight-and-style-panel': EdgelessFontWeightAndStylePanel;
-    'note-display-mode-panel': NoteDisplayModePanel;
-    'edgeless-note-shadow-panel': EdgelessNoteShadowPanel;
     'edgeless-scale-panel': EdgelessScalePanel;
-    'edgeless-shape-panel': EdgelessShapePanel;
-    'edgeless-shape-style-panel': EdgelessShapeStylePanel;
     'edgeless-size-panel': EdgelessSizePanel;
     'stroke-style-panel': StrokeStylePanel;
     'edgeless-navigator-black-background': EdgelessNavigatorBlackBackgroundWidget;
     'edgeless-dragging-area-rect': EdgelessDraggingAreaRectWidget;
     'edgeless-selected-rect': EdgelessSelectedRectWidget;
-    'edgeless-connector-label-editor': EdgelessConnectorLabelEditor;
     'edgeless-group-title-editor': EdgelessGroupTitleEditor;
     'edgeless-brush-menu': EdgelessBrushMenu;
     'edgeless-brush-tool-button': EdgelessBrushToolButton;
     'edgeless-slide-menu': EdgelessSlideMenu;
     'toolbar-arrow-up-icon': ToolbarArrowUpIcon;
-    'edgeless-connector-menu': EdgelessConnectorMenu;
-    'edgeless-connector-tool-button': EdgelessConnectorToolButton;
     'edgeless-default-tool-button': EdgelessDefaultToolButton;
     'edgeless-eraser-tool-button': EdgelessEraserToolButton;
     'edgeless-lasso-tool-button': EdgelessLassoToolButton;

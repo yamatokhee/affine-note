@@ -1,4 +1,5 @@
 import { frameQuickTool } from '@blocksuite/affine-block-frame';
+import { connectorQuickTool } from '@blocksuite/affine-gfx-connector';
 import { noteSeniorTool } from '@blocksuite/affine-gfx-note';
 import { shapeSeniorTool } from '@blocksuite/affine-gfx-shape';
 import {
@@ -15,15 +16,6 @@ const defaultQuickTool = QuickToolExtension('default', ({ block }) => {
     content: html`<edgeless-default-tool-button
       .edgeless=${block}
     ></edgeless-default-tool-button>`,
-  };
-});
-
-const connectorQuickTool = QuickToolExtension('connector', ({ block }) => {
-  return {
-    type: 'connector',
-    content: html`<edgeless-connector-tool-button
-      .edgeless=${block}
-    ></edgeless-connector-tool-button>`,
   };
 });
 

@@ -57,7 +57,7 @@ import {
 import { html } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { mountConnectorLabelEditor } from '../../utils/text';
+import { mountConnectorLabelEditor } from '../text';
 
 const FRONT_ENDPOINT_STYLE_LIST = [
   {
@@ -123,7 +123,7 @@ const CONNECTOR_MODE_LIST = [
   },
 ] as const satisfies MenuItem<ConnectorMode>[];
 
-export const builtinConnectorToolbarConfig = {
+export const connectorToolbarConfig = {
   actions: [
     {
       id: 'a.stroke-color',

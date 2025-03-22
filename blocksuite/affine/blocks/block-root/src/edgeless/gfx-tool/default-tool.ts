@@ -8,6 +8,7 @@ import {
   isNoteBlock,
   OverlayIdentifier,
 } from '@blocksuite/affine-block-surface';
+import { mountConnectorLabelEditor } from '@blocksuite/affine-gfx-connector';
 import { mountShapeTextEditor } from '@blocksuite/affine-gfx-shape';
 import { addText, mountTextElementEditor } from '@blocksuite/affine-gfx-text';
 import type {
@@ -51,10 +52,7 @@ import type { EdgelessRootBlockComponent } from '../index.js';
 import { prepareCloneData } from '../utils/clone-utils.js';
 import { calPanDelta } from '../utils/panning-utils.js';
 import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
-import {
-  mountConnectorLabelEditor,
-  mountGroupTitleEditor,
-} from '../utils/text.js';
+import { mountGroupTitleEditor } from '../utils/text.js';
 import { DefaultModeDragType } from './default-tool-ext/ext.js';
 
 export class DefaultTool extends BaseTool {

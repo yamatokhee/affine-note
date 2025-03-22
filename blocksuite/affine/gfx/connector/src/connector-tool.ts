@@ -101,6 +101,7 @@ export class ConnectorTool extends BaseTool<ConnectorToolOptions> {
       this._allowCancel = true;
     }
 
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
     this.gfx.tool.setTool('default');
     this.gfx.selection.set({ elements: [focusedId] });
   }
@@ -128,6 +129,7 @@ export class ConnectorTool extends BaseTool<ConnectorToolOptions> {
     const connector = this._connector;
 
     this.doc.captureSync();
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
     this.gfx.tool.setTool('default');
     this.gfx.selection.set({ elements: [connector.id] });
   }

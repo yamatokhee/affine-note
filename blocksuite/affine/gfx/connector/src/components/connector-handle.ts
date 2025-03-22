@@ -1,9 +1,11 @@
 import {
   type ConnectionOverlay,
+  EdgelessLegacySlotIdentifier,
   OverlayIdentifier,
 } from '@blocksuite/affine-block-surface';
 import type { ConnectorElementModel } from '@blocksuite/affine-model';
 import {
+  type BlockComponent,
   type BlockStdScope,
   docContext,
   stdContext,
@@ -17,8 +19,6 @@ import { consume } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-
-import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 
 const SIZE = 12;
 const HALF_SIZE = SIZE / 2;
@@ -59,15 +59,19 @@ export class EdgelessConnectorHandle extends WithDisposable(LitElement) {
     return this.std.get(GfxControllerIdentifier);
   }
 
+  get slots() {
+    return this.std.get(EdgelessLegacySlotIdentifier);
+  }
+
   private _bindEvent() {
-    const edgeless = this.edgeless;
+    const slots = this.slots;
 
     this._disposables.addFromEvent(this._startHandler, 'pointerdown', e => {
-      edgeless.slots.elementResizeStart.next();
+      slots.elementResizeStart.next();
       this._capPointerDown(e, 'source');
     });
     this._disposables.addFromEvent(this._endHandler, 'pointerdown', e => {
-      edgeless.slots.elementResizeStart.next();
+      slots.elementResizeStart.next();
       this._capPointerDown(e, 'target');
     });
     this._disposables.add(() => {
@@ -76,11 +80,10 @@ export class EdgelessConnectorHandle extends WithDisposable(LitElement) {
   }
 
   private _capPointerDown(e: PointerEvent, connection: 'target' | 'source') {
-    const { edgeless, connector, _disposables } = this;
-    const { service } = edgeless;
+    const { gfx, connector, slots, _disposables } = this;
     e.stopPropagation();
     _disposables.addFromEvent(document, 'pointermove', e => {
-      const point = service.viewport.toModelCoordFromClientCoord([e.x, e.y]);
+      const point = gfx.viewport.toModelCoordFromClientCoord([e.x, e.y]);
       const isStartPointer = connection === 'source';
       const otherSideId = connector[isStartPointer ? 'target' : 'source'].id;
 
@@ -96,16 +99,16 @@ export class EdgelessConnectorHandle extends WithDisposable(LitElement) {
       _disposables.dispose();
       this._disposables = new DisposableGroup();
       this._bindEvent();
-      edgeless.slots.elementResizeEnd.next();
+      slots.elementResizeEnd.next();
     });
   }
 
   override firstUpdated() {
-    const { edgeless } = this;
-    const { viewport } = edgeless.service;
+    const { gfx } = this;
+    const { viewport } = gfx;
 
     this._lastZoom = viewport.zoom;
-    edgeless.service.viewport.viewportUpdated.subscribe(() => {
+    viewport.viewportUpdated.subscribe(() => {
       if (viewport.zoom !== this._lastZoom) {
         this._lastZoom = viewport.zoom;
         this.requestUpdate();
@@ -116,10 +119,10 @@ export class EdgelessConnectorHandle extends WithDisposable(LitElement) {
   }
 
   override render() {
-    const { service } = this.edgeless;
+    const { gfx } = this;
     // path is relative to the element's xywh
     const { path } = this.connector;
-    const zoom = service.viewport.zoom;
+    const zoom = gfx.viewport.zoom;
     const startPoint = Vec.subScalar(Vec.mul(path[0], zoom), HALF_SIZE);
     const endPoint = Vec.subScalar(
       Vec.mul(path[path.length - 1], zoom),
@@ -155,7 +158,7 @@ export class EdgelessConnectorHandle extends WithDisposable(LitElement) {
   accessor doc!: Store;
 
   @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
+  accessor edgeless!: BlockComponent;
 
   @consume({
     context: stdContext,
