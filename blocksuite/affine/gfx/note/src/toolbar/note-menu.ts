@@ -16,7 +16,7 @@ import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
+import type { NoteToolOption } from '../note-tool.js';
 import { NOTE_MENU_ITEMS } from './note-menu-config.js';
 
 export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
@@ -60,6 +60,7 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
       maxWidth: MAX_IMAGE_WIDTH,
     });
     this._imageLoading = false;
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
     this.gfx.tool.setTool('default');
     this.gfx.selection.set({ elements: ids });
   }
@@ -140,6 +141,7 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
                 const file = await openFileOrFiles();
                 if (!file) return;
                 await addAttachments(this.edgeless.std, [file]);
+                // @ts-expect-error FIXME: resolve after gfx tool refactor
                 this.gfx.tool.setTool('default');
                 this.edgeless.std
                   .getOptional(TelemetryProvider)

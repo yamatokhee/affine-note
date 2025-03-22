@@ -13,7 +13,7 @@ import { computed } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
+import type { NoteToolOption } from '../note-tool.js';
 import { toShapeNotToAdapt } from './icon.js';
 
 export class EdgelessNoteSeniorButton extends EdgelessToolbarToolMixin(

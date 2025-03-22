@@ -1,4 +1,5 @@
 import { frameQuickTool } from '@blocksuite/affine-block-frame';
+import { noteSeniorTool } from '@blocksuite/affine-gfx-note';
 import { shapeSeniorTool } from '@blocksuite/affine-gfx-shape';
 import {
   QuickToolExtension,
@@ -32,15 +33,6 @@ const linkQuickTool = QuickToolExtension('link', ({ block, gfx }) => {
       .edgeless=${block}
     ></edgeless-link-tool-button>`,
     menu: buildLinkDenseMenu(block, gfx),
-  };
-});
-
-const noteSeniorTool = SeniorToolExtension('note', ({ block }) => {
-  return {
-    name: 'Note',
-    content: html`<edgeless-note-senior-button
-      .edgeless=${block}
-    ></edgeless-note-senior-button>`,
   };
 });
 

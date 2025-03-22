@@ -1,3 +1,4 @@
+import { effects as gfxNoteEffects } from '@blocksuite/affine-gfx-note/effects';
 import { effects as gfxShapeEffects } from '@blocksuite/affine-gfx-shape/effects';
 import { effects as gfxCanvasTextEffects } from '@blocksuite/affine-gfx-text/effects';
 import { effects as widgetEdgelessToolbarEffects } from '@blocksuite/affine-widget-edgeless-toolbar/effects';
@@ -41,9 +42,6 @@ import { EdgelessLinkToolButton } from './edgeless/components/toolbar/link/link-
 import { MindMapPlaceholder } from './edgeless/components/toolbar/mindmap/mindmap-importing-placeholder.js';
 import { EdgelessMindmapMenu } from './edgeless/components/toolbar/mindmap/mindmap-menu.js';
 import { EdgelessMindmapToolButton } from './edgeless/components/toolbar/mindmap/mindmap-tool-button.js';
-import { EdgelessNoteMenu } from './edgeless/components/toolbar/note/note-menu.js';
-import { EdgelessNoteSeniorButton } from './edgeless/components/toolbar/note/note-senior-button.js';
-import { EdgelessNoteToolButton } from './edgeless/components/toolbar/note/note-tool-button.js';
 import { EdgelessFrameOrderButton } from './edgeless/components/toolbar/present/frame-order-button.js';
 import { EdgelessFrameOrderMenu } from './edgeless/components/toolbar/present/frame-order-menu.js';
 import { EdgelessNavigatorSettingButton } from './edgeless/components/toolbar/present/navigator-setting-button.js';
@@ -120,6 +118,7 @@ function registerRootComponents() {
 function registerGfxEffects() {
   gfxCanvasTextEffects();
   gfxShapeEffects();
+  gfxNoteEffects();
 }
 
 function registerWidgets() {
@@ -161,14 +160,12 @@ function registerEdgelessToolbarComponents() {
     'edgeless-mindmap-tool-button',
     EdgelessMindmapToolButton
   );
-  customElements.define('edgeless-note-tool-button', EdgelessNoteToolButton);
   customElements.define('edgeless-template-button', EdgelessTemplateButton);
 
   // Menus
   customElements.define('edgeless-brush-menu', EdgelessBrushMenu);
   customElements.define('edgeless-connector-menu', EdgelessConnectorMenu);
   customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);
-  customElements.define('edgeless-note-menu', EdgelessNoteMenu);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
 
   // Toolbar components
@@ -185,10 +182,6 @@ function registerEdgelessToolbarComponents() {
     EdgelessNavigatorSettingButton
   );
   customElements.define('edgeless-present-button', EdgelessPresentButton);
-  customElements.define(
-    'edgeless-note-senior-button',
-    EdgelessNoteSeniorButton
-  );
 }
 
 function registerEdgelessPanelComponents() {
@@ -302,8 +295,6 @@ declare global {
     'mindmap-import-placeholder': MindMapPlaceholder;
     'edgeless-mindmap-menu': EdgelessMindmapMenu;
     'edgeless-mindmap-tool-button': EdgelessMindmapToolButton;
-    'edgeless-note-menu': EdgelessNoteMenu;
-    'edgeless-note-tool-button': EdgelessNoteToolButton;
     'edgeless-frame-order-menu': EdgelessFrameOrderMenu;
     'edgeless-navigator-setting-button': EdgelessNavigatorSettingButton;
     'edgeless-present-button': EdgelessPresentButton;

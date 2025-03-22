@@ -17,7 +17,7 @@ import {
   NOTE_OVERLAY_STOKE_COLOR,
   NOTE_OVERLAY_TEXT_COLOR,
   NOTE_OVERLAY_WIDTH,
-} from '../utils/consts.js';
+} from './consts.js';
 
 export class NoteOverlay extends ToolOverlay {
   backgroundColor = 'transparent';

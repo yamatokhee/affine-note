@@ -28,6 +28,7 @@ export const PackageList = [
       'blocksuite/affine/fragments/fragment-doc-title',
       'blocksuite/affine/fragments/fragment-frame-panel',
       'blocksuite/affine/fragments/fragment-outline',
+      'blocksuite/affine/gfx/note',
       'blocksuite/affine/gfx/shape',
       'blocksuite/affine/gfx/text',
       'blocksuite/affine/gfx/turbo-renderer',
@@ -307,6 +308,7 @@ export const PackageList = [
       'blocksuite/affine/blocks/block-table',
       'blocksuite/affine/components',
       'blocksuite/affine/fragments/fragment-doc-title',
+      'blocksuite/affine/gfx/note',
       'blocksuite/affine/gfx/shape',
       'blocksuite/affine/gfx/text',
       'blocksuite/affine/inlines/latex',
@@ -436,6 +438,24 @@ export const PackageList = [
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
+    location: 'blocksuite/affine/gfx/note',
+    name: '@blocksuite/affine-gfx-note',
+    workspaceDependencies: [
+      'blocksuite/affine/blocks/block-attachment',
+      'blocksuite/affine/blocks/block-bookmark',
+      'blocksuite/affine/blocks/block-image',
+      'blocksuite/affine/blocks/block-surface',
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/rich-text',
+      'blocksuite/affine/shared',
+      'blocksuite/affine/widgets/widget-edgeless-toolbar',
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',
       'blocksuite/framework/store',
@@ -1055,6 +1075,7 @@ export type PackageName =
   | '@blocksuite/affine-fragment-doc-title'
   | '@blocksuite/affine-fragment-frame-panel'
   | '@blocksuite/affine-fragment-outline'
+  | '@blocksuite/affine-gfx-note'
   | '@blocksuite/affine-gfx-shape'
   | '@blocksuite/affine-gfx-text'
   | '@blocksuite/affine-gfx-turbo-renderer'

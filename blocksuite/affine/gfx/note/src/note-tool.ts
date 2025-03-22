@@ -15,7 +15,7 @@ import { BaseTool } from '@blocksuite/block-std/gfx';
 import { Point } from '@blocksuite/global/gfx';
 import { effect } from '@preact/signals-core';
 
-import { DraggingNoteOverlay, NoteOverlay } from '../utils/tool-overlay.js';
+import { DraggingNoteOverlay, NoteOverlay } from './overlay';
 
 export type NoteToolOption = {
   childFlavour: NoteChildrenFlavour;

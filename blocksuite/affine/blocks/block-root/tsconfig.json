@@ -24,6 +24,7 @@
     { "path": "../block-table" },
     { "path": "../../components" },
     { "path": "../../fragments/fragment-doc-title" },
+    { "path": "../../gfx/note" },
     { "path": "../../gfx/shape" },
     { "path": "../../gfx/text" },
     { "path": "../../inlines/latex" },
