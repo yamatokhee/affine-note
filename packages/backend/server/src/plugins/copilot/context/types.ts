@@ -61,10 +61,10 @@ export abstract class EmbeddingClient {
         });
       }
       const input = doc.chunks.toSorted((a, b) => a.index - b.index);
-      // chunk input into 32 every array
+      // chunk input into 128 every array
       const chunks: Chunk[][] = [];
-      for (let i = 0; i < input.length; i += 32) {
-        chunks.push(input.slice(i, i + 32));
+      for (let i = 0; i < input.length; i += 128) {
+        chunks.push(input.slice(i, i + 128));
       }
       return chunks;
     }
