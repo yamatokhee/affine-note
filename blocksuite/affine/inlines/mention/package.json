@@ -1,6 +1,6 @@
 {
-  "name": "@blocksuite/affine-rich-text",
-  "description": "Inline rich text for BlockSuite.",
+  "name": "@blocksuite/affine-inline-mention",
+  "description": "Inline mention for BlockSuite.",
   "type": "module",
   "scripts": {
     "build": "tsc"

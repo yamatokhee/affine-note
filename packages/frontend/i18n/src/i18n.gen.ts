@@ -6916,6 +6916,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.editor.at-menu.date-picker"](): string;
     /**
+      * `Mention Member`
+      */
+    ["com.affine.editor.at-menu.mention-member"](): string;
+    /**
+      * `Successfully mentioned the member`
+      */
+    ["com.affine.editor.at-menu.mention-success"](): string;
+    /**
       * `Show`
       */
     ["com.affine.editor.bi-directional-link-panel.show"](): string;
