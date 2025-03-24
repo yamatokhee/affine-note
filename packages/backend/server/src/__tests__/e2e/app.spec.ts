@@ -7,6 +7,14 @@ e2e('should create test app correctly', async t => {
   t.truthy(app);
 });
 
+e2e('should mock mails work', async t => {
+  t.is(app.mails.count('MemberInvitation'), 0);
+});
+
+e2e('should mock queue work', async t => {
+  t.is(app.queue.count('notification.sendInvitation'), 0);
+});
+
 e2e('should handle http request', async t => {
   const res = await app.GET('/info');
   t.is(res.status, 200);
