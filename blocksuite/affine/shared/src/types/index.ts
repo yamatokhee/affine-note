@@ -75,7 +75,7 @@ export interface AffineTextAttributes {
   footnote?: FootNote | null;
   mention?: {
     member: string;
-    notification: string;
+    notification?: string;
   } | null;
 }
 

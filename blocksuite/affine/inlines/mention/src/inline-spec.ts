@@ -12,7 +12,7 @@ export const MentionInlineSpecExtension =
       schema: z
         .object({
           member: z.string(),
-          notification: z.string(),
+          notification: z.string().optional(),
         })
         .optional()
         .nullable()

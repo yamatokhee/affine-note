@@ -30,7 +30,7 @@ import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
 
-import type { WorkspaceServerService } from '../../cloud';
+import { AuthService, type WorkspaceServerService } from '../../cloud';
 import type { WorkspaceDialogService } from '../../dialogs';
 import type { DocsService } from '../../doc';
 import type { DocDisplayMetaService } from '../../doc-display-meta';
@@ -352,8 +352,6 @@ export class AtMenuConfigService extends Service {
         name: name ?? 'Unknown',
         icon,
         action: () => {
-          close();
-
           const root = inlineEditor.rootElement;
           const block = root?.closest<BlockComponent>(`[${BLOCK_ID_ATTR}]`);
           if (!block) return;
@@ -365,13 +363,36 @@ export class AtMenuConfigService extends Service {
           const doc = block.doc;
           const workspaceId = doc.workspace.id;
           const docId = doc.id;
-          const docTitle = doc.meta?.title ?? '';
           const mode = block.std.get(DocModeProvider).getEditorMode() ?? 'page';
+
+          const currentUserId =
+            this.workspaceServerService.server?.scope.get(AuthService).session
+              .account$.value?.id;
+          if (!currentUserId) return;
+
+          close();
+
+          if (id === currentUserId) {
+            const inlineRange = inlineEditor.getInlineRange();
+            if (inlineRange && inlineRange.length === 0) {
+              inlineEditor.insertText(inlineRange, ' ', {
+                mention: {
+                  member: id,
+                },
+              });
+              inlineEditor.setInlineRange({
+                index: inlineRange.index + 1,
+                length: 0,
+              });
+            }
+
+            return;
+          }
 
           notificationService
             .mentionUser(id, workspaceId, {
               id: docId,
-              title: docTitle,
+              title: this.docDisplayMetaService.title$(docId).value,
               blockId: block.blockId,
               mode: mode as GraphqlDocMode,
             })
