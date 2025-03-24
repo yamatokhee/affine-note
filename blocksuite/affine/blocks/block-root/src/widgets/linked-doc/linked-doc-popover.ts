@@ -55,7 +55,7 @@ export class LinkedDocPopover extends SignalWatcher(
     }
     this._updateLinkedDocGroupAbortController = new AbortController();
 
-    if (query === null) {
+    if (query === null || query.startsWith(' ')) {
       this.context.close();
       return;
     }
