@@ -112,6 +112,12 @@ export const shapeToolbarConfig = {
         const models = ctx.getSurfaceModelsByType(ShapeElementModel);
         if (!models.length) return null;
 
+        const shapeStyle = ctx.features.getFlag(
+          'enable_edgeless_scribbled_style'
+        )
+          ? (getMostCommonValue(models, 'shapeStyle') ?? ShapeStyle.General)
+          : ShapeStyle.General;
+
         const shapeName =
           getMostCommonValue<ShapeToolOption, 'shapeName'>(
             models.map(model => ({
@@ -139,8 +145,10 @@ export const shapeToolbarConfig = {
           items: ShapeComponentConfig.map(item => ({
             key: item.tooltip,
             value: item.name,
-            // TODO(@fundon): should add a feature flag to switch style
-            icon: item.generalIcon,
+            icon:
+              shapeStyle === ShapeStyle.General
+                ? item.generalIcon
+                : item.scribbledIcon,
             disabled: item.disabled,
           })),
           currentValue: shapeName,
@@ -150,8 +158,7 @@ export const shapeToolbarConfig = {
     },
     {
       id: 'd.style',
-      // TODO(@fundon): should add a feature flag
-      when: false,
+      when: ctx => ctx.features.getFlag('enable_edgeless_scribbled_style'),
       content(ctx) {
         const models = ctx.getSurfaceModelsByType(ShapeElementModel);
         if (!models.length) return null;

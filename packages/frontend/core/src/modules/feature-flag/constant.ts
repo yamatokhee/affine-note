@@ -264,6 +264,16 @@ export const AFFINE_FLAGS = {
     configurable: isCanaryBuild,
     defaultState: false,
   },
+  enable_edgeless_scribbled_style: {
+    category: 'blocksuite',
+    bsFlag: 'enable_edgeless_scribbled_style',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-edgeless-scribbled-style.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-edgeless-scribbled-style.description',
+    configurable: isCanaryBuild,
+    defaultState: false,
+  },
 } satisfies { [key in string]: FlagInfo };
 
 // oxlint-disable-next-line no-redeclare

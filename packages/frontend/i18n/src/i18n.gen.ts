@@ -5584,6 +5584,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.experimental-features.enable-editor-rtl.description"](): string;
     /**
+      * `Edgeless scribbled style`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-edgeless-scribbled-style.name"](): string;
+    /**
+      * `Once enabled, you can use scribbled style in edgeless mode.`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-edgeless-scribbled-style.description"](): string;
+    /**
       * `Only an owner can edit the workspace avatar and name. Changes will be shown for everyone.`
       */
     ["com.affine.settings.workspace.not-owner"](): string;

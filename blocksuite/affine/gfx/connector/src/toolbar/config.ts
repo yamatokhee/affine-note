@@ -209,8 +209,7 @@ export const connectorToolbarConfig = {
     },
     {
       id: 'b.style',
-      // TODO(@fundon): should add a feature flag
-      when: false,
+      when: ctx => ctx.features.getFlag('enable_edgeless_scribbled_style'),
       content(ctx) {
         const models = ctx.getSurfaceModelsByType(ConnectorElementModel);
         if (!models.length) return null;
