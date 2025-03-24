@@ -1,5 +1,6 @@
 import { getCurrentUserQuery } from '@affine/graphql';
 
+import { Mockers } from '../mocks';
 import { app, e2e } from './test';
 
 e2e('should create test app correctly', async t => {
@@ -15,4 +16,12 @@ e2e('should handle http request', async t => {
 e2e('should handle gql request', async t => {
   const user = await app.gql({ query: getCurrentUserQuery });
   t.is(user.currentUser, null);
+});
+
+e2e('should create workspace with owner', async t => {
+  const user = await app.signup();
+  const workspace = await app.create(Mockers.Workspace, {
+    owner: { id: user.id },
+  });
+  t.truthy(workspace);
 });
