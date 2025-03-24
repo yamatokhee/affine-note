@@ -16,6 +16,19 @@ declare global {
       inviterId: string;
       inviteId: string;
     };
+    'notification.sendInvitationReviewRequest': {
+      reviewerId: string;
+      inviteId: string;
+    };
+    'notification.sendInvitationReviewApproved': {
+      reviewerId: string;
+      inviteId: string;
+    };
+    'notification.sendInvitationReviewDeclined': {
+      reviewerId: string;
+      userId: string;
+      workspaceId: string;
+    };
   }
 }
 
@@ -77,6 +90,59 @@ export class NotificationJob {
         workspaceId: invite.workspaceId,
         createdByUserId: invite.userId,
         inviteId,
+      },
+    });
+  }
+
+  @OnJob('notification.sendInvitationReviewRequest')
+  async sendInvitationReviewRequest({
+    reviewerId,
+    inviteId,
+  }: Jobs['notification.sendInvitationReviewRequest']) {
+    const invite = await this.models.workspaceUser.getById(inviteId);
+    if (!invite) {
+      return;
+    }
+    await this.service.createInvitationReviewRequest({
+      userId: reviewerId,
+      body: {
+        workspaceId: invite.workspaceId,
+        createdByUserId: invite.userId,
+        inviteId,
+      },
+    });
+  }
+
+  @OnJob('notification.sendInvitationReviewApproved')
+  async sendInvitationReviewApproved({
+    reviewerId,
+    inviteId,
+  }: Jobs['notification.sendInvitationReviewApproved']) {
+    const invite = await this.models.workspaceUser.getById(inviteId);
+    if (!invite) {
+      return;
+    }
+    await this.service.createInvitationReviewApproved({
+      userId: invite.userId,
+      body: {
+        workspaceId: invite.workspaceId,
+        createdByUserId: reviewerId,
+        inviteId,
+      },
+    });
+  }
+
+  @OnJob('notification.sendInvitationReviewDeclined')
+  async sendInvitationReviewDeclined({
+    reviewerId,
+    userId,
+    workspaceId,
+  }: Jobs['notification.sendInvitationReviewDeclined']) {
+    await this.service.createInvitationReviewDeclined({
+      userId,
+      body: {
+        workspaceId,
+        createdByUserId: reviewerId,
       },
     });
   }

@@ -494,6 +494,18 @@ test('should be able to approve team member', async t => {
     t.is(memberInvite.status, 'UnderReview', 'should be under review');
 
     t.true(await approveMember(app, tws.id, member.id));
+    const requestApprovedNotification = app.queue.last(
+      'notification.sendInvitationReviewApproved'
+    );
+    t.truthy(requestApprovedNotification);
+    t.deepEqual(
+      requestApprovedNotification.payload,
+      {
+        inviteId: memberInvite.inviteId,
+        reviewerId: owner.id,
+      },
+      'should send review approved notification'
+    );
   }
 
   {
@@ -627,7 +639,7 @@ test('should be able to invite batch and send notifications', async t => {
   t.truthy(job.payload.inviterId);
 });
 
-test('should be able to emit events', async t => {
+test('should be able to emit events and send notifications', async t => {
   const { app, event } = t.context;
 
   {
@@ -654,24 +666,35 @@ test('should be able to emit events', async t => {
     app.switchUser(owner);
     const { members } = await getWorkspace(app, tws.id);
     const memberInvite = members.find(m => m.id === user.id)!;
+    const requestRequestNotification = app.queue.last(
+      'notification.sendInvitationReviewRequest'
+    );
+    t.truthy(requestRequestNotification);
+    // find admin
+    const admins = await t.context.models.workspaceUser.getAdmins(tws.id);
     t.deepEqual(
-      event.emit.lastCall.args,
-      [
-        'workspace.members.reviewRequested',
-        { inviteId: memberInvite.inviteId },
-      ],
-      'should emit review requested event'
+      requestRequestNotification.payload,
+      {
+        inviteId: memberInvite.inviteId,
+        reviewerId: admins[0].id,
+      },
+      'should send review request notification'
     );
 
     app.switchUser(owner);
     await revokeUser(app, tws.id, user.id);
+    const requestDeclinedNotification = app.queue.last(
+      'notification.sendInvitationReviewDeclined'
+    );
+    t.truthy(requestDeclinedNotification);
     t.deepEqual(
-      event.emit.lastCall.args,
-      [
-        'workspace.members.requestDeclined',
-        { userId: user.id, workspaceId: tws.id },
-      ],
-      'should emit review requested event'
+      requestDeclinedNotification.payload,
+      {
+        userId: user.id,
+        workspaceId: tws.id,
+        reviewerId: owner.id,
+      },
+      'should send review declined notification'
     );
   }
 

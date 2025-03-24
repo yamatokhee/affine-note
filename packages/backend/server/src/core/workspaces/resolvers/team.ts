@@ -223,12 +223,12 @@ export class TeamWorkspaceResolver {
 
   @Mutation(() => Boolean)
   async approveMember(
-    @CurrentUser() user: CurrentUser,
+    @CurrentUser() me: CurrentUser,
     @Args('workspaceId') workspaceId: string,
     @Args('userId') userId: string
   ) {
     await this.ac
-      .user(user.id)
+      .user(me.id)
       .workspace(workspaceId)
       .assert('Workspace.Users.Manage');
 
@@ -242,9 +242,10 @@ export class TeamWorkspaceResolver {
           WorkspaceMemberStatus.Accepted
         );
 
-        this.event.emit('workspace.members.requestApproved', {
-          inviteId: result.id,
-        });
+        await this.workspaceService.sendReviewApprovedNotification(
+          result.id,
+          me.id
+        );
       }
       return true;
     } else {

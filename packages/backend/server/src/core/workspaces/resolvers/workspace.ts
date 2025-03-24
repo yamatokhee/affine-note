@@ -529,11 +529,11 @@ export class WorkspaceResolver {
 
   @Mutation(() => Boolean)
   async revoke(
-    @CurrentUser() user: CurrentUser,
+    @CurrentUser() me: CurrentUser,
     @Args('workspaceId') workspaceId: string,
     @Args('userId') userId: string
   ) {
-    if (userId === user.id) {
+    if (userId === me.id) {
       throw new CanNotRevokeYourself();
     }
 
@@ -544,7 +544,7 @@ export class WorkspaceResolver {
     }
 
     await this.ac
-      .user(user.id)
+      .user(me.id)
       .workspace(workspaceId)
       .assert(
         role.type === WorkspaceRole.Admin
@@ -562,10 +562,11 @@ export class WorkspaceResolver {
     });
 
     if (role.status === WorkspaceMemberStatus.UnderReview) {
-      this.event.emit('workspace.members.requestDeclined', {
+      await this.workspaceService.sendReviewDeclinedNotification(
         userId,
         workspaceId,
-      });
+        me.id
+      );
     } else if (role.status === WorkspaceMemberStatus.Accepted) {
       this.event.emit('workspace.members.removed', {
         userId,
@@ -617,9 +618,7 @@ export class WorkspaceResolver {
             WorkspaceRole.Collaborator,
             WorkspaceMemberStatus.UnderReview
           );
-          this.event.emit('workspace.members.reviewRequested', {
-            inviteId: invite.id,
-          });
+          await this.workspaceService.sendReviewRequestNotification(invite.id);
           return true;
         } else {
           const isTeam =
