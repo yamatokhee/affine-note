@@ -7,16 +7,20 @@ import {
   NoteDisplayMode,
   SurfaceRefBlockSchema,
 } from '@blocksuite/affine-model';
-import { type ToolbarModuleConfig } from '@blocksuite/affine-shared/services';
+import {
+  type ToolbarModuleConfig,
+  ToolbarModuleExtension,
+} from '@blocksuite/affine-shared/services';
 import { matchModels } from '@blocksuite/affine-shared/utils';
 import { getRootBlock } from '@blocksuite/affine-widget-edgeless-toolbar';
+import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
 import { EditIcon, PageIcon, UngroupIcon } from '@blocksuite/icons/lit';
 
-import { EdgelessRootService } from '../../edgeless-root-service';
-import { mountGroupTitleEditor } from '../../utils/text';
+import { ungroupCommand } from '../command';
+import { mountGroupTitleEditor } from '../text/text';
 
-export const builtinGroupToolbarConfig = {
+export const groupToolbarConfig = {
   actions: [
     {
       id: 'a.insert-into-page',
@@ -85,10 +89,8 @@ export const builtinGroupToolbarConfig = {
         const models = ctx.getSurfaceModelsByType(GroupElementModel);
         if (!models.length) return;
 
-        const edgelessService = ctx.std.get(EdgelessRootService);
-
         for (const model of models) {
-          edgelessService.ungroup(model);
+          ctx.command.exec(ungroupCommand, { group: model });
         }
       },
     },
@@ -96,3 +98,8 @@ export const builtinGroupToolbarConfig = {
 
   when: ctx => ctx.getSurfaceModelsByType(GroupElementModel).length > 0,
 } as const satisfies ToolbarModuleConfig;
+
+export const groupToolbarExtension = ToolbarModuleExtension({
+  id: BlockFlavourIdentifier('affine:surface:group'),
+  config: groupToolbarConfig,
+});

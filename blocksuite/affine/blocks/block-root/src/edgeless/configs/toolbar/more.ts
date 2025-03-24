@@ -11,6 +11,7 @@ import {
   EdgelessCRUDIdentifier,
   getSurfaceComponent,
 } from '@blocksuite/affine-block-surface';
+import { createGroupFromSelectedCommand } from '@blocksuite/affine-gfx-group';
 import {
   AttachmentBlockModel,
   BookmarkBlockModel,
@@ -45,7 +46,6 @@ import {
   ResetIcon,
 } from '@blocksuite/icons/lit';
 
-import { EdgelessRootService } from '../../edgeless-root-service';
 import { duplicate } from '../../utils/clipboard-utils';
 import { getSortedCloneElements } from '../../utils/clone-utils';
 import { moveConnectors } from '../../utils/connector';
@@ -92,8 +92,7 @@ export const moreActions = [
           return !models.some(model => ctx.matchModel(model, FrameBlockModel));
         },
         run(ctx) {
-          const service = ctx.std.get(EdgelessRootService);
-          service.createGroupFromSelected();
+          ctx.command.exec(createGroupFromSelectedCommand);
         },
       },
     ],

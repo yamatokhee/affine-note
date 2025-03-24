@@ -4,6 +4,10 @@ import { isNoteBlock } from '@blocksuite/affine-block-surface';
 import { toast } from '@blocksuite/affine-components/toast';
 import { mountConnectorLabelEditor } from '@blocksuite/affine-gfx-connector';
 import {
+  createGroupFromSelectedCommand,
+  ungroupCommand,
+} from '@blocksuite/affine-gfx-group';
+import {
   getNearestTranslation,
   isElementOutsideViewport,
   isSingleMindMapNode,
@@ -227,7 +231,7 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
             !this.rootComponent.service.selection.editing
           ) {
             ctx.get('keyboardState').event.preventDefault();
-            rootComponent.service.createGroupFromSelected();
+            rootComponent.std.command.exec(createGroupFromSelectedCommand);
           }
         },
         'Shift-Mod-g': ctx => {
@@ -239,7 +243,9 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
             !selection.firstElement.isLocked()
           ) {
             ctx.get('keyboardState').event.preventDefault();
-            rootComponent.service.ungroup(selection.firstElement);
+            rootComponent.std.command.exec(ungroupCommand, {
+              group: selection.firstElement,
+            });
           }
         },
         'Mod-a': ctx => {
