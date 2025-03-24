@@ -1,3 +1,4 @@
+import { effects as gfxBrushEffects } from '@blocksuite/affine-gfx-brush/effects';
 import { effects as gfxConnectorEffects } from '@blocksuite/affine-gfx-connector/effects';
 import { effects as gfxGroupEffects } from '@blocksuite/affine-gfx-group/effects';
 import { effects as gfxMindmapEffects } from '@blocksuite/affine-gfx-mindmap/effects';
@@ -20,12 +21,9 @@ import {
   EDGELESS_SELECTED_RECT_WIDGET,
   EdgelessSelectedRectWidget,
 } from './edgeless/components/rects/edgeless-selected-rect.js';
-import { EdgelessBrushMenu } from './edgeless/components/toolbar/brush/brush-menu.js';
-import { EdgelessBrushToolButton } from './edgeless/components/toolbar/brush/brush-tool-button.js';
 import { EdgelessSlideMenu } from './edgeless/components/toolbar/common/slide-menu.js';
 import { ToolbarArrowUpIcon } from './edgeless/components/toolbar/common/toolbar-arrow-up-icon.js';
 import { EdgelessDefaultToolButton } from './edgeless/components/toolbar/default/default-tool-button.js';
-import { EdgelessEraserToolButton } from './edgeless/components/toolbar/eraser/eraser-tool-button.js';
 import { EdgelessLassoToolButton } from './edgeless/components/toolbar/lasso/lasso-tool-button.js';
 import { EdgelessLinkToolButton } from './edgeless/components/toolbar/link/link-tool-button.js';
 import { OverlayScrollbar } from './edgeless/components/toolbar/template/overlay-scrollbar.js';
@@ -101,6 +99,7 @@ function registerGfxEffects() {
   gfxConnectorEffects();
   gfxMindmapEffects();
   gfxGroupEffects();
+  gfxBrushEffects();
 }
 
 function registerWidgets() {
@@ -123,21 +122,15 @@ function registerWidgets() {
 
 function registerEdgelessToolbarComponents() {
   // Tool buttons
-  customElements.define('edgeless-brush-tool-button', EdgelessBrushToolButton);
   customElements.define(
     'edgeless-default-tool-button',
     EdgelessDefaultToolButton
-  );
-  customElements.define(
-    'edgeless-eraser-tool-button',
-    EdgelessEraserToolButton
   );
   customElements.define('edgeless-link-tool-button', EdgelessLinkToolButton);
   customElements.define('edgeless-lasso-tool-button', EdgelessLassoToolButton);
   customElements.define('edgeless-template-button', EdgelessTemplateButton);
 
   // Menus
-  customElements.define('edgeless-brush-menu', EdgelessBrushMenu);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
 
   // Toolbar components
@@ -196,12 +189,9 @@ declare global {
     'edgeless-navigator-black-background': EdgelessNavigatorBlackBackgroundWidget;
     'edgeless-dragging-area-rect': EdgelessDraggingAreaRectWidget;
     'edgeless-selected-rect': EdgelessSelectedRectWidget;
-    'edgeless-brush-menu': EdgelessBrushMenu;
-    'edgeless-brush-tool-button': EdgelessBrushToolButton;
     'edgeless-slide-menu': EdgelessSlideMenu;
     'toolbar-arrow-up-icon': ToolbarArrowUpIcon;
     'edgeless-default-tool-button': EdgelessDefaultToolButton;
-    'edgeless-eraser-tool-button': EdgelessEraserToolButton;
     'edgeless-lasso-tool-button': EdgelessLassoToolButton;
     'edgeless-link-tool-button': EdgelessLinkToolButton;
     'overlay-scrollbar': OverlayScrollbar;

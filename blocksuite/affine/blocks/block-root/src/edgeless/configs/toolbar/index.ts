@@ -1,5 +1,6 @@
 import { edgelessTextToolbarExtension } from '@blocksuite/affine-block-edgeless-text';
 import { frameToolbarExtension } from '@blocksuite/affine-block-frame';
+import { brushToolbarExtension } from '@blocksuite/affine-gfx-brush';
 import { connectorToolbarExtension } from '@blocksuite/affine-gfx-connector';
 import { groupToolbarExtension } from '@blocksuite/affine-gfx-group';
 import { mindmapToolbarExtension } from '@blocksuite/affine-gfx-mindmap';
@@ -9,7 +10,6 @@ import { ToolbarModuleExtension } from '@blocksuite/affine-shared/services';
 import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import type { ExtensionType } from '@blocksuite/store';
 
-import { builtinBrushToolbarConfig } from './brush';
 import { builtinLockedToolbarConfig, builtinMiscToolbarConfig } from './misc';
 
 export const EdgelessElementToolbarExtension: ExtensionType[] = [
@@ -17,10 +17,7 @@ export const EdgelessElementToolbarExtension: ExtensionType[] = [
 
   groupToolbarExtension,
 
-  ToolbarModuleExtension({
-    id: BlockFlavourIdentifier('affine:surface:brush'),
-    config: builtinBrushToolbarConfig,
-  }),
+  brushToolbarExtension,
 
   connectorToolbarExtension,
 

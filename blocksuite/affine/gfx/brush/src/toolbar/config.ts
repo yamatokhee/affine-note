@@ -9,14 +9,18 @@ import {
   LineWidth,
   resolveColor,
 } from '@blocksuite/affine-model';
-import { type ToolbarModuleConfig } from '@blocksuite/affine-shared/services';
+import {
+  type ToolbarModuleConfig,
+  ToolbarModuleExtension,
+} from '@blocksuite/affine-shared/services';
 import {
   getMostCommonResolvedValue,
   getMostCommonValue,
 } from '@blocksuite/affine-shared/utils';
+import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { html } from 'lit';
 
-export const builtinBrushToolbarConfig = {
+export const brushToolbarConfig = {
   actions: [
     {
       id: 'a.line-width',
@@ -98,3 +102,8 @@ export const builtinBrushToolbarConfig = {
 
   when: ctx => ctx.getSurfaceModelsByType(BrushElementModel).length > 0,
 } as const satisfies ToolbarModuleConfig;
+
+export const brushToolbarExtension = ToolbarModuleExtension({
+  id: BlockFlavourIdentifier('affine:surface:brush'),
+  config: brushToolbarConfig,
+});

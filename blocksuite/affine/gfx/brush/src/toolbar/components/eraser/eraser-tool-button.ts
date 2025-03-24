@@ -41,6 +41,7 @@ export class EdgelessEraserToolButton extends EdgelessToolbarToolMixin(
         {
           Escape: () => {
             if (this.edgelessTool.type === 'eraser') {
+              // @ts-expect-error FIXME: resolve after gfx tool refactor
               this.setEdgelessTool({ type: 'default' });
             }
           },

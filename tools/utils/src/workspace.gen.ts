@@ -28,6 +28,7 @@ export const PackageList = [
       'blocksuite/affine/fragments/fragment-doc-title',
       'blocksuite/affine/fragments/fragment-frame-panel',
       'blocksuite/affine/fragments/fragment-outline',
+      'blocksuite/affine/gfx/brush',
       'blocksuite/affine/gfx/connector',
       'blocksuite/affine/gfx/group',
       'blocksuite/affine/gfx/mindmap',
@@ -312,6 +313,7 @@ export const PackageList = [
       'blocksuite/affine/blocks/block-table',
       'blocksuite/affine/components',
       'blocksuite/affine/fragments/fragment-doc-title',
+      'blocksuite/affine/gfx/brush',
       'blocksuite/affine/gfx/connector',
       'blocksuite/affine/gfx/group',
       'blocksuite/affine/gfx/mindmap',
@@ -445,6 +447,21 @@ export const PackageList = [
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
+    location: 'blocksuite/affine/gfx/brush',
+    name: '@blocksuite/affine-gfx-brush',
+    workspaceDependencies: [
+      'blocksuite/affine/blocks/block-surface',
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/rich-text',
+      'blocksuite/affine/shared',
+      'blocksuite/affine/widgets/widget-edgeless-toolbar',
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',
       'blocksuite/framework/store',
@@ -1145,6 +1162,7 @@ export type PackageName =
   | '@blocksuite/affine-fragment-doc-title'
   | '@blocksuite/affine-fragment-frame-panel'
   | '@blocksuite/affine-fragment-outline'
+  | '@blocksuite/affine-gfx-brush'
   | '@blocksuite/affine-gfx-connector'
   | '@blocksuite/affine-gfx-group'
   | '@blocksuite/affine-gfx-mindmap'

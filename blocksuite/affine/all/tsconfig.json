@@ -30,6 +30,7 @@
     { "path": "../fragments/fragment-doc-title" },
     { "path": "../fragments/fragment-frame-panel" },
     { "path": "../fragments/fragment-outline" },
+    { "path": "../gfx/brush" },
     { "path": "../gfx/connector" },
     { "path": "../gfx/group" },
     { "path": "../gfx/mindmap" },
