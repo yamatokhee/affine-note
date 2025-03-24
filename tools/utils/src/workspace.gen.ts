@@ -959,6 +959,8 @@ export const PackageList = [
       'packages/common/nbstore',
       'blocksuite/affine/all',
       'packages/common/infra',
+      'tools/cli',
+      'tools/utils',
       'packages/frontend/native',
     ],
   },

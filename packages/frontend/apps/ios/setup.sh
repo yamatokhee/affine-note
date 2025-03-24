@@ -1,12 +1,11 @@
 #!/bin/zsh
 
+# This script provides a quick setup process for iOS developers working on this project.
 
 set -e
 set -o pipefail
 
 # packages/frontend/apps/ios/
-
-
 cd "$(dirname "$0")"
 
 export SCRIPT_DIR_PATH=$(pwd)
@@ -32,26 +31,16 @@ echo "[*] current object version: $CURRENT_VERSION"
 sed -i '' "s/objectVersion = $CURRENT_VERSION/objectVersion = 56/" "$XCPROJ_PATH"
 
 yarn affine @affine/ios build
-yarn affine @affine/ios cap sync
+yarn affine @affine/ios sync
 
 echo "[*] interacting with rust..."
 rustup target add aarch64-apple-ios
 rustup target add aarch64-apple-ios-sim
 rustup target add aarch64-apple-darwin
 
-cargo build -p affine_mobile_native --lib --release --target aarch64-apple-ios
-cargo run -p affine_mobile_native --bin uniffi-bindgen \
-    generate \
-    --library target/aarch64-apple-ios/release/libaffine_mobile_native.a \
-    --language swift \
-    --out-dir packages/frontend/apps/ios/App/App/uniffi
-
-echo "[*] interacting with graphql..."
-apollo-ios-cli generate --path $SCRIPT_DIR_PATH/apollo-codegen-config.json
-
-echo "[*] setting object version back to $CURRENT_VERSION"
-sed -i '' "s/objectVersion = 56/objectVersion = $CURRENT_VERSION/" "$XCPROJ_PATH"
+echo "[*] codegen..."
+yarn affine @affine/ios codegen
 
 echo "[+] setup complete"
 
-yarn affine @affine/ios cap open ios
+yarn affine @affine/ios xcode
