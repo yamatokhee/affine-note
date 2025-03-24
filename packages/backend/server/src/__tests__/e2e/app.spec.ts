@@ -33,3 +33,11 @@ e2e('should create workspace with owner', async t => {
   });
   t.truthy(workspace);
 });
+
+e2e('should get current user', async t => {
+  const user = await app.signup();
+  await app.switchUser(user);
+  const res = await app.gql({ query: getCurrentUserQuery });
+  t.truthy(res.currentUser);
+  t.is(res.currentUser!.id, user.id);
+});
