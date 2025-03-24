@@ -797,7 +797,7 @@ export async function updateExistedBrushElementSize(
 export async function openComponentToolbarMoreMenu(page: Page) {
   const btn = page
     .locator('affine-toolbar-widget editor-toolbar')
-    .getByLabel('more-menu');
+    .getByLabel('More menu');
 
   await btn.click();
 }
@@ -1023,7 +1023,7 @@ export function locatorComponentToolbar(page: Page) {
 }
 
 export function locatorComponentToolbarMoreButton(page: Page) {
-  const moreButton = locatorComponentToolbar(page).getByLabel('more-menu');
+  const moreButton = locatorComponentToolbar(page).getByLabel('More menu');
   return moreButton;
 }
 type Action =

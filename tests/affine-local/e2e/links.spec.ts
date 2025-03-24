@@ -156,7 +156,7 @@ test('not allowed to switch to embed view when linking to block', async ({
 
   await cardLink.click();
 
-  await toolbar.getByLabel('more-menu').click();
+  await toolbar.getByLabel('More menu').click();
   await toolbar.getByLabel('Copy link to block').click();
 
   await page.keyboard.press('Enter');
@@ -1034,4 +1034,90 @@ test.describe('Customize linked doc title and description', () => {
     await expect(a.locator('svg')).toBeHidden();
     await expect(a.locator('.affine-reference-title')).toContainText(year);
   });
+});
+
+test('should save open doc mode of internal links', async ({ page }) => {
+  await waitForEditorLoad(page);
+  await enableEmojiDocIcon(page);
+
+  await clickNewPageButton(page);
+  const title = getBlockSuiteEditorTitle(page);
+  await title.click();
+
+  await page.keyboard.press('Enter');
+  await createLinkedPage(page, 'Test Page');
+
+  const { toolbar, switchViewBtn, inlineViewBtn, cardViewBtn, embedViewBtn } =
+    toolbarButtons(page);
+
+  const inlineLink = page.locator('affine-reference');
+  await inlineLink.hover();
+
+  const recentOpenModeBtn = toolbar.getByLabel(/^Open/).nth(0);
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
+    'Open this doc'
+  );
+  await expect(
+    recentOpenModeBtn.locator('span.label:has-text("Open")')
+  ).toBeVisible();
+
+  const openDocBtn = toolbar.getByLabel(/^Open doc$/);
+  await openDocBtn.click();
+
+  const openDocMenu = toolbar.getByLabel('Open doc menu');
+
+  const openThisDocBtn = openDocMenu.getByLabel('Open this doc');
+  // In Desktop
+  const openInSplitViewBtn = openDocMenu.getByLabel('Open in split view');
+  const openInNewTabBtn = openDocMenu.getByLabel('Open in new tab');
+  const openInCenterPeekBtn = openDocMenu.getByLabel('Open in center peek');
+
+  await expect(openThisDocBtn).toBeVisible();
+  await expect(openInSplitViewBtn).toBeHidden();
+  await expect(openInNewTabBtn).toBeVisible();
+  await expect(openInCenterPeekBtn).toBeVisible();
+
+  await openInCenterPeekBtn.click();
+
+  await page.keyboard.press('Escape');
+
+  await inlineLink.hover();
+
+  await expect(toolbar).toBeVisible();
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
+    'Open in center peek'
+  );
+
+  await switchViewBtn.click();
+  await cardViewBtn.click();
+
+  await expect(toolbar).toBeVisible();
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
+    'Open in center peek'
+  );
+
+  await switchViewBtn.click();
+  await embedViewBtn.click();
+
+  await expect(toolbar).toBeVisible();
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
+    'Open in center peek'
+  );
+
+  await switchViewBtn.click();
+  await inlineViewBtn.click();
+
+  await inlineLink.hover();
+
+  await page.waitForTimeout(250);
+
+  await expect(toolbar).toBeVisible();
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
+    'Open in center peek'
+  );
 });

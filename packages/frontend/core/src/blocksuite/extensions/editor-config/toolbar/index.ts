@@ -5,6 +5,7 @@ import {
 } from '@affine/core/components/hooks/affine/use-share-url';
 import { WorkspaceServerService } from '@affine/core/modules/cloud';
 import { EditorService } from '@affine/core/modules/editor';
+import type { EditorSettingExt } from '@affine/core/modules/editor-setting/entities/editor-setting';
 import { copyLinkToBlockStdScopeClipboard } from '@affine/core/utils/clipboard';
 import { I18n, i18nTime } from '@affine/i18n';
 import { track } from '@affine/track';
@@ -57,7 +58,6 @@ import {
   GenerateDocUrlProvider,
   isRemovedUserInfo,
   OpenDocExtensionIdentifier,
-  type OpenDocMode,
   type ToolbarAction,
   type ToolbarActionGenerator,
   type ToolbarActionGroupGenerator,
@@ -69,14 +69,11 @@ import {
 import { matchModels } from '@blocksuite/affine/shared/utils';
 import type { ExtensionType } from '@blocksuite/affine/store';
 import {
-  CenterPeekIcon,
   CopyAsImgaeIcon,
   CopyIcon,
   EditIcon,
-  ExpandFullIcon,
   LinkIcon,
   OpenInNewIcon,
-  SplitViewIcon,
 } from '@blocksuite/icons/lit';
 import { computed } from '@preact/signals-core';
 import type { FrameworkProvider } from '@toeverything/infra';
@@ -86,6 +83,7 @@ import { keyed } from 'lit/directives/keyed.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
+import { openDocActions } from '../../open-doc';
 import { createCopyAsPngMenuItem } from './copy-as-image';
 
 export function createToolbarMoreMenuConfig(framework: FrameworkProvider) {
@@ -477,39 +475,6 @@ function createExternalLinkableToolbarConfig(
   } as const satisfies ToolbarModuleConfig;
 }
 
-const openDocActions = [
-  {
-    mode: 'open-in-active-view',
-    id: 'a.open-in-active-view',
-    label: I18n['com.affine.peek-view-controls.open-doc'](),
-    icon: ExpandFullIcon(),
-    when: true,
-  },
-  {
-    mode: 'open-in-new-view',
-    id: 'b.open-in-new-view',
-    label: I18n['com.affine.peek-view-controls.open-doc-in-split-view'](),
-    icon: SplitViewIcon(),
-    when: BUILD_CONFIG.isElectron,
-  },
-  {
-    mode: 'open-in-new-tab',
-    id: 'c.open-in-new-tab',
-    label: I18n['com.affine.peek-view-controls.open-doc-in-new-tab'](),
-    icon: OpenInNewIcon(),
-    when: true,
-  },
-  {
-    mode: 'open-in-center-peek',
-    id: 'd.open-in-center-peek',
-    label: I18n['com.affine.peek-view-controls.open-doc-in-center-peek'](),
-    icon: CenterPeekIcon(),
-    when: true,
-  },
-] as const satisfies (Pick<ToolbarAction, 'id' | 'label' | 'icon' | 'when'> & {
-  mode: OpenDocMode;
-})[];
-
 function createOpenDocActions(
   ctx: ToolbarContext,
   target:
@@ -517,7 +482,15 @@ function createOpenDocActions(
     | EmbedSyncedDocBlockComponent
     | AffineReference,
   isSameDoc: boolean,
-  actions = openDocActions
+  actions = openDocActions.map(
+    ({ type: mode, label, icon, enabled: when }, i) => ({
+      mode,
+      id: `${i}.${mode}`,
+      label,
+      icon,
+      when,
+    })
+  )
 ) {
   return actions
     .filter(action => action.when)
@@ -552,7 +525,8 @@ function createOpenDocActions(
 function createOpenDocActionGroup(
   klass:
     | typeof EmbedLinkedDocBlockComponent
-    | typeof EmbedSyncedDocBlockComponent
+    | typeof EmbedSyncedDocBlockComponent,
+  settings: EditorSettingExt
 ): ToolbarAction {
   return {
     placement: ActionPlacement.Start,
@@ -562,6 +536,7 @@ function createOpenDocActionGroup(
       if (!block) return null;
 
       return renderOpenDocMenu(
+        settings,
         ctx,
         block,
         block.model.props.pageId === ctx.store.id
@@ -594,6 +569,7 @@ function createEdgelessOpenDocActionGroup(
 }
 
 function renderOpenDocMenu(
+  settings: EditorSettingExt,
   ctx: ToolbarContext,
   target:
     | EmbedLinkedDocBlockComponent
@@ -607,42 +583,64 @@ function renderOpenDocMenu(
   }));
   if (!actions.length) return null;
 
-  return html`
-    ${keyed(
-      target,
-      html`
-        <editor-menu-button
-          .contentPadding="${'8px'}"
-          .button=${html`
-            <editor-icon-button aria-label="Open doc" .tooltip=${'Open doc'}>
-              ${OpenInNewIcon()} ${EditorChevronDown}
-            </editor-icon-button>
-          `}
-        >
-          <div data-size="small" data-orientation="vertical">
-            ${repeat(
-              actions,
-              action => action.id,
-              ({ label, icon, run, disabled }) => html`
-                <editor-menu-action
-                  aria-label=${ifDefined(label)}
-                  ?disabled=${ifDefined(disabled)}
-                  @click=${() => run?.(ctx)}
-                >
-                  ${icon}<span class="label">${label}</span>
-                </editor-menu-action>
-              `
-            )}
-          </div>
-        </editor-menu-button>
-      `
-    )}
-  `;
+  const currentOpenMode =
+    settings.settingSignal.value.openDocMode ?? 'open-in-active-view';
+  const currentIcon =
+    openDocActions.find(a => a.type === currentOpenMode)?.icon ??
+    OpenInNewIcon();
+  const currentAction = actions.find(a => a.icon === currentIcon) ?? actions[0];
+
+  return html`${keyed(
+    target,
+    html`
+      <editor-icon-button
+        aria-label="${currentAction.label}"
+        .tooltip="${currentAction.label}"
+        @click=${() => currentAction.run?.(ctx)}
+      >
+        ${currentAction.icon} <span class="label">Open</span>
+      </editor-icon-button>
+      <editor-menu-button
+        aria-label="Open doc menu"
+        .contentPadding="${'8px'}"
+        .button=${html`
+          <editor-icon-button
+            aria-label="Open doc"
+            .tooltip="${'Open doc'}"
+            .iconContainerPadding="${'4'}"
+          >
+            ${EditorChevronDown}
+          </editor-icon-button>
+        `}
+      >
+        <div data-size="small" data-orientation="vertical">
+          ${repeat(
+            actions,
+            action => action.id,
+            ({ label, icon, run, disabled }) => html`
+              <editor-menu-action
+                aria-label=${ifDefined(label)}
+                ?disabled=${ifDefined(disabled)}
+                @click=${() => {
+                  run?.(ctx);
+                  settings.openDocMode.set(
+                    openDocActions.find(a => a.icon === icon)?.type ??
+                      'open-in-active-view'
+                  );
+                }}
+              >
+                ${icon}<span class="label">${label}</span>
+              </editor-menu-action>
+            `
+          )}
+        </div>
+      </editor-menu-button>
+    `
+  )}`;
 }
 
 const embedLinkedDocToolbarConfig = {
   actions: [
-    createOpenDocActionGroup(EmbedLinkedDocBlockComponent),
     {
       id: 'a.doc-title.after.copy-link-and-edit',
       actions: [
@@ -724,7 +722,6 @@ const embedLinkedDocToolbarConfig = {
 
 const embedSyncedDocToolbarConfig = {
   actions: [
-    createOpenDocActionGroup(EmbedSyncedDocBlockComponent),
     {
       placement: ActionPlacement.Start,
       id: 'B.copy-link-and-edit',
@@ -800,20 +797,6 @@ const embedSyncedDocToolbarConfig = {
 
 const inlineReferenceToolbarConfig = {
   actions: [
-    {
-      placement: ActionPlacement.Start,
-      id: 'A.open-doc',
-      content(ctx) {
-        const target = ctx.message$.peek()?.element;
-        if (!(target instanceof AffineReference)) return null;
-
-        return renderOpenDocMenu(
-          ctx,
-          target,
-          target.referenceInfo.pageId === ctx.store.id
-        );
-      },
-    },
     {
       id: 'b.copy-link-and-edit',
       actions: [
@@ -957,6 +940,7 @@ const embedIframeToolbarConfig = {
 } as const satisfies ToolbarModuleConfig;
 
 export const createCustomToolbarExtension = (
+  settings: EditorSettingExt,
   baseUrl: string
 ): ExtensionType[] => {
   return [
@@ -1017,7 +1001,12 @@ export const createCustomToolbarExtension = (
 
     ToolbarModuleExtension({
       id: BlockFlavourIdentifier('custom:affine:embed-linked-doc'),
-      config: embedLinkedDocToolbarConfig,
+      config: {
+        actions: [
+          embedLinkedDocToolbarConfig.actions,
+          createOpenDocActionGroup(EmbedLinkedDocBlockComponent, settings),
+        ].flat(),
+      },
     }),
 
     ToolbarModuleExtension({
@@ -1025,6 +1014,7 @@ export const createCustomToolbarExtension = (
       config: {
         actions: [
           embedLinkedDocToolbarConfig.actions,
+          createOpenDocActionGroup(EmbedLinkedDocBlockComponent, settings),
           createEdgelessOpenDocActionGroup(EmbedLinkedDocBlockComponent),
         ].flat(),
 
@@ -1034,7 +1024,13 @@ export const createCustomToolbarExtension = (
 
     ToolbarModuleExtension({
       id: BlockFlavourIdentifier('custom:affine:embed-synced-doc'),
-      config: embedSyncedDocToolbarConfig,
+      config: {
+        actions: [
+          embedSyncedDocToolbarConfig.actions,
+          createOpenDocActionGroup(EmbedSyncedDocBlockComponent, settings),
+          createEdgelessOpenDocActionGroup(EmbedSyncedDocBlockComponent),
+        ].flat(),
+      },
     }),
 
     ToolbarModuleExtension({
@@ -1042,6 +1038,7 @@ export const createCustomToolbarExtension = (
       config: {
         actions: [
           embedSyncedDocToolbarConfig.actions,
+          createOpenDocActionGroup(EmbedSyncedDocBlockComponent, settings),
           createEdgelessOpenDocActionGroup(EmbedSyncedDocBlockComponent),
         ].flat(),
 
@@ -1051,7 +1048,26 @@ export const createCustomToolbarExtension = (
 
     ToolbarModuleExtension({
       id: BlockFlavourIdentifier('custom:affine:reference'),
-      config: inlineReferenceToolbarConfig,
+      config: {
+        actions: [
+          {
+            placement: ActionPlacement.Start,
+            id: 'A.open-doc',
+            content(ctx) {
+              const target = ctx.message$.peek()?.element;
+              if (!(target instanceof AffineReference)) return null;
+
+              return renderOpenDocMenu(
+                settings,
+                ctx,
+                target,
+                target.referenceInfo.pageId === ctx.store.id
+              );
+            },
+          } as const satisfies ToolbarAction,
+          inlineReferenceToolbarConfig.actions,
+        ].flat(),
+      },
     }),
 
     ToolbarModuleExtension({
