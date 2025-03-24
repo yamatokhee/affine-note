@@ -1,3 +1,4 @@
+import { waitNextFrame } from '@affine-test/kit/bs/misc';
 import { test } from '@affine-test/kit/playwright';
 import { clickEdgelessModeButton } from '@affine-test/kit/utils/editor';
 import {
@@ -594,34 +595,37 @@ test('should show edgeless content when switching card view of linked mode doc i
 
   // move viewport
   const { x, y } = noteBoundingBox;
-  await page.mouse.click(x, y);
+  await page.mouse.click(x - 100, y + 100);
   await page.keyboard.down('Space');
-  await page.waitForTimeout(50);
+  await waitNextFrame(page);
   await page.mouse.down();
-  await page.mouse.move(x + 1000, y);
+  await page.mouse.move(x + 1000, y, {
+    steps: 20,
+  });
   await page.mouse.up();
   await page.keyboard.up('Space');
 
   // create edgeless text
   await page.keyboard.press('t');
-  await page.mouse.click(x, y);
+  await page.mouse.click(x, y + 100);
   await page.locator('affine-edgeless-text').waitFor({ state: 'visible' });
   await page.keyboard.type('Edgeless Text');
 
   const url = new URL(page.url());
 
   await clickNewPageButton(page);
+  const closeAdButton = page.locator(
+    '[data-testid="local-demo-tips-close-button"]'
+  );
+  await closeAdButton.click();
   await clickEdgelessModeButton(page);
 
   await page.mouse.move(x, y);
   await writeTextToClipboard(page, url.toString());
-  await pasteByKeyboard(page);
 
   // Inline
-  await page
-    .locator('affine-embed-edgeless-linked-doc-block')
-    .waitFor({ state: 'visible' });
-  await page.mouse.click(x - 50, y - 50);
+  const embed = page.locator('affine-embed-edgeless-linked-doc-block');
+  await expect(embed).toBeVisible();
   await page.getByLabel('Switch view').click();
   await page.getByTestId('link-to-embed').click();
 
