@@ -14,7 +14,6 @@ import {
   type EmbedSyncedDocModel,
   type EmbedYoutubeModel,
   type ImageBlockModel,
-  MindmapElementModel,
   ShapeElementModel,
   TextElementModel,
 } from '@blocksuite/affine-model';
@@ -23,7 +22,6 @@ import {
   isTopLevelBlock,
 } from '@blocksuite/affine-shared/utils';
 import type {
-  GfxBlockElementModel,
   GfxModel,
   GfxPrimitiveElementModel,
   GfxToolsFullOptionValue,
@@ -32,10 +30,6 @@ import type {
 import type { PointLocation } from '@blocksuite/global/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import type { BlockModel } from '@blocksuite/store';
-
-export function isMindmapNode(element: GfxBlockElementModel | GfxModel | null) {
-  return element?.group instanceof MindmapElementModel;
-}
 
 export function isEdgelessTextBlock(
   element: BlockModel | GfxModel | null

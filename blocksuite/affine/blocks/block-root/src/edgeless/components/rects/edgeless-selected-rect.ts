@@ -18,6 +18,7 @@ import {
   OverlayIdentifier,
   TextUtils,
 } from '@blocksuite/affine-block-surface';
+import { isMindmapNode } from '@blocksuite/affine-gfx-mindmap';
 import {
   type BookmarkBlockModel,
   ConnectorElementModel,
@@ -85,7 +86,6 @@ import {
   isEmbedSyncedDocBlock,
   isEmbedYoutubeBlock,
   isImageBlock,
-  isMindmapNode,
 } from '../../utils/query.js';
 import {
   HandleDirection,

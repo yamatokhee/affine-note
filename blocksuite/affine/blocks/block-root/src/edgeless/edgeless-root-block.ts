@@ -7,6 +7,7 @@ import {
   getBgGridGap,
   normalizeWheelDeltaY,
 } from '@blocksuite/affine-block-surface';
+import { isSingleMindMapNode } from '@blocksuite/affine-gfx-mindmap';
 import { mountShapeTextEditor } from '@blocksuite/affine-gfx-shape';
 import {
   NoteBlockModel,
@@ -51,7 +52,6 @@ import { EdgelessClipboardController } from './clipboard/clipboard.js';
 import type { EdgelessSelectedRectWidget } from './components/rects/edgeless-selected-rect.js';
 import { EdgelessPageKeyboardManager } from './edgeless-keyboard.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
-import { isSingleMindMapNode } from './utils/mindmap.js';
 import { isCanvasElement } from './utils/query.js';
 
 export class EdgelessRootBlockComponent extends BlockComponent<

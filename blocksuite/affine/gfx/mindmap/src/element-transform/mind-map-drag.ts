@@ -3,17 +3,6 @@ import {
   type SurfaceBlockComponent,
 } from '@blocksuite/affine-block-surface';
 import {
-  containsNode,
-  createFromTree,
-  detachMindmap,
-  findTargetNode,
-  hideNodeConnector,
-  type MindMapIndicatorOverlay,
-  NODE_HORIZONTAL_SPACING,
-  NODE_VERTICAL_SPACING,
-  tryMoveNode,
-} from '@blocksuite/affine-gfx-mindmap';
-import {
   type LayoutType,
   type LocalConnectorElementModel,
   MindmapElementModel,
@@ -31,9 +20,18 @@ import {
 } from '@blocksuite/block-std/gfx';
 import type { Bound, IVec } from '@blocksuite/global/gfx';
 
-import { isSingleMindMapNode } from '../utils/mindmap';
-import { isMindmapNode } from '../utils/query';
-import { calculateResponseArea } from './utils/drag-utils';
+import type { MindMapIndicatorOverlay } from '../indicator-overlay';
+import { isMindmapNode, isSingleMindMapNode } from '../utils';
+import { NODE_HORIZONTAL_SPACING, NODE_VERTICAL_SPACING } from '../view/layout';
+import {
+  containsNode,
+  createFromTree,
+  detachMindmap,
+  findTargetNode,
+  hideNodeConnector,
+  tryMoveNode,
+} from '../view/utils';
+import { calculateResponseArea } from './drag-utils';
 
 type DragMindMapCtx = {
   mindmap: MindmapElementModel;

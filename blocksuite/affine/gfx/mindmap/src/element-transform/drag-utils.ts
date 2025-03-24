@@ -1,8 +1,4 @@
 import {
-  NODE_HORIZONTAL_SPACING,
-  NODE_VERTICAL_SPACING,
-} from '@blocksuite/affine-gfx-mindmap';
-import {
   LayoutType,
   type MindmapElementModel,
   type MindmapNode,
@@ -10,6 +6,8 @@ import {
 } from '@blocksuite/affine-model';
 import { Bound } from '@blocksuite/global/gfx';
 import last from 'lodash-es/last';
+
+import { NODE_HORIZONTAL_SPACING, NODE_VERTICAL_SPACING } from '../view/layout';
 
 const isOnEdge = (node: MindmapNode, direction: 'tail' | 'head') => {
   let current = node;

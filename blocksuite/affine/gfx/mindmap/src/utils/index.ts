@@ -1,5 +1,13 @@
 import { MindmapElementModel } from '@blocksuite/affine-model';
-import type { GfxModel, Viewport } from '@blocksuite/block-std/gfx';
+import type {
+  GfxBlockElementModel,
+  GfxModel,
+  Viewport,
+} from '@blocksuite/block-std/gfx';
+
+export function isMindmapNode(element: GfxBlockElementModel | GfxModel | null) {
+  return element?.group instanceof MindmapElementModel;
+}
 
 export function isSingleMindMapNode(els: GfxModel[]) {
   return els.length === 1 && els[0].group instanceof MindmapElementModel;

@@ -3,6 +3,11 @@ import { EdgelessTextBlockComponent } from '@blocksuite/affine-block-edgeless-te
 import { isNoteBlock } from '@blocksuite/affine-block-surface';
 import { toast } from '@blocksuite/affine-components/toast';
 import { mountConnectorLabelEditor } from '@blocksuite/affine-gfx-connector';
+import {
+  getNearestTranslation,
+  isElementOutsideViewport,
+  isSingleMindMapNode,
+} from '@blocksuite/affine-gfx-mindmap';
 import { mountShapeTextEditor, ShapeTool } from '@blocksuite/affine-gfx-shape';
 import {
   ConnectorElementModel,
@@ -43,11 +48,6 @@ import {
 } from './utils/consts.js';
 import { deleteElements } from './utils/crud.js';
 import { getNextShapeType } from './utils/hotkey-utils.js';
-import {
-  getNearestTranslation,
-  isElementOutsideViewport,
-  isSingleMindMapNode,
-} from './utils/mindmap.js';
 import { isCanvasElement } from './utils/query.js';
 
 export class EdgelessPageKeyboardManager extends PageKeyboardManager {
