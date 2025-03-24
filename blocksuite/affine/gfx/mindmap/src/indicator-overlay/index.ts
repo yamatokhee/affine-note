@@ -1,9 +1,4 @@
-import {
-  NODE_HORIZONTAL_SPACING,
-  NODE_VERTICAL_SPACING,
-  Overlay,
-  PathGenerator,
-} from '@blocksuite/affine-block-surface';
+import { Overlay, PathGenerator } from '@blocksuite/affine-block-surface';
 import {
   ConnectorMode,
   LayoutType,
@@ -20,6 +15,8 @@ import {
   Vec,
 } from '@blocksuite/global/gfx';
 import last from 'lodash-es/last';
+
+import { NODE_HORIZONTAL_SPACING, NODE_VERTICAL_SPACING } from '../view/layout';
 
 export class MindMapIndicatorOverlay extends Overlay {
   static INDICATOR_SIZE = [48, 22];

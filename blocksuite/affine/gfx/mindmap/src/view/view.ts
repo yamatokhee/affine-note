@@ -10,7 +10,7 @@ import { requestThrottledConnectedFrame } from '@blocksuite/affine-shared/utils'
 import type { PointerEventState } from '@blocksuite/block-std';
 import { GfxElementModelView } from '@blocksuite/block-std/gfx';
 
-import { handleLayout } from '../utils/mindmap/utils.js';
+import { handleLayout } from './utils.js';
 
 export class MindMapView extends GfxElementModelView<MindmapElementModel> {
   static override type = 'mindmap';

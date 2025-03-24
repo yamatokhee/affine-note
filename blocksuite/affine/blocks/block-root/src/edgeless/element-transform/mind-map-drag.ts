@@ -1,10 +1,18 @@
 import {
-  MindmapUtils,
-  NODE_HORIZONTAL_SPACING,
-  NODE_VERTICAL_SPACING,
   OverlayIdentifier,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine-block-surface';
+import {
+  containsNode,
+  createFromTree,
+  detachMindmap,
+  findTargetNode,
+  hideNodeConnector,
+  type MindMapIndicatorOverlay,
+  NODE_HORIZONTAL_SPACING,
+  NODE_VERTICAL_SPACING,
+  tryMoveNode,
+} from '@blocksuite/affine-gfx-mindmap';
 import {
   type LayoutType,
   type LocalConnectorElementModel,
@@ -26,7 +34,6 @@ import type { Bound, IVec } from '@blocksuite/global/gfx';
 import { isSingleMindMapNode } from '../utils/mindmap';
 import { isMindmapNode } from '../utils/query';
 import { calculateResponseArea } from './utils/drag-utils';
-import type { MindMapIndicatorOverlay } from './utils/indicator-overlay';
 
 type DragMindMapCtx = {
   mindmap: MindmapElementModel;
@@ -89,7 +96,7 @@ export class MindMapDragExtension extends TransformExtension {
         hoveredCtx?.abort?.();
 
         const hoveredNode = hoveredMindMap
-          ? MindmapUtils.findTargetNode(hoveredMindMap, [x, y])
+          ? findTargetNode(hoveredMindMap, [x, y])
           : null;
 
         hoveredCtx = {
@@ -104,13 +111,9 @@ export class MindMapDragExtension extends TransformExtension {
         if (
           hoveredNode &&
           hoveredMindMap &&
-          !MindmapUtils.containsNode(
-            hoveredMindMap,
-            hoveredNode,
-            dragMindMapCtx.node
-          )
+          !containsNode(hoveredMindMap, hoveredNode, dragMindMapCtx.node)
         ) {
-          const operation = MindmapUtils.tryMoveNode(
+          const operation = tryMoveNode(
             hoveredMindMap,
             hoveredNode,
             dragMindMapCtx.mindmap,
@@ -156,7 +159,7 @@ export class MindMapDragExtension extends TransformExtension {
           } else {
             hoveredCtx.detach = true;
 
-            const reset = (hoveredCtx.abort = MindmapUtils.hideNodeConnector(
+            const reset = (hoveredCtx.abort = hideNodeConnector(
               dragMindMapCtx.mindmap,
               dragMindMapCtx.node
             ));
@@ -183,11 +186,8 @@ export class MindMapDragExtension extends TransformExtension {
                 .serialize();
 
             if (dragMindMapCtx.node !== dragMindMapCtx.mindmap.tree) {
-              MindmapUtils.detachMindmap(
-                dragMindMapCtx.mindmap,
-                dragMindMapCtx.node
-              );
-              const mindmap = MindmapUtils.createFromTree(
+              detachMindmap(dragMindMapCtx.mindmap, dragMindMapCtx.node);
+              const mindmap = createFromTree(
                 dragMindMapCtx.node,
                 dragMindMapCtx.mindmap.style,
                 dragMindMapCtx.mindmap.layoutType,

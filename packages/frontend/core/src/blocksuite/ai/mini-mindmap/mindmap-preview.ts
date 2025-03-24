@@ -1,12 +1,12 @@
 import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace.js';
 import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
+import type { SurfaceBlockModel } from '@blocksuite/affine/blocks/surface';
 import {
   MindmapStyleFour,
   MindmapStyleOne,
   MindmapStyleThree,
   MindmapStyleTwo,
-  type SurfaceBlockModel,
-} from '@blocksuite/affine/blocks/surface';
+} from '@blocksuite/affine/gfx/mindmap';
 import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/lit';
 import {

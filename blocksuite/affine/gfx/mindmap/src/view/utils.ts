@@ -1,3 +1,4 @@
+import { fitContent } from '@blocksuite/affine-block-surface';
 import {
   applyNodeStyle,
   LayoutType,
@@ -19,7 +20,6 @@ import isEqual from 'lodash-es/isEqual';
 import last from 'lodash-es/last';
 import * as Y from 'yjs';
 
-import { fitContent } from '../../renderer/elements/shape/utils.js';
 import { layout } from './layout.js';
 
 export function getHoveredArea(

@@ -1,3 +1,5 @@
+import { ConnectorElementView } from '@blocksuite/affine-gfx-connector';
+import { MindMapView } from '@blocksuite/affine-gfx-mindmap';
 import { ViewportElementExtension } from '@blocksuite/affine-shared/services';
 import { autoConnectWidget } from '@blocksuite/affine-widget-edgeless-auto-connect';
 import { edgelessToolbarWidget } from '@blocksuite/affine-widget-edgeless-toolbar';
@@ -59,6 +61,8 @@ const EdgelessCommonExtension: ExtensionType[] = [
   ToolController,
   EdgelessRootService,
   ViewportElementExtension('.affine-edgeless-viewport'),
+  MindMapView,
+  ConnectorElementView,
   ...quickTools,
   ...seniorTools,
 ].flat();

@@ -1,10 +1,4 @@
 import {
-  MindmapStyleFour,
-  MindmapStyleOne,
-  MindmapStyleThree,
-  MindmapStyleTwo,
-} from '@blocksuite/affine-block-surface';
-import {
   LayoutType,
   MindmapElementModel,
   MindmapStyle,
@@ -21,6 +15,13 @@ import {
 } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { RadiantIcon, RightLayoutIcon, StyleIcon } from '@blocksuite/icons/lit';
+
+import {
+  MindmapStyleFour,
+  MindmapStyleOne,
+  MindmapStyleThree,
+  MindmapStyleTwo,
+} from '../view';
 
 const MINDMAP_STYLE_LIST = [
   {

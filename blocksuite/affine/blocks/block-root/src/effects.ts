@@ -11,8 +11,6 @@ import {
   NOTE_SLICER_WIDGET,
   NoteSlicer,
 } from './edgeless/components/note-slicer/index.js';
-import { EdgelessFontFamilyPanel } from './edgeless/components/panel/font-family-panel.js';
-import { EdgelessFontWeightAndStylePanel } from './edgeless/components/panel/font-weight-and-style-panel.js';
 import { EdgelessScalePanel } from './edgeless/components/panel/scale-panel.js';
 import { EdgelessSizePanel } from './edgeless/components/panel/size-panel.js';
 import { StrokeStylePanel } from './edgeless/components/panel/stroke-style-panel.js';
@@ -151,13 +149,8 @@ function registerEdgelessToolbarComponents() {
 }
 
 function registerEdgelessPanelComponents() {
-  customElements.define(
-    'edgeless-font-weight-and-style-panel',
-    EdgelessFontWeightAndStylePanel
-  );
   customElements.define('edgeless-size-panel', EdgelessSizePanel);
   customElements.define('edgeless-scale-panel', EdgelessScalePanel);
-  customElements.define('edgeless-font-family-panel', EdgelessFontFamilyPanel);
   customElements.define('stroke-style-panel', StrokeStylePanel);
 }
 
@@ -217,8 +210,6 @@ declare global {
     'edgeless-auto-complete-panel': EdgelessAutoCompletePanel;
     'edgeless-auto-complete': EdgelessAutoComplete;
     'note-slicer': NoteSlicer;
-    'edgeless-font-family-panel': EdgelessFontFamilyPanel;
-    'edgeless-font-weight-and-style-panel': EdgelessFontWeightAndStylePanel;
     'edgeless-scale-panel': EdgelessScalePanel;
     'edgeless-size-panel': EdgelessSizePanel;
     'stroke-style-panel': StrokeStylePanel;

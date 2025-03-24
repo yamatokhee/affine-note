@@ -1,7 +1,7 @@
 import {
   NODE_HORIZONTAL_SPACING,
   NODE_VERTICAL_SPACING,
-} from '@blocksuite/affine-block-surface';
+} from '@blocksuite/affine-gfx-mindmap';
 import {
   LayoutType,
   type MindmapElementModel,
