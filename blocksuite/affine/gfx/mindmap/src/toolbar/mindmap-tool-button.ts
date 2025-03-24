@@ -150,6 +150,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
 
   override enableActiveBackground = true;
 
+  // @ts-expect-error FIXME: resolve after gfx tool refactor
   override type: GfxToolsFullOptionValue['type'][] = ['empty', 'text'];
 
   get draggableTools(): DraggableTool[] {
@@ -191,6 +192,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
 
   private _toggleMenu() {
     if (this.tryDisposePopper()) return;
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
     this.setEdgelessTool({ type: 'default' });
 
     const menu = this.createPopper('edgeless-mindmap-menu', this);
@@ -211,6 +213,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
           const element = this.crud.getElementById(id) as MindmapElementModel;
 
           this.tryDisposePopper();
+          // @ts-expect-error FIXME: resolve after gfx tool refactor
           this.setEdgelessTool({ type: 'default' });
           this.gfx.selection.set({
             elements: [element.tree.id],
@@ -271,12 +274,14 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
             if (!id) return;
             this.readyToDrop = false;
             if (el.data.name === 'mindmap') {
+              // @ts-expect-error FIXME: resolve after gfx tool refactor
               this.setEdgelessTool({ type: 'default' });
               this.gfx.selection.set({
                 elements: [id],
                 editing: false,
               });
             } else if (el.data.name === 'text') {
+              // @ts-expect-error FIXME: resolve after gfx tool refactor
               this.setEdgelessTool({ type: 'default' });
             }
           })
@@ -309,6 +314,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
             });
             return;
           }
+          // @ts-expect-error FIXME: resolve after gfx tool refactor
           this.setEdgelessTool({ type: 'empty' });
           const icon = this.mindmapElement;
           const { x, y } = gfx.tool.lastMousePos$.peek();

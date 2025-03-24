@@ -3,8 +3,12 @@ import {
   TextUtils,
 } from '@blocksuite/affine-block-surface';
 import { TextElementModel } from '@blocksuite/affine-model';
-import { type ToolbarModuleConfig } from '@blocksuite/affine-shared/services';
+import {
+  type ToolbarModuleConfig,
+  ToolbarModuleExtension,
+} from '@blocksuite/affine-shared/services';
 import { createTextActions } from '@blocksuite/affine-widget-edgeless-toolbar';
+import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
 
 export const textToolbarConfig = {
@@ -46,3 +50,8 @@ export const textToolbarConfig = {
 
   when: ctx => ctx.getSurfaceModelsByType(TextElementModel).length > 0,
 } as const satisfies ToolbarModuleConfig;
+
+export const textToolbarExtension = ToolbarModuleExtension({
+  id: BlockFlavourIdentifier('affine:surface:text'),
+  config: textToolbarConfig,
+});

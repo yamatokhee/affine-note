@@ -1,6 +1,6 @@
 {
-  "name": "@blocksuite/affine-gfx-shape",
-  "description": "Gfx shape for BlockSuite.",
+  "name": "@blocksuite/affine-gfx-mindmap",
+  "description": "Gfx mindmap for BlockSuite.",
   "type": "module",
   "scripts": {
     "build": "tsc"
@@ -10,9 +10,12 @@
   "author": "toeverything",
   "license": "MIT",
   "dependencies": {
+    "@blocksuite/affine-block-attachment": "workspace:*",
+    "@blocksuite/affine-block-edgeless-text": "workspace:*",
+    "@blocksuite/affine-block-image": "workspace:*",
     "@blocksuite/affine-block-surface": "workspace:*",
     "@blocksuite/affine-components": "workspace:*",
-    "@blocksuite/affine-gfx-mindmap": "workspace:*",
+    "@blocksuite/affine-gfx-text": "workspace:*",
     "@blocksuite/affine-model": "workspace:*",
     "@blocksuite/affine-rich-text": "workspace:*",
     "@blocksuite/affine-shared": "workspace:*",
@@ -29,6 +32,7 @@
     "lodash-es": "^4.17.21",
     "minimatch": "^10.0.1",
     "rxjs": "^7.8.1",
+    "simple-xml-to-json": "^1.2.2",
     "yjs": "^13.6.21",
     "zod": "^3.23.8"
   },

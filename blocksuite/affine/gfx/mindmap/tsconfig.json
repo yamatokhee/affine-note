@@ -7,9 +7,12 @@
   },
   "include": ["./src"],
   "references": [
+    { "path": "../../blocks/block-attachment" },
+    { "path": "../../blocks/block-edgeless-text" },
+    { "path": "../../blocks/block-image" },
     { "path": "../../blocks/block-surface" },
     { "path": "../../components" },
-    { "path": "../mindmap" },
+    { "path": "../text" },
     { "path": "../../model" },
     { "path": "../../rich-text" },
     { "path": "../../shared" },

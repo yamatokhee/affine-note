@@ -21,7 +21,6 @@ import { css, html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { EdgelessRootBlockComponent } from '../../../index.js';
 import { getMindMaps, type ToolbarMindmapItem } from './assets.js';
 import { mediaRender, textRender } from './basket-elements.js';
 import { importMindMapIcon, mindmapMenuMediaIcon, textIcon } from './icons.js';
@@ -124,11 +123,8 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
     ToolbarMindmapItem | TextItem | ImportItem | MediaItem
   >;
 
+  // @ts-expect-error FIXME: resolve after gfx tool refactor
   override type = 'empty' as const;
-
-  private get _rootBlock(): EdgelessRootBlockComponent {
-    return this.std.view.getBlock(this.model.id) as EdgelessRootBlockComponent;
-  }
 
   get mindMaps() {
     return getMindMaps(this.theme);
@@ -164,7 +160,7 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
         }}
         @click=${() => {
           this.draggableController.cancel();
-          const viewportBound = this._rootBlock.service.viewport.viewportBounds;
+          const viewportBound = this.gfx.viewport.viewportBounds;
 
           viewportBound.x += viewportBound.w / 2;
           viewportBound.y += viewportBound.h / 2;
@@ -183,16 +179,13 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
   }
 
   private _onImportMindMap(bound: Bound) {
-    const edgelessBlock = this._rootBlock;
-    if (!edgelessBlock) return;
-
     const placeholder = new MindMapPlaceholder();
 
     placeholder.style.position = 'absolute';
     placeholder.style.left = `${bound.x}px`;
     placeholder.style.top = `${bound.y}px`;
 
-    edgelessBlock.gfxViewportElm.append(placeholder);
+    this.gfx.viewport.element?.append(placeholder);
 
     this.onImportMindMap?.(bound)
       .then(() => {
@@ -230,6 +223,7 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
           this.onActiveStyleChange?.(element.data.style);
         }
         // a workaround to active mindmap, so that menu cannot be closed by `Escape`
+        // @ts-expect-error FIXME: resolve after gfx tool refactor
         this.setEdgelessTool({ type: 'empty' });
       },
       onDrop: (element, bound) => {
@@ -240,6 +234,7 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
               if (!id) return;
               if (element.data.type === 'mindmap') {
                 this.onActiveStyleChange?.(element.data.style);
+                // @ts-expect-error FIXME: resolve after gfx tool refactor
                 this.setEdgelessTool({ type: 'default' });
                 this.gfx.selection.set({
                   elements: [id],
@@ -249,6 +244,7 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
                 element.data.type === 'text' ||
                 element.data.type === 'media'
               ) {
+                // @ts-expect-error FIXME: resolve after gfx tool refactor
                 this.setEdgelessTool({ type: 'default' });
               }
             })

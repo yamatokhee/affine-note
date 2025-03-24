@@ -21,10 +21,11 @@ import {
   resolveColor,
   StrokeStyle,
 } from '@blocksuite/affine-model';
-import type {
-  ToolbarContext,
-  ToolbarGenericAction,
-  ToolbarModuleConfig,
+import {
+  type ToolbarContext,
+  type ToolbarGenericAction,
+  type ToolbarModuleConfig,
+  ToolbarModuleExtension,
 } from '@blocksuite/affine-shared/services';
 import {
   getMostCommonResolvedValue,
@@ -37,6 +38,7 @@ import {
   LINE_STYLE_LIST,
   renderMenu,
 } from '@blocksuite/affine-widget-edgeless-toolbar';
+import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
 import {
   AddTextIcon,
@@ -417,3 +419,8 @@ function updateModelsWith<
       .updateElement(model.id, { [field]: value });
   }
 }
+
+export const connectorToolbarExtension = ToolbarModuleExtension({
+  id: BlockFlavourIdentifier('affine:surface:connector'),
+  config: connectorToolbarConfig,
+});

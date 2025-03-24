@@ -9,15 +9,17 @@ import {
   MindmapElementModel,
   MindmapStyle,
 } from '@blocksuite/affine-model';
-import type {
-  ToolbarContext,
-  ToolbarModuleConfig,
+import {
+  type ToolbarContext,
+  type ToolbarModuleConfig,
+  ToolbarModuleExtension,
 } from '@blocksuite/affine-shared/services';
 import { getMostCommonValue } from '@blocksuite/affine-shared/utils';
 import {
   type MenuItem,
   renderMenu,
 } from '@blocksuite/affine-widget-edgeless-toolbar';
+import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { RadiantIcon, RightLayoutIcon, StyleIcon } from '@blocksuite/icons/lit';
 
 const MINDMAP_STYLE_LIST = [
@@ -102,7 +104,7 @@ export const createMindmapLayoutActionMenu = (
   });
 };
 
-export const builtinMindmapToolbarConfig = {
+export const mindmapToolbarConfig = {
   actions: [
     {
       id: 'a.style',
@@ -126,3 +128,8 @@ export const builtinMindmapToolbarConfig = {
 
   when: ctx => ctx.getSurfaceModelsByType(MindmapElementModel).length > 0,
 } as const satisfies ToolbarModuleConfig;
+
+export const mindmapToolbarExtension = ToolbarModuleExtension({
+  id: BlockFlavourIdentifier('affine:surface:mindmap'),
+  config: mindmapToolbarConfig,
+});

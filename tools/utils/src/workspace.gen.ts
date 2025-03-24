@@ -29,6 +29,7 @@ export const PackageList = [
       'blocksuite/affine/fragments/fragment-frame-panel',
       'blocksuite/affine/fragments/fragment-outline',
       'blocksuite/affine/gfx/connector',
+      'blocksuite/affine/gfx/mindmap',
       'blocksuite/affine/gfx/note',
       'blocksuite/affine/gfx/shape',
       'blocksuite/affine/gfx/text',
@@ -310,6 +311,7 @@ export const PackageList = [
       'blocksuite/affine/components',
       'blocksuite/affine/fragments/fragment-doc-title',
       'blocksuite/affine/gfx/connector',
+      'blocksuite/affine/gfx/mindmap',
       'blocksuite/affine/gfx/note',
       'blocksuite/affine/gfx/shape',
       'blocksuite/affine/gfx/text',
@@ -461,6 +463,25 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/gfx/mindmap',
+    name: '@blocksuite/affine-gfx-mindmap',
+    workspaceDependencies: [
+      'blocksuite/affine/blocks/block-attachment',
+      'blocksuite/affine/blocks/block-edgeless-text',
+      'blocksuite/affine/blocks/block-image',
+      'blocksuite/affine/blocks/block-surface',
+      'blocksuite/affine/components',
+      'blocksuite/affine/gfx/text',
+      'blocksuite/affine/model',
+      'blocksuite/affine/rich-text',
+      'blocksuite/affine/shared',
+      'blocksuite/affine/widgets/widget-edgeless-toolbar',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/gfx/note',
     name: '@blocksuite/affine-gfx-note',
     workspaceDependencies: [
@@ -484,6 +505,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
+      'blocksuite/affine/gfx/mindmap',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
@@ -1093,6 +1115,7 @@ export type PackageName =
   | '@blocksuite/affine-fragment-frame-panel'
   | '@blocksuite/affine-fragment-outline'
   | '@blocksuite/affine-gfx-connector'
+  | '@blocksuite/affine-gfx-mindmap'
   | '@blocksuite/affine-gfx-note'
   | '@blocksuite/affine-gfx-shape'
   | '@blocksuite/affine-gfx-text'
