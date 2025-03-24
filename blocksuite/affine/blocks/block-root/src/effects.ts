@@ -11,9 +11,6 @@ import {
   NOTE_SLICER_WIDGET,
   NoteSlicer,
 } from './edgeless/components/note-slicer/index.js';
-import { EdgelessScalePanel } from './edgeless/components/panel/scale-panel.js';
-import { EdgelessSizePanel } from './edgeless/components/panel/size-panel.js';
-import { StrokeStylePanel } from './edgeless/components/panel/stroke-style-panel.js';
 import {
   EDGELESS_DRAGGING_AREA_WIDGET,
   EdgelessDraggingAreaRectWidget,
@@ -84,7 +81,6 @@ export function effects() {
   registerGfxEffects();
   registerWidgets();
   registerEdgelessToolbarComponents();
-  registerEdgelessPanelComponents();
   registerEdgelessEditorComponents();
   registerMiscComponents();
 }
@@ -148,12 +144,6 @@ function registerEdgelessToolbarComponents() {
   customElements.define('toolbar-arrow-up-icon', ToolbarArrowUpIcon);
 }
 
-function registerEdgelessPanelComponents() {
-  customElements.define('edgeless-size-panel', EdgelessSizePanel);
-  customElements.define('edgeless-scale-panel', EdgelessScalePanel);
-  customElements.define('stroke-style-panel', StrokeStylePanel);
-}
-
 function registerEdgelessEditorComponents() {
   customElements.define(
     'edgeless-group-title-editor',
@@ -210,9 +200,6 @@ declare global {
     'edgeless-auto-complete-panel': EdgelessAutoCompletePanel;
     'edgeless-auto-complete': EdgelessAutoComplete;
     'note-slicer': NoteSlicer;
-    'edgeless-scale-panel': EdgelessScalePanel;
-    'edgeless-size-panel': EdgelessSizePanel;
-    'stroke-style-panel': StrokeStylePanel;
     'edgeless-navigator-black-background': EdgelessNavigatorBlackBackgroundWidget;
     'edgeless-dragging-area-rect': EdgelessDraggingAreaRectWidget;
     'edgeless-selected-rect': EdgelessSelectedRectWidget;
