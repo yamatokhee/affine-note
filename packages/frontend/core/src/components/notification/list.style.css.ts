@@ -85,7 +85,7 @@ export const itemNameLabel = style({
   display: 'inline-flex',
   alignItems: 'center',
   gap: '4px',
-  lineHeight: '22px',
+  verticalAlign: 'top',
   selectors: {
     [`&[data-inactived="true"]`]: {
       color: cssVarV2('text/placeholder'),
