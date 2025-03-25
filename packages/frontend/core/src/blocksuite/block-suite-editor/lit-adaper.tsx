@@ -57,7 +57,7 @@ import {
 import { patchDatabaseBlockConfigService } from '../extensions/database-block-config-service';
 import { patchDocModeService } from '../extensions/doc-mode-service';
 import { patchDocUrlExtensions } from '../extensions/doc-url';
-import { EdgelessClipboardWatcher } from '../extensions/edgeless-clipboard';
+import { EdgelessClipboardAIChatConfig } from '../extensions/edgeless-clipboard';
 import { patchForClipboardInElectron } from '../extensions/electron-clipboard';
 import { enableEditorExtension } from '../extensions/entry/enable-editor';
 import { enableMobileExtension } from '../extensions/entry/enable-mobile';
@@ -169,7 +169,7 @@ const usePatchSpecs = (mode: DocMode) => {
         patchNotificationService(confirmModal),
         patchPeekViewService(peekViewService),
         patchOpenDocExtension(),
-        EdgelessClipboardWatcher,
+        EdgelessClipboardAIChatConfig,
         patchDocUrlExtensions(framework),
         patchQuickSearchService(framework),
         patchSideBarService(framework),

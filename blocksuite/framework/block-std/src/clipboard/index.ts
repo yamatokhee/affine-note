@@ -9,12 +9,12 @@ import type {
   TransformerMiddleware,
 } from '@blocksuite/store';
 import DOMPurify from 'dompurify';
-import type { RootContentMap } from 'hast';
 import * as lz from 'lz-string';
 import rehypeParse from 'rehype-parse';
 import { unified } from 'unified';
 
 import { LifeCycleWatcher } from '../extension/index.js';
+import { onlyContainImgElement } from './utils.js';
 
 type AdapterConstructor<T extends BaseAdapter> =
   | { new (job: Transformer): T }
@@ -27,38 +27,6 @@ type AdapterMap = Map<
     priority: number;
   }
 >;
-
-type HastUnionType<
-  K extends keyof RootContentMap,
-  V extends RootContentMap[K],
-> = V;
-
-export function onlyContainImgElement(
-  ast: HastUnionType<keyof RootContentMap, RootContentMap[keyof RootContentMap]>
-): 'yes' | 'no' | 'maybe' {
-  if (ast.type === 'element') {
-    switch (ast.tagName) {
-      case 'html':
-      case 'body':
-        return ast.children.map(onlyContainImgElement).reduce((a, b) => {
-          if (a === 'no' || b === 'no') {
-            return 'no';
-          }
-          if (a === 'maybe' && b === 'maybe') {
-            return 'maybe';
-          }
-          return 'yes';
-        }, 'maybe');
-      case 'img':
-        return 'yes';
-      case 'head':
-        return 'maybe';
-      default:
-        return 'no';
-    }
-  }
-  return 'maybe';
-}
 
 export class Clipboard extends LifeCycleWatcher {
   static override readonly key = 'clipboard';
