@@ -20,6 +20,7 @@ import { WorkspaceRole } from '../../permission';
 import { WorkspaceBlobStorage } from '../../storage';
 
 export type InviteInfo = {
+  isLink: boolean;
   workspaceId: string;
   inviterUserId?: string;
   inviteeUserId?: string;
@@ -45,7 +46,10 @@ export class WorkspaceService {
       `workspace:inviteLinkId:${inviteId}`
     );
     if (typeof invite?.workspaceId === 'string') {
-      return invite;
+      return {
+        ...invite,
+        isLink: true,
+      };
     }
 
     const workspaceUser = await this.models.workspaceUser.getById(inviteId);
@@ -55,6 +59,7 @@ export class WorkspaceService {
     }
 
     return {
+      isLink: false,
       workspaceId: workspaceUser.workspaceId,
       inviteeUserId: workspaceUser.userId,
     };

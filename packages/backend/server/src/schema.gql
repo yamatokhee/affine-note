@@ -692,10 +692,13 @@ type InvitationReviewRequestNotificationBodyType {
 
 type InvitationType {
   """Invitee information"""
-  invitee: UserType!
+  invitee: WorkspaceUserType!
+
+  """Invitation status in workspace"""
+  status: WorkspaceMemberStatus
 
   """User information"""
-  user: UserType!
+  user: WorkspaceUserType!
 
   """Workspace information"""
   workspace: InvitationWorkspaceType!

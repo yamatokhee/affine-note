@@ -1,9 +1,12 @@
 import {
   acceptInviteByInviteIdMutation,
+  createInviteLinkMutation,
+  getInviteInfoQuery,
   getMembersByWorkspaceIdQuery,
   inviteByEmailMutation,
   leaveWorkspaceMutation,
   revokeMemberPermissionMutation,
+  WorkspaceInviteLinkExpireTime,
   WorkspaceMemberStatus,
 } from '@affine/graphql';
 import { faker } from '@faker-js/faker';
@@ -32,6 +35,34 @@ e2e('should invite a user', async t => {
   const invitationNotification = app.queue.last('notification.sendInvitation');
   t.is(invitationNotification.payload.inviterId, owner.id);
   t.is(invitationNotification.payload.inviteId, result.invite);
+
+  // invitation status is pending
+  const { getInviteInfo } = await app.gql({
+    query: getInviteInfoQuery,
+    variables: {
+      inviteId: result.invite,
+    },
+  });
+  t.is(getInviteInfo.status, WorkspaceMemberStatus.Pending);
+
+  // u2 accept invite
+  await app.switchUser(u2);
+  await app.gql({
+    query: acceptInviteByInviteIdMutation,
+    variables: {
+      workspaceId: workspace.id,
+      inviteId: result.invite,
+    },
+  });
+
+  // invitation status is accepted
+  const { getInviteInfo: getInviteInfo2 } = await app.gql({
+    query: getInviteInfoQuery,
+    variables: {
+      inviteId: result.invite,
+    },
+  });
+  t.is(getInviteInfo2.status, WorkspaceMemberStatus.Accepted);
 });
 
 e2e('should leave a workspace', async t => {
@@ -290,7 +321,7 @@ e2e('should limit member count correctly', async t => {
   const workspace = await app.create(Mockers.Workspace, {
     owner: { id: owner.id },
   });
-  await Promise.allSettled(
+  await Promise.all(
     Array.from({ length: 10 }).map(async () => {
       const user = await app.signup();
       await app.create(Mockers.WorkspaceUser, {
@@ -311,4 +342,63 @@ e2e('should limit member count correctly', async t => {
   });
   t.is(result.workspace.memberCount, 11);
   t.is(result.workspace.members.length, 10);
+});
+
+e2e('should get invite link info with status', async t => {
+  const owner = await app.signup();
+
+  const workspace = await app.create(Mockers.Workspace, {
+    owner: { id: owner.id },
+  });
+
+  await app.login(owner);
+  const { createInviteLink } = await app.gql({
+    query: createInviteLinkMutation,
+    variables: {
+      workspaceId: workspace.id,
+      expireTime: WorkspaceInviteLinkExpireTime.OneDay,
+    },
+  });
+  t.truthy(createInviteLink, 'failed to create invite link');
+  const link = createInviteLink.link;
+  const inviteId = link.split('/').pop()!;
+
+  // owner/member see accept status
+  const { getInviteInfo } = await app.gql({
+    query: getInviteInfoQuery,
+    variables: {
+      inviteId,
+    },
+  });
+  t.truthy(getInviteInfo, 'failed to get invite info');
+  t.is(getInviteInfo.status, WorkspaceMemberStatus.Accepted);
+
+  // non-member see null status
+  await app.signup();
+  const { getInviteInfo: getInviteInfo2 } = await app.gql({
+    query: getInviteInfoQuery,
+    variables: {
+      inviteId,
+    },
+  });
+  t.truthy(getInviteInfo2, 'failed to get invite info');
+  t.is(getInviteInfo2.status, null);
+
+  // pending-member see under review status
+  await app.signup();
+  await app.gql({
+    query: acceptInviteByInviteIdMutation,
+    variables: {
+      workspaceId: workspace.id,
+      inviteId,
+    },
+  });
+  const { getInviteInfo: getInviteInfo3 } = await app.gql({
+    query: getInviteInfoQuery,
+    variables: {
+      inviteId,
+    },
+  });
+  t.truthy(getInviteInfo3, 'failed to get invite info');
+  t.is(getInviteInfo3.status, WorkspaceMemberStatus.UnderReview);
 });

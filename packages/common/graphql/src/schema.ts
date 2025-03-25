@@ -834,9 +834,11 @@ export interface InvitationReviewRequestNotificationBodyType {
 export interface InvitationType {
   __typename?: 'InvitationType';
   /** Invitee information */
-  invitee: UserType;
+  invitee: WorkspaceUserType;
+  /** Invitation status in workspace */
+  status: Maybe<WorkspaceMemberStatus>;
   /** User information */
-  user: UserType;
+  user: WorkspaceUserType;
   /** Workspace information */
   workspace: InvitationWorkspaceType;
 }
@@ -3192,6 +3194,7 @@ export type GetInviteInfoQuery = {
   __typename?: 'Query';
   getInviteInfo: {
     __typename?: 'InvitationType';
+    status: WorkspaceMemberStatus | null;
     workspace: {
       __typename?: 'InvitationWorkspaceType';
       id: string;
@@ -3199,7 +3202,7 @@ export type GetInviteInfoQuery = {
       avatar: string;
     };
     user: {
-      __typename?: 'UserType';
+      __typename?: 'WorkspaceUserType';
       id: string;
       name: string;
       avatarUrl: string | null;

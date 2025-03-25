@@ -544,27 +544,34 @@ test('should be able to invite by link', async t => {
   const [teamInviteId, teamInvite, acceptTeamInvite] =
     await createInviteLink(tws);
 
+  const member = await app.signup();
   {
     // check invite link
-    app.switchUser(owner);
+    app.switchUser(member);
     const info = await getInviteInfo(app, inviteId);
     t.is(info.workspace.id, ws.id, 'should be able to get invite info');
+    t.falsy(info.status);
 
     // check team invite link
     const teamInfo = await getInviteInfo(app, teamInviteId);
     t.is(teamInfo.workspace.id, tws.id, 'should be able to get invite info');
+    t.falsy(info.status);
   }
 
   {
     // invite link
     for (const [i] of Array.from({ length: 5 }).entries()) {
       const user = await invite(`test${i}@affine.pro`);
-      const status = (await models.workspaceUser.get(ws.id, user.id))?.status;
+      const role = await models.workspaceUser.get(ws.id, user.id);
+      t.truthy(role);
+      const status = role!.status;
       t.is(
         status,
         WorkspaceMemberStatus.UnderReview,
         'should be able to check status'
       );
+      const info = await getInviteInfo(app, role!.id);
+      t.is(info.status, WorkspaceMemberStatus.UnderReview);
     }
 
     await t.throwsAsync(

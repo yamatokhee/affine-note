@@ -514,8 +514,8 @@ export class WorkspaceResolver {
   async getInviteInfo(
     @CurrentUser() user: UserType | undefined,
     @Args('inviteId') inviteId: string
-  ) {
-    const { workspaceId, inviteeUserId } =
+  ): Promise<InvitationType> {
+    const { workspaceId, inviteeUserId, isLink } =
       await this.workspaceService.getInviteInfo(inviteId);
     const workspace = await this.workspaceService.getWorkspaceInfo(workspaceId);
     const owner = await this.models.workspaceUser.getOwner(workspaceId);
@@ -523,8 +523,21 @@ export class WorkspaceResolver {
     const inviteeId = inviteeUserId || user?.id;
     if (!inviteeId) throw new UserNotFound();
     const invitee = await this.models.user.getWorkspaceUser(inviteeId);
+    if (!invitee) throw new UserNotFound();
 
-    return { workspace, user: owner, invitee };
+    let status: WorkspaceMemberStatus | undefined;
+    if (isLink) {
+      const invitation = await this.models.workspaceUser.get(
+        workspaceId,
+        inviteeId
+      );
+      status = invitation?.status;
+    } else {
+      const invitation = await this.models.workspaceUser.getById(inviteId);
+      status = invitation?.status;
+    }
+
+    return { workspace, user: owner, invitee, status };
   }
 
   @Mutation(() => Boolean)

@@ -10,5 +10,6 @@ query getInviteInfo($inviteId: String!) {
       name
       avatarUrl
     }
+    status
   }
 }

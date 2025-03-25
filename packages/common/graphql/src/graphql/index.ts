@@ -750,6 +750,7 @@ export const getInviteInfoQuery = {
       name
       avatarUrl
     }
+    status
   }
 }`,
 };
