@@ -610,44 +610,48 @@ export class WorkspaceResolver {
         `workspace:inviteLink:${workspaceId}`
       );
       if (invite?.inviteId === inviteId) {
-        const seatAvailable = await this.quota.tryCheckSeat(workspaceId);
-        if (seatAvailable) {
-          const invite = await this.models.workspaceUser.set(
-            workspaceId,
-            user.id,
-            WorkspaceRole.Collaborator,
-            WorkspaceMemberStatus.UnderReview
-          );
-          await this.workspaceService.sendReviewRequestNotification(invite.id);
-          return true;
-        } else {
-          const isTeam =
-            await this.workspaceService.isTeamWorkspace(workspaceId);
-          // only team workspace allow over limit
-          if (isTeam) {
-            await this.models.workspaceUser.set(
-              workspaceId,
-              user.id,
-              WorkspaceRole.Collaborator,
-              WorkspaceMemberStatus.NeedMoreSeatAndReview
-            );
-            const memberCount =
-              await this.models.workspaceUser.count(workspaceId);
-            this.event.emit('workspace.members.updated', {
-              workspaceId,
-              count: memberCount,
-            });
-            return true;
-          } else {
-            throw new MemberQuotaExceeded();
-          }
-        }
+        await this.acceptInviteByLink(user, workspaceId);
+        return true;
       }
     }
 
     await this.models.workspaceUser.accept(inviteId);
     await this.workspaceService.sendInvitationAcceptedNotification(inviteId);
     return true;
+  }
+
+  private async acceptInviteByLink(user: CurrentUser, workspaceId: string) {
+    const seatAvailable = await this.quota.tryCheckSeat(workspaceId);
+    if (seatAvailable) {
+      const role = await this.models.workspaceUser.set(
+        workspaceId,
+        user.id,
+        WorkspaceRole.Collaborator,
+        WorkspaceMemberStatus.UnderReview
+      );
+      await this.workspaceService.sendReviewRequestNotification(role.id);
+      return;
+    }
+
+    const isTeam = await this.workspaceService.isTeamWorkspace(workspaceId);
+    // only team workspace allow over limit
+    if (isTeam) {
+      const role = await this.models.workspaceUser.set(
+        workspaceId,
+        user.id,
+        WorkspaceRole.Collaborator,
+        WorkspaceMemberStatus.NeedMoreSeatAndReview
+      );
+      await this.workspaceService.sendReviewRequestNotification(role.id);
+      const memberCount = await this.models.workspaceUser.count(workspaceId);
+      this.event.emit('workspace.members.updated', {
+        workspaceId,
+        count: memberCount,
+      });
+      return;
+    }
+
+    throw new MemberQuotaExceeded();
   }
 
   @Mutation(() => Boolean)
