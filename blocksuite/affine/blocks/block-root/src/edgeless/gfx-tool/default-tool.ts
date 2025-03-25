@@ -49,7 +49,7 @@ import { effect } from '@preact/signals-core';
 import clamp from 'lodash-es/clamp';
 import last from 'lodash-es/last';
 
-import type { EdgelessRootBlockComponent } from '../index.js';
+import { EdgelessClipboardController } from '../clipboard/clipboard.js';
 import { prepareCloneData } from '../utils/clone-utils.js';
 import { calPanDelta } from '../utils/panning-utils.js';
 import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
@@ -238,10 +238,9 @@ export class DefaultTool extends BaseTool {
   private async _cloneContent() {
     if (!this._edgeless) return;
 
-    // FIXME: edgeless clipboard should be an extension
-    const clipboardController = (
-      this._edgeless as EdgelessRootBlockComponent | null
-    )?.clipboardController;
+    const clipboardController = this.std.getOptional(
+      EdgelessClipboardController
+    );
     if (!clipboardController) return;
     const snapshot = prepareCloneData(this._toBeMoved, this.std);
 

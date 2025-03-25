@@ -15,8 +15,8 @@ import {
   getSelectedModelsCommand,
 } from '@blocksuite/affine-shared/commands';
 import {
-  type BlockComponent,
   ClipboardAdapterConfigExtension,
+  LifeCycleWatcher,
   type UIEventHandler,
 } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/disposable';
@@ -81,9 +81,11 @@ export const clipboardConfigs: ExtensionType[] = [
  * ReadOnlyClipboard is a class that provides a read-only clipboard for the root block.
  * It is supported to copy models in the root block.
  */
-export class ReadOnlyClipboard {
+export class ReadOnlyClipboard extends LifeCycleWatcher {
+  static override key = 'affine-readonly-clipboard';
+
   protected readonly _copySelected = (onCopy?: () => void) => {
-    return this._std.command
+    return this.std.command
       .chain()
       .with({ onCopy })
       .pipe(getSelectedModelsCommand)
@@ -94,25 +96,23 @@ export class ReadOnlyClipboard {
   protected _disposables = new DisposableGroup();
 
   protected _initAdapters = () => {
-    const copy = copyMiddleware(this._std);
-    this._std.clipboard.use(copy);
-    this._std.clipboard.use(
-      titleMiddleware(this._std.store.workspace.meta.docMetas)
+    const copy = copyMiddleware(this.std);
+    this.std.clipboard.use(copy);
+    this.std.clipboard.use(
+      titleMiddleware(this.std.store.workspace.meta.docMetas)
     );
-    this._std.clipboard.use(defaultImageProxyMiddleware);
+    this.std.clipboard.use(defaultImageProxyMiddleware);
 
     this._disposables.add({
       dispose: () => {
-        this._std.clipboard.unuse(copy);
-        this._std.clipboard.unuse(
-          titleMiddleware(this._std.store.workspace.meta.docMetas)
+        this.std.clipboard.unuse(copy);
+        this.std.clipboard.unuse(
+          titleMiddleware(this.std.store.workspace.meta.docMetas)
         );
-        this._std.clipboard.unuse(defaultImageProxyMiddleware);
+        this.std.clipboard.unuse(defaultImageProxyMiddleware);
       },
     });
   };
-
-  host: BlockComponent;
 
   onPageCopy: UIEventHandler = ctx => {
     const e = ctx.get('clipboardState').raw;
@@ -121,25 +121,17 @@ export class ReadOnlyClipboard {
     this._copySelected().run();
   };
 
-  protected get _std() {
-    return this.host.std;
-  }
-
-  constructor(host: BlockComponent) {
-    this.host = host;
-  }
-
-  hostConnected() {
+  override mounted(): void {
+    if (!navigator.clipboard) {
+      console.error(
+        'navigator.clipboard is not supported in current environment.'
+      );
+      return;
+    }
     if (this._disposables.disposed) {
       this._disposables = new DisposableGroup();
     }
-    if (navigator.clipboard) {
-      this.host.handleEvent('copy', this.onPageCopy);
-      this._initAdapters();
-    }
-  }
-
-  hostDisconnected() {
-    this._disposables.dispose();
+    this.std.event.add('copy', this.onPageCopy);
+    this._initAdapters();
   }
 }

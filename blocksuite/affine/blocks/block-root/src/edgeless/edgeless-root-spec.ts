@@ -20,6 +20,7 @@ import { literal, unsafeStatic } from 'lit/static-html.js';
 import { CommonSpecs } from '../common-specs/index.js';
 import { edgelessNavigatorBgWidget } from '../widgets/edgeless-navigator-bg/index.js';
 import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from '../widgets/edgeless-zoom-toolbar/index.js';
+import { EdgelessClipboardController } from './clipboard/clipboard.js';
 import {
   EdgelessClipboardAttachmentConfig,
   EdgelessClipboardBookmarkConfig,
@@ -113,6 +114,7 @@ export const EdgelessRootBlockSpec: ExtensionType[] = [
   edgelessNavigatorBgWidget,
   edgelessSelectedRectWidget,
   edgelessToolbarWidget,
+  EdgelessClipboardController,
 ];
 
 export const PreviewEdgelessRootBlockSpec: ExtensionType[] = [

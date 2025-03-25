@@ -22,7 +22,6 @@ import {
 import {
   ClipboardAdapter,
   decodeClipboardBlobs,
-  encodeClipboardBlobs,
 } from '@blocksuite/affine-shared/adapters';
 import {
   CANVAS_EXPORT_IGNORE_TAGS,
@@ -42,8 +41,6 @@ import {
   referenceToNode,
 } from '@blocksuite/affine-shared/utils';
 import type {
-  BlockComponent,
-  BlockStdScope,
   EditorHost,
   SurfaceSelection,
   UIEventStateContext,
@@ -74,21 +71,18 @@ import {
   BlockSnapshotSchema,
   type SliceSnapshot,
 } from '@blocksuite/store';
-import DOMPurify from 'dompurify';
 import * as Y from 'yjs';
 
 import { PageClipboard } from '../../clipboard/index.js';
-import { edgelessElementsBoundFromRawData } from '../utils/bound-utils.js';
-import { createNewPresentationIndexes } from '../utils/clipboard-utils.js';
+import { getSortedCloneElements } from '../utils/clone-utils.js';
+import { isCanvasElementWithText } from '../utils/query.js';
 import {
-  getSortedCloneElements,
-  serializeElement,
-} from '../utils/clone-utils.js';
-import {
-  isAttachmentBlock,
-  isCanvasElementWithText,
-  isImageBlock,
-} from '../utils/query.js';
+  createNewPresentationIndexes,
+  edgelessElementsBoundFromRawData,
+  isPureFileInClipboard,
+  prepareClipboardData,
+  tryGetSvgFromClipboard,
+} from './utils.js';
 
 const BLOCKSUITE_SURFACE = 'blocksuite/surface';
 
@@ -102,35 +96,25 @@ interface CanvasExportOptions {
 }
 
 export class EdgelessClipboardController extends PageClipboard {
+  static override key = 'affine-edgeless-clipboard';
+
   private readonly _initEdgelessClipboard = () => {
-    this.host.handleEvent(
-      'copy',
-      ctx => {
-        const { surfaceSelections, selectedIds } = this.selectionManager;
+    this.std.event.add('copy', ctx => {
+      const { surfaceSelections, selectedIds } = this.selectionManager;
 
-        if (selectedIds.length === 0) return false;
+      if (selectedIds.length === 0) return false;
 
-        this._onCopy(ctx, surfaceSelections).catch(console.error);
-        return;
-      },
-      { global: true }
-    );
+      this._onCopy(ctx, surfaceSelections).catch(console.error);
+      return;
+    });
 
-    this.host.handleEvent(
-      'paste',
-      ctx => {
-        this._onPaste(ctx).catch(console.error);
-      },
-      { global: true }
-    );
+    this.std.event.add('paste', ctx => {
+      this._onPaste(ctx).catch(console.error);
+    });
 
-    this.host.handleEvent(
-      'cut',
-      ctx => {
-        this._onCut(ctx).catch(console.error);
-      },
-      { global: true }
-    );
+    this.std.event.add('cut', ctx => {
+      this._onCut(ctx).catch(console.error);
+    });
   };
 
   private readonly _onCopy = async (
@@ -373,19 +357,11 @@ export class EdgelessClipboardController extends PageClipboard {
   }
 
   private get doc() {
-    return this.host.doc;
-  }
-
-  private get edgeless() {
-    return this.host;
+    return this.std.store;
   }
 
   private get selectionManager() {
     return this.gfx.selection;
-  }
-
-  private get std() {
-    return this.host.std;
   }
 
   private get surface() {
@@ -523,7 +499,6 @@ export class EdgelessClipboardController extends PageClipboard {
   }
 
   private async _edgelessToCanvas(
-    edgeless: BlockComponent,
     bound: IBound,
     nodes?: GfxBlockElementModel[],
     canvasElements: GfxPrimitiveElementModel[] = [],
@@ -533,7 +508,7 @@ export class EdgelessClipboardController extends PageClipboard {
       dpr = window.devicePixelRatio || 1,
     }: CanvasExportOptions = {}
   ): Promise<HTMLCanvasElement | undefined> {
-    const host = edgeless.host;
+    const host = this.std.host;
     const rootModel = this.doc.root;
     if (!rootModel) return;
 
@@ -874,7 +849,7 @@ export class EdgelessClipboardController extends PageClipboard {
       originalIndexes: new Map<string, string>(),
       newPresentationIndexes: createNewPresentationIndexes(
         elementsRawData,
-        this.edgeless
+        this.std
       ),
     };
 
@@ -960,7 +935,13 @@ export class EdgelessClipboardController extends PageClipboard {
     };
   }
 
-  override hostConnected() {
+  override mounted() {
+    if (!navigator.clipboard) {
+      console.error(
+        'navigator.clipboard is not supported in current environment.'
+      );
+      return;
+    }
     if (this._disposables.disposed) {
       this._disposables = new DisposableGroup();
     }
@@ -989,72 +970,7 @@ export class EdgelessClipboardController extends PageClipboard {
       return;
     }
 
-    const canvas = await this._edgelessToCanvas(
-      this.host,
-      bound,
-      blocks,
-      shapes,
-      options
-    );
+    const canvas = await this._edgelessToCanvas(bound, blocks, shapes, options);
     return canvas;
   }
-}
-
-export async function prepareClipboardData(
-  selectedAll: GfxModel[],
-  std: BlockStdScope
-) {
-  const job = std.store.getTransformer();
-  const selected = await Promise.all(
-    selectedAll.map(async selected => {
-      const data = serializeElement(selected, selectedAll, job);
-      if (!data) {
-        return;
-      }
-      if (isAttachmentBlock(selected) || isImageBlock(selected)) {
-        await job.assetsManager.readFromBlob(data.props.sourceId as string);
-      }
-      return data;
-    })
-  );
-  const blobs = await encodeClipboardBlobs(job.assetsManager.getAssets());
-  return {
-    snapshot: selected.filter(d => !!d),
-    blobs,
-  };
-}
-
-function isPureFileInClipboard(clipboardData: DataTransfer) {
-  const types = clipboardData.types;
-  return (
-    (types.length === 1 && types[0] === 'Files') ||
-    (types.length === 2 &&
-      (types.includes('text/plain') || types.includes('text/html')) &&
-      types.includes('Files'))
-  );
-}
-
-function tryGetSvgFromClipboard(clipboardData: DataTransfer) {
-  const types = clipboardData.types;
-
-  if (types.length === 1 && types[0] !== 'text/plain') {
-    return null;
-  }
-
-  const parser = new DOMParser();
-  const svgDoc = parser.parseFromString(
-    clipboardData.getData('text/plain'),
-    'image/svg+xml'
-  );
-  const svg = svgDoc.documentElement;
-
-  if (svg.tagName !== 'svg' || !svg.hasAttribute('xmlns')) {
-    return null;
-  }
-  const svgContent = DOMPurify.sanitize(svgDoc.documentElement, {
-    USE_PROFILES: { svg: true },
-  });
-  const blob = new Blob([svgContent], { type: 'image/svg+xml' });
-  const file = new File([blob], 'pasted-image.svg', { type: 'image/svg+xml' });
-  return file;
 }

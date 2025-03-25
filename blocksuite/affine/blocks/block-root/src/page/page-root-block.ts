@@ -31,7 +31,6 @@ import { css, html } from 'lit';
 import { query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { PageClipboard } from '../clipboard/index.js';
 import type { PageRootBlockWidgetName } from '../index.js';
 import { PageKeyboardManager } from '../keyboard/keyboard-manager.js';
 import type { PageRootService } from './page-root-service.js';
@@ -113,8 +112,6 @@ export class PageRootBlockComponent extends BlockComponent<
       }
     }
   `;
-
-  clipboardController = new PageClipboard(this);
 
   /**
    * Focus the first paragraph in the default note block.
@@ -211,7 +208,6 @@ export class PageRootBlockComponent extends BlockComponent<
 
   override connectedCallback() {
     super.connectedCallback();
-    this.clipboardController.hostConnected();
 
     this.keyboardManager = new PageKeyboardManager(this);
 
@@ -386,7 +382,6 @@ export class PageRootBlockComponent extends BlockComponent<
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.clipboardController.hostDisconnected();
     this._disposables.dispose();
     this.keyboardManager = null;
   }

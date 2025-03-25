@@ -46,6 +46,7 @@ import {
   ResetIcon,
 } from '@blocksuite/icons/lit';
 
+import { EdgelessClipboardController } from '../../clipboard/clipboard';
 import { duplicate } from '../../utils/clipboard-utils';
 import { getSortedCloneElements } from '../../utils/clone-utils';
 import { moveConnectors } from '../../utils/connector';
@@ -154,10 +155,12 @@ export const moreActions = [
           const models = ctx.getSurfaceModels();
           if (!models.length) return;
 
-          const edgeless = getEdgelessWith(ctx);
-          if (!edgeless) return;
+          const edgelessClipboard = ctx.std.getOptional(
+            EdgelessClipboardController
+          );
+          if (!edgelessClipboard) return;
 
-          edgeless.clipboardController.copy();
+          edgelessClipboard.copy();
         },
       },
       {

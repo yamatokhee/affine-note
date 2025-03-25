@@ -48,7 +48,6 @@ import { query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { EdgelessRootBlockWidgetName } from '../types.js';
-import { EdgelessClipboardController } from './clipboard/clipboard.js';
 import type { EdgelessSelectedRectWidget } from './components/rects/edgeless-selected-rect.js';
 import { EdgelessPageKeyboardManager } from './edgeless-keyboard.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
@@ -123,8 +122,6 @@ export class EdgelessRootBlockComponent extends BlockComponent<
   );
 
   private _resizeObserver: ResizeObserver | null = null;
-
-  clipboardController = new EdgelessClipboardController(this);
 
   keyboardManager: EdgelessPageKeyboardManager | null = null;
 
@@ -473,7 +470,6 @@ export class EdgelessRootBlockComponent extends BlockComponent<
 
     this._initViewport();
 
-    this.clipboardController.hostConnected();
     this.keyboardManager = new EdgelessPageKeyboardManager(this);
 
     this.handleEvent('selectionChange', () => {
@@ -493,7 +489,6 @@ export class EdgelessRootBlockComponent extends BlockComponent<
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.clipboardController.hostDisconnected();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
       this._resizeObserver = null;
