@@ -341,7 +341,9 @@ export class CopilotClient {
         limit,
       },
     });
-    return res.currentUser?.copilot?.contexts?.[0]?.matchContext;
+    const { matchFiles: files, matchWorkspaceDocs: docs } =
+      res.currentUser?.copilot?.contexts?.[0] || {};
+    return { files, docs };
   }
 
   async chatText({

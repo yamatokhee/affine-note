@@ -556,9 +556,12 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
 
   private async _getMatchedContexts(userInput: string) {
     const contextId = await this.getContextId();
-    const matched = contextId
-      ? (await AIProvider.context?.matchContext(contextId, userInput)) || []
-      : [];
+    // TODO(@akumatus): adapt workspace docs
+    const { files: matched = [] } =
+      (contextId &&
+        (await AIProvider.context?.matchContext(contextId, userInput))) ||
+      {};
+
     const contexts = this.chatContextValue.chips.reduce(
       (acc, chip, index) => {
         if (chip.state !== 'finished') {

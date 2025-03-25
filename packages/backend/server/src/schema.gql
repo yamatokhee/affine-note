@@ -109,11 +109,11 @@ type CopilotContext {
   files: [CopilotContextFile!]!
   id: ID!
 
-  """match file context"""
-  matchContext(content: String!, limit: SafeInt, threshold: Float): [ContextMatchedFileChunk!]!
+  """match file in context"""
+  matchFiles(content: String!, limit: SafeInt, threshold: Float): [ContextMatchedFileChunk!]!
 
-  """match workspace doc content"""
-  matchWorkspaceContext(content: String!, limit: SafeInt): ContextMatchedDocChunk!
+  """match workspace docs"""
+  matchWorkspaceDocs(content: String!, limit: SafeInt, threshold: Float): [ContextMatchedDocChunk!]!
 
   """list tags in context"""
   tags: [CopilotContextCategory!]!

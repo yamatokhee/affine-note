@@ -199,7 +199,7 @@ export class ContextSession implements AsyncDisposable {
 
     return this.models.copilotContext.matchWorkspaceEmbedding(
       embedding,
-      this.id,
+      this.workspaceId,
       topK,
       threshold
     );

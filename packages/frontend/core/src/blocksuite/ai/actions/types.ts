@@ -1,5 +1,6 @@
 import type {
   ChatHistoryOrder,
+  ContextMatchedDocChunk,
   ContextMatchedFileChunk,
   CopilotContextCategory,
   CopilotContextDoc,
@@ -312,7 +313,10 @@ declare global {
         contextId: string,
         content: string,
         limit?: number
-      ) => Promise<ContextMatchedFileChunk[] | undefined>;
+      ) => Promise<{
+        files?: ContextMatchedFileChunk[];
+        docs?: ContextMatchedDocChunk[];
+      }>;
     }
 
     // TODO(@Peng): should be refactored to get rid of implement details (like messages, action, role, etc.)

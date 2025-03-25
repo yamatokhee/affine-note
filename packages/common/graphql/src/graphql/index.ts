@@ -205,25 +205,6 @@ export const addContextFileMutation = {
   file: true,
 };
 
-export const matchContextQuery = {
-  id: 'matchContextQuery' as const,
-  op: 'matchContext',
-  query: `query matchContext($contextId: String!, $content: String!, $limit: SafeInt) {
-  currentUser {
-    copilot {
-      contexts(contextId: $contextId) {
-        matchContext(content: $content, limit: $limit) {
-          fileId
-          chunk
-          content
-          distance
-        }
-      }
-    }
-  }
-}`,
-};
-
 export const removeContextFileMutation = {
   id: 'removeContextFileMutation' as const,
   op: 'removeContextFile',
@@ -295,15 +276,59 @@ export const listContextQuery = {
 }`,
 };
 
-export const matchWorkspaceContextQuery = {
-  id: 'matchWorkspaceContextQuery' as const,
-  op: 'matchWorkspaceContext',
-  query: `query matchWorkspaceContext($contextId: String!, $content: String!, $limit: SafeInt) {
+export const matchContextQuery = {
+  id: 'matchContextQuery' as const,
+  op: 'matchContext',
+  query: `query matchContext($contextId: String!, $content: String!, $limit: SafeInt, $threshold: Float) {
   currentUser {
     copilot {
       contexts(contextId: $contextId) {
-        matchWorkspaceContext(content: $content, limit: $limit) {
+        matchFiles(content: $content, limit: $limit, threshold: $threshold) {
+          fileId
+          chunk
+          content
+          distance
+        }
+        matchWorkspaceDocs(content: $content, limit: $limit, threshold: $threshold) {
           docId
+          chunk
+          content
+          distance
+        }
+      }
+    }
+  }
+}`,
+};
+
+export const matchWorkspaceDocsQuery = {
+  id: 'matchWorkspaceDocsQuery' as const,
+  op: 'matchWorkspaceDocs',
+  query: `query matchWorkspaceDocs($contextId: String!, $content: String!, $limit: SafeInt) {
+  currentUser {
+    copilot {
+      contexts(contextId: $contextId) {
+        matchWorkspaceDocs(content: $content, limit: $limit) {
+          docId
+          chunk
+          content
+          distance
+        }
+      }
+    }
+  }
+}`,
+};
+
+export const matchFilesQuery = {
+  id: 'matchFilesQuery' as const,
+  op: 'matchFiles',
+  query: `query matchFiles($contextId: String!, $content: String!, $limit: SafeInt) {
+  currentUser {
+    copilot {
+      contexts(contextId: $contextId) {
+        matchFiles(content: $content, limit: $limit) {
+          fileId
           chunk
           content
           distance

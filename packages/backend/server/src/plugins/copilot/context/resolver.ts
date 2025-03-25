@@ -656,10 +656,10 @@ export class CopilotContextResolver {
   }
 
   @ResolveField(() => [ContextMatchedFileChunk], {
-    description: 'match file context',
+    description: 'match file in context',
   })
   @CallMetric('ai', 'context_file_remove')
-  async matchContext(
+  async matchFiles(
     @Context() ctx: { req: Request },
     @Parent() context: CopilotContextType,
     @Args('content') content: string,
@@ -667,16 +667,11 @@ export class CopilotContextResolver {
     limit?: number,
     @Args('threshold', { type: () => Float, nullable: true })
     threshold?: number
-  ) {
+  ): Promise<ContextMatchedFileChunk[]> {
     if (!this.context.canEmbedding) {
       return [];
     }
 
-    const lockFlag = `${COPILOT_LOCKER}:context:${context.id}`;
-    await using lock = await this.mutex.acquire(lockFlag);
-    if (!lock) {
-      return new TooManyRequest('Server is busy');
-    }
     const session = await this.context.get(context.id);
 
     try {
@@ -696,18 +691,20 @@ export class CopilotContextResolver {
     }
   }
 
-  @ResolveField(() => ContextMatchedDocChunk, {
-    description: 'match workspace doc content',
+  @ResolveField(() => [ContextMatchedDocChunk], {
+    description: 'match workspace docs',
   })
   @CallMetric('ai', 'context_match_workspace_doc')
-  async matchWorkspaceContext(
+  async matchWorkspaceDocs(
     @CurrentUser() user: CurrentUser,
     @Context() ctx: { req: Request },
     @Parent() context: CopilotContextType,
     @Args('content') content: string,
     @Args('limit', { type: () => SafeIntResolver, nullable: true })
-    limit?: number
-  ) {
+    limit?: number,
+    @Args('threshold', { type: () => Float, nullable: true })
+    threshold?: number
+  ): Promise<ContextMatchedDocChunk[]> {
     if (!this.context.canEmbedding) {
       return [];
     }
@@ -723,7 +720,8 @@ export class CopilotContextResolver {
       return await session.matchWorkspaceChunks(
         content,
         limit,
-        this.getSignal(ctx.req)
+        this.getSignal(ctx.req),
+        threshold
       );
     } catch (e: any) {
       throw new CopilotFailedToMatchContext({

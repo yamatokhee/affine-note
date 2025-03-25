@@ -172,24 +172,25 @@ export interface CopilotContext {
   /** list files in context */
   files: Array<CopilotContextFile>;
   id: Scalars['ID']['output'];
-  /** match file context */
-  matchContext: Array<ContextMatchedFileChunk>;
-  /** match workspace doc content */
-  matchWorkspaceContext: ContextMatchedDocChunk;
+  /** match file in context */
+  matchFiles: Array<ContextMatchedFileChunk>;
+  /** match workspace docs */
+  matchWorkspaceDocs: Array<ContextMatchedDocChunk>;
   /** list tags in context */
   tags: Array<CopilotContextCategory>;
   workspaceId: Scalars['String']['output'];
 }
 
-export interface CopilotContextMatchContextArgs {
+export interface CopilotContextMatchFilesArgs {
   content: Scalars['String']['input'];
   limit?: InputMaybe<Scalars['SafeInt']['input']>;
   threshold?: InputMaybe<Scalars['Float']['input']>;
 }
 
-export interface CopilotContextMatchWorkspaceContextArgs {
+export interface CopilotContextMatchWorkspaceDocsArgs {
   content: Scalars['String']['input'];
   limit?: InputMaybe<Scalars['SafeInt']['input']>;
+  threshold?: InputMaybe<Scalars['Float']['input']>;
 }
 
 export interface CopilotContextCategory {
@@ -2562,32 +2563,6 @@ export type AddContextFileMutation = {
   };
 };
 
-export type MatchContextQueryVariables = Exact<{
-  contextId: Scalars['String']['input'];
-  content: Scalars['String']['input'];
-  limit?: InputMaybe<Scalars['SafeInt']['input']>;
-}>;
-
-export type MatchContextQuery = {
-  __typename?: 'Query';
-  currentUser: {
-    __typename?: 'UserType';
-    copilot: {
-      __typename?: 'Copilot';
-      contexts: Array<{
-        __typename?: 'CopilotContext';
-        matchContext: Array<{
-          __typename?: 'ContextMatchedFileChunk';
-          fileId: string;
-          chunk: number;
-          content: string;
-          distance: number | null;
-        }>;
-      }>;
-    };
-  } | null;
-};
-
 export type RemoveContextFileMutationVariables = Exact<{
   options: RemoveContextFileInput;
 }>;
@@ -2677,13 +2652,14 @@ export type ListContextQuery = {
   } | null;
 };
 
-export type MatchWorkspaceContextQueryVariables = Exact<{
+export type MatchContextQueryVariables = Exact<{
   contextId: Scalars['String']['input'];
   content: Scalars['String']['input'];
   limit?: InputMaybe<Scalars['SafeInt']['input']>;
+  threshold?: InputMaybe<Scalars['Float']['input']>;
 }>;
 
-export type MatchWorkspaceContextQuery = {
+export type MatchContextQuery = {
   __typename?: 'Query';
   currentUser: {
     __typename?: 'UserType';
@@ -2691,13 +2667,72 @@ export type MatchWorkspaceContextQuery = {
       __typename?: 'Copilot';
       contexts: Array<{
         __typename?: 'CopilotContext';
-        matchWorkspaceContext: {
+        matchFiles: Array<{
+          __typename?: 'ContextMatchedFileChunk';
+          fileId: string;
+          chunk: number;
+          content: string;
+          distance: number | null;
+        }>;
+        matchWorkspaceDocs: Array<{
           __typename?: 'ContextMatchedDocChunk';
           docId: string;
           chunk: number;
           content: string;
           distance: number | null;
-        };
+        }>;
+      }>;
+    };
+  } | null;
+};
+
+export type MatchWorkspaceDocsQueryVariables = Exact<{
+  contextId: Scalars['String']['input'];
+  content: Scalars['String']['input'];
+  limit?: InputMaybe<Scalars['SafeInt']['input']>;
+}>;
+
+export type MatchWorkspaceDocsQuery = {
+  __typename?: 'Query';
+  currentUser: {
+    __typename?: 'UserType';
+    copilot: {
+      __typename?: 'Copilot';
+      contexts: Array<{
+        __typename?: 'CopilotContext';
+        matchWorkspaceDocs: Array<{
+          __typename?: 'ContextMatchedDocChunk';
+          docId: string;
+          chunk: number;
+          content: string;
+          distance: number | null;
+        }>;
+      }>;
+    };
+  } | null;
+};
+
+export type MatchFilesQueryVariables = Exact<{
+  contextId: Scalars['String']['input'];
+  content: Scalars['String']['input'];
+  limit?: InputMaybe<Scalars['SafeInt']['input']>;
+}>;
+
+export type MatchFilesQuery = {
+  __typename?: 'Query';
+  currentUser: {
+    __typename?: 'UserType';
+    copilot: {
+      __typename?: 'Copilot';
+      contexts: Array<{
+        __typename?: 'CopilotContext';
+        matchFiles: Array<{
+          __typename?: 'ContextMatchedFileChunk';
+          fileId: string;
+          chunk: number;
+          content: string;
+          distance: number | null;
+        }>;
       }>;
     };
   } | null;
@@ -4316,11 +4351,6 @@ export type Queries =
       response: ListBlobsQuery;
     }
   | {
-      name: 'matchContextQuery';
-      variables: MatchContextQueryVariables;
-      response: MatchContextQuery;
-    }
-  | {
       name: 'listContextObjectQuery';
       variables: ListContextObjectQueryVariables;
       response: ListContextObjectQuery;
@@ -4331,9 +4361,19 @@ export type Queries =
       response: ListContextQuery;
     }
   | {
-      name: 'matchWorkspaceContextQuery';
-      variables: MatchWorkspaceContextQueryVariables;
-      response: MatchWorkspaceContextQuery;
+      name: 'matchContextQuery';
+      variables: MatchContextQueryVariables;
+      response: MatchContextQuery;
+    }
+  | {
+      name: 'matchWorkspaceDocsQuery';
+      variables: MatchWorkspaceDocsQueryVariables;
+      response: MatchWorkspaceDocsQuery;
+    }
+  | {
+      name: 'matchFilesQuery';
+      variables: MatchFilesQueryVariables;
+      response: MatchFilesQuery;
     }
   | {
       name: 'getWorkspaceEmbeddingStatusQuery';

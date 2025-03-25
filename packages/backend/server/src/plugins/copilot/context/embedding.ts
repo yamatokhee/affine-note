@@ -30,7 +30,7 @@ export class MockEmbeddingClient extends EmbeddingClient {
     return input.map((_, i) => ({
       index: i,
       content: input[i],
-      embedding: Array.from({ length: 512 }, () => Math.random()),
+      embedding: Array.from({ length: 1024 }, () => Math.random()),
     }));
   }
 }
