@@ -1125,3 +1125,47 @@ test('should save open doc mode of internal links', async ({ page }) => {
     'Open in center peek'
   );
 });
+
+test('should show full email address', async ({ page }) => {
+  await page.keyboard.press('Enter');
+
+  await writeTextToClipboard(page, 'dev@affine.pro');
+  await pasteByKeyboard(page);
+
+  const inlineLink = page.locator('affine-link');
+
+  await expect(inlineLink).toHaveText('dev@affine.pro');
+
+  await inlineLink.hover();
+
+  const { toolbar, switchViewBtn } = toolbarButtons(page);
+
+  await expect(toolbar).toBeVisible();
+  await expect(switchViewBtn).toBeHidden();
+
+  await expect(toolbar.locator('affine-link-preview')).toHaveText(
+    'dev@affine.pro'
+  );
+});
+
+test('should not show view toggle button when protocol of link is not http(s)', async ({
+  page,
+}) => {
+  await page.keyboard.press('Enter');
+
+  await writeTextToClipboard(page, 'ftp://affine.pro/blocksuite.pdf');
+  await pasteByKeyboard(page);
+
+  const inlineLink = page.locator('affine-link');
+
+  await expect(inlineLink).toHaveText('ftp://affine.pro/blocksuite.pdf');
+
+  await inlineLink.hover();
+
+  const { toolbar, switchViewBtn } = toolbarButtons(page);
+
+  await expect(toolbar).toBeVisible();
+  await expect(switchViewBtn).toBeHidden();
+
+  await expect(toolbar.locator('affine-link-preview')).toHaveText('affine.pro');
+});
