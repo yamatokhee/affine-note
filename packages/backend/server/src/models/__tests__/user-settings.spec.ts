@@ -43,7 +43,7 @@ test.after(async t => {
 });
 
 test('should get a user settings with default value', async t => {
-  const settings = await t.context.models.settings.get(user.id);
+  const settings = await t.context.models.userSettings.get(user.id);
   t.deepEqual(settings, {
     receiveInvitationEmail: true,
     receiveMentionEmail: true,
@@ -51,28 +51,28 @@ test('should get a user settings with default value', async t => {
 });
 
 test('should update a user settings', async t => {
-  const settings = await t.context.models.settings.set(user.id, {
+  const settings = await t.context.models.userSettings.set(user.id, {
     receiveInvitationEmail: false,
   });
   t.deepEqual(settings, {
     receiveInvitationEmail: false,
     receiveMentionEmail: true,
   });
-  const settings2 = await t.context.models.settings.get(user.id);
+  const settings2 = await t.context.models.userSettings.get(user.id);
   t.deepEqual(settings2, settings);
 
   // update existing setting
-  const setting3 = await t.context.models.settings.set(user.id, {
+  const setting3 = await t.context.models.userSettings.set(user.id, {
     receiveInvitationEmail: true,
   });
   t.deepEqual(setting3, {
     receiveInvitationEmail: true,
     receiveMentionEmail: true,
   });
-  const setting4 = await t.context.models.settings.get(user.id);
+  const setting4 = await t.context.models.userSettings.get(user.id);
   t.deepEqual(setting4, setting3);
 
-  const setting5 = await t.context.models.settings.set(user.id, {
+  const setting5 = await t.context.models.userSettings.set(user.id, {
     receiveMentionEmail: false,
     receiveInvitationEmail: false,
   });
@@ -80,13 +80,13 @@ test('should update a user settings', async t => {
     receiveInvitationEmail: false,
     receiveMentionEmail: false,
   });
-  const setting6 = await t.context.models.settings.get(user.id);
+  const setting6 = await t.context.models.userSettings.get(user.id);
   t.deepEqual(setting6, setting5);
 });
 
 test('should throw error when update settings with invalid payload', async t => {
   await t.throwsAsync(
-    t.context.models.settings.set(user.id, {
+    t.context.models.userSettings.set(user.id, {
       // @ts-expect-error invalid setting input types
       receiveInvitationEmail: 1,
     }),

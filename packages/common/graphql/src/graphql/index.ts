@@ -1536,7 +1536,7 @@ export const updateUserProfileMutation = {
 export const updateUserSettingsMutation = {
   id: 'updateUserSettingsMutation' as const,
   op: 'updateUserSettings',
-  query: `mutation updateUserSettings($input: UpdateSettingsInput!) {
+  query: `mutation updateUserSettings($input: UpdateUserSettingsInput!) {
   updateSettings(input: $input)
 }`,
 };

@@ -1455,7 +1455,7 @@ export interface MutationUpdateRuntimeConfigsArgs {
 }
 
 export interface MutationUpdateSettingsArgs {
-  input: UpdateSettingsInput;
+  input: UpdateUserSettingsInput;
 }
 
 export interface MutationUpdateSubscriptionRecurringArgs {
@@ -1851,14 +1851,6 @@ export interface ServerServiceConfig {
   name: Scalars['String']['output'];
 }
 
-export interface SettingsType {
-  __typename?: 'SettingsType';
-  /** Receive invitation email */
-  receiveInvitationEmail: Scalars['Boolean']['output'];
-  /** Receive mention email */
-  receiveMentionEmail: Scalars['Boolean']['output'];
-}
-
 export interface SpaceAccessDeniedDataType {
   __typename?: 'SpaceAccessDeniedDataType';
   spaceId: Scalars['String']['output'];
@@ -2019,16 +2011,16 @@ export interface UpdateDocUserRoleInput {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface UpdateSettingsInput {
+export interface UpdateUserInput {
+  /** User name */
+  name?: InputMaybe<Scalars['String']['input']>;
+}
+
+export interface UpdateUserSettingsInput {
   /** Receive invitation email */
   receiveInvitationEmail?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive mention email */
   receiveMentionEmail?: InputMaybe<Scalars['Boolean']['input']>;
-}
-
-export interface UpdateUserInput {
-  /** User name */
-  name?: InputMaybe<Scalars['String']['input']>;
 }
 
 export interface UpdateWorkspaceInput {
@@ -2080,6 +2072,14 @@ export interface UserQuotaUsageType {
   storageQuota: Scalars['SafeInt']['output'];
 }
 
+export interface UserSettingsType {
+  __typename?: 'UserSettingsType';
+  /** Receive invitation email */
+  receiveInvitationEmail: Scalars['Boolean']['output'];
+  /** Receive mention email */
+  receiveMentionEmail: Scalars['Boolean']['output'];
+}
+
 export interface UserType {
   __typename?: 'UserType';
   /** User avatar url */
@@ -2113,7 +2113,7 @@ export interface UserType {
   quota: UserQuotaType;
   quotaUsage: UserQuotaUsageType;
   /** Get user settings */
-  settings: SettingsType;
+  settings: UserSettingsType;
   subscriptions: Array<SubscriptionType>;
   /** @deprecated use [/api/auth/sign-in?native=true] instead */
   token: TokenType;
@@ -3417,7 +3417,7 @@ export type GetUserSettingsQuery = {
   currentUser: {
     __typename?: 'UserType';
     settings: {
-      __typename?: 'SettingsType';
+      __typename?: 'UserSettingsType';
       receiveInvitationEmail: boolean;
       receiveMentionEmail: boolean;
     };
@@ -4051,7 +4051,7 @@ export type UpdateUserProfileMutation = {
 };
 
 export type UpdateUserSettingsMutationVariables = Exact<{
-  input: UpdateSettingsInput;
+  input: UpdateUserSettingsInput;
 }>;
 
 export type UpdateUserSettingsMutation = {

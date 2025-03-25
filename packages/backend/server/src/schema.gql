@@ -1018,7 +1018,7 @@ type Mutation {
   updateRuntimeConfigs(updates: JSONObject!): [ServerRuntimeConfigType!]!
 
   """Update user settings"""
-  updateSettings(input: UpdateSettingsInput!): Boolean!
+  updateSettings(input: UpdateUserSettingsInput!): Boolean!
   updateSubscriptionRecurring(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, recurring: SubscriptionRecurring!, workspaceId: String): SubscriptionType!
 
   """Update an user"""
@@ -1363,14 +1363,6 @@ type ServerServiceConfig {
   name: String!
 }
 
-type SettingsType {
-  """Receive invitation email"""
-  receiveInvitationEmail: Boolean!
-
-  """Receive mention email"""
-  receiveMentionEmail: Boolean!
-}
-
 type SpaceAccessDeniedDataType {
   spaceId: String!
 }
@@ -1510,17 +1502,17 @@ input UpdateDocUserRoleInput {
   workspaceId: String!
 }
 
-input UpdateSettingsInput {
+input UpdateUserInput {
+  """User name"""
+  name: String
+}
+
+input UpdateUserSettingsInput {
   """Receive invitation email"""
   receiveInvitationEmail: Boolean
 
   """Receive mention email"""
   receiveMentionEmail: Boolean
-}
-
-input UpdateUserInput {
-  """User name"""
-  name: String
 }
 
 input UpdateWorkspaceInput {
@@ -1572,6 +1564,14 @@ type UserQuotaUsageType {
   storageQuota: SafeInt! @deprecated(reason: "use `UserQuotaType['usedStorageQuota']` instead")
 }
 
+type UserSettingsType {
+  """Receive invitation email"""
+  receiveInvitationEmail: Boolean!
+
+  """Receive mention email"""
+  receiveMentionEmail: Boolean!
+}
+
 type UserType {
   """User avatar url"""
   avatarUrl: String
@@ -1612,7 +1612,7 @@ type UserType {
   quotaUsage: UserQuotaUsageType!
 
   """Get user settings"""
-  settings: SettingsType!
+  settings: UserSettingsType!
   subscriptions: [SubscriptionType!]!
   token: tokenType! @deprecated(reason: "use [/api/auth/sign-in?native=true] instead")
 }

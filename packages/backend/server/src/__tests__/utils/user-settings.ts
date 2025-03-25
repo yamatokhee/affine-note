@@ -1,7 +1,12 @@
-import type { SettingsType, UpdateSettingsInput } from '../../core/user/types';
+import type {
+  UpdateUserSettingsInput,
+  UserSettingsType,
+} from '../../core/user/types';
 import type { TestingApp } from './testing-app';
 
-export async function getSettings(app: TestingApp): Promise<SettingsType> {
+export async function getUserSettings(
+  app: TestingApp
+): Promise<UserSettingsType> {
   const res = await app.gql(
     `
     query settings {
@@ -17,13 +22,13 @@ export async function getSettings(app: TestingApp): Promise<SettingsType> {
   return res.currentUser.settings;
 }
 
-export async function updateSettings(
+export async function updateUserSettings(
   app: TestingApp,
-  input: UpdateSettingsInput
+  input: UpdateUserSettingsInput
 ): Promise<boolean> {
   const res = await app.gql(
     `
-    mutation updateSettings($input: UpdateSettingsInput!) {
+    mutation updateUserSettings($input: UpdateUserSettingsInput!) {
       updateSettings(input: $input)
     }
     `,

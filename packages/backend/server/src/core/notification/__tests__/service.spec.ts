@@ -89,7 +89,7 @@ test('should create invitation notification and email', async t => {
 test('should not send invitation email if user setting is not to receive invitation email', async t => {
   const { notificationService } = t.context;
   const inviteId = randomUUID();
-  await t.context.models.settings.set(member.id, {
+  await t.context.models.userSettings.set(member.id, {
     receiveInvitationEmail: false,
   });
   const invitationMailCount = t.context.module.mails.count('MemberInvitation');
@@ -150,7 +150,7 @@ test('should not send invitation accepted email if user settings is not receive 
   const { notificationService } = t.context;
   const inviteId = randomUUID();
   // should not send email if user settings is not receive invitation email
-  await t.context.models.settings.set(owner.id, {
+  await t.context.models.userSettings.set(owner.id, {
     receiveInvitationEmail: false,
   });
   const invitationAcceptedMailCount =
@@ -560,7 +560,7 @@ test('should send mention email by user setting', async t => {
 
   // update user setting to not receive mention email
   const mentionMailCount = t.context.module.mails.count('Mention');
-  await t.context.models.settings.set(member.id, {
+  await t.context.models.userSettings.set(member.id, {
     receiveMentionEmail: false,
   });
   await notificationService.createMention({

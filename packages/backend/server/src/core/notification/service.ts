@@ -45,7 +45,7 @@ export class NotificationService {
   }
 
   private async sendMentionEmail(input: MentionNotificationCreate) {
-    const userSetting = await this.models.settings.get(input.userId);
+    const userSetting = await this.models.userSettings.get(input.userId);
     if (!userSetting.receiveMentionEmail) {
       return;
     }
@@ -104,7 +104,7 @@ export class NotificationService {
       // make it easier to test in dev mode
       this.logger.debug(`Invite link: ${inviteUrl}`);
     }
-    const userSetting = await this.models.settings.get(input.userId);
+    const userSetting = await this.models.userSettings.get(input.userId);
     if (!userSetting.receiveInvitationEmail) {
       return;
     }
@@ -151,7 +151,7 @@ export class NotificationService {
     const inviterUserId = input.userId;
     const inviteeUserId = input.body.createdByUserId;
     const workspaceId = input.body.workspaceId;
-    const userSetting = await this.models.settings.get(inviterUserId);
+    const userSetting = await this.models.userSettings.get(inviterUserId);
     if (!userSetting.receiveInvitationEmail) {
       return;
     }

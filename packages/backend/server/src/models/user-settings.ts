@@ -4,27 +4,27 @@ import z from 'zod';
 
 import { BaseModel } from './base';
 
-export const SettingsSchema = z.object({
+export const UserSettingsSchema = z.object({
   receiveInvitationEmail: z.boolean().default(true),
   receiveMentionEmail: z.boolean().default(true),
 });
 
-export type SettingsInput = z.input<typeof SettingsSchema>;
-export type Settings = z.infer<typeof SettingsSchema>;
+export type UserSettingsInput = z.input<typeof UserSettingsSchema>;
+export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
 /**
- * Settings Model
+ * UserSettings Model
  */
 @Injectable()
-export class SettingsModel extends BaseModel {
+export class UserSettingsModel extends BaseModel {
   @Transactional()
-  async set(userId: string, setting: SettingsInput) {
+  async set(userId: string, setting: UserSettingsInput) {
     const existsSetting = await this.get(userId);
-    const payload = SettingsSchema.parse({
+    const payload = UserSettingsSchema.parse({
       ...existsSetting,
       ...setting,
     });
-    await this.db.settings.upsert({
+    await this.db.userSettings.upsert({
       where: {
         userId,
       },
@@ -36,16 +36,16 @@ export class SettingsModel extends BaseModel {
         payload,
       },
     });
-    this.logger.log(`Settings updated for user ${userId}`);
+    this.logger.log(`UserSettings updated for user ${userId}`);
     return payload;
   }
 
-  async get(userId: string): Promise<Settings> {
-    const row = await this.db.settings.findUnique({
+  async get(userId: string): Promise<UserSettings> {
+    const row = await this.db.userSettings.findUnique({
       where: {
         userId,
       },
     });
-    return SettingsSchema.parse(row?.payload ?? {});
+    return UserSettingsSchema.parse(row?.payload ?? {});
   }
 }

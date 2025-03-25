@@ -40,7 +40,7 @@ model User {
   createdAiJobs         AiJobs[]               @relation("createdAiJobs")
   // receive notifications
   notifications         Notification[]         @relation("user_notifications")
-  settings              Settings?
+  settings              UserSettings?
 
   @@index([email])
   @@map("users")
@@ -747,7 +747,7 @@ model Notification {
   @@map("notifications")
 }
 
-model Settings {
+model UserSettings {
   userId    String   @id @map("user_id") @db.VarChar
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
@@ -755,5 +755,5 @@ model Settings {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("settings")
+  @@map("user_settings")
 }
