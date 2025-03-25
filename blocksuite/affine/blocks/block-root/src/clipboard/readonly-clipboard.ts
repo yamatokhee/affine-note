@@ -14,8 +14,68 @@ import {
   draftSelectedModelsCommand,
   getSelectedModelsCommand,
 } from '@blocksuite/affine-shared/commands';
-import type { BlockComponent, UIEventHandler } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  ClipboardAdapterConfigExtension,
+  type UIEventHandler,
+} from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/disposable';
+import type { ExtensionType } from '@blocksuite/store';
+
+const SnapshotClipboardConfig = ClipboardAdapterConfigExtension({
+  mimeType: ClipboardAdapter.MIME,
+  adapter: ClipboardAdapter,
+  priority: 100,
+});
+
+const NotionClipboardConfig = ClipboardAdapterConfigExtension({
+  mimeType: 'text/_notion-text-production',
+  adapter: NotionTextAdapter,
+  priority: 95,
+});
+
+const HtmlClipboardConfig = ClipboardAdapterConfigExtension({
+  mimeType: 'text/html',
+  adapter: HtmlAdapter,
+  priority: 90,
+});
+
+const imageClipboardConfigs = [
+  'image/apng',
+  'image/avif',
+  'image/gif',
+  'image/jpeg',
+  'image/png',
+  'image/svg+xml',
+  'image/webp',
+].map(mimeType => {
+  return ClipboardAdapterConfigExtension({
+    mimeType,
+    adapter: ImageAdapter,
+    priority: 80,
+  });
+});
+
+const PlainTextClipboardConfig = ClipboardAdapterConfigExtension({
+  mimeType: 'text/plain',
+  adapter: MixTextAdapter,
+  priority: 70,
+});
+
+const AttachmentClipboardConfig = ClipboardAdapterConfigExtension({
+  mimeType: '*/*',
+  adapter: AttachmentAdapter,
+  priority: 60,
+});
+
+export const clipboardConfigs: ExtensionType[] = [
+  SnapshotClipboardConfig,
+  NotionClipboardConfig,
+  HtmlClipboardConfig,
+  ...imageClipboardConfigs,
+  PlainTextClipboardConfig,
+  AttachmentClipboardConfig,
+];
 
 /**
  * ReadOnlyClipboard is a class that provides a read-only clipboard for the root block.
@@ -34,30 +94,6 @@ export class ReadOnlyClipboard {
   protected _disposables = new DisposableGroup();
 
   protected _initAdapters = () => {
-    this._std.clipboard.registerAdapter(
-      ClipboardAdapter.MIME,
-      ClipboardAdapter,
-      100
-    );
-    this._std.clipboard.registerAdapter(
-      'text/_notion-text-production',
-      NotionTextAdapter,
-      95
-    );
-    this._std.clipboard.registerAdapter('text/html', HtmlAdapter, 90);
-    [
-      'image/apng',
-      'image/avif',
-      'image/gif',
-      'image/jpeg',
-      'image/png',
-      'image/svg+xml',
-      'image/webp',
-    ].forEach(type =>
-      this._std.clipboard.registerAdapter(type, ImageAdapter, 80)
-    );
-    this._std.clipboard.registerAdapter('text/plain', MixTextAdapter, 70);
-    this._std.clipboard.registerAdapter('*/*', AttachmentAdapter, 60);
     const copy = copyMiddleware(this._std);
     this._std.clipboard.use(copy);
     this._std.clipboard.use(
@@ -67,19 +103,6 @@ export class ReadOnlyClipboard {
 
     this._disposables.add({
       dispose: () => {
-        this._std.clipboard.unregisterAdapter(ClipboardAdapter.MIME);
-        this._std.clipboard.unregisterAdapter('text/plain');
-        [
-          'image/apng',
-          'image/avif',
-          'image/gif',
-          'image/jpeg',
-          'image/png',
-          'image/svg+xml',
-          'image/webp',
-        ].forEach(type => this._std.clipboard.unregisterAdapter(type));
-        this._std.clipboard.unregisterAdapter('text/html');
-        this._std.clipboard.unregisterAdapter('*/*');
         this._std.clipboard.unuse(copy);
         this._std.clipboard.unuse(
           titleMiddleware(this._std.store.workspace.meta.docMetas)
@@ -120,5 +143,3 @@ export class ReadOnlyClipboard {
     this._disposables.dispose();
   }
 }
-
-export { copyMiddleware };
