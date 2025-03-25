@@ -83,27 +83,24 @@ export class AtMenuConfigService extends Service {
 
   private readonly autoFocusedItemKey = (
     menus: LinkedMenuGroup[],
-    query: string,
-    currentActiveKey: string | null
+    query: string
   ): string | null => {
     if (query.trim().length === 0) {
       return null;
     }
 
-    if (
-      currentActiveKey === RESERVED_ITEM_KEYS.createPage ||
-      currentActiveKey === RESERVED_ITEM_KEYS.createEdgeless
-    ) {
-      return currentActiveKey;
+    const linkToDocGroup = menus[0];
+    const memberGroup = menus[1];
+
+    if (resolveSignal(memberGroup.items).length > 1) {
+      return resolveSignal(memberGroup.items)[0]?.key;
     }
 
-    // if the second group (linkToDocGroup) is EMPTY,
-    // if the query is NOT empty && the second group (linkToDocGroup) is EMPTY,
-    // we will focus on the first item of the third group (create), which is the "New Doc" item.
-    if (resolveSignal(menus[1].items).length === 0) {
-      return resolveSignal(menus[2].items)[0]?.key;
+    if (resolveSignal(linkToDocGroup.items).length > 0) {
+      return resolveSignal(linkToDocGroup.items)[0]?.key;
     }
-    return null;
+
+    return RESERVED_ITEM_KEYS.createPage;
   };
 
   private newDocMenuGroup(
@@ -458,10 +455,10 @@ export class AtMenuConfigService extends Service {
   private getMenusFn(): LinkedWidgetConfig['getMenus'] {
     return (query, close, editorHost, inlineEditor, abortSignal) => {
       return [
-        this.journalGroup(query, close, inlineEditor),
         this.linkToDocGroup(query, close, inlineEditor, abortSignal),
-        this.newDocMenuGroup(query, close, editorHost, inlineEditor),
         this.memberGroup(query, close, inlineEditor, abortSignal),
+        this.journalGroup(query, close, inlineEditor),
+        this.newDocMenuGroup(query, close, editorHost, inlineEditor),
       ];
     };
   }
