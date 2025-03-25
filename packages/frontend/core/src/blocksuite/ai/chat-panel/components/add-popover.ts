@@ -34,8 +34,8 @@ export type MenuGroup = {
   items: MenuItem[] | Signal<MenuItem[]>;
   maxDisplay?: number;
   overflowText?: string | Signal<string>;
-  divider?: TemplateResult<1>;
-  noResult?: TemplateResult<1>;
+  divider?: () => TemplateResult<1>;
+  noResult?: () => TemplateResult<1>;
 };
 
 export type MenuItem = {
@@ -120,7 +120,6 @@ export class ChatPanelAddPopover extends SignalWatcher(
     ${scrollbarStyle('.add-popover')}
   `;
 
-  @state()
   private accessor _query = '';
 
   @state()
@@ -208,26 +207,24 @@ export class ChatPanelAddPopover extends SignalWatcher(
 
     // Process maxDisplay for each group
     return groups.map(group => {
-      let items = resolveSignal(group.items);
+      const items = resolveSignal(group.items);
       const maxDisplay = group.maxDisplay ?? items.length;
       const hasMore = items.length > maxDisplay;
       if (!hasMore) {
         return group;
       }
+      const more = {
+        key: `${group.name} More`,
+        name: resolveSignal(group.overflowText) ?? 'more',
+        icon: MoreHorizontalIcon(),
+        action: () => {
+          this._resetMaxDisplay(group);
+          this._focusSearchInput();
+        },
+      };
       return {
         ...group,
-        items: [
-          ...items.slice(0, maxDisplay),
-          {
-            key: `${group.name} More`,
-            name: resolveSignal(group.overflowText) ?? 'more',
-            icon: MoreHorizontalIcon(),
-            action: () => {
-              this._resetMaxDisplay(group);
-              this._focusSearchInput();
-            },
-          },
-        ],
+        items: [...items.slice(0, maxDisplay), more],
       };
     });
   }
@@ -287,6 +284,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
         placeholder=${this._getPlaceholder()}
         .value=${this._query}
         @input=${this._onInput}
+        @compositionend=${this._onCompositionEnd}
       />
     </div>`;
   }
@@ -321,9 +319,9 @@ export class ChatPanelAddPopover extends SignalWatcher(
         const menuGroup = html`<div class="menu-group">
           ${items.length > 0
             ? this._renderMenuItems(items, startIndex)
-            : (group.noResult ?? this._renderNoResult())}
+            : (group.noResult?.() ?? this._renderNoResult())}
           ${idx < groups.length - 1
-            ? (group.divider ?? this._renderDivider())
+            ? (group.divider?.() ?? this._renderDivider())
             : ''}
         </div>`;
         startIndex += items.length;
@@ -357,8 +355,17 @@ export class ChatPanelAddPopover extends SignalWatcher(
     </div>`;
   }
 
-  private _onInput(event: Event) {
-    this._query = (event.target as HTMLInputElement).value;
+  private _onCompositionEnd(event: CompositionEvent) {
+    this._updateQuery((event.target as HTMLInputElement).value.trim());
+  }
+
+  private _onInput(event: InputEvent) {
+    if (event.isComposing) return;
+    this._updateQuery((event.target as HTMLInputElement).value.trim());
+  }
+
+  private _updateQuery(query: string) {
+    this._query = query;
     this._activatedIndex = 0;
     this._updateSearchGroup();
   }
@@ -409,36 +416,29 @@ export class ChatPanelAddPopover extends SignalWatcher(
             this._addCollectionChip,
             this.abortController.signal
           );
-          const hasNoResult =
-            resolveSignal(docGroup.items).length === 0 &&
-            resolveSignal(tagGroup.items).length === 0 &&
-            resolveSignal(collectionGroup.items).length === 0;
-          if (hasNoResult) {
-            this._searchGroups = [
-              {
-                name: 'No Result',
-                items: [],
+          const nothing = html``;
+          this._searchGroups = [
+            {
+              ...docGroup,
+              divider: () => nothing,
+              noResult: () => nothing,
+            },
+            {
+              ...tagGroup,
+              divider: () => nothing,
+              noResult: () => nothing,
+            },
+            {
+              ...collectionGroup,
+              divider: () => this._renderDivider(),
+              noResult: () => {
+                const hasNoResult = this._searchGroups.every(group => {
+                  return resolveSignal(group.items).length === 0;
+                });
+                return hasNoResult ? this._renderNoResult() : nothing;
               },
-            ];
-          } else {
-            const nothing = html``;
-            this._searchGroups = [
-              {
-                ...docGroup,
-                divider: nothing,
-                noResult: nothing,
-              },
-              {
-                ...tagGroup,
-                divider: nothing,
-                noResult: nothing,
-              },
-              {
-                ...collectionGroup,
-                noResult: nothing,
-              },
-            ];
-          }
+            },
+          ];
         }
         break;
       }
