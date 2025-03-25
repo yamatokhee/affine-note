@@ -6,6 +6,7 @@ import type {
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { scrollbarStyle } from '@blocksuite/affine/shared/styles';
+import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine/shared/theme';
 import { openFileOrFiles } from '@blocksuite/affine/shared/utils';
 import {
   CollectionsIcon,
@@ -55,26 +56,26 @@ export class ChatPanelAddPopover extends SignalWatcher(
   WithDisposable(ShadowlessElement)
 ) {
   static override styles = css`
-    .add-popover {
+    .ai-add-popover {
       width: 280px;
       max-height: 450px;
       overflow-y: auto;
-      border: 0.5px solid var(--affine-border-color);
+      border: 0.5px solid ${unsafeCSSVarV2('layer/insideBorder/border')};
       border-radius: 4px;
-      background: var(--affine-background-primary-color);
-      box-shadow: var(--affine-shadow-2);
+      background: ${unsafeCSSVarV2('layer/background/overlayPanel')};
+      box-shadow: ${unsafeCSSVar('overlayPanelShadow')};
       padding: 8px;
     }
-    .add-popover icon-button {
+    .ai-add-popover icon-button {
       justify-content: flex-start;
       gap: 8px;
     }
-    .add-popover icon-button svg {
+    .ai-add-popover icon-button svg {
       width: 20px;
       height: 20px;
     }
-    .add-popover .divider {
-      border-top: 0.5px solid var(--affine-border-color);
+    .ai-add-popover .divider {
+      border-top: 0.5px solid ${unsafeCSSVarV2('layer/insideBorder/border')};
       margin: 8px 0;
     }
     .search-input-wrapper {
@@ -88,11 +89,11 @@ export class ChatPanelAddPopover extends SignalWatcher(
       line-height: 20px;
       height: 20px;
       font-size: var(--affine-font-sm);
-      color: var(--affine-text-primary-color);
+      color: ${unsafeCSSVarV2('text/primary')};
       flex-grow: 1;
     }
     .search-input-wrapper input::placeholder {
-      color: var(--affine-placeholder-color);
+      color: ${unsafeCSSVarV2('text/placeholder')};
     }
     .search-input-wrapper input:focus {
       outline: none;
@@ -100,18 +101,18 @@ export class ChatPanelAddPopover extends SignalWatcher(
     .search-input-wrapper svg {
       width: 20px;
       height: 20px;
-      color: var(--affine-v2-icon-primary);
+      color: ${unsafeCSSVarV2('icon/primary')};
     }
     .no-result {
       padding: 4px;
       font-size: var(--affine-font-sm);
-      color: var(--affine-text-secondary-color);
+      color: ${unsafeCSSVarV2('text/secondary')};
     }
     .menu-items icon-button {
       outline: none;
     }
 
-    ${scrollbarStyle('.add-popover')}
+    ${scrollbarStyle('.ai-add-popover')}
   `;
 
   private accessor _query = '';
@@ -263,7 +264,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
   }
 
   override render() {
-    return html`<div class="add-popover">
+    return html`<div class="ai-add-popover" data-testid="ai-add-popover">
       ${this._renderSearchInput()} ${this._renderDivider()}
       ${this._renderMenuGroup(this._menuGroup)}
     </div>`;

@@ -6,6 +6,7 @@ import {
 } from '@blocksuite/affine/block-std';
 import { createLitPortal } from '@blocksuite/affine/components/portal';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
+import { unsafeCSSVarV2 } from '@blocksuite/affine/shared/theme';
 import { MoreVerticalIcon, PlusIcon } from '@blocksuite/icons/lit';
 import { flip, offset } from '@floating-ui/dom';
 import { computed, type Signal, signal } from '@preact/signals-core';
@@ -54,25 +55,27 @@ export class ChatPanelChips extends SignalWatcher(
       justify-content: center;
       width: 24px;
       height: 24px;
-      border: 0.5px solid var(--affine-border-color);
+      border: 0.5px solid ${unsafeCSSVarV2('layer/insideBorder/border')};
       border-radius: 4px;
-      margin: 4px 0;
+      margin: 4px;
       box-sizing: border-box;
       cursor: pointer;
       font-size: 12px;
     }
     .add-button:hover,
-    .collapse-button:hover {
-      background-color: var(--affine-hover-color);
+    .collapse-button:hover,
+    .more-candidate-button:hover {
+      background-color: ${unsafeCSSVarV2('layer/background/hoverOverlay')};
     }
     .more-candidate-button {
       border-width: 1px;
       border-style: dashed;
-      background: var(--affine-background-secondary-color);
-      color: var(--affine-icon-secondary);
+      border-color: ${unsafeCSSVarV2('icon/tertiary')};
+      background: ${unsafeCSSVarV2('layer/background/secondary')};
+      color: ${unsafeCSSVarV2('icon/secondary')};
     }
     .more-candidate-button svg {
-      color: var(--affine-icon-secondary);
+      color: ${unsafeCSSVarV2('icon/secondary')};
     }
   `;
 
@@ -265,7 +268,7 @@ export class ChatPanelChips extends SignalWatcher(
       computePosition: {
         referenceElement: this.addButton,
         placement: 'top-start',
-        middleware: [offset({ crossAxis: -30, mainAxis: 10 }), flip()],
+        middleware: [offset({ crossAxis: -30, mainAxis: 8 }), flip()],
         autoUpdate: { animationFrame: true },
       },
       abortController: this._abortController,
@@ -304,7 +307,7 @@ export class ChatPanelChips extends SignalWatcher(
       computePosition: {
         referenceElement: this.moreCandidateButton,
         placement: 'top-start',
-        middleware: [offset({ crossAxis: 0, mainAxis: 6 }), flip()],
+        middleware: [offset({ crossAxis: 0, mainAxis: 8 }), flip()],
         autoUpdate: { animationFrame: true },
       },
       abortController: this._abortController,

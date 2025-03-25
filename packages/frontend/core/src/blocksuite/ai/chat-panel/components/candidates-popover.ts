@@ -1,6 +1,7 @@
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { scrollbarStyle } from '@blocksuite/affine/shared/styles';
+import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine/shared/theme';
 import { PlusIcon } from '@blocksuite/icons/lit';
 import { type Signal, signal } from '@preact/signals-core';
 import { css, html } from 'lit';
@@ -14,28 +15,28 @@ export class ChatPanelCandidatesPopover extends SignalWatcher(
   WithDisposable(ShadowlessElement)
 ) {
   static override styles = css`
-    .candidates-popover {
+    .ai-candidates-popover {
       width: 280px;
       max-height: 450px;
       overflow-y: auto;
-      border: 0.5px solid var(--affine-border-color);
+      border: 0.5px solid ${unsafeCSSVarV2('layer/insideBorder/border')};
       border-radius: 4px;
-      background: var(--affine-background-primary-color);
-      box-shadow: var(--affine-shadow-2);
+      background: ${unsafeCSSVarV2('layer/background/overlayPanel')};
+      box-shadow: ${unsafeCSSVar('overlayPanelShadow')};
       padding: 8px;
     }
 
-    .candidates-popover icon-button {
+    .ai-candidates-popover icon-button {
       justify-content: flex-start;
       gap: 8px;
     }
-    .candidates-popover icon-button svg {
+    .ai-candidates-popover icon-button svg {
       width: 20px;
       height: 20px;
       color: var(--svg-icon-color);
     }
 
-    ${scrollbarStyle('.candidates-popover')}
+    ${scrollbarStyle('.ai-candidates-popover')}
   `;
 
   @property({ attribute: false })
@@ -69,7 +70,10 @@ export class ChatPanelCandidatesPopover extends SignalWatcher(
   }
 
   override render() {
-    return html`<div class="candidates-popover">
+    return html`<div
+      class="ai-candidates-popover"
+      data-testid="ai-candidates-popover"
+    >
       ${repeat(
         this.referenceDocs.value,
         doc => doc.docId,
