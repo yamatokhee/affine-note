@@ -6928,7 +6928,7 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.editor.at-menu.date-picker"](): string;
     /**
-      * `Mention Member`
+      * `Mention Members`
       */
     ["com.affine.editor.at-menu.mention-member"](): string;
     /**
