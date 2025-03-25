@@ -49,7 +49,7 @@ import { effect } from '@preact/signals-core';
 import clamp from 'lodash-es/clamp';
 import last from 'lodash-es/last';
 
-import { EdgelessClipboardController } from '../clipboard/clipboard.js';
+import { createElementsFromClipboardDataCommand } from '../clipboard/command.js';
 import { prepareCloneData } from '../utils/clone-utils.js';
 import { calPanDelta } from '../utils/panning-utils.js';
 import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
@@ -238,18 +238,18 @@ export class DefaultTool extends BaseTool {
   private async _cloneContent() {
     if (!this._edgeless) return;
 
-    const clipboardController = this.std.getOptional(
-      EdgelessClipboardController
-    );
-    if (!clipboardController) return;
     const snapshot = prepareCloneData(this._toBeMoved, this.std);
 
     const bound = getCommonBoundWithRotation(this._toBeMoved);
-    const { canvasElements, blockModels } =
-      await clipboardController.createElementsFromClipboardData(
-        snapshot,
-        bound.center
-      );
+    const [_, { createdElementsPromise }] = this.std.command.exec(
+      createElementsFromClipboardDataCommand,
+      {
+        elementsRawData: snapshot,
+        pasteCenter: bound.center,
+      }
+    );
+    if (!createdElementsPromise) return;
+    const { canvasElements, blockModels } = await createdElementsPromise;
 
     this._toBeMoved = [...canvasElements, ...blockModels];
     this.edgelessSelectionManager.set({

@@ -1,4 +1,5 @@
 export * from './clipboard/clipboard';
+export * from './clipboard/command';
 export { EdgelessTemplatePanel } from './components/toolbar/template/template-panel.js';
 export * from './components/toolbar/template/template-type.js';
 export * from './edgeless-root-block.js';

@@ -20,7 +20,7 @@ import {
 import { getCommonBoundWithRotation } from '@blocksuite/global/gfx';
 import groupBy from 'lodash-es/groupBy';
 
-import { EdgelessClipboardController } from '../clipboard/clipboard.js';
+import { createElementsFromClipboardDataCommand } from '../clipboard/command.js';
 import { getSortedCloneElements, prepareCloneData } from './clone-utils.js';
 import {
   isEdgelessTextBlock,
@@ -34,7 +34,6 @@ export async function duplicate(
   elements: GfxModel[],
   select = true
 ) {
-  const edgelessClipboard = edgeless.std.get(EdgelessClipboardController);
   const gfx = edgeless.std.get(GfxControllerIdentifier);
 
   const surface = getSurfaceComponent(edgeless.std);
@@ -45,11 +44,15 @@ export async function duplicate(
   totalBound.x += totalBound.w + offset;
 
   const snapshot = prepareCloneData(copyElements, edgeless.std);
-  const { canvasElements, blockModels } =
-    await edgelessClipboard.createElementsFromClipboardData(
-      snapshot,
-      totalBound.center
-    );
+  const [_, { createdElementsPromise }] = edgeless.std.command.exec(
+    createElementsFromClipboardDataCommand,
+    {
+      elementsRawData: snapshot,
+      pasteCenter: totalBound.center,
+    }
+  );
+  if (!createdElementsPromise) return;
+  const { canvasElements, blockModels } = await createdElementsPromise;
 
   const newElements = [...canvasElements, ...blockModels];
 
