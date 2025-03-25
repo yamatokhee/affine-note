@@ -43,7 +43,6 @@ export type MenuItem = {
   name: string | TemplateResult<1>;
   icon: TemplateResult<1>;
   action: MenuAction;
-  suffix?: string | TemplateResult<1>;
 };
 
 export type MenuAction = () => Promise<void> | void;
@@ -110,11 +109,6 @@ export class ChatPanelAddPopover extends SignalWatcher(
     }
     .menu-items icon-button {
       outline: none;
-    }
-    .item-suffix {
-      margin-left: auto;
-      font-size: var(--affine-font-xs);
-      color: var(--affine-text-secondary-color);
     }
 
     ${scrollbarStyle('.add-popover')}
@@ -335,7 +329,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
       ${repeat(
         items,
         item => item.key,
-        ({ key, name, icon, action, suffix }, idx) => {
+        ({ key, name, icon, action }, idx) => {
           const curIdx = startIndex + idx;
           return html`<icon-button
             width="280px"
@@ -348,7 +342,6 @@ export class ChatPanelAddPopover extends SignalWatcher(
             @mousemove=${() => (this._activatedIndex = curIdx)}
           >
             ${icon}
-            ${suffix ? html`<div class="item-suffix">${suffix}</div>` : ''}
           </icon-button>`;
         }
       )}

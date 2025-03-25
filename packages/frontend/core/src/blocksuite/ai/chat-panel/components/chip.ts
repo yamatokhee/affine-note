@@ -25,7 +25,7 @@ export class ChatPanelChip extends SignalWatcher(
     .chip-card[data-state='candidate'] {
       border-width: 1px;
       border-style: dashed;
-      background: var(--affine-tag-white);
+      background: var(--affine-background-secondary-color);
       color: var(--affine-icon-secondary);
     }
     .chip-card[data-state='candidate'] svg {
@@ -58,7 +58,7 @@ export class ChatPanelChip extends SignalWatcher(
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .chip-card[data-state='candidate'] .chip-card-title {
+    .chip-card[data-state='candidate'] {
       cursor: pointer;
     }
     .chip-card-close {
@@ -101,10 +101,11 @@ export class ChatPanelChip extends SignalWatcher(
         class="chip-card"
         data-testid="chat-panel-chip"
         data-state=${this.state}
+        @click=${this.onChipClick}
       >
         <div class="chip-card-content">
           ${this.icon}
-          <span class="chip-card-title" @click=${this.onChipClick}>
+          <span class="chip-card-title">
             <span data-testid="chat-panel-chip-title">${this.name}</span>
           </span>
           <affine-tooltip>${this.tooltip}</affine-tooltip>

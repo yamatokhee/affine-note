@@ -6,9 +6,9 @@ import {
 } from '@blocksuite/affine/block-std';
 import { createLitPortal } from '@blocksuite/affine/components/portal';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
-import { PlusIcon } from '@blocksuite/icons/lit';
+import { MoreVerticalIcon, PlusIcon } from '@blocksuite/icons/lit';
 import { flip, offset } from '@floating-ui/dom';
-import { type Signal, signal } from '@preact/signals-core';
+import { computed, type Signal, signal } from '@preact/signals-core';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -36,6 +36,8 @@ import {
 // 100k tokens limit for the docs context
 const MAX_TOKEN_COUNT = 100000;
 
+const MAX_CANDIDATES = 3;
+
 export class ChatPanelChips extends SignalWatcher(
   WithDisposable(ShadowlessElement)
 ) {
@@ -45,13 +47,14 @@ export class ChatPanelChips extends SignalWatcher(
       flex-wrap: wrap;
     }
     .add-button,
-    .collapse-button {
+    .collapse-button,
+    .more-candidate-button {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 24px;
       height: 24px;
-      border: 1px solid var(--affine-border-color);
+      border: 0.5px solid var(--affine-border-color);
       border-radius: 4px;
       margin: 4px 0;
       box-sizing: border-box;
@@ -61,6 +64,15 @@ export class ChatPanelChips extends SignalWatcher(
     .add-button:hover,
     .collapse-button:hover {
       background-color: var(--affine-hover-color);
+    }
+    .more-candidate-button {
+      border-width: 1px;
+      border-style: dashed;
+      background: var(--affine-background-secondary-color);
+      color: var(--affine-icon-secondary);
+    }
+    .more-candidate-button svg {
+      color: var(--affine-icon-secondary);
     }
   `;
 
@@ -90,6 +102,9 @@ export class ChatPanelChips extends SignalWatcher(
   @query('.add-button')
   accessor addButton!: HTMLDivElement;
 
+  @query('.more-candidate-button')
+  accessor moreCandidateButton!: HTMLDivElement;
+
   @state()
   accessor isCollapsed = false;
 
@@ -114,11 +129,14 @@ export class ChatPanelChips extends SignalWatcher(
       docId: doc.docId,
       state: 'candidate',
     }));
-    const allChips = this.chatContextValue.chips.concat(candidates);
+    const moreCandidates = candidates.length > MAX_CANDIDATES;
+    const allChips = this.chatContextValue.chips.concat(
+      candidates.slice(0, MAX_CANDIDATES)
+    );
     const isCollapsed = this.isCollapsed && allChips.length > 1;
     const chips = isCollapsed ? allChips.slice(0, 1) : allChips;
 
-    return html` <div class="chips-wrapper">
+    return html`<div class="chips-wrapper">
       <div class="add-button" @click=${this._toggleAddDocMenu}>
         ${PlusIcon()}
       </div>
@@ -170,6 +188,14 @@ export class ChatPanelChips extends SignalWatcher(
           return null;
         }
       )}
+      ${moreCandidates && !isCollapsed
+        ? html`<div
+            class="more-candidate-button"
+            @click=${this._toggleMoreCandidatesMenu}
+          >
+            ${MoreVerticalIcon()}
+          </div>`
+        : nothing}
       ${isCollapsed
         ? html`<div class="collapse-button" @click=${this._toggleCollapse}>
             +${allChips.length - 1}
@@ -240,6 +266,45 @@ export class ChatPanelChips extends SignalWatcher(
         referenceElement: this.addButton,
         placement: 'top-start',
         middleware: [offset({ crossAxis: -30, mainAxis: 10 }), flip()],
+        autoUpdate: { animationFrame: true },
+      },
+      abortController: this._abortController,
+      closeOnClickAway: true,
+    });
+  };
+
+  private readonly _toggleMoreCandidatesMenu = () => {
+    if (this._abortController) {
+      this._abortController.abort();
+      return;
+    }
+
+    this._abortController = new AbortController();
+    this._abortController.signal.addEventListener('abort', () => {
+      this._abortController = null;
+    });
+
+    const referenceDocs = computed(() =>
+      this.referenceDocs.value.slice(MAX_CANDIDATES)
+    );
+
+    createLitPortal({
+      template: html`
+        <chat-panel-candidates-popover
+          .addChip=${this._addChip}
+          .referenceDocs=${referenceDocs}
+          .docDisplayConfig=${this.docDisplayConfig}
+          .abortController=${this._abortController}
+        ></chat-panel-candidates-popover>
+      `,
+      portalStyles: {
+        zIndex: 'var(--affine-z-index-popover)',
+      },
+      container: document.body,
+      computePosition: {
+        referenceElement: this.moreCandidateButton,
+        placement: 'top-start',
+        middleware: [offset({ crossAxis: 0, mainAxis: 6 }), flip()],
         autoUpdate: { animationFrame: true },
       },
       abortController: this._abortController,
