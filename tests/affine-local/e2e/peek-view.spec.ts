@@ -132,13 +132,13 @@ test('can open peek view for embedded frames', async ({ page }) => {
   await page.locator('affine-surface-ref .affine-surface-ref').hover();
 
   await page
-    .locator('.surface-ref-toolbar-container')
-    .locator('editor-icon-button[aria-label="Open doc"]')
+    .locator('affine-surface-ref-toolbar editor-menu-button[aria-label="Open"]')
     .click();
 
   await page
-    .locator('.surface-ref-toolbar-container')
-    .locator('editor-menu-action:has-text("center peek")')
+    .locator(
+      'affine-surface-ref-toolbar editor-menu-action[aria-label="Open in center peek"]'
+    )
     .click();
 
   // verify peek view is opened
