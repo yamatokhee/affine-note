@@ -165,5 +165,3 @@ export class PageClipboard extends ReadOnlyClipboard {
     }
   }
 }
-
-export { pasteMiddleware };

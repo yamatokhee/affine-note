@@ -1,6 +1,7 @@
 import { defaultImageProxyMiddleware } from '@blocksuite/affine-block-image';
 import {
   AttachmentAdapter,
+  ClipboardAdapter,
   copyMiddleware,
   HtmlAdapter,
   ImageAdapter,
@@ -15,8 +16,6 @@ import {
 } from '@blocksuite/affine-shared/commands';
 import type { BlockComponent, UIEventHandler } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/disposable';
-
-import { ClipboardAdapter } from './adapter.js';
 
 /**
  * ReadOnlyClipboard is a class that provides a read-only clipboard for the root block.

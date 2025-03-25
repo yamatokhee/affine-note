@@ -15,6 +15,7 @@ import type {
 } from '@blocksuite/store';
 import { BaseAdapter } from '@blocksuite/store';
 
+import { NotificationProvider } from '../../services/notification-service.js';
 import { decodeClipboardBlobs, encodeClipboardBlobs } from './utils.js';
 
 export type FileSnapshot = {
@@ -25,6 +26,13 @@ export type FileSnapshot = {
 
 export class ClipboardAdapter extends BaseAdapter<string> {
   static MIME = 'BLOCKSUITE/SNAPSHOT';
+
+  private readonly _onError = (message: string) => {
+    const notification = this.provider.getOptional(NotificationProvider);
+    if (!notification) return;
+
+    notification.toast(message);
+  };
 
   override fromBlockSnapshot(
     _payload: FromBlockSnapshotPayload
@@ -56,7 +64,10 @@ export class ClipboardAdapter extends BaseAdapter<string> {
       );
     }
     const map = assets.getAssets();
-    const blobs: Record<string, FileSnapshot> = await encodeClipboardBlobs(map);
+    const blobs: Record<string, FileSnapshot> = await encodeClipboardBlobs(
+      map,
+      this._onError
+    );
     return {
       file: JSON.stringify({
         snapshot,

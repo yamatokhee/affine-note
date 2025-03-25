@@ -20,6 +20,11 @@ import {
   MAX_IMAGE_WIDTH,
 } from '@blocksuite/affine-model';
 import {
+  ClipboardAdapter,
+  decodeClipboardBlobs,
+  encodeClipboardBlobs,
+} from '@blocksuite/affine-shared/adapters';
+import {
   CANVAS_EXPORT_IGNORE_TAGS,
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
@@ -72,12 +77,7 @@ import {
 import DOMPurify from 'dompurify';
 import * as Y from 'yjs';
 
-import { ClipboardAdapter } from '../../clipboard/adapter.js';
 import { PageClipboard } from '../../clipboard/index.js';
-import {
-  decodeClipboardBlobs,
-  encodeClipboardBlobs,
-} from '../../clipboard/utils.js';
 import { edgelessElementsBoundFromRawData } from '../utils/bound-utils.js';
 import { createNewPresentationIndexes } from '../utils/clipboard-utils.js';
 import {

@@ -1,6 +1,4 @@
-import { toast } from '@blocksuite/affine-components/toast';
-
-import type { FileSnapshot } from './adapter.js';
+import type { FileSnapshot } from './clipboard.js';
 
 const chars =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -67,30 +65,21 @@ export const decode = (base64: string): ArrayBuffer => {
   return arraybuffer;
 };
 
-export async function encodeClipboardBlobs(map: Map<string, Blob>) {
+export async function encodeClipboardBlobs(
+  map: Map<string, Blob>,
+  onError?: (message: string) => void
+) {
   const blobs: Record<string, FileSnapshot> = {};
   let sumSize = 0;
   await Promise.all(
     Array.from(map.entries()).map(async ([id, blob]) => {
       if (blob.size > 4 * 1024 * 1024) {
-        const host = document.querySelector('editor-host');
-        if (!host) {
-          return;
-        }
-        toast(
-          host,
-          (blob as File).name ?? 'File' + ' is too large to be copied'
-        );
+        onError?.((blob as File).name ?? 'File' + ' is too large to be copied');
         return;
       }
       sumSize += blob.size;
       if (sumSize > 6 * 1024 * 1024) {
-        const host = document.querySelector('editor-host');
-        if (!host) {
-          return;
-        }
-        toast(
-          host,
+        onError?.(
           (blob as File).name ??
             'File' + ' cannot be copied due to the clipboard size limit'
         );
