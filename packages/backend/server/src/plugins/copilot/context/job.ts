@@ -159,7 +159,7 @@ export class CopilotContextDocJob implements OnModuleInit {
     if (!this.supportEmbedding) return;
 
     try {
-      const content = await this.doc.getDocContent(workspaceId, docId);
+      const content = await this.doc.getFullDocContent(workspaceId, docId);
       if (content) {
         // no need to check if embeddings is empty, will throw internally
         const embeddings = await this.embeddingClient.getFileEmbeddings(
