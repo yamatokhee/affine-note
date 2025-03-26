@@ -16,20 +16,19 @@ import type { InviteInfoStore } from '../stores/invite-info';
 
 export type InviteInfo = GetInviteInfoQuery['getInviteInfo'];
 
-export class AcceptInviteService extends Service {
+export class InvitationService extends Service {
   constructor(
-    private readonly store: AcceptInviteStore,
+    private readonly acceptInviteStore: AcceptInviteStore,
     private readonly inviteInfoStore: InviteInfoStore
   ) {
     super();
   }
   inviteId$ = new LiveData<string | undefined>(undefined);
   inviteInfo$ = new LiveData<InviteInfo | undefined>(undefined);
-  accepted$ = new LiveData<boolean>(false);
   loading$ = new LiveData(false);
   error$ = new LiveData<any>(null);
 
-  readonly acceptInvite = effect(
+  readonly getInviteInfo = effect(
     switchMap(({ inviteId }: { inviteId: string }) => {
       if (!inviteId) {
         return EMPTY;
@@ -39,16 +38,6 @@ export class AcceptInviteService extends Service {
       }).pipe(
         mergeMap(res => {
           this.inviteInfo$.setValue(res);
-          return fromPromise(async () => {
-            return await this.store.acceptInvite(
-              res.workspace.id,
-              inviteId,
-              true
-            );
-          });
-        }),
-        mergeMap(res => {
-          this.accepted$.next(res);
           return EMPTY;
         }),
         smartRetry({
@@ -59,7 +48,6 @@ export class AcceptInviteService extends Service {
           this.inviteId$.setValue(inviteId);
           this.loading$.setValue(true);
           this.inviteInfo$.setValue(undefined);
-          this.accepted$.setValue(false);
         }),
         onComplete(() => {
           this.loading$.setValue(false);
@@ -68,21 +56,20 @@ export class AcceptInviteService extends Service {
     })
   );
 
-  async waitForAcceptInvite(inviteId: string) {
-    this.acceptInvite({ inviteId });
+  async acceptInvite(inviteId: string) {
+    this.getInviteInfo({ inviteId });
     await this.loading$.waitFor(f => !f);
-    if (this.accepted$.value) {
-      return true; // invite is accepted
+    if (!this.inviteInfo$.value) {
+      throw new Error('Invalid invite id');
     }
-
-    if (this.error$.value) {
-      throw this.error$.value;
-    }
-
-    return false; // invite is expired
+    return await this.acceptInviteStore.acceptInvite(
+      this.inviteInfo$.value.workspace.id,
+      inviteId,
+      true
+    );
   }
 
   override dispose(): void {
-    this.acceptInvite.unsubscribe();
+    this.getInviteInfo.unsubscribe();
   }
 }

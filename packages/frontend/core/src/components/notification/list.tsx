@@ -6,7 +6,7 @@ import {
   Scrollable,
   Skeleton,
 } from '@affine/component';
-import { AcceptInviteService } from '@affine/core/modules/cloud';
+import { InvitationService } from '@affine/core/modules/cloud';
 import {
   type Notification,
   NotificationListService,
@@ -314,7 +314,7 @@ const InvitationNotificationItem = ({
   const memberInactived = !body.createdByUser;
   const workspaceInactived = !body.workspace;
   const workspacesService = useService(WorkspacesService);
-  const acceptInviteService = useService(AcceptInviteService);
+  const invitationService = useService(InvitationService);
   const notificationListService = useService(NotificationListService);
   const inviteId = body.inviteId;
   const [isAccepting, setIsAccepting] = useState(false);
@@ -347,8 +347,8 @@ const InvitationNotificationItem = ({
 
   const handleAcceptInvite = useCallback(() => {
     setIsAccepting(true);
-    acceptInviteService
-      .waitForAcceptInvite(inviteId)
+    invitationService
+      .acceptInvite(inviteId)
       .catch(err => {
         const userFriendlyError = UserFriendlyError.fromAny(err);
         if (userFriendlyError.is('ALREADY_IN_SPACE')) {
@@ -384,7 +384,7 @@ const InvitationNotificationItem = ({
         setIsAccepting(false);
       });
   }, [
-    acceptInviteService,
+    invitationService,
     handleReadAndOpenWorkspace,
     inviteId,
     notification,

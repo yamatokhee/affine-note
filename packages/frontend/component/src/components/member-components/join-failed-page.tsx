@@ -20,7 +20,7 @@ export const JoinFailedPage = ({
       title={t['com.affine.fail-to-join-workspace.title']()}
       subtitle={
         userFriendlyError.name === ErrorNames.MEMBER_QUOTA_EXCEEDED ? (
-          <div className={styles.content}>
+          <div className={styles.lineHeight}>
             <Trans
               i18nKey={'com.affine.fail-to-join-workspace.description-1'}
               components={{

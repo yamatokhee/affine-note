@@ -3242,6 +3242,13 @@ export type GetInviteInfoQuery = {
       name: string;
       avatarUrl: string | null;
     };
+    invitee: {
+      __typename?: 'WorkspaceUserType';
+      id: string;
+      name: string;
+      email: string;
+      avatarUrl: string | null;
+    };
   };
 };
 

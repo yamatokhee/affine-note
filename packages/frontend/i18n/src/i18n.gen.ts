@@ -7204,6 +7204,18 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.fail-to-join-workspace.description-2"](): string;
     /**
+      * `Request to join`
+      */
+    ["com.affine.request-to-join-workspace.button"](): string;
+    /**
+      * `Request Sent successfully`
+      */
+    ["com.affine.sent-request-to-join-workspace.title"](): string;
+    /**
+      * `Request failed to send`
+      */
+    ["com.affine.failed-to-send-request.title"](): string;
+    /**
       * `Readwise`
       */
     ["com.affine.integration.name.readwise"](): string;
@@ -8444,6 +8456,28 @@ export const TypedTrans: {
     }, {
         ["1"]: JSX.Element;
         ["2"]: JSX.Element;
+    }>>;
+    /**
+      * `You requested to join <1/> <2>{{workspaceName}}</2> with <3>{{userEmail}}</3>, the workspace owner and team admins will review your request.`
+      */
+    ["com.affine.sent-request-to-join-workspace.description"]: ComponentType<TypedTransProps<Readonly<{
+        workspaceName: string;
+        userEmail: string;
+    }>, {
+        ["1"]: JSX.Element;
+        ["2"]: JSX.Element;
+        ["3"]: JSX.Element;
+    }>>;
+    /**
+      * `Unable to process your request to join <1/> <2>{{workspaceName}}</2> with <3>{{userEmail}}</3>, the workspace has reached its member limit. Please contact the workspace owner for available seats.`
+      */
+    ["com.affine.failed-to-send-request.description"]: ComponentType<TypedTransProps<Readonly<{
+        workspaceName: string;
+        userEmail: string;
+    }>, {
+        ["1"]: JSX.Element;
+        ["2"]: JSX.Element;
+        ["3"]: JSX.Element;
     }>>;
     /**
       * `Import your Readwise highlights to AFFiNE. Please visit Readwise, click <a>"Get Access Token"</a>, and paste the token below.`

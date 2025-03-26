@@ -776,6 +776,12 @@ export const getInviteInfoQuery = {
       avatarUrl
     }
     status
+    invitee {
+      id
+      name
+      email
+      avatarUrl
+    }
   }
 }`,
 };

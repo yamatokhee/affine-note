@@ -11,5 +11,11 @@ query getInviteInfo($inviteId: String!) {
       avatarUrl
     }
     status
+    invitee {
+      id
+      name
+      email
+      avatarUrl
+    }
   }
 }
