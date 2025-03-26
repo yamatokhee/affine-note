@@ -1081,5 +1081,14 @@ export const createCustomToolbarExtension = (
       id: BlockFlavourIdentifier('custom:affine:embed-iframe'),
       config: embedIframeToolbarConfig,
     }),
+
+    ToolbarModuleExtension({
+      id: BlockFlavourIdentifier('custom:affine:surface:embed-iframe'),
+      config: {
+        actions: [embedIframeToolbarConfig.actions].flat(),
+
+        when: ctx => ctx.getSurfaceModels().length === 1,
+      },
+    }),
   ];
 };
