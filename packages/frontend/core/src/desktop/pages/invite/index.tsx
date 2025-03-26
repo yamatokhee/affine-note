@@ -1,3 +1,4 @@
+import { notify } from '@affine/component';
 import {
   AcceptInvitePage,
   ExpiredPage,
@@ -34,6 +35,9 @@ const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
   const workspaces = useLiveData(workspacesService.list.workspaces$);
   const navigateHelper = useNavigateHelper();
   const [accepted, setAccepted] = useState(false);
+  const [acceptError, setAcceptError] = useState<UserFriendlyError | null>(
+    null
+  );
 
   const openWorkspace = useAsyncCallback(async () => {
     if (!inviteInfo?.workspace.id) {
@@ -70,6 +74,8 @@ const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
         if (err.is('ALREADY_IN_SPACE')) {
           return openWorkspace();
         }
+        setAcceptError(err);
+        notify.error(err);
       });
   }, [invitationService, openWorkspace, targetInviteId]);
 
@@ -85,8 +91,10 @@ const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
     return <ExpiredPage onOpenAffine={onOpenAffine} />;
   }
 
-  if (error) {
-    return <JoinFailedPage inviteInfo={inviteInfo} error={error} />;
+  if (error || acceptError) {
+    return (
+      <JoinFailedPage inviteInfo={inviteInfo} error={error || acceptError} />
+    );
   }
 
   // for email invite

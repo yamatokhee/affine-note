@@ -355,6 +355,7 @@ const InvitationNotificationItem = ({
           // ignore if the user is already in the workspace
           return true;
         }
+        notify.error(userFriendlyError);
         throw err;
       })
       .then(async value => {
