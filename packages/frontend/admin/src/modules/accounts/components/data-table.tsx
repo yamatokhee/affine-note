@@ -18,6 +18,7 @@ import {
 } from '@tanstack/react-table';
 import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
 
+import type { UserType } from '../schema';
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
 import { useUserCount } from './use-user-management';
@@ -26,6 +27,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pagination: PaginationState;
+  selectedUsers: UserType[];
   onPaginationChange: Dispatch<
     SetStateAction<{
       pageIndex: number;
@@ -34,10 +36,11 @@ interface DataTableProps<TData, TValue> {
   >;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string }, TValue>({
   columns,
   data,
   pagination,
+  selectedUsers,
   onPaginationChange,
 }: DataTableProps<TData, TValue>) {
   const usersCount = useUserCount();
@@ -50,6 +53,7 @@ export function DataTable<TData, TValue>({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getRowId: row => row.id,
     manualPagination: true,
     rowCount: usersCount,
     enableFilters: true,
@@ -70,7 +74,12 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="flex flex-col gap-4 py-5 px-6 h-full overflow-auto">
-      <DataTableToolbar setDataTable={setTableData} data={data} table={table} />
+      <DataTableToolbar
+        setDataTable={setTableData}
+        data={data}
+        table={table}
+        selectedUsers={selectedUsers}
+      />
       <div className="rounded-md border h-full flex flex-col overflow-auto">
         <Table>
           <TableHeader>
