@@ -230,6 +230,7 @@ export const moreActions = [
             if (!surfaceId) return;
 
             const linkedDoc = createLinkedDocFromNote(ctx.store, model, title);
+            if (!linkedDoc) return;
 
             // Inserts linked doc card
             const cardId = ctx.std.get(EdgelessCRUDIdentifier).addBlock(
