@@ -1115,10 +1115,6 @@ export function useAFFiNEI18N(): {
         readonly second: string;
     }): string;
     /**
-      * `Sent`
-      */
-    ["com.affine.auth.sent"](): string;
-    /**
       * `The verification link failed to be sent, please try again later.`
       */
     ["com.affine.auth.sent.change.email.fail"](): string;
@@ -1707,6 +1703,10 @@ export function useAFFiNEI18N(): {
       * `Cancel`
       */
     ["com.affine.confirmModal.button.cancel"](): string;
+    /**
+      * `Ok`
+      */
+    ["com.affine.confirmModal.button.ok"](): string;
     /**
       * `Current year`
       */
@@ -6928,7 +6928,7 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.editor.at-menu.date-picker"](): string;
     /**
-      * `Mention Members`
+      * `Mention Member`
       */
     ["com.affine.editor.at-menu.mention-member"](): string;
     /**
@@ -7428,15 +7428,45 @@ export function useAFFiNEI18N(): {
     /**
       * `Notes`
       */
-    ["com.affine.attachmentViewer.audio.notes"](): string;
+    ["com.affine.audio.notes"](): string;
     /**
       * `Transcribing`
       */
-    ["com.affine.attachmentViewer.audio.transcribing"](): string;
+    ["com.affine.audio.transcribing"](): string;
     /**
-      * `Accept & Join`
+      * `Unable to retrieve AI results for others`
       */
-    ["com.affine.notification.invitation.accept"](): string;
+    ["com.affine.audio.transcribe.non-owner.confirm.title"](): string;
+    /**
+      * `Audio activity`
+      */
+    ["com.affine.recording.new"](): string;
+    /**
+      * `Open app`
+      */
+    ["com.affine.recording.ready"](): string;
+    /**
+      * `{{appName}}'s audio`
+      */
+    ["com.affine.recording.recording"](options: {
+        readonly appName: string;
+    }): string;
+    /**
+      * `Audio recording`
+      */
+    ["com.affine.recording.recording.unnamed"](): string;
+    /**
+      * `Start`
+      */
+    ["com.affine.recording.start"](): string;
+    /**
+      * `Dismiss`
+      */
+    ["com.affine.recording.dismiss"](): string;
+    /**
+      * `Stop`
+      */
+    ["com.affine.recording.stop"](): string;
     /**
       * `An internal error occurred.`
       */
@@ -8494,29 +8524,11 @@ export const TypedTrans: {
         a: JSX.Element;
     }>>;
     /**
-      * `<1>{{username}}</1> has accept your invitation`
+      * `Please contact <1>{{user}}</1> to upgrade AI rights or resend the attachment.`
       */
-    ["com.affine.notification.invitation-accepted"]: ComponentType<TypedTransProps<{
-        readonly username: string;
+    ["com.affine.audio.transcribe.non-owner.confirm.message"]: ComponentType<TypedTransProps<{
+        readonly user: string;
     }, {
         ["1"]: JSX.Element;
-    }>>;
-    /**
-      * `There is an issue regarding your invitation to <1>{{workspaceName}}</1> `
-      */
-    ["com.affine.notification.invitation-blocked"]: ComponentType<TypedTransProps<{
-        readonly workspaceName: string;
-    }, {
-        ["1"]: JSX.Element;
-    }>>;
-    /**
-      * `<1>{{username}}</1> invited you to join <2>{{workspaceName}}</2>`
-      */
-    ["com.affine.notification.invitation"]: ComponentType<TypedTransProps<Readonly<{
-        username: string;
-        workspaceName: string;
-    }>, {
-        ["1"]: JSX.Element;
-        ["2"]: JSX.Element;
     }>>;
 } = /*#__PURE__*/ createProxy(createComponent);
