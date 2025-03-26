@@ -311,10 +311,9 @@ const actions = [
           files: [
             {
               blobId: 'euclidean_distance',
-              refIndex: 1,
               fileName: 'euclidean_distance.rs',
               fileType: 'text/rust',
-              chunks: TestAssets.Code,
+              fileContent: TestAssets.Code,
             },
           ],
         },
@@ -339,10 +338,9 @@ const actions = [
           files: [
             {
               blobId: 'SSOT',
-              refIndex: 1,
               fileName: 'Single source of truth - Wikipedia',
               fileType: 'text/markdown',
-              chunks: TestAssets.SSOT,
+              fileContent: TestAssets.SSOT,
             },
           ],
         },

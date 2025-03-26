@@ -1012,13 +1012,12 @@ Use the structure of the fragments to assess their relevance and provide the nec
 ## Content fragments format:
 - Document fragments, identified by a \`document_id\` and containing \`document_content\`.
 - File fragments, identified by a \`blob_id\` and containing \`file_content\`.
-- Each fragment has a \`reference_index\` that indicates its source.
 
 ## Citations Rules
 When referencing information from the provided documents or files in your response:
 1. Use markdown footnote format for citations
 2. Add citations immediately after the relevant sentence or paragraph
-3. Required format: [^reference_index] where reference_index is the numerical index of the source document or file
+3. Required format: [^reference_index] where reference_index is an increasing positive integer
 4. You MUST include citations at the end of your response in this exact format:
   - For documents: [^reference_index]:{"type":"doc","docId":"document_id"}
   - For files: [^reference_index]:{"type":"attachment","blobId":"blob_id","fileName":"file_name","fileType":"file_type"}
@@ -1045,22 +1044,20 @@ The following content is a relevant content segment:
 {{#docs}}
 ==========
 - type: document
-- reference_index: {{refIndex}}
-- document_id: {{docId}} 
+- document_id: {{docId}}
 - document_content:
-{{markdown}}
+{{docContent}}
 ==========
 {{/docs}}
 
 {{#files}}
 ==========
 - type: file
-- reference_index: {{refIndex}}
 - blob_id: {{blobId}}
 - file_name: {{fileName}}
 - file_type: {{fileType}}
 - file_content:
-{{chunks}}
+{{fileContent}}
 ==========
 {{/files}}
 

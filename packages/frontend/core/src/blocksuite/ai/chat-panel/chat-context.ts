@@ -36,17 +36,15 @@ export type ChatStatus =
 
 export interface DocContext {
   docId: string;
-  refIndex: number;
-  markdown: string;
+  docContent: string;
 }
 
-export type FileContext = {
+export interface FileContext {
   blobId: string;
-  refIndex: number;
   fileName: string;
   fileType: string;
-  chunks: string;
-};
+  fileContent: string;
+}
 
 export type ChatContextValue = {
   // history messages of the chat
