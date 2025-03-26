@@ -5,16 +5,10 @@ import {
 } from '@affine/admin/components/ui/avatar';
 import type { UserType } from '@affine/graphql';
 import { FeatureType } from '@affine/graphql';
+import { AccountIcon, LockIcon, UnlockIcon } from '@blocksuite/icons/rc';
 import type { ColumnDef } from '@tanstack/react-table';
 import { cssVarV2 } from '@toeverything/theme/v2';
-import clsx from 'clsx';
-import {
-  LockIcon,
-  MailIcon,
-  MailWarningIcon,
-  UnlockIcon,
-  UserIcon,
-} from 'lucide-react';
+import { MailIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { Checkbox } from '../../../components/ui/checkbox';
@@ -35,10 +29,10 @@ const StatusItem = ({
   textFalse: string;
 }) => (
   <div
-    className={clsx(
-      'flex gap-2 items-center',
-      !condition ? 'text-red-500 opacity-100' : 'opacity-25'
-    )}
+    className="flex gap-1 items-center"
+    style={{
+      color: condition ? cssVarV2('text/secondary') : cssVarV2('status/error'),
+    }}
   >
     {condition ? (
       <>
@@ -89,7 +83,7 @@ export const columns: ColumnDef<UserType>[] = [
         <Avatar className="w-10 h-10">
           <AvatarImage src={row.original.avatarUrl ?? undefined} />
           <AvatarFallback>
-            <UserIcon size={20} />
+            <AccountIcon fontSize={20} />
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col gap-1 max-w-full overflow-hidden">
@@ -97,7 +91,7 @@ export const columns: ColumnDef<UserType>[] = [
             <span>{row.original.name}</span>
             {row.original.features.includes(FeatureType.Admin) && (
               <span
-                className="ml-2 rounded px-2 py-0.5 text-xs h-5 border"
+                className="ml-2 rounded px-2 py-0.5 text-xs h-5 border text-center inline-flex items-center font-normal"
                 style={{
                   borderRadius: '4px',
                   backgroundColor: cssVarV2('chip/label/blue'),
@@ -120,7 +114,12 @@ export const columns: ColumnDef<UserType>[] = [
               </span>
             )}
           </div>
-          <div className="text-xs font-medium opacity-50 max-w-full overflow-hidden">
+          <div
+            className="text-xs font-medium max-w-full overflow-hidden"
+            style={{
+              color: cssVarV2('text/secondary'),
+            }}
+          >
             {row.original.email}
           </div>
         </div>
@@ -141,20 +140,29 @@ export const columns: ColumnDef<UserType>[] = [
     cell: ({ row: { original: user } }) => (
       <div className="flex items-center gap-2">
         <div className="flex flex-col gap-2 text-xs max-md:hidden">
-          <div className="flex justify-end opacity-25">{user.id}</div>
-          <div className="flex gap-3 items-center justify-end">
+          <div className="flex justify-start">{user.id}</div>
+          <div className="flex gap-3 items-center justify-start">
             <StatusItem
               condition={user.hasPassword}
-              IconTrue={<LockIcon size={10} />}
-              IconFalse={<UnlockIcon size={10} />}
+              IconTrue={
+                <LockIcon
+                  fontSize={16}
+                  color={cssVarV2('selfhost/icon/tertiary')}
+                />
+              }
+              IconFalse={<UnlockIcon fontSize={16} />}
               textTrue="Password Set"
               textFalse="No Password"
             />
-
             <StatusItem
               condition={user.emailVerified}
-              IconTrue={<MailIcon size={10} />}
-              IconFalse={<MailWarningIcon size={10} />}
+              IconTrue={
+                <MailIcon
+                  size={16}
+                  color={cssVarV2('selfhost/icon/tertiary')}
+                />
+              }
+              IconFalse={<MailIcon size={16} />}
               textTrue="Email Verified"
               textFalse="Email Not Verified"
             />
