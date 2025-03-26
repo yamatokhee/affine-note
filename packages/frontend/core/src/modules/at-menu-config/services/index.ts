@@ -29,6 +29,7 @@ import { computed, Signal, signal } from '@preact/signals-core';
 import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
+import { styleMap } from 'lit/directives/style-map.js';
 import {
   createAbsolutePositionFromRelativePosition,
   createRelativePositionFromTypeIndex,
@@ -345,8 +346,15 @@ export class AtMenuConfigService extends Service {
     };
     const convertMemberToMenuItem = (member: Member) => {
       const { id, name, avatarUrl } = member;
+      const style = styleMap({
+        borderRadius: '50%',
+        border: `1px solid ${cssVarV2('layer/background/overlayPanel')}`,
+        width: '20px',
+        height: '20px',
+        boxSizing: 'border-box',
+      });
       const icon = avatarUrl
-        ? html`<img style="width: 20px; height: 20px;" src="${avatarUrl}" />`
+        ? html`<img style=${style} src="${avatarUrl}" />`
         : MainAvatarIcon();
       return {
         key: id,
