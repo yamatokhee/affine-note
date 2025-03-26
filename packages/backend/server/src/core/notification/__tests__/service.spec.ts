@@ -3,6 +3,7 @@ import { mock } from 'node:test';
 
 import ava, { TestFn } from 'ava';
 
+import { Mockers } from '../../../__tests__/mocks';
 import {
   createTestingModule,
   type TestingModule,
@@ -15,6 +16,7 @@ import {
   NotificationType,
   User,
   Workspace,
+  WorkspaceMemberStatus,
 } from '../../../models';
 import { DocReader } from '../../doc';
 import { NotificationService } from '../service';
@@ -41,15 +43,14 @@ let member: User;
 let workspace: Workspace;
 
 test.beforeEach(async t => {
-  await t.context.module.initTestingDB();
-  owner = await t.context.models.user.create({
-    email: `${randomUUID()}@affine.pro`,
-  });
-  member = await t.context.models.user.create({
-    email: `${randomUUID()}@affine.pro`,
-  });
-  workspace = await t.context.models.workspace.create(owner.id);
-  await t.context.models.workspace.update(workspace.id, {
+  const { module } = t.context;
+  await module.initTestingDB();
+  owner = await module.create(Mockers.User);
+  member = await module.create(Mockers.User);
+  workspace = await module.create(Mockers.Workspace, {
+    owner: {
+      id: owner.id,
+    },
     name: 'Test Workspace',
     avatarKey: 'test-avatar-key',
   });
@@ -87,12 +88,13 @@ test('should create invitation notification and email', async t => {
 });
 
 test('should not send invitation email if user setting is not to receive invitation email', async t => {
-  const { notificationService } = t.context;
+  const { notificationService, module } = t.context;
   const inviteId = randomUUID();
-  await t.context.models.userSettings.set(member.id, {
+  await module.create(Mockers.UserSettings, {
+    userId: member.id,
     receiveInvitationEmail: false,
   });
-  const invitationMailCount = t.context.module.mails.count('MemberInvitation');
+  const invitationMailCount = module.mails.count('MemberInvitation');
   const notification = await notificationService.createInvitation({
     userId: member.id,
     body: {
@@ -107,11 +109,11 @@ test('should not send invitation email if user setting is not to receive invitat
 });
 
 test('should not create invitation notification if user is already a member', async t => {
-  const { notificationService, models } = t.context;
-  const inviteId = randomUUID();
-  mock.method(models.workspaceUser, 'getActive', async () => ({
-    id: inviteId,
-  }));
+  const { notificationService, module } = t.context;
+  const { id: inviteId } = await module.create(Mockers.WorkspaceUser, {
+    workspaceId: workspace.id,
+    userId: member.id,
+  });
   const notification = await notificationService.createInvitation({
     userId: member.id,
     body: {
@@ -124,8 +126,11 @@ test('should not create invitation notification if user is already a member', as
 });
 
 test('should create invitation accepted notification and email', async t => {
-  const { notificationService } = t.context;
-  const inviteId = randomUUID();
+  const { notificationService, module } = t.context;
+  const { id: inviteId } = await module.create(Mockers.WorkspaceUser, {
+    workspaceId: workspace.id,
+    userId: member.id,
+  });
   const notification = await notificationService.createInvitationAccepted({
     userId: owner.id,
     body: {
@@ -142,15 +147,19 @@ test('should create invitation accepted notification and email', async t => {
   t.is(notification!.body.inviteId, inviteId);
 
   // should send email
-  const invitationAcceptedMail = t.context.module.mails.last('MemberAccepted');
+  const invitationAcceptedMail = module.mails.last('MemberAccepted');
   t.is(invitationAcceptedMail.to, owner.email);
 });
 
 test('should not send invitation accepted email if user settings is not receive invitation email', async t => {
-  const { notificationService } = t.context;
-  const inviteId = randomUUID();
+  const { notificationService, module } = t.context;
+  const { id: inviteId } = await module.create(Mockers.WorkspaceUser, {
+    workspaceId: workspace.id,
+    userId: member.id,
+  });
   // should not send email if user settings is not receive invitation email
-  await t.context.models.userSettings.set(owner.id, {
+  await module.create(Mockers.UserSettings, {
+    userId: owner.id,
     receiveInvitationEmail: false,
   });
   const invitationAcceptedMailCount =
@@ -172,9 +181,8 @@ test('should not send invitation accepted email if user settings is not receive 
 });
 
 test('should not create invitation accepted notification if user is not an active member', async t => {
-  const { notificationService, models } = t.context;
+  const { notificationService } = t.context;
   const inviteId = randomUUID();
-  mock.method(models.workspaceUser, 'getActive', async () => null);
   const notification = await notificationService.createInvitationAccepted({
     userId: owner.id,
     body: {
@@ -225,9 +233,8 @@ test('should create invitation rejected notification', async t => {
 });
 
 test('should create invitation review request notification if user is not an active member', async t => {
-  const { notificationService, models } = t.context;
+  const { notificationService, module } = t.context;
   const inviteId = randomUUID();
-  mock.method(models.workspaceUser, 'getActive', async () => null);
   const notification = await notificationService.createInvitationReviewRequest({
     userId: owner.id,
     body: {
@@ -244,18 +251,18 @@ test('should create invitation review request notification if user is not an act
   t.is(notification!.body.inviteId, inviteId);
 
   // should send email
-  const invitationReviewRequestMail = t.context.module.mails.last(
+  const invitationReviewRequestMail = module.mails.last(
     'LinkInvitationReviewRequest'
   );
   t.is(invitationReviewRequestMail.to, owner.email);
 });
 
 test('should not create invitation review request notification if user is an active member', async t => {
-  const { notificationService, models } = t.context;
-  const inviteId = randomUUID();
-  mock.method(models.workspaceUser, 'getActive', async () => ({
-    id: inviteId,
-  }));
+  const { notificationService, module } = t.context;
+  const { id: inviteId } = await module.create(Mockers.WorkspaceUser, {
+    workspaceId: workspace.id,
+    userId: member.id,
+  });
   const notification = await notificationService.createInvitationReviewRequest({
     userId: owner.id,
     body: {
@@ -268,11 +275,11 @@ test('should not create invitation review request notification if user is an act
 });
 
 test('should create invitation review approved notification if user is an active member', async t => {
-  const { notificationService, models } = t.context;
-  const inviteId = randomUUID();
-  mock.method(models.workspaceUser, 'getActive', async () => ({
-    id: inviteId,
-  }));
+  const { notificationService, module } = t.context;
+  const { id: inviteId } = await module.create(Mockers.WorkspaceUser, {
+    workspaceId: workspace.id,
+    userId: member.id,
+  });
   const notification = await notificationService.createInvitationReviewApproved(
     {
       userId: member.id,
@@ -298,15 +305,18 @@ test('should create invitation review approved notification if user is an active
 });
 
 test('should not create invitation review approved notification if user is not an active member', async t => {
-  const { notificationService, models } = t.context;
-  const inviteId = randomUUID();
-  mock.method(models.workspaceUser, 'getActive', async () => null);
+  const { notificationService, module } = t.context;
+  const { id: inviteId } = await module.create(Mockers.WorkspaceUser, {
+    workspaceId: workspace.id,
+    userId: member.id,
+    status: WorkspaceMemberStatus.Pending,
+  });
   const notification = await notificationService.createInvitationReviewApproved(
     {
-      userId: owner.id,
+      userId: member.id,
       body: {
         workspaceId: workspace.id,
-        createdByUserId: member.id,
+        createdByUserId: owner.id,
         inviteId,
       },
     }
@@ -315,8 +325,7 @@ test('should not create invitation review approved notification if user is not a
 });
 
 test('should create invitation review declined notification if user is not an active member', async t => {
-  const { notificationService, models } = t.context;
-  mock.method(models.workspaceUser, 'getActive', async () => null);
+  const { notificationService, module } = t.context;
   const notification = await notificationService.createInvitationReviewDeclined(
     {
       userId: member.id,
@@ -333,18 +342,18 @@ test('should create invitation review declined notification if user is not an ac
   t.is(notification!.body.createdByUserId, owner.id);
 
   // should send email
-  const invitationReviewDeclinedMail = t.context.module.mails.last(
+  const invitationReviewDeclinedMail = module.mails.last(
     'LinkInvitationDecline'
   );
   t.is(invitationReviewDeclinedMail.to, member.email);
 });
 
 test('should not create invitation review declined notification if user is an active member', async t => {
-  const { notificationService, models } = t.context;
-  const inviteId = randomUUID();
-  mock.method(models.workspaceUser, 'getActive', async () => ({
-    id: inviteId,
-  }));
+  const { notificationService, module } = t.context;
+  await module.create(Mockers.WorkspaceUser, {
+    workspaceId: workspace.id,
+    userId: member.id,
+  });
   const notification = await notificationService.createInvitationReviewDeclined(
     {
       userId: owner.id,
@@ -413,7 +422,7 @@ test('should throw error on mark notification as read if notification is not fou
 });
 
 test('should throw error on mark notification as read if notification user is not the same', async t => {
-  const { notificationService } = t.context;
+  const { notificationService, module } = t.context;
   const notification = await notificationService.createInvitation({
     userId: member.id,
     body: {
@@ -422,9 +431,7 @@ test('should throw error on mark notification as read if notification user is no
       inviteId: randomUUID(),
     },
   });
-  const otherUser = await t.context.models.user.create({
-    email: `${randomUUID()}@affine.pro`,
-  });
+  const otherUser = await module.create(Mockers.User);
   await t.throwsAsync(
     notificationService.markAsRead(otherUser.id, notification!.id),
     {
@@ -538,7 +545,7 @@ test('should raw doc title in mention notification if no doc found', async t => 
 });
 
 test('should send mention email by user setting', async t => {
-  const { notificationService } = t.context;
+  const { notificationService, module } = t.context;
   const docId = randomUUID();
   const notification = await notificationService.createMention({
     userId: member.id,
@@ -555,12 +562,13 @@ test('should send mention email by user setting', async t => {
   });
   t.truthy(notification);
   // should send mention email
-  const mentionMail = t.context.module.mails.last('Mention');
+  const mentionMail = module.mails.last('Mention');
   t.is(mentionMail.to, member.email);
 
   // update user setting to not receive mention email
-  const mentionMailCount = t.context.module.mails.count('Mention');
-  await t.context.models.userSettings.set(member.id, {
+  const mentionMailCount = module.mails.count('Mention');
+  await module.create(Mockers.UserSettings, {
+    userId: member.id,
     receiveMentionEmail: false,
   });
   await notificationService.createMention({
@@ -577,5 +585,5 @@ test('should send mention email by user setting', async t => {
     },
   });
   // should not send mention email
-  t.is(t.context.module.mails.count('Mention'), mentionMailCount);
+  t.is(module.mails.count('Mention'), mentionMailCount);
 });

@@ -132,8 +132,12 @@ export class NotificationService {
 
   async createInvitationAccepted(input: InvitationNotificationCreate) {
     const workspaceId = input.body.workspaceId;
-    const userId = input.userId;
-    if (!(await this.isActiveWorkspaceUser(workspaceId, userId))) {
+    if (
+      !(await this.isActiveWorkspaceUser(
+        workspaceId,
+        input.body.createdByUserId
+      ))
+    ) {
       return;
     }
     await this.ensureWorkspaceContentExists(workspaceId);
@@ -194,8 +198,9 @@ export class NotificationService {
 
   async createInvitationReviewRequest(input: InvitationNotificationCreate) {
     const workspaceId = input.body.workspaceId;
-    const userId = input.userId;
-    if (await this.isActiveWorkspaceUser(workspaceId, userId)) {
+    if (
+      await this.isActiveWorkspaceUser(workspaceId, input.body.createdByUserId)
+    ) {
       return;
     }
     await this.ensureWorkspaceContentExists(workspaceId);
