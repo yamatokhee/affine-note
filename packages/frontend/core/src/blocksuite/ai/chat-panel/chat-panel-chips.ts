@@ -361,10 +361,6 @@ export class ChatPanelChips extends SignalWatcher(
   };
 
   private readonly _addToContext = async (chip: ChatChip) => {
-    const contextId = await this.getContextId();
-    if (!contextId || !AIProvider.context) {
-      return;
-    }
     if (isDocChip(chip)) {
       return await this._addDocToContext(chip);
     }
@@ -381,11 +377,11 @@ export class ChatPanelChips extends SignalWatcher(
   };
 
   private readonly _addDocToContext = async (chip: DocChip) => {
-    const contextId = await this.getContextId();
-    if (!contextId || !AIProvider.context) {
-      return;
-    }
     try {
+      const contextId = await this.getContextId();
+      if (!contextId || !AIProvider.context) {
+        throw new Error('Context not found');
+      }
       await AIProvider.context.addContextDoc({
         contextId,
         docId: chip.docId,
@@ -399,11 +395,11 @@ export class ChatPanelChips extends SignalWatcher(
   };
 
   private readonly _addFileToContext = async (chip: FileChip) => {
-    const contextId = await this.getContextId();
-    if (!contextId || !AIProvider.context) {
-      return;
-    }
     try {
+      const contextId = await this.getContextId();
+      if (!contextId || !AIProvider.context) {
+        throw new Error('Context not found');
+      }
       const blobId = await this.host.doc.blobSync.set(chip.file);
       const contextFile = await AIProvider.context.addContextFile(chip.file, {
         contextId,
@@ -423,11 +419,11 @@ export class ChatPanelChips extends SignalWatcher(
   };
 
   private readonly _addTagToContext = async (chip: TagChip) => {
-    const contextId = await this.getContextId();
-    if (!contextId || !AIProvider.context) {
-      return;
-    }
     try {
+      const contextId = await this.getContextId();
+      if (!contextId || !AIProvider.context) {
+        throw new Error('Context not found');
+      }
       // TODO: server side docIds calculation
       const docIds = this.docDisplayConfig.getTagPageIds(chip.tagId);
       await AIProvider.context.addContextTag({
@@ -447,11 +443,11 @@ export class ChatPanelChips extends SignalWatcher(
   };
 
   private readonly _addCollectionToContext = async (chip: CollectionChip) => {
-    const contextId = await this.getContextId();
-    if (!contextId || !AIProvider.context) {
-      return;
-    }
     try {
+      const contextId = await this.getContextId();
+      if (!contextId || !AIProvider.context) {
+        throw new Error('Context not found');
+      }
       const collection = this._collections.value.find(
         collection => collection.id === chip.collectionId
       );
@@ -477,35 +473,39 @@ export class ChatPanelChips extends SignalWatcher(
   private readonly _removeFromContext = async (
     chip: ChatChip
   ): Promise<boolean> => {
-    const contextId = await this.getContextId();
-    if (!contextId || !AIProvider.context) {
-      return false;
+    try {
+      const contextId = await this.getContextId();
+      if (!contextId || !AIProvider.context) {
+        return true;
+      }
+      if (isDocChip(chip)) {
+        return await AIProvider.context.removeContextDoc({
+          contextId,
+          docId: chip.docId,
+        });
+      }
+      if (isFileChip(chip) && chip.fileId) {
+        return await AIProvider.context.removeContextFile({
+          contextId,
+          fileId: chip.fileId,
+        });
+      }
+      if (isTagChip(chip)) {
+        return await AIProvider.context.removeContextTag({
+          contextId,
+          tagId: chip.tagId,
+        });
+      }
+      if (isCollectionChip(chip)) {
+        return await AIProvider.context.removeContextCollection({
+          contextId,
+          collectionId: chip.collectionId,
+        });
+      }
+      return true;
+    } catch {
+      return true;
     }
-    if (isDocChip(chip)) {
-      return await AIProvider.context.removeContextDoc({
-        contextId,
-        docId: chip.docId,
-      });
-    }
-    if (isFileChip(chip) && chip.fileId) {
-      return await AIProvider.context.removeContextFile({
-        contextId,
-        fileId: chip.fileId,
-      });
-    }
-    if (isTagChip(chip)) {
-      return await AIProvider.context.removeContextTag({
-        contextId,
-        tagId: chip.tagId,
-      });
-    }
-    if (isCollectionChip(chip)) {
-      return await AIProvider.context.removeContextCollection({
-        contextId,
-        collectionId: chip.collectionId,
-      });
-    }
-    return true;
   };
 
   private readonly _checkTokenLimit = (

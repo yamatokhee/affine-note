@@ -328,25 +328,32 @@ export class ChatPanel extends SignalWatcher(
   private readonly _cleanupHistories = async () => {
     const notification = this.host.std.getOptional(NotificationProvider);
     if (!notification) return;
-
-    if (
-      await notification.confirm({
-        title: 'Clear History',
-        message:
-          'Are you sure you want to clear all history? This action will permanently delete all content, including all chat logs and data, and cannot be undone.',
-        confirmText: 'Confirm',
-        cancelText: 'Cancel',
-      })
-    ) {
-      const actionIds = this.chatContextValue.items
-        .filter(item => 'sessionId' in item)
-        .map(item => item.sessionId);
-      await AIProvider.histories?.cleanup(this.doc.workspace.id, this.doc.id, [
-        ...(this._chatSessionId ? [this._chatSessionId] : []),
-        ...(actionIds || []),
-      ]);
-      notification.toast('History cleared');
-      await this._updateHistory();
+    try {
+      if (
+        await notification.confirm({
+          title: 'Clear History',
+          message:
+            'Are you sure you want to clear all history? This action will permanently delete all content, including all chat logs and data, and cannot be undone.',
+          confirmText: 'Confirm',
+          cancelText: 'Cancel',
+        })
+      ) {
+        const actionIds = this.chatContextValue.items
+          .filter(item => 'sessionId' in item)
+          .map(item => item.sessionId);
+        await AIProvider.histories?.cleanup(
+          this.doc.workspace.id,
+          this.doc.id,
+          [
+            ...(this._chatSessionId ? [this._chatSessionId] : []),
+            ...(actionIds || []),
+          ]
+        );
+        notification.toast('History cleared');
+        await this._updateHistory();
+      }
+    } catch {
+      notification.toast('Failed to clear history');
     }
   };
 
