@@ -7,14 +7,6 @@ query getUserByEmail($email: String!) {
     hasPassword
     emailVerified
     avatarUrl
-    quota {
-      humanReadable {
-        blobLimit
-        historyPeriod
-        memberLimit
-        name
-        storageQuota
-      }
-    }
+    disabled
   }
 }
