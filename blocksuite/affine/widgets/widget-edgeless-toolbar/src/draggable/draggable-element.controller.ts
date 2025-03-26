@@ -63,7 +63,6 @@ export class EdgelessDraggableElementController<T>
     public host: EdgelessDraggableElementHost & ReactiveControllerHost,
     public options: EdgelessDraggableElementOptions<T>
   ) {
-    this.host = host;
     host.addController(this);
   }
 
