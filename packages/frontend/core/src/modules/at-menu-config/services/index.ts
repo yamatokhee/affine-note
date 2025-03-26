@@ -29,6 +29,10 @@ import { computed, Signal, signal } from '@preact/signals-core';
 import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
+import {
+  createAbsolutePositionFromRelativePosition,
+  createRelativePositionFromTypeIndex,
+} from 'yjs';
 
 import { AuthService, type WorkspaceServerService } from '../../cloud';
 import type { WorkspaceDialogService } from '../../dialogs';
@@ -369,62 +373,80 @@ export class AtMenuConfigService extends Service {
 
           close();
 
-          if (id === currentUserId) {
-            const inlineRange = inlineEditor.getInlineRange();
-            if (inlineRange && inlineRange.length === 0) {
-              inlineEditor.insertText(inlineRange, ' ', {
-                mention: {
-                  member: id,
-                },
-              });
-              inlineEditor.setInlineRange({
-                index: inlineRange.index + 1,
-                length: 0,
-              });
-            }
+          const inlineRange = inlineEditor.getInlineRange();
+          if (!inlineRange || inlineRange.length !== 0) return;
 
-            return;
-          }
+          inlineEditor.insertText(inlineRange, ' ', {
+            mention: {
+              member: id,
+            },
+          });
+          inlineEditor.setInlineRange({
+            index: inlineRange.index + 1,
+            length: 0,
+          });
 
-          notificationService
-            .mentionUser(id, workspaceId, {
-              id: docId,
-              title: this.docDisplayMetaService.title$(docId).value,
-              blockId: block.blockId,
-              mode: mode as GraphqlDocMode,
-            })
-            .then(notificationId => {
-              const inlineRange = inlineEditor.getInlineRange();
-              if (inlineRange && inlineRange.length === 0) {
-                inlineEditor.insertText(inlineRange, ' ', {
-                  mention: {
-                    member: id,
-                    notification: notificationId,
+          const relativePosition = createRelativePositionFromTypeIndex(
+            inlineEditor.yText,
+            inlineRange.index + 1
+          );
+
+          if (id !== currentUserId) {
+            notificationService
+              .mentionUser(id, workspaceId, {
+                id: docId,
+                title: this.docDisplayMetaService.title$(docId).value,
+                blockId: block.blockId,
+                mode: mode as GraphqlDocMode,
+              })
+              .then(notificationId => {
+                const doc = inlineEditor.yText.doc;
+                if (!doc) return;
+                const absolutePosition =
+                  createAbsolutePositionFromRelativePosition(
+                    relativePosition,
+                    doc
+                  );
+                if (!absolutePosition) return;
+                const index = absolutePosition.index;
+
+                const delta = inlineEditor.getDeltaByRangeIndex(index);
+                if (
+                  !delta ||
+                  delta.insert !== ' ' ||
+                  !delta.attributes?.mention ||
+                  delta.attributes.mention.notification ||
+                  delta.attributes.mention.member !== id
+                )
+                  return;
+
+                inlineEditor.formatText(
+                  {
+                    index: index - 1,
+                    length: 1,
                   },
+                  {
+                    mention: {
+                      member: id,
+                      notification: notificationId,
+                    },
+                  }
+                );
+              })
+              .catch(error => {
+                const err = UserFriendlyError.fromAny(error);
+                notify.error({
+                  title: I18n[`error.${err.name}`](err.data),
                 });
-                inlineEditor.setInlineRange({
-                  index: inlineRange.index + 1,
-                  length: 0,
-                });
-              }
-
-              notify.success({
-                title: I18n.t('com.affine.editor.at-menu.mention-success'),
               });
-            })
-            .catch(error => {
-              const err = UserFriendlyError.fromAny(error);
-              notify.error({
-                title: I18n[`error.${err.name}`](err.data),
-              });
-            });
+          }
         },
       };
     };
 
     if (query.length === 0) {
       return {
-        name: I18n.t('com.affine.editor.at-menu.mention-member'),
+        name: I18n.t('com.affine.editor.at-menu.mention-members'),
         items: [
           ...this.memberSearchService.result$.value
             .slice(0, 3)
@@ -446,7 +468,7 @@ export class AtMenuConfigService extends Service {
     this.memberSearchService.search(query);
 
     return {
-      name: I18n.t('com.affine.editor.at-menu.mention-member'),
+      name: I18n.t('com.affine.editor.at-menu.mention-members'),
       items,
       loading,
     };
