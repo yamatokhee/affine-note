@@ -55,7 +55,7 @@ export const DesktopNotificationCard = ({
               {icon}
             </div>
           ) : null}
-          <div className={styles.title}>{title ?? errorTitle}</div>
+          <div className={styles.title}>{title || errorTitle}</div>
 
           {action ? (
             <div className={clsx(styles.headAlignWrapper, styles.action)}>
