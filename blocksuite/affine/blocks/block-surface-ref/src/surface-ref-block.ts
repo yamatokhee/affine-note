@@ -289,9 +289,8 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       this._referencedModel =
         referencedModel && referencedModel.xywh ? referencedModel : null;
       // TODO(@L-Sun): clear query cache
-      this._previewDoc = this.doc.workspace.getDoc(docId, {
-        readonly: true,
-      });
+      const doc = this.doc.workspace.getDoc(docId);
+      this._previewDoc = doc?.getStore({ readonly: true }) ?? null;
     };
 
     init();

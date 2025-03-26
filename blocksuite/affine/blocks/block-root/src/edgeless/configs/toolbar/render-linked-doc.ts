@@ -32,7 +32,8 @@ export function createLinkedDocFromNote(
   note: NoteBlockModel,
   docTitle?: string
 ) {
-  const linkedDoc = doc.workspace.createDoc({});
+  const _doc = doc.workspace.createDoc();
+  const linkedDoc = _doc.getStore();
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {
       title: new Text(docTitle),
@@ -63,7 +64,8 @@ export function createLinkedDocFromEdgelessElements(
   elements: GfxModel[],
   docTitle?: string
 ) {
-  const linkedDoc = host.doc.workspace.createDoc({});
+  const _doc = host.doc.workspace.createDoc();
+  const linkedDoc = _doc.getStore();
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {
       title: new Text(docTitle),

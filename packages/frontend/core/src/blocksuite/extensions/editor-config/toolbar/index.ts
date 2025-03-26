@@ -684,7 +684,7 @@ const embedLinkedDocToolbarConfig = {
             ctx.hide();
 
             const model = block.model;
-            const doc = ctx.workspace.getDoc(model.props.pageId);
+            const doc = ctx.workspace.getDoc(model.props.pageId)?.getStore();
             const abortController = new AbortController();
             abortController.signal.onabort = () => ctx.show();
 

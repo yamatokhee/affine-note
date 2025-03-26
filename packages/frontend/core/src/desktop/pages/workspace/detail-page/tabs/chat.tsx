@@ -96,7 +96,7 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
         },
         getDoc: (docId: string) => {
           const doc = workspaceService.workspace.docCollection.getDoc(docId);
-          return doc;
+          return doc?.getStore() ?? null;
         },
         getReferenceDocs: (docIds: string[]) => {
           const docs$ = docsSearchService.watchRefsFrom(docIds);

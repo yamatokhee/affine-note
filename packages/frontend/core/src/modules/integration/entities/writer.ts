@@ -67,7 +67,7 @@ export class IntegrationWriter extends Entity {
     } else {
       const collection = workspace.docCollection;
 
-      const doc = collection.getDoc(docId);
+      const doc = collection.getDoc(docId)?.getStore();
       if (!doc) throw new Error('Doc not found');
 
       doc.workspace.meta.setDocMeta(docId, {
