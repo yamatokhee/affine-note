@@ -88,6 +88,21 @@ export function isAIChatBlock(element: BlockModel | GfxModel | null) {
   );
 }
 
+/**
+ * TODO: Remove this function after the edgeless refactor completed
+ * This function is used to check if the block is an EmbedIframeBlock for edgeless selected rect
+ * Should not be used in the future
+ * Related issue: https://linear.app/affine-design/issue/BS-2841/
+ * @deprecated
+ */
+export function isEmbedIframeBlock(element: BlockModel | GfxModel | null) {
+  return (
+    !!element &&
+    'flavour' in element &&
+    element.flavour === 'affine:embed-iframe'
+  );
+}
+
 export function isEmbeddedLinkBlock(element: BlockModel | GfxModel | null) {
   return (
     isEmbeddedBlock(element) &&
