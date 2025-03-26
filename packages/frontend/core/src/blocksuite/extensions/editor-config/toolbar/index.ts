@@ -48,6 +48,7 @@ import {
 } from '@blocksuite/affine/inlines/reference';
 import {
   BookmarkBlockModel,
+  EmbedIframeBlockModel,
   EmbedLinkedDocModel,
   EmbedSyncedDocModel,
 } from '@blocksuite/affine/model';
@@ -868,6 +869,12 @@ const inlineReferenceToolbarConfig = {
 } as const satisfies ToolbarModuleConfig;
 
 const embedIframeToolbarConfig = {
+  when: (ctx: ToolbarContext) => {
+    const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
+    if (!model) return false;
+
+    return !!model.props.url;
+  },
   actions: [
     {
       id: 'a.copy-link-and-edit',

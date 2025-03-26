@@ -17,7 +17,7 @@ import {
   EMBED_IFRAME_DEFAULT_WIDTH_IN_SURFACE,
 } from '../consts';
 
-export const insertEmbedIframeCommand: Command<
+export const insertEmbedIframeWithUrlCommand: Command<
   { url: string },
   { blockId: string; flavour: string }
 > = (ctx, next) => {

@@ -7,6 +7,7 @@ import {
   ActionPlacement,
   type ToolbarAction,
   type ToolbarActionGroup,
+  type ToolbarContext,
   type ToolbarModuleConfig,
 } from '@blocksuite/affine-shared/services';
 import { getBlockProps } from '@blocksuite/affine-shared/utils';
@@ -35,6 +36,12 @@ export const builtinToolbarConfig = {
   actions: [
     {
       id: 'b.conversions',
+      when: (ctx: ToolbarContext) => {
+        const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
+        if (!model) return false;
+
+        return !!model.props.url;
+      },
       actions: [
         {
           id: 'inline',
@@ -44,6 +51,8 @@ export const builtinToolbarConfig = {
             if (!model) return;
 
             const { title, caption, url } = model.props;
+            if (!url) return;
+
             const { parent } = model;
             const index = parent?.children.indexOf(model);
 
@@ -77,6 +86,8 @@ export const builtinToolbarConfig = {
             if (!model) return;
 
             const { url, caption } = model.props;
+            if (!url) return;
+
             const { parent } = model;
             const index = parent?.children.indexOf(model);
 
@@ -140,6 +151,12 @@ export const builtinToolbarConfig = {
     } satisfies ToolbarActionGroup<ToolbarAction>,
     {
       id: 'c.caption',
+      when: (ctx: ToolbarContext) => {
+        const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
+        if (!model) return false;
+
+        return !!model.props.url;
+      },
       tooltip: 'Caption',
       icon: CaptionIcon(),
       run(ctx) {
