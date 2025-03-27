@@ -10,7 +10,7 @@ export const JoinFailedPage = ({
   inviteInfo,
   error,
 }: {
-  inviteInfo: GetInviteInfoQuery['getInviteInfo'];
+  inviteInfo?: GetInviteInfoQuery['getInviteInfo'];
   error?: any;
 }) => {
   const userFriendlyError = UserFriendlyError.fromAny(error);
@@ -27,8 +27,8 @@ export const JoinFailedPage = ({
                 1: (
                   <div className={styles.avatarWrapper}>
                     <Avatar
-                      url={`data:image/png;base64,${inviteInfo.workspace.avatar}`}
-                      name={inviteInfo.workspace.name}
+                      url={`data:image/png;base64,${inviteInfo?.workspace.avatar}`}
+                      name={inviteInfo?.workspace.name}
                       size={20}
                       colorfulFallback
                     />
@@ -37,7 +37,7 @@ export const JoinFailedPage = ({
                 2: <span className={styles.inviteName} />,
               }}
               values={{
-                workspaceName: inviteInfo.workspace.name,
+                workspaceName: inviteInfo?.workspace.name,
               }}
             />
             <div>{t['com.affine.fail-to-join-workspace.description-2']()}</div>

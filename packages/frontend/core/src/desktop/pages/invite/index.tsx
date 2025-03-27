@@ -2,7 +2,6 @@ import { notify } from '@affine/component';
 import {
   AcceptInvitePage,
   ExpiredPage,
-  FailedToSendPage,
   JoinFailedPage,
   RequestToJoinPage,
   SentRequestPage,
@@ -35,6 +34,7 @@ const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
   const workspaces = useLiveData(workspacesService.list.workspaces$);
   const navigateHelper = useNavigateHelper();
   const [accepted, setAccepted] = useState(false);
+  const [requestToJoinLoading, setRequestToJoinLoading] = useState(false);
   const [acceptError, setAcceptError] = useState<UserFriendlyError | null>(
     null
   );
@@ -63,6 +63,7 @@ const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
   }, [accepted, inviteInfo?.workspace.id, openWorkspace, workspaces]);
 
   const requestToJoin = useAsyncCallback(async () => {
+    setRequestToJoinLoading(true);
     await invitationService
       .acceptInvite(targetInviteId)
       .then(() => {
@@ -77,17 +78,18 @@ const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
         setAcceptError(err);
         notify.error(err);
       });
+    setRequestToJoinLoading(false);
   }, [invitationService, openWorkspace, targetInviteId]);
 
   const onSignOut = useAsyncCallback(async () => {
     await authService.signOut();
   }, [authService]);
 
-  if (loading || inviteId !== targetInviteId) {
+  if ((loading && !requestToJoinLoading) || inviteId !== targetInviteId) {
     return null;
   }
 
-  if (!inviteInfo) {
+  if (!inviteInfo && !loading) {
     return <ExpiredPage onOpenAffine={onOpenAffine} />;
   }
 
@@ -98,7 +100,7 @@ const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
   }
 
   // for email invite
-  if (accepted && inviteInfo.status === WorkspaceMemberStatus.Accepted) {
+  if (accepted && inviteInfo?.status === WorkspaceMemberStatus.Accepted) {
     return (
       <AcceptInvitePage
         onOpenWorkspace={openWorkspace}
@@ -107,15 +109,12 @@ const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
     );
   }
 
-  if (inviteInfo.status === WorkspaceMemberStatus.UnderReview) {
-    return <SentRequestPage user={user} inviteInfo={inviteInfo} />;
-  }
-
   if (
-    inviteInfo.status === WorkspaceMemberStatus.NeedMoreSeatAndReview ||
-    inviteInfo.status === WorkspaceMemberStatus.NeedMoreSeat
+    inviteInfo?.status === WorkspaceMemberStatus.UnderReview ||
+    inviteInfo?.status === WorkspaceMemberStatus.NeedMoreSeatAndReview ||
+    inviteInfo?.status === WorkspaceMemberStatus.NeedMoreSeat
   ) {
-    return <FailedToSendPage user={user} inviteInfo={inviteInfo} />;
+    return <SentRequestPage user={user} inviteInfo={inviteInfo} />;
   }
 
   return (
