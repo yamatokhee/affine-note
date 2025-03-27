@@ -25,11 +25,13 @@ export class EdgelessPenMenu extends EdgelessToolbarToolMixin(
     }
 
     .pens {
-      position: fixed;
       display: flex;
+      padding: 0 4px;
+      align-items: center;
 
       .pen-wrapper {
         display: flex;
+        min-width: 38px;
         height: 64px;
         align-items: flex-end;
         justify-content: center;
@@ -55,7 +57,7 @@ export class EdgelessPenMenu extends EdgelessToolbarToolMixin(
 
     menu-divider {
       height: 24px;
-      margin: 0 9px 0 70px;
+      margin: 0 9px;
     }
   `;
 
@@ -93,26 +95,26 @@ export class EdgelessPenMenu extends EdgelessToolbarToolMixin(
 
     return html`
       <edgeless-slide-menu>
-        <div class="menu-content">
-          <div class="pens">
-            <div
-              class="pen-wrapper edgeless-brush-button"
-              ?data-active="${pen === 'brush'}"
-              style=${styleMap({ color: brushColor })}
-              @click=${() => this._onPickPen('brush')}
-            >
-              ${brushIcon}
-            </div>
-            <div
-              class="pen-wrapper edgeless-highlighter-button"
-              ?data-active="${pen === 'highlighter'}"
-              style=${styleMap({ color: highlighterColor })}
-              @click=${() => this._onPickPen('highlighter')}
-            >
-              ${highlighterIcon}
-            </div>
+        <div class="pens" slot="prefix">
+          <div
+            class="pen-wrapper edgeless-brush-button"
+            ?data-active="${pen === 'brush'}"
+            style=${styleMap({ color: brushColor })}
+            @click=${() => this._onPickPen('brush')}
+          >
+            ${brushIcon}
+          </div>
+          <div
+            class="pen-wrapper edgeless-highlighter-button"
+            ?data-active="${pen === 'highlighter'}"
+            style=${styleMap({ color: highlighterColor })}
+            @click=${() => this._onPickPen('highlighter')}
+          >
+            ${highlighterIcon}
           </div>
           <menu-divider .vertical=${true}></menu-divider>
+        </div>
+        <div class="menu-content">
           <edgeless-color-panel
             class="one-way"
             @select=${this._onPickColor}
