@@ -68,6 +68,7 @@ export function focusTextModel(
   id: string,
   offset: number = 0
 ) {
+  std.event.active = true;
   selectTextModel(std, id, offset);
 }
 

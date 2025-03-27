@@ -19,6 +19,7 @@ export const focusBlockEnd: Command<{
 
   const { selection } = std;
 
+  std.event.active = true;
   if (force) selection.clear();
 
   selection.setGroup('note', [

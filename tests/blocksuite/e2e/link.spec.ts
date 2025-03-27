@@ -288,6 +288,7 @@ test('link bar should not be appear when the range is collapsed', async ({
   await pressCreateLinkShortCut(page);
   await expect(linkPopoverLocator).toBeVisible();
 
+  await focusRichText(page); // click to cancel the link popover
   await focusRichTextEnd(page);
   await pressEnter(page);
   // create auto line-break in span element

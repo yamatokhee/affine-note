@@ -481,6 +481,7 @@ test(scoped`copy when text note active in edgeless`, async ({ page }) => {
 
   await activeNoteInEdgeless(page, ids.noteId);
   await waitForInlineEditorStateUpdated(page);
+  await focusRichText(page);
   await setInlineRangeInSelectedRichText(page, 0, 4);
   await copyByKeyboard(page);
   await pressArrowRight(page);

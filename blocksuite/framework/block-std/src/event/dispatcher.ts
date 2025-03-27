@@ -1,5 +1,6 @@
 import { DisposableGroup } from '@blocksuite/global/disposable';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import { signal } from '@preact/signals-core';
 
 import { LifeCycleWatcher } from '../extension/index.js';
 import { KeymapIdentifier } from '../identifier.js';
@@ -81,7 +82,7 @@ export class UIEventDispatcher extends LifeCycleWatcher {
 
   static override readonly key = 'UIEventDispatcher';
 
-  private _active = false;
+  private readonly _active = signal(false);
 
   private readonly _clipboardControl: ClipboardControl;
 
@@ -105,6 +106,10 @@ export class UIEventDispatcher extends LifeCycleWatcher {
   }
 
   get active() {
+    return this._active.peek();
+  }
+
+  get active$() {
     return this._active;
   }
 
@@ -302,17 +307,22 @@ export class UIEventDispatcher extends LifeCycleWatcher {
     if (active) {
       if (UIEventDispatcher._activeDispatcher !== this) {
         if (UIEventDispatcher._activeDispatcher) {
-          UIEventDispatcher._activeDispatcher._active = false;
+          UIEventDispatcher._activeDispatcher._active.value = false;
         }
         UIEventDispatcher._activeDispatcher = this;
       }
-      this._active = true;
+      this._active.value = true;
     } else {
       if (UIEventDispatcher._activeDispatcher === this) {
         UIEventDispatcher._activeDispatcher = null;
       }
-      this._active = false;
+      this._active.value = false;
     }
+  }
+
+  set active(active: boolean) {
+    if (active === this._active.peek()) return;
+    this._setActive(active);
   }
 
   add(name: EventName, handler: UIEventHandler, options?: EventOptions) {

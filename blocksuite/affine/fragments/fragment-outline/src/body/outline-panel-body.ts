@@ -1,8 +1,12 @@
 import { changeNoteDisplayMode } from '@blocksuite/affine-block-note';
 import { NoteBlockModel, NoteDisplayMode } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
-import { matchModels } from '@blocksuite/affine-shared/utils';
-import { ShadowlessElement, SurfaceSelection } from '@blocksuite/block-std';
+import { focusTitle, matchModels } from '@blocksuite/affine-shared/utils';
+import {
+  BlockSelection,
+  ShadowlessElement,
+  SurfaceSelection,
+} from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
@@ -170,6 +174,19 @@ export class OutlinePanelBody extends SignalWatcher(
   }
 
   private async _scrollToBlock(blockId: string) {
+    // if focus title
+    if (blockId === this.doc.root?.id) {
+      this.editor.std.selection.setGroup('note', []);
+      this.editor.std.event.active = false;
+      focusTitle(this.editor);
+    } else {
+      this.editor.std.event.active = true;
+      this.editor.std.selection.setGroup('note', [
+        this.editor.std.selection.create(BlockSelection, {
+          blockId,
+        }),
+      ]);
+    }
     this._lockActiveHeadingId = true;
     this._activeHeadingId$.value = blockId;
     this._clearHighlightMask = await scrollToBlockWithHighlight(

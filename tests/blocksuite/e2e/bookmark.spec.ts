@@ -127,6 +127,7 @@ test(
 
     await activeNoteInEdgeless(page, ids.noteId);
     await waitForInlineEditorStateUpdated(page);
+    await focusRichText(page);
     await selectAllByKeyboard(page);
     await copyByKeyboard(page);
     await pressArrowRight(page);

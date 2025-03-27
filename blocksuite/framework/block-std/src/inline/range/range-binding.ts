@@ -169,7 +169,10 @@ export class RangeBinding {
   private readonly _onNativeSelectionChanged = async () => {
     if (this.isComposing) return;
     if (!this.host) return; // Unstable when switching views, card <-> embed
-    if (!isActiveInEditor(this.host)) return;
+    if (!isActiveInEditor(this.host)) {
+      this._prevTextSelection = null;
+      return;
+    }
 
     await this.host.updateComplete;
 
@@ -251,6 +254,8 @@ export class RangeBinding {
     // TODO(@mirone): this is a trade-off, we need to use separate awareness store for every store to make sure the selection is isolated.
     const closestHost = document.activeElement?.closest('editor-host');
     if (closestHost && closestHost !== this.host) return;
+    const active = this.host.event.active;
+    if (!active) return;
 
     const text =
       selections.find((selection): selection is TextSelection =>
@@ -266,7 +271,7 @@ export class RangeBinding {
         const id = text?.blockId;
         const path = id && this._computePath(id);
 
-        if (this.host.event.active) {
+        if (active) {
           const eq =
             text && this._prevTextSelection && path
               ? text.equals(this._prevTextSelection.selection) &&
