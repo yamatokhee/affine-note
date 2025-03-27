@@ -7,6 +7,7 @@ import type {
   AttachmentUploadedEvent,
   BlockCreationEvent,
   DocCreatedEvent,
+  EdgelessToolPickedEvent,
   ElementCreationEvent,
   ElementLockEvent,
   LinkedDocCreatedEvent,
@@ -26,6 +27,7 @@ export type TelemetryEventMap = OutDatabaseAllEvents &
     ExpandedAndCollapsed: MindMapCollapseEvent;
     AttachmentUploadedEvent: AttachmentUploadedEvent;
     BlockCreated: BlockCreationEvent;
+    EdgelessToolPicked: EdgelessToolPickedEvent;
   };
 
 export interface TelemetryService {
