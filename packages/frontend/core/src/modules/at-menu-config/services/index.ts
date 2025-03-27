@@ -25,7 +25,7 @@ import {
   NewXxxEdgelessIcon,
   NewXxxPageIcon,
 } from '@blocksuite/icons/lit';
-import { computed, Signal, signal } from '@preact/signals-core';
+import { computed, Signal } from '@preact/signals-core';
 import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
@@ -42,7 +42,7 @@ import type { DocDisplayMetaService } from '../../doc-display-meta';
 import type { EditorSettingService } from '../../editor-setting';
 import { type JournalService, suggestJournalDate } from '../../journal';
 import { NotificationService } from '../../notification';
-import type { Member, MemberSearchService } from '../../permissions';
+import type { GuardService, MemberSearchService } from '../../permissions';
 import type { SearchMenuService } from '../../search-menu/services';
 
 function resolveSignal<T>(data: T | Signal<T>): T {
@@ -64,7 +64,8 @@ export class AtMenuConfigService extends Service {
     private readonly docsService: DocsService,
     private readonly searchMenuService: SearchMenuService,
     private readonly workspaceServerService: WorkspaceServerService,
-    private readonly memberSearchService: MemberSearchService
+    private readonly memberSearchService: MemberSearchService,
+    private readonly guardService: GuardService
   ) {
     super();
   }
@@ -332,30 +333,23 @@ export class AtMenuConfigService extends Service {
     inlineEditor: AffineInlineEditor,
     _: AbortSignal
   ): LinkedMenuGroup {
-    const inviteItem: LinkedMenuItem = {
-      key: 'invite',
-      name: 'Invite...',
-      icon: MainAvatarIcon(),
-      action: () => {
-        close();
-
-        this.dialogService.open('setting', {
-          activeTab: 'workspace:members',
-        });
-      },
-    };
-    const convertMemberToMenuItem = (member: Member) => {
-      const { id, name, avatarUrl } = member;
-      const style = styleMap({
+    const getMenuItem = (
+      id: string,
+      name?: string | null,
+      avatar?: string | null,
+      sendNotification: boolean = true
+    ): LinkedMenuItem => {
+      const avatarStyle = styleMap({
         borderRadius: '50%',
         border: `1px solid ${cssVarV2('layer/background/overlayPanel')}`,
         width: '20px',
         height: '20px',
         boxSizing: 'border-box',
       });
-      const icon = avatarUrl
-        ? html`<img style=${style} src="${avatarUrl}" />`
+      const icon = avatar
+        ? html`<img style=${avatarStyle} src="${avatar}" />`
         : MainAvatarIcon();
+
       return {
         key: id,
         name: name ?? 'Unknown',
@@ -374,11 +368,6 @@ export class AtMenuConfigService extends Service {
           const docId = doc.id;
           const mode = block.std.get(DocModeProvider).getEditorMode() ?? 'page';
 
-          const currentUserId =
-            this.workspaceServerService.server?.scope.get(AuthService).session
-              .account$.value?.id;
-          if (!currentUserId) return;
-
           close();
 
           const inlineRange = inlineEditor.getInlineRange();
@@ -394,91 +383,133 @@ export class AtMenuConfigService extends Service {
             length: 0,
           });
 
+          if (!sendNotification) return;
+
           const relativePosition = createRelativePositionFromTypeIndex(
             inlineEditor.yText,
             inlineRange.index + 1
           );
-
-          if (id !== currentUserId) {
-            notificationService
-              .mentionUser(id, workspaceId, {
-                id: docId,
-                title: this.docDisplayMetaService.title$(docId).value,
-                blockId: block.blockId,
-                mode: mode as GraphqlDocMode,
-              })
-              .then(notificationId => {
-                const doc = inlineEditor.yText.doc;
-                if (!doc) return;
-                const absolutePosition =
-                  createAbsolutePositionFromRelativePosition(
-                    relativePosition,
-                    doc
-                  );
-                if (!absolutePosition) return;
-                const index = absolutePosition.index;
-
-                const delta = inlineEditor.getDeltaByRangeIndex(index);
-                if (
-                  !delta ||
-                  delta.insert !== ' ' ||
-                  !delta.attributes?.mention ||
-                  delta.attributes.mention.notification ||
-                  delta.attributes.mention.member !== id
-                )
-                  return;
-
-                inlineEditor.formatText(
-                  {
-                    index: index - 1,
-                    length: 1,
-                  },
-                  {
-                    mention: {
-                      member: id,
-                      notification: notificationId,
-                    },
-                  }
+          notificationService
+            .mentionUser(id, workspaceId, {
+              id: docId,
+              title: this.docDisplayMetaService.title$(docId).value,
+              blockId: block.blockId,
+              mode: mode as GraphqlDocMode,
+            })
+            .then(notificationId => {
+              const doc = inlineEditor.yText.doc;
+              if (!doc) return;
+              const absolutePosition =
+                createAbsolutePositionFromRelativePosition(
+                  relativePosition,
+                  doc
                 );
-              })
-              .catch(error => {
-                const err = UserFriendlyError.fromAny(error);
-                notify.error({
-                  title: I18n[`error.${err.name}`](err.data),
-                });
+              if (!absolutePosition) return;
+              const index = absolutePosition.index;
+
+              const delta = inlineEditor.getDeltaByRangeIndex(index);
+              if (
+                !delta ||
+                delta.insert !== ' ' ||
+                !delta.attributes?.mention ||
+                delta.attributes.mention.notification ||
+                delta.attributes.mention.member !== id
+              )
+                return;
+
+              inlineEditor.formatText(
+                {
+                  index: index - 1,
+                  length: 1,
+                },
+                {
+                  mention: {
+                    member: id,
+                    notification: notificationId,
+                  },
+                }
+              );
+            })
+            .catch(error => {
+              const err = UserFriendlyError.fromAny(error);
+              notify.error({
+                title: I18n[`error.${err.name}`](err.data),
               });
-          }
+            });
         },
       };
     };
 
-    if (query.length === 0) {
-      return {
-        name: I18n.t('com.affine.editor.at-menu.mention-members'),
-        items: [
-          ...this.memberSearchService.result$.value
-            .slice(0, 3)
-            .map(member => convertMemberToMenuItem(member)),
-          inviteItem,
-        ],
-      };
-    }
-    this.memberSearchService.reset();
+    const inviteItem: LinkedMenuItem = {
+      key: 'invite',
+      name: 'Invite...',
+      icon: MainAvatarIcon(),
+      action: () => {
+        close();
+        this.dialogService.open('setting', {
+          activeTab: 'workspace:members',
+        });
+      },
+    };
 
-    const items = signal<LinkedMenuItem[]>([inviteItem]);
-    const loading = this.memberSearchService.isLoading$.signal;
-    this.memberSearchService.result$.subscribe(members => {
-      items.value = [
-        ...members.map(member => convertMemberToMenuItem(member)),
-        inviteItem,
+    const items = computed<LinkedMenuItem[]>(() => {
+      const members = this.memberSearchService.result$.signal.value;
+      const currentUser =
+        this.workspaceServerService.server?.scope.get(AuthService).session
+          .account$.signal.value;
+      const canUserManage = this.guardService.can$('Workspace_Users_Manage')
+        .signal.value;
+
+      if (query.length === 0) {
+        return [
+          ...(currentUser
+            ? [
+                getMenuItem(
+                  currentUser.id,
+                  currentUser.info?.name,
+                  currentUser.info?.avatarUrl,
+                  false
+                ),
+              ]
+            : []),
+          ...members
+            .slice(0, 2)
+            .filter(member => member.id !== currentUser?.id)
+            .map(member =>
+              getMenuItem(member.id, member.name, member.avatarUrl)
+            ),
+          ...(canUserManage ? [inviteItem] : []),
+        ];
+      }
+
+      return [
+        ...members.map(member =>
+          getMenuItem(
+            member.id,
+            member.name,
+            member.avatarUrl,
+            member.id !== currentUser?.id
+          )
+        ),
+        ...(canUserManage ? [inviteItem] : []),
       ];
     });
-    this.memberSearchService.search(query);
+    const hidden = computed(() => {
+      const members = this.memberSearchService.result$.signal.value;
+      const loading = this.memberSearchService.isLoading$.signal.value;
+      return query.length > 0 && !loading && members.length === 0;
+    });
+    const loading = this.memberSearchService.isLoading$.signal.value;
+
+    if (query.length > 0) {
+      this.memberSearchService.search(query);
+    }
 
     return {
       name: I18n.t('com.affine.editor.at-menu.mention-members'),
       items,
       loading,
+      hidden,
     };
   }
 

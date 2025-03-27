@@ -99,6 +99,8 @@ export type LinkedMenuGroup = {
   loading?: boolean | Signal<boolean>;
   // copywriting when display quantity exceeds
   overflowText?: string | Signal<string>;
+  // hide the group
+  hidden?: boolean | Signal<boolean>;
 };
 
 export type LinkedDocContext = {

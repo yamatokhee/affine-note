@@ -260,17 +260,22 @@ export class LinkedDocPopover extends SignalWatcher(
         });
 
     const actionGroups = this._actionGroup.map(group => {
-      // Check if the group is loading
+      // Check if the group is loading or hidden
       const isLoading = resolveSignal(group.loading);
+      const isHidden = resolveSignal(group.hidden);
       return {
         ...group,
         isLoading,
+        isHidden,
       };
     });
 
     return html`<div class="linked-doc-popover" style="${style}">
       ${actionGroups
-        .filter(group => group.items.length || group.isLoading)
+        .filter(
+          group =>
+            (group.items.length > 0 || group.isLoading) && !group.isHidden
+        )
         .map((group, idx) => {
           return html`
             <div class="divider" ?hidden=${idx === 0}></div>
