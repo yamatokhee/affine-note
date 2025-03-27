@@ -3180,8 +3180,6 @@ __metadata:
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
     "@blocksuite/store": "workspace:*"
-    "@types/lodash-es": "npm:^4.17.12"
-    lodash-es: "npm:^4.17.21"
     rxjs: "npm:^7.8.1"
   languageName: unknown
   linkType: soft

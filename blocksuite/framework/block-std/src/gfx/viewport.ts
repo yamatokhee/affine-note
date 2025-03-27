@@ -5,9 +5,8 @@ import {
   type IVec,
   Vec,
 } from '@blocksuite/global/gfx';
-import { signal } from '@preact/signals-core';
 import debounce from 'lodash-es/debounce';
-import { debounceTime, Subject } from 'rxjs';
+import { BehaviorSubject, debounceTime, Subject } from 'rxjs';
 
 import type { GfxViewportElement } from '.';
 
@@ -100,19 +99,19 @@ export class Viewport {
     center: IVec;
   }>();
 
-  zooming$ = signal(false);
-  panning$ = signal(false);
+  zooming$ = new BehaviorSubject<boolean>(false);
+  panning$ = new BehaviorSubject<boolean>(false);
 
   ZOOM_MAX = ZOOM_MAX;
 
   ZOOM_MIN = ZOOM_MIN;
 
   private readonly _resetZooming = debounce(() => {
-    this.zooming$.value = false;
+    this.zooming$.next(false);
   }, 200);
 
   private readonly _resetPanning = debounce(() => {
-    this.panning$.value = false;
+    this.panning$.next(false);
   }, 200);
 
   constructor() {
@@ -296,9 +295,8 @@ export class Viewport {
     this.viewportMoved.complete();
     this.viewportUpdated.complete();
     this._resizeSubject.complete();
-
-    this.zooming$.value = false;
-    this.panning$.value = false;
+    this.zooming$.complete();
+    this.panning$.complete();
   }
 
   getFitToScreenData(
@@ -371,7 +369,7 @@ export class Viewport {
 
     this._center.x = centerX;
     this._center.y = centerY;
-    this.panning$.value = true;
+    this.panning$.next(true);
     this.viewportUpdated.next({
       zoom: this.zoom,
       center: Vec.toVec(this.center) as IVec,
@@ -530,7 +528,7 @@ export class Viewport {
       Vec.mul(offset, prevZoom / newZoom)
     );
     if (wheel) {
-      this.zooming$.value = true;
+      this.zooming$.next(true);
     }
     this.setCenter(newCenter[0], newCenter[1], forceUpdate);
     this.viewportUpdated.next({
