@@ -54,7 +54,7 @@ jobs:
   build-ios-web:
     needs:
       - output-env
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     environment: ${{ needs.output-env.outputs.ENVIRONMENT }}
     outputs:
       RELEASE_VERSION: ${{ steps.version.outputs.APP_VERSION }}
@@ -85,7 +85,7 @@ jobs:
           path: packages/frontend/apps/ios/dist
 
   build-android-web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs:
       - output-env
     environment: ${{ needs.output-env.outputs.ENVIRONMENT }}
@@ -118,7 +118,7 @@ jobs:
           path: packages/frontend/apps/android/dist
 
   ios:
-    runs-on: macos-latest
+    runs-on: namespace-profile-macos
     needs:
       - build-ios-web
     steps:
@@ -139,7 +139,7 @@ jobs:
           enableScripts: false
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 16.1
+          xcode-version: 16.2
       - name: Install Swiftformat
         run: brew install swiftformat
       - name: Cap sync
