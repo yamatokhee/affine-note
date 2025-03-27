@@ -61,6 +61,14 @@ export const createChangePasswordUrlMutation = {
 }`,
 };
 
+export const appConfigQuery = {
+  id: 'appConfigQuery' as const,
+  op: 'appConfig',
+  query: `query appConfig {
+  appConfig
+}`,
+};
+
 export const getPromptsQuery = {
   id: 'getPromptsQuery' as const,
   op: 'getPrompts',
@@ -151,33 +159,6 @@ export const enableUserMutation = {
 }`,
 };
 
-export const getServerRuntimeConfigQuery = {
-  id: 'getServerRuntimeConfigQuery' as const,
-  op: 'getServerRuntimeConfig',
-  query: `query getServerRuntimeConfig {
-  serverRuntimeConfig {
-    id
-    module
-    key
-    description
-    value
-    type
-    updatedAt
-  }
-}`,
-};
-
-export const getServerServiceConfigsQuery = {
-  id: 'getServerServiceConfigsQuery' as const,
-  op: 'getServerServiceConfigs',
-  query: `query getServerServiceConfigs {
-  serverServiceConfigs {
-    name
-    config
-  }
-}`,
-};
-
 export const getUserByEmailQuery = {
   id: 'getUserByEmailQuery' as const,
   op: 'getUserByEmail',
@@ -259,14 +240,11 @@ export const updateAccountMutation = {
 }`,
 };
 
-export const updateServerRuntimeConfigsMutation = {
-  id: 'updateServerRuntimeConfigsMutation' as const,
-  op: 'updateServerRuntimeConfigs',
-  query: `mutation updateServerRuntimeConfigs($updates: JSONObject!) {
-  updateRuntimeConfigs(updates: $updates) {
-    key
-    value
-  }
+export const updateAppConfigMutation = {
+  id: 'updateAppConfigMutation' as const,
+  op: 'updateAppConfig',
+  query: `mutation updateAppConfig($updates: [UpdateAppConfigInput!]!) {
+  updateAppConfig(updates: $updates)
 }`,
 };
 

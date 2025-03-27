@@ -917,6 +917,12 @@ export class MentionUserOneselfDenied extends UserFriendlyError {
     super('action_forbidden', 'mention_user_oneself_denied', message);
   }
 }
+
+export class InvalidAppConfig extends UserFriendlyError {
+  constructor(message?: string) {
+    super('invalid_input', 'invalid_app_config', message);
+  }
+}
 export enum ErrorNames {
   INTERNAL_SERVER_ERROR,
   NETWORK_ERROR,
@@ -1034,7 +1040,8 @@ export enum ErrorNames {
   UNSUPPORTED_CLIENT_VERSION,
   NOTIFICATION_NOT_FOUND,
   MENTION_USER_DOC_ACCESS_DENIED,
-  MENTION_USER_ONESELF_DENIED
+  MENTION_USER_ONESELF_DENIED,
+  INVALID_APP_CONFIG
 }
 registerEnumType(ErrorNames, {
   name: 'ErrorNames'

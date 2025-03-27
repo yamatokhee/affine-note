@@ -13,6 +13,7 @@ import {
   AFFiNELogger,
   CacheInterceptor,
   CloudThrottlerGuard,
+  EventBus,
   GlobalExceptionFilter,
   JobQueue,
   OneMB,
@@ -23,6 +24,7 @@ import { Mailer } from '../../core/mail';
 import {
   createFactory,
   MockedUser,
+  MockEventBus,
   MockJobQueue,
   MockMailer,
   MockUser,
@@ -181,23 +183,19 @@ export class TestingApp extends NestApplication {
   }
 }
 
-let GLOBAL_APP_INSTANCE: TestingApp | null = null;
 export async function createApp(
   metadata: TestingAppMetadata = {}
 ): Promise<TestingApp> {
-  if (GLOBAL_APP_INSTANCE) {
-    return GLOBAL_APP_INSTANCE;
-  }
-
   const { buildAppModule } = await import('../../app.module');
   const { tapModule, tapApp } = metadata;
 
   const builder = Test.createTestingModule({
-    imports: [buildAppModule()],
+    imports: [buildAppModule(globalThis.env)],
   });
 
   builder.overrideProvider(Mailer).useValue(new MockMailer());
   builder.overrideProvider(JobQueue).useValue(new MockJobQueue());
+  builder.overrideProvider(EventBus).useValue(new MockEventBus());
 
   // when custom override happens
   if (tapModule) {
@@ -240,6 +238,5 @@ export async function createApp(
 
   await app.init();
 
-  GLOBAL_APP_INSTANCE = app;
   return app;
 }

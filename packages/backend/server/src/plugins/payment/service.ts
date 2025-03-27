@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import type { User, UserStripeCustomer } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import Stripe from 'stripe';
@@ -7,14 +7,12 @@ import { z } from 'zod';
 import {
   ActionForbidden,
   CantUpdateOnetimePaymentSubscription,
-  Config,
   CustomerPortalCreateFailed,
   InternalServerError,
   InvalidCheckoutParameters,
   InvalidLicenseSessionId,
   InvalidSubscriptionParameters,
   LicenseRevealed,
-  Mutex,
   OnEvent,
   SameSubscriptionRecurring,
   SubscriptionExpired,
@@ -46,9 +44,8 @@ import {
   SelfhostTeamSubscriptionManager,
 } from './manager/selfhost';
 import { ScheduleManager } from './schedule';
+import { StripeFactory } from './stripe';
 import {
-  decodeLookupKey,
-  DEFAULT_PRICES,
   KnownStripeInvoice,
   KnownStripePrice,
   KnownStripeSubscription,
@@ -57,7 +54,6 @@ import {
   SubscriptionPlan,
   SubscriptionRecurring,
   SubscriptionStatus,
-  SubscriptionVariant,
 } from './types';
 
 export const CheckoutExtraArgs = z.union([
@@ -75,24 +71,22 @@ export const SubscriptionIdentity = z.union([
 export { CheckoutParams };
 
 @Injectable()
-export class SubscriptionService implements OnApplicationBootstrap {
+export class SubscriptionService {
   private readonly logger = new Logger(SubscriptionService.name);
-  private readonly scheduleManager = new ScheduleManager(this.stripe);
+  private readonly scheduleManager = new ScheduleManager(this.stripeProvider);
 
   constructor(
-    private readonly config: Config,
-    private readonly stripe: Stripe,
+    private readonly stripeProvider: StripeFactory,
     private readonly db: PrismaClient,
     private readonly feature: FeatureService,
     private readonly models: Models,
     private readonly userManager: UserSubscriptionManager,
     private readonly workspaceManager: WorkspaceSubscriptionManager,
-    private readonly selfhostManager: SelfhostTeamSubscriptionManager,
-    private readonly mutex: Mutex
+    private readonly selfhostManager: SelfhostTeamSubscriptionManager
   ) {}
 
-  async onApplicationBootstrap() {
-    await this.initStripeProducts();
+  get stripe() {
+    return this.stripeProvider.stripe;
   }
 
   private select(plan: SubscriptionPlan): SubscriptionManager {
@@ -132,8 +126,8 @@ export class SubscriptionService implements OnApplicationBootstrap {
     const { plan, recurring, variant } = params;
 
     if (
-      this.config.deploy &&
-      this.config.affine.canary &&
+      env.namespaces.canary &&
+      env.prod &&
       args.user &&
       !this.feature.isStaff(args.user.email)
     ) {
@@ -681,74 +675,6 @@ export class SubscriptionService implements OnApplicationBootstrap {
 
     if (!result.success) {
       throw new InvalidSubscriptionParameters();
-    }
-  }
-
-  private async initStripeProducts() {
-    // only init stripe products in dev mode or canary deployment
-    if (
-      (this.config.deploy && !this.config.affine.canary) ||
-      !this.config.node.dev
-    ) {
-      return;
-    }
-
-    await using lock = await this.mutex.acquire('init stripe prices');
-
-    if (!lock) {
-      return;
-    }
-
-    const keys = new Set<string>();
-    try {
-      await this.stripe.prices
-        .list({
-          active: true,
-          limit: 100,
-        })
-        .autoPagingEach(item => {
-          if (item.lookup_key) {
-            keys.add(item.lookup_key);
-          }
-        });
-    } catch {
-      this.logger.warn('Failed to list stripe prices, skip auto init.');
-      return;
-    }
-
-    for (const [key, setting] of DEFAULT_PRICES) {
-      if (keys.has(key)) {
-        continue;
-      }
-
-      const lookupKey = decodeLookupKey(key);
-
-      try {
-        await this.stripe.prices.create({
-          product_data: {
-            name: setting.product,
-          },
-          billing_scheme: 'per_unit',
-          unit_amount: setting.price,
-          currency: 'usd',
-          lookup_key: key,
-          tax_behavior: 'inclusive',
-          recurring:
-            lookupKey.recurring === SubscriptionRecurring.Lifetime ||
-            lookupKey.variant === SubscriptionVariant.Onetime
-              ? undefined
-              : {
-                  interval:
-                    lookupKey.recurring === SubscriptionRecurring.Monthly
-                      ? 'month'
-                      : 'year',
-                  interval_count: 1,
-                  usage_type: 'licensed',
-                },
-        });
-      } catch (e) {
-        this.logger.error('Failed to create stripe price.', e);
-      }
     }
   }
 }

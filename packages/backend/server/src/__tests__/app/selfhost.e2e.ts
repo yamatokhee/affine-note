@@ -8,7 +8,6 @@ import ava from 'ava';
 import request from 'supertest';
 
 import { buildAppModule } from '../../app.module';
-import { Config } from '../../base';
 import { Public } from '../../core/auth';
 import { ServerService } from '../../core/config';
 import { createTestingApp, type TestingApp } from '../utils';
@@ -49,18 +48,16 @@ export class TestResolver {
 
 test.before('init selfhost server', async t => {
   // @ts-expect-error override
-  AFFiNE.isSelfhosted = true;
-  AFFiNE.flavor.renderer = true;
+  globalThis.env.DEPLOYMENT_TYPE = 'selfhosted';
   const app = await createTestingApp({
-    imports: [buildAppModule()],
+    imports: [buildAppModule(globalThis.env)],
     controllers: [TestResolver],
   });
 
   t.context.app = app;
   t.context.db = t.context.app.get(PrismaClient);
-  const config = app.get(Config);
 
-  const staticPath = path.join(config.projectRoot, 'static');
+  const staticPath = path.join(env.projectRoot, 'static');
   initTestStaticFiles(staticPath);
 });
 

@@ -41,7 +41,7 @@ type EmailContent = {
 
 function render(component: React.ReactElement) {
   return rawRender(component, {
-    pretty: AFFiNE.node.test,
+    pretty: env.testing,
   });
 }
 
@@ -53,7 +53,7 @@ function make<T extends React.ComponentType<any>>(
   subject: string | ((props: Props<T>) => string)
 ): EmailRenderer<Props<T>> {
   return async props => {
-    if (!props && AFFiNE.node.test) {
+    if (!props && env.testing) {
       // @ts-expect-error test only
       props = Component.PreviewProps;
     }

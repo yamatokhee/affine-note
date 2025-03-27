@@ -133,7 +133,7 @@ export class FeatureModel extends BaseModel {
       const name = key as FeatureName;
       const def = FeatureConfigs[name];
       // self-hosted instance will use pro plan as free plan
-      if (name === 'free_plan_v1' && this.config.isSelfhosted) {
+      if (name === 'free_plan_v1' && env.selfhosted) {
         await this.upsert(
           name,
           FeatureConfigs['pro_plan_v1'].configs,

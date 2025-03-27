@@ -2,13 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { chunk } from 'lodash-es';
 import * as Y from 'yjs';
 
-import {
-  CallMetric,
-  Config,
-  mergeUpdatesInApplyWay as yotcoMergeUpdates,
-  metrics,
-  Runtime,
-} from '../../base';
+import { CallMetric, Config, metrics } from '../../base';
+import { mergeUpdatesInApplyWay as yoctoMergeUpdates } from '../../native';
 import { QuotaService } from '../quota';
 import { DocStorageOptions as IDocStorageOptions } from './storage';
 
@@ -35,7 +30,6 @@ export class DocStorageOptions implements IDocStorageOptions {
 
   constructor(
     private readonly config: Config,
-    private readonly runtime: Runtime,
     private readonly quota: QuotaService
   ) {}
 
@@ -43,19 +37,17 @@ export class DocStorageOptions implements IDocStorageOptions {
     const doc = await this.recoverDoc(updates);
     const yjsResult = Buffer.from(Y.encodeStateAsUpdate(doc));
 
-    const useYocto = await this.runtime.fetch('doc/experimentalMergeWithYOcto');
-
-    if (useYocto) {
+    if (this.config.doc.experimental.yocto) {
       metrics.jwst.counter('codec_merge_counter').add(1);
       let log = false;
       let yoctoResult: Buffer | null = null;
       try {
-        yoctoResult = yotcoMergeUpdates(updates.map(Buffer.from));
+        yoctoResult = yoctoMergeUpdates(updates.map(Buffer.from));
         if (!compare(yjsResult, yoctoResult)) {
           metrics.jwst.counter('codec_not_match').add(1);
           this.logger.warn(`yocto codec result doesn't match yjs codec result`);
           log = true;
-          if (this.config.node.dev) {
+          if (env.dev) {
             this.logger.warn(`Expected:\n  ${yjsResult.toString('hex')}`);
             this.logger.warn(`Result:\n  ${yoctoResult.toString('hex')}`);
           }
@@ -66,14 +58,14 @@ export class DocStorageOptions implements IDocStorageOptions {
         log = true;
       }
 
-      if (log && this.config.node.dev) {
+      if (log && env.dev) {
         this.logger.warn(
           `Updates: ${updates.map(u => Buffer.from(u).toString('hex')).join('\n')}`
         );
       }
 
       if (
-        this.config.affine.canary &&
+        env.namespaces.canary &&
         yoctoResult &&
         yoctoResult.length > 2 /* simple test for non-empty yjs binary */
       ) {

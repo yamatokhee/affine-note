@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { APIError, BadRequestError, ClientOptions, OpenAI } from 'openai';
 
 import {
@@ -7,6 +6,7 @@ import {
   metrics,
   UserFriendlyError,
 } from '../../../base';
+import { CopilotProvider } from './provider';
 import {
   ChatMessageRole,
   CopilotCapability,
@@ -19,28 +19,31 @@ import {
   CopilotTextToImageProvider,
   CopilotTextToTextProvider,
   PromptMessage,
-} from '../types';
+} from './types';
 
 export const DEFAULT_DIMENSIONS = 256;
 
 const SIMPLE_IMAGE_URL_REGEX = /^(https?:\/\/|data:image\/)/;
 
+export type OpenAIConfig = ClientOptions;
+
 export class OpenAIProvider
+  extends CopilotProvider<OpenAIConfig>
   implements
     CopilotTextToTextProvider,
     CopilotTextToEmbeddingProvider,
     CopilotTextToImageProvider,
     CopilotImageToTextProvider
 {
-  static readonly type = CopilotProviderType.OpenAI;
-  static readonly capabilities = [
+  readonly type = CopilotProviderType.OpenAI;
+  readonly capabilities = [
     CopilotCapability.TextToText,
     CopilotCapability.TextToEmbedding,
     CopilotCapability.TextToImage,
     CopilotCapability.ImageToText,
   ];
 
-  readonly availableModels = [
+  readonly models = [
     // text to text
     'gpt-4o',
     'gpt-4o-2024-08-06',
@@ -59,41 +62,32 @@ export class OpenAIProvider
     'dall-e-3',
   ];
 
-  private readonly logger = new Logger(OpenAIProvider.type);
-  private readonly instance: OpenAI;
+  #existsModels: string[] = [];
+  #instance!: OpenAI;
 
-  private existsModels: string[] | undefined;
-
-  constructor(config: ClientOptions) {
-    this.instance = new OpenAI(config);
+  override configured(): boolean {
+    return !!this.config.apiKey;
   }
 
-  static assetsConfig(config: ClientOptions) {
-    return !!config?.apiKey;
+  protected override setup() {
+    super.setup();
+    this.#instance = new OpenAI(this.config);
   }
 
-  get type(): CopilotProviderType {
-    return OpenAIProvider.type;
-  }
-
-  getCapabilities(): CopilotCapability[] {
-    return OpenAIProvider.capabilities;
-  }
-
-  async isModelAvailable(model: string): Promise<boolean> {
-    const knownModels = this.availableModels.includes(model);
+  override async isModelAvailable(model: string): Promise<boolean> {
+    const knownModels = this.models.includes(model);
     if (knownModels) return true;
 
-    if (!this.existsModels) {
+    if (!this.#existsModels) {
       try {
-        this.existsModels = await this.instance.models
+        this.#existsModels = await this.#instance.models
           .list()
           .then(({ data }) => data.map(m => m.id));
       } catch (e: any) {
         this.logger.error('Failed to fetch online model list', e.stack);
       }
     }
-    return !!this.existsModels?.includes(model);
+    return !!this.#existsModels?.includes(model);
   }
 
   protected chatToGPTMessage(
@@ -226,7 +220,7 @@ export class OpenAIProvider
 
     try {
       metrics.ai.counter('chat_text_calls').add(1, { model });
-      const result = await this.instance.chat.completions.create(
+      const result = await this.#instance.chat.completions.create(
         {
           messages: this.chatToGPTMessage(messages),
           model: model,
@@ -257,7 +251,7 @@ export class OpenAIProvider
 
     try {
       metrics.ai.counter('chat_text_stream_calls').add(1, { model });
-      const result = await this.instance.chat.completions.create(
+      const result = await this.#instance.chat.completions.create(
         {
           stream: true,
           messages: this.chatToGPTMessage(messages),
@@ -307,7 +301,7 @@ export class OpenAIProvider
 
     try {
       metrics.ai.counter('generate_embedding_calls').add(1, { model });
-      const result = await this.instance.embeddings.create({
+      const result = await this.#instance.embeddings.create({
         model: model,
         input: messages,
         dimensions: options.dimensions || DEFAULT_DIMENSIONS,
@@ -333,7 +327,7 @@ export class OpenAIProvider
 
     try {
       metrics.ai.counter('generate_images_calls').add(1, { model });
-      const result = await this.instance.images.generate(
+      const result = await this.#instance.images.generate(
         {
           prompt,
           model,

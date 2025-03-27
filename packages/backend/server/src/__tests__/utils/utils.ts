@@ -1,6 +1,7 @@
 import { INestApplicationContext, LogLevel } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { PrismaClient } from '@prisma/client';
+import whywhywhy from 'why-is-node-running';
 
 import { RefreshFeatures0001 } from '../../data/migrations/0001-refresh-features';
 
@@ -31,4 +32,22 @@ export async function initTestingDB(context: INestApplicationContext) {
 
 export async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function debugProcessHolding(ignorePrismaStack = true) {
+  setImmediate(() => {
+    whywhywhy({
+      error: message => {
+        // ignore prisma error
+        if (
+          ignorePrismaStack &&
+          (message.includes('Prisma') || message.includes('prisma'))
+        ) {
+          return;
+        }
+
+        console.error(message);
+      },
+    });
+  });
 }

@@ -1,19 +1,16 @@
-import { defineStartupConfig, ModuleConfig } from '../../base/config';
+import { defineModuleConfig } from '../../base';
 
-interface DocServiceStartupConfigurations {
-  /**
-   * The endpoint of the doc service.
-   * Example: http://doc-service:3020
-   */
-  endpoint: string;
-}
-
-declare module '../../base/config' {
-  interface AppConfig {
-    docService: ModuleConfig<DocServiceStartupConfigurations>;
+declare global {
+  interface AppConfigSchema {
+    docService: {
+      endpoint: string;
+    };
   }
 }
 
-defineStartupConfig('docService', {
-  endpoint: '',
+defineModuleConfig('docService', {
+  endpoint: {
+    desc: 'The endpoint of the doc service.',
+    default: '',
+  },
 });

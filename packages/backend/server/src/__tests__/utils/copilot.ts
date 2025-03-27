@@ -1,160 +1,11 @@
-import { randomBytes } from 'node:crypto';
-
-import {
-  DEFAULT_DIMENSIONS,
-  OpenAIProvider,
-} from '../../plugins/copilot/providers/openai';
-import {
-  CopilotCapability,
-  CopilotChatOptions,
-  CopilotEmbeddingOptions,
-  CopilotImageToImageProvider,
-  CopilotImageToTextProvider,
-  CopilotProviderType,
-  CopilotTextToEmbeddingProvider,
-  CopilotTextToImageProvider,
-  CopilotTextToTextProvider,
-  PromptConfig,
-  PromptMessage,
-} from '../../plugins/copilot/types';
+import { PromptConfig, PromptMessage } from '../../plugins/copilot/providers';
 import { NodeExecutorType } from '../../plugins/copilot/workflow/executor';
 import {
   WorkflowGraph,
   WorkflowNodeType,
   WorkflowParams,
 } from '../../plugins/copilot/workflow/types';
-import { gql } from './common';
 import { TestingApp } from './testing-app';
-import { sleep } from './utils';
-
-// @ts-expect-error no error
-export class MockCopilotTestProvider
-  extends OpenAIProvider
-  implements
-    CopilotTextToTextProvider,
-    CopilotTextToEmbeddingProvider,
-    CopilotTextToImageProvider,
-    CopilotImageToImageProvider,
-    CopilotImageToTextProvider
-{
-  static override readonly type = CopilotProviderType.Test;
-  override readonly availableModels = [
-    'test',
-    'gpt-4o',
-    'gpt-4o-2024-08-06',
-    'fast-sdxl/image-to-image',
-    'lcm-sd15-i2i',
-    'clarity-upscaler',
-    'imageutils/rembg',
-  ];
-  static override readonly capabilities = [
-    CopilotCapability.TextToText,
-    CopilotCapability.TextToEmbedding,
-    CopilotCapability.TextToImage,
-    CopilotCapability.ImageToImage,
-    CopilotCapability.ImageToText,
-  ];
-
-  constructor() {
-    super({ apiKey: '1' });
-  }
-
-  override getCapabilities(): CopilotCapability[] {
-    return MockCopilotTestProvider.capabilities;
-  }
-
-  static override assetsConfig(_config: any) {
-    return true;
-  }
-
-  override get type(): CopilotProviderType {
-    return CopilotProviderType.Test;
-  }
-
-  override async isModelAvailable(model: string): Promise<boolean> {
-    return this.availableModels.includes(model);
-  }
-
-  // ====== text to text ======
-
-  override async generateText(
-    messages: PromptMessage[],
-    model: string = 'test',
-    options: CopilotChatOptions = {}
-  ): Promise<string> {
-    this.checkParams({ messages, model, options });
-    // make some time gap for history test case
-    await sleep(100);
-    return 'generate text to text';
-  }
-
-  override async *generateTextStream(
-    messages: PromptMessage[],
-    model: string = 'gpt-4o-mini',
-    options: CopilotChatOptions = {}
-  ): AsyncIterable<string> {
-    this.checkParams({ messages, model, options });
-
-    // make some time gap for history test case
-    await sleep(100);
-    const result = 'generate text to text stream';
-    for (const message of result) {
-      yield message;
-      if (options.signal?.aborted) {
-        break;
-      }
-    }
-  }
-
-  // ====== text to embedding ======
-
-  override async generateEmbedding(
-    messages: string | string[],
-    model: string,
-    options: CopilotEmbeddingOptions = { dimensions: DEFAULT_DIMENSIONS }
-  ): Promise<number[][]> {
-    messages = Array.isArray(messages) ? messages : [messages];
-    this.checkParams({ embeddings: messages, model, options });
-
-    // make some time gap for history test case
-    await sleep(100);
-    return [Array.from(randomBytes(options.dimensions)).map(v => v % 128)];
-  }
-
-  // ====== text to image ======
-  override async generateImages(
-    messages: PromptMessage[],
-    model: string = 'test',
-    _options: {
-      signal?: AbortSignal;
-      user?: string;
-    } = {}
-  ): Promise<Array<string>> {
-    const { content: prompt } = messages[0] || {};
-    if (!prompt) {
-      throw new Error('Prompt is required');
-    }
-
-    // make some time gap for history test case
-    await sleep(100);
-    // just let test case can easily verify the final prompt
-    return [`https://example.com/${model}.jpg`, prompt];
-  }
-
-  override async *generateImagesStream(
-    messages: PromptMessage[],
-    model: string = 'dall-e-3',
-    options: {
-      signal?: AbortSignal;
-      user?: string;
-    } = {}
-  ): AsyncIterable<string> {
-    const ret = await this.generateImages(messages, model, options);
-    for (const url of ret) {
-      yield url;
-    }
-  }
-}
 
 export const cleanObject = (
   obj: any[] | undefined,
@@ -342,7 +193,7 @@ export async function addContextFile(
   content: Buffer
 ): Promise<{ id: string }> {
   const res = await app
-    .POST(gql)
+    .POST('/graphql')
     .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
     .field(
       'operations',

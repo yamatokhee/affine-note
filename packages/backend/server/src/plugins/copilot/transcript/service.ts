@@ -11,13 +11,13 @@ import {
 } from '../../../base';
 import { Models } from '../../../models';
 import { PromptService } from '../prompt';
-import { CopilotProviderService } from '../providers';
-import { CopilotStorage } from '../storage';
 import {
   CopilotCapability,
+  CopilotProviderFactory,
   CopilotTextProvider,
   PromptMessage,
-} from '../types';
+} from '../providers';
+import { CopilotStorage } from '../storage';
 import {
   TranscriptionPayload,
   TranscriptionSchema,
@@ -38,7 +38,7 @@ export class CopilotTranscriptionService {
     private readonly job: JobQueue,
     private readonly storage: CopilotStorage,
     private readonly prompt: PromptService,
-    private readonly provider: CopilotProviderService
+    private readonly providerFactory: CopilotProviderFactory
   ) {}
 
   async submitTranscriptionJob(
@@ -123,9 +123,9 @@ export class CopilotTranscriptionService {
   }
 
   private async getProvider(model: string): Promise<CopilotTextProvider> {
-    let provider = await this.provider.getProviderByCapability(
+    let provider = await this.providerFactory.getProviderByCapability(
       CopilotCapability.TextToText,
-      model
+      { model }
     );
 
     if (!provider) {

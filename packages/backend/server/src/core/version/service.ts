@@ -1,18 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import semver from 'semver';
 
-import { Runtime, UnsupportedClientVersion } from '../../base';
+import { Config, UnsupportedClientVersion } from '../../base';
 
 @Injectable()
 export class VersionService {
   private readonly logger = new Logger(VersionService.name);
 
-  constructor(private readonly runtime: Runtime) {}
+  constructor(private readonly config: Config) {}
 
   async checkVersion(clientVersion?: string) {
-    const requiredVersion = await this.runtime.fetch(
-      'client/versionControl.requiredVersion'
-    );
+    const requiredVersion = this.config.client.versionControl.requiredVersion;
 
     const range = await this.getVersionRange(requiredVersion);
     if (!range) {

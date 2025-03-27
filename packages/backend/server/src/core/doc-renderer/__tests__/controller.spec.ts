@@ -5,36 +5,23 @@ import ava, { TestFn } from 'ava';
 import { Doc as YDoc } from 'yjs';
 
 import { createTestingApp, type TestingApp } from '../../../__tests__/utils';
-import { AppModule } from '../../../app.module';
-import { Config } from '../../../base';
-import { ConfigModule } from '../../../base/config';
+import { ConfigFactory } from '../../../base';
+import { Flavor } from '../../../env';
 import { Models } from '../../../models';
 import { PgWorkspaceDocStorageAdapter } from '../../doc';
 
 const test = ava as TestFn<{
   models: Models;
   app: TestingApp;
-  config: Config;
   adapter: PgWorkspaceDocStorageAdapter;
 }>;
 
 test.before(async t => {
-  const app = await createTestingApp({
-    imports: [
-      ConfigModule.forRoot({
-        flavor: {
-          doc: false,
-        },
-        docService: {
-          endpoint: '',
-        },
-      }),
-      AppModule,
-    ],
-  });
+  // @ts-expect-error testing
+  env.FLAVOR = Flavor.Renderer;
+  const app = await createTestingApp();
 
   t.context.models = app.get(Models);
-  t.context.config = app.get(Config);
   t.context.adapter = app.get(PgWorkspaceDocStorageAdapter);
   t.context.app = app;
 });
@@ -43,7 +30,11 @@ let user: User;
 let workspace: Workspace;
 
 test.beforeEach(async t => {
-  t.context.config.docService.endpoint = t.context.app.url();
+  t.context.app.get(ConfigFactory).override({
+    docService: {
+      endpoint: t.context.app.url(),
+    },
+  });
   await t.context.app.initTestingDB();
   user = await t.context.models.user.create({
     email: 'test@affine.pro',

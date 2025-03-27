@@ -26,7 +26,7 @@ export class StaticFilesResolver implements OnModuleInit {
     const app = this.adapterHost.httpAdapter.getInstance<Application>();
     // for example, '/affine' in host [//host.com/affine]
     const basePath = this.config.server.path;
-    const staticPath = join(this.config.projectRoot, 'static');
+    const staticPath = join(env.projectRoot, 'static');
 
     // web => {
     //   affine: 'static/index.html',
@@ -69,7 +69,7 @@ export class StaticFilesResolver implements OnModuleInit {
           join(
             staticPath,
             'admin',
-            this.config.isSelfhosted ? 'selfhost.html' : 'index.html'
+            env.selfhosted ? 'selfhost.html' : 'index.html'
           )
         );
       }
@@ -107,7 +107,7 @@ export class StaticFilesResolver implements OnModuleInit {
     // fallback all unknown routes
     app.get([basePath, basePath + '/*'], this.check.use, (req, res) => {
       const mobile =
-        this.config.affine.canary &&
+        env.namespaces.canary &&
         isMobile({
           ua: req.headers['user-agent'] ?? undefined,
         });
@@ -116,7 +116,7 @@ export class StaticFilesResolver implements OnModuleInit {
         join(
           staticPath,
           mobile ? 'mobile' : '',
-          this.config.isSelfhosted ? 'selfhost.html' : 'index.html'
+          env.selfhosted ? 'selfhost.html' : 'index.html'
         )
       );
     });

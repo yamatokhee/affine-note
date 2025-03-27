@@ -1,4 +1,5 @@
 replicaCount: 3
+enabled: false
 
 image:
   # the tag is defined as chart appVersion.

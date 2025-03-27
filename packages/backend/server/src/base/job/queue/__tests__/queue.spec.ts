@@ -52,13 +52,15 @@ class JobHandlers {
 test.before(async () => {
   module = await createTestingModule({
     imports: [
-      ConfigModule.forRoot({
+      ConfigModule.override({
         job: {
           worker: {
-            // NOTE(@forehalo):
-            //   bullmq will hold the connection to check stalled jobs,
-            //   which will keep the test process alive to timeout.
-            stalledInterval: 100,
+            defaultWorkerOptions: {
+              // NOTE(@forehalo):
+              //   bullmq will hold the connection to check stalled jobs,
+              //   which will keep the test process alive to timeout.
+              stalledInterval: 100,
+            },
           },
           queue: {
             defaultJobOptions: { delay: 1000 },
@@ -82,7 +84,7 @@ test.afterEach(async () => {
   // @ts-expect-error private api
   const inner = queue.getQueue('nightly');
   await inner.obliterate({ force: true });
-  inner.resume();
+  await inner.resume();
 });
 
 test.after.always(async () => {
@@ -132,7 +134,7 @@ test('should remove job from queue', async t => {
 // #region executor
 test('should start workers', async t => {
   // @ts-expect-error private api
-  const worker = executor.workers['nightly'];
+  const worker = executor.workers.get('nightly')!;
 
   t.truthy(worker);
   t.true(worker.isRunning());

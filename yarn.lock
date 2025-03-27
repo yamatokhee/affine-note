@@ -173,6 +173,7 @@ __metadata:
   dependencies:
     "@affine/component": "workspace:*"
     "@affine/core": "workspace:*"
+    "@affine/error": "workspace:*"
     "@affine/graphql": "workspace:*"
     "@blocksuite/icons": "npm:^2.2.8"
     "@radix-ui/react-accordion": "npm:^1.2.2"
@@ -206,12 +207,14 @@ __metadata:
     "@tanstack/react-table": "npm:^8.20.5"
     "@toeverything/infra": "workspace:*"
     "@toeverything/theme": "npm:^1.1.12"
+    "@types/lodash-es": "npm:^4.17.12"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
     cmdk: "npm:^1.0.4"
     cross-env: "npm:^7.0.3"
     embla-carousel-react: "npm:^8.5.1"
     input-otp: "npm:^1.4.1"
+    lodash-es: "npm:^4.17.21"
     lucide-react: "npm:^0.484.0"
     next-themes: "npm:^0.4.4"
     react: "npm:^19.0.0"
@@ -960,6 +963,7 @@ __metadata:
     tldts: "npm:^6.1.68"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
+    why-is-node-running: "npm:^3.2.2"
     winston: "npm:^3.17.0"
     yjs: "npm:^13.6.21"
     zod: "npm:^3.24.1"
@@ -34113,6 +34117,15 @@ __metadata:
   bin:
     why-is-node-running: cli.js
   checksum: 10/0de6e6cd8f2f94a8b5ca44e84cf1751eadcac3ebedcdc6e5fbbe6c8011904afcbc1a2777c53496ec02ced7b81f2e7eda61e76bf8262a8bc3ceaa1f6040508051
+  languageName: node
+  linkType: hard
+
+"why-is-node-running@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "why-is-node-running@npm:3.2.2"
+  bin:
+    why-is-node-running: cli.js
+  checksum: 10/b57146897f676cf01fe30ac415f66dd72b54218e6fee8eb4479251f72a2e064bc18ed7eaddac18513f978353ce2b758d16a4de126cd3e47e467631c1ec5a50af
   languageName: node
   linkType: hard
 

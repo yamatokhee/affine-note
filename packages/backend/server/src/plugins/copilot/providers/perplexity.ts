@@ -1,5 +1,3 @@
-import assert from 'node:assert';
-
 import { EventSourceParserStream } from 'eventsource-parser/stream';
 import { z } from 'zod';
 
@@ -8,13 +6,14 @@ import {
   CopilotProviderSideError,
   metrics,
 } from '../../../base';
+import { CopilotProvider } from './provider';
 import {
   CopilotCapability,
   CopilotChatOptions,
   CopilotProviderType,
   CopilotTextToTextProvider,
   PromptMessage,
-} from '../types';
+} from './types';
 
 export type PerplexityConfig = {
   apiKey: string;
@@ -164,36 +163,21 @@ export class CitationParser {
   }
 }
 
-export class PerplexityProvider implements CopilotTextToTextProvider {
-  static readonly type = CopilotProviderType.Perplexity;
-
-  static readonly capabilities = [CopilotCapability.TextToText];
-
-  static assetsConfig(config: PerplexityConfig) {
-    return !!config.apiKey;
-  }
-
-  constructor(private readonly config: PerplexityConfig) {
-    assert(PerplexityProvider.assetsConfig(config));
-  }
-
-  readonly availableModels = [
+export class PerplexityProvider
+  extends CopilotProvider<PerplexityConfig>
+  implements CopilotTextToTextProvider
+{
+  readonly type = CopilotProviderType.Perplexity;
+  readonly capabilities = [CopilotCapability.TextToText];
+  readonly models = [
     'sonar',
     'sonar-pro',
     'sonar-reasoning',
     'sonar-reasoning-pro',
   ];
 
-  get type(): CopilotProviderType {
-    return PerplexityProvider.type;
-  }
-
-  getCapabilities(): CopilotCapability[] {
-    return PerplexityProvider.capabilities;
-  }
-
-  async isModelAvailable(model: string): Promise<boolean> {
-    return this.availableModels.includes(model);
+  override configured(): boolean {
+    return !!this.config.apiKey;
   }
 
   async generateText(

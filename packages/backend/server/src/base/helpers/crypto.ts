@@ -2,8 +2,11 @@ import {
   createCipheriv,
   createDecipheriv,
   createHash,
+  createPrivateKey,
+  createPublicKey,
   createSign,
   createVerify,
+  generateKeyPairSync,
   randomBytes,
   randomInt,
   timingSafeEqual,
@@ -16,13 +19,48 @@ import {
 } from '@node-rs/argon2';
 
 import { Config } from '../config';
+import { OnEvent } from '../event';
 
 const NONCE_LENGTH = 12;
 const AUTH_TAG_LENGTH = 12;
 
+function generatePrivateKey(): string {
+  const { privateKey } = generateKeyPairSync('ec', {
+    namedCurve: 'prime256v1',
+  });
+
+  const key = privateKey.export({
+    type: 'sec1',
+    format: 'pem',
+  });
+
+  return key.toString('utf8');
+}
+
+function readPrivateKey(privateKey: string) {
+  return createPrivateKey({
+    key: Buffer.from(privateKey),
+    format: 'pem',
+    type: 'sec1',
+  })
+    .export({
+      format: 'pem',
+      type: 'pkcs8',
+    })
+    .toString('utf8');
+}
+
+function readPublicKey(privateKey: string) {
+  return createPublicKey({
+    key: Buffer.from(privateKey),
+  })
+    .export({ format: 'pem', type: 'spki' })
+    .toString('utf8');
+}
+
 @Injectable()
 export class CryptoHelper {
-  keyPair: {
+  keyPair!: {
     publicKey: Buffer;
     privateKey: Buffer;
     sha256: {
@@ -31,13 +69,31 @@ export class CryptoHelper {
     };
   };
 
-  constructor(config: Config) {
+  constructor(private readonly config: Config) {}
+
+  @OnEvent('config.init')
+  onConfigInit() {
+    this.setup();
+  }
+
+  @OnEvent('config.changed')
+  onConfigChanged(event: Events['config.changed']) {
+    if (event.updates.crypto?.privateKey) {
+      this.setup();
+    }
+  }
+
+  private setup() {
+    const key = this.config.crypto.privateKey || generatePrivateKey();
+    const privateKey = readPrivateKey(key);
+    const publicKey = readPublicKey(key);
+
     this.keyPair = {
-      publicKey: Buffer.from(config.crypto.secret.publicKey, 'utf8'),
-      privateKey: Buffer.from(config.crypto.secret.privateKey, 'utf8'),
+      publicKey: Buffer.from(publicKey),
+      privateKey: Buffer.from(privateKey),
       sha256: {
-        publicKey: this.sha256(config.crypto.secret.publicKey),
-        privateKey: this.sha256(config.crypto.secret.privateKey),
+        publicKey: this.sha256(publicKey),
+        privateKey: this.sha256(privateKey),
       },
     };
   }

@@ -1,5 +1,3 @@
-import '../../plugins/config';
-
 import { randomUUID } from 'node:crypto';
 
 import { HttpStatus } from '@nestjs/common';
@@ -30,14 +28,12 @@ const test = ava as TestFn<{
 test.before(async t => {
   const app = await createTestingApp({
     imports: [
-      ConfigModule.forRoot({
-        plugins: {
-          oauth: {
-            providers: {
-              google: {
-                clientId: 'google-client-id',
-                clientSecret: 'google-client-secret',
-              },
+      ConfigModule.override({
+        oauth: {
+          providers: {
+            google: {
+              clientId: 'google-client-id',
+              clientSecret: 'google-client-secret',
             },
           },
         },

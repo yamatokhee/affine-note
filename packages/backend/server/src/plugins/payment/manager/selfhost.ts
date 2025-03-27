@@ -3,11 +3,11 @@ import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, UserStripeCustomer } from '@prisma/client';
 import { pick } from 'lodash-es';
-import Stripe from 'stripe';
 import { z } from 'zod';
 
 import { SubscriptionPlanNotFound, URLHelper } from '../../../base';
 import { Mailer } from '../../../core/mail';
+import { StripeFactory } from '../stripe';
 import {
   KnownStripeInvoice,
   KnownStripePrice,
@@ -43,12 +43,12 @@ export const SelfhostTeamSubscriptionIdentity = z.object({
 @Injectable()
 export class SelfhostTeamSubscriptionManager extends SubscriptionManager {
   constructor(
-    stripe: Stripe,
+    stripeProvider: StripeFactory,
     db: PrismaClient,
     private readonly url: URLHelper,
     private readonly mailer: Mailer
   ) {
-    super(stripe, db);
+    super(stripeProvider, db);
   }
 
   filterPrices(

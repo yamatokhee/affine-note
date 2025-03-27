@@ -10,8 +10,9 @@ import {
 import type { Request, Response } from 'express';
 import { HTMLRewriter } from 'htmlrewriter';
 
-import { BadRequest, Cache, Config, URLHelper } from '../../base';
+import { BadRequest, Cache, URLHelper, UseNamedGuard } from '../../base';
 import { Public } from '../../core/auth';
+import { WorkerService } from './service';
 import type { LinkPreviewRequest, LinkPreviewResponse } from './types';
 import {
   appendUrl,
@@ -20,7 +21,6 @@ import {
   getCorsHeaders,
   isOriginAllowed,
   isRefererAllowed,
-  OriginRules,
   parseJson,
   reduceUrls,
 } from './utils';
@@ -30,22 +30,19 @@ import { decodeWithCharset } from './utils/encoding';
 const CACHE_TTL = 1000 * 60 * 30;
 
 @Public()
+@UseNamedGuard('selfhost')
 @Controller('/api/worker')
 export class WorkerController {
   private readonly logger = new Logger(WorkerController.name);
-  private readonly allowedOrigin: OriginRules;
 
   constructor(
-    config: Config,
     private readonly cache: Cache,
-    private readonly url: URLHelper
-  ) {
-    this.allowedOrigin = [
-      ...config.plugins.worker.allowedOrigin
-        .map(u => fixUrl(u)?.origin as string)
-        .filter(v => !!v),
-      url.origin,
-    ];
+    private readonly url: URLHelper,
+    private readonly service: WorkerService
+  ) {}
+
+  private get allowedOrigin() {
+    return this.service.allowedOrigins;
   }
 
   @Get('/image-proxy')

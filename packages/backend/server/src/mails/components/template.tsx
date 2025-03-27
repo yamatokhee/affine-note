@@ -195,7 +195,7 @@ export function Template(props: PropsWithChildren) {
     </>
   );
 
-  if (typeof AFFiNE !== 'undefined' && AFFiNE.node.test) {
+  if (env.testing) {
     return content;
   }
 

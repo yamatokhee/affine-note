@@ -26,6 +26,7 @@ import {
 import { Public } from '../../../core/auth';
 import { SelfhostTeamSubscriptionManager } from '../manager/selfhost';
 import { SubscriptionService } from '../service';
+import { StripeFactory } from '../stripe';
 import {
   SubscriptionPlan,
   SubscriptionRecurring,
@@ -53,7 +54,7 @@ export class LicenseController {
     private readonly mutex: Mutex,
     private readonly subscription: SubscriptionService,
     private readonly manager: SelfhostTeamSubscriptionManager,
-    private readonly stripe: Stripe
+    private readonly stripeProvider: StripeFactory
   ) {}
 
   @Post('/:license/activate')
@@ -238,18 +239,20 @@ export class LicenseController {
       throw new LicenseNotFound();
     }
 
-    const subscriptionData = await this.stripe.subscriptions.retrieve(
-      subscription.stripeSubscriptionId,
-      {
-        expand: ['customer'],
-      }
-    );
+    const subscriptionData =
+      await this.stripeProvider.stripe.subscriptions.retrieve(
+        subscription.stripeSubscriptionId,
+        {
+          expand: ['customer'],
+        }
+      );
 
     const customer = subscriptionData.customer as Stripe.Customer;
     try {
-      const portal = await this.stripe.billingPortal.sessions.create({
-        customer: customer.id,
-      });
+      const portal =
+        await this.stripeProvider.stripe.billingPortal.sessions.create({
+          customer: customer.id,
+        });
 
       return { url: portal.url };
     } catch (e) {

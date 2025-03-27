@@ -41,20 +41,17 @@ export async function createTestingApp(
   moduleDef: TestingAppMetadata = {}
 ): Promise<TestingApp> {
   const module = await createTestingModule(moduleDef, false);
+  const logger = new AFFiNELogger();
+  logger.setLogLevels([TEST_LOG_LEVEL]);
 
   const app = module.createNestApplication<NestExpressApplication>({
     cors: true,
     bodyParser: true,
     rawBody: true,
+    logger,
   });
 
   app.useBodyParser('raw', { limit: 1 * OneMB });
-
-  const logger = new AFFiNELogger();
-
-  logger.setLogLevels([TEST_LOG_LEVEL]);
-  app.useLogger(logger);
-
   app.useGlobalFilters(new GlobalExceptionFilter(app.getHttpAdapter()));
   app.use(
     graphqlUploadExpress({

@@ -3,10 +3,11 @@ import type { Request, Response } from 'express';
 
 import {
   ActionForbidden,
+  Config,
   InternalServerError,
   Mutex,
   PasswordRequired,
-  Runtime,
+  UseNamedGuard,
 } from '../../base';
 import { Models } from '../../models';
 import { AuthService, Public } from '../auth';
@@ -18,14 +19,15 @@ interface CreateUserInput {
   password: string;
 }
 
+@UseNamedGuard('selfhost')
 @Controller('/api/setup')
 export class CustomSetupController {
   constructor(
+    private readonly config: Config,
     private readonly models: Models,
     private readonly auth: AuthService,
     private readonly mutex: Mutex,
-    private readonly server: ServerService,
-    private readonly runtime: Runtime
+    private readonly server: ServerService
   ) {}
 
   @Public()
@@ -45,15 +47,10 @@ export class CustomSetupController {
       throw new PasswordRequired();
     }
 
-    const config = await this.runtime.fetchAll({
-      'auth/password.max': true,
-      'auth/password.min': true,
-    });
-
-    validators.assertValidPassword(input.password, {
-      max: config['auth/password.max'],
-      min: config['auth/password.min'],
-    });
+    validators.assertValidPassword(
+      input.password,
+      this.config.auth.passwordRequirements
+    );
 
     await using lock = await this.mutex.acquire('createFirstAdmin');
 

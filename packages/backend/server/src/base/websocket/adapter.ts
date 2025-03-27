@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 import { Config } from '../config';
 import { AuthenticationRequired } from '../error';
@@ -14,7 +14,9 @@ export class SocketIoAdapter extends IoAdapter {
   }
 
   override createIOServer(port: number, options?: any): Server {
-    const config = this.app.get(WEBSOCKET_OPTIONS) as Config['websocket'];
+    const config = this.app.get(WEBSOCKET_OPTIONS) as Config['websocket'] & {
+      canActivate: (socket: Socket) => Promise<boolean>;
+    };
     const server: Server = super.createIOServer(port, {
       ...config,
       ...options,
@@ -22,7 +24,6 @@ export class SocketIoAdapter extends IoAdapter {
 
     if (config.canActivate) {
       server.use((socket, next) => {
-        // @ts-expect-error checked
         config
           .canActivate(socket)
           .then(pass => {

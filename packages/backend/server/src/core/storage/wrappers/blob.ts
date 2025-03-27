@@ -30,16 +30,20 @@ declare global {
 @Injectable()
 export class WorkspaceBlobStorage {
   private readonly logger = new Logger(WorkspaceBlobStorage.name);
-  public readonly provider: StorageProvider;
+  private provider: StorageProvider;
+
+  get config() {
+    return this.AFFiNEConfig.storages.blob;
+  }
 
   constructor(
-    private readonly config: Config,
+    private readonly AFFiNEConfig: Config,
     private readonly event: EventBus,
     private readonly storageFactory: StorageProviderFactory,
     private readonly db: PrismaClient,
     private readonly url: URLHelper
   ) {
-    this.provider = this.storageFactory.create(this.config.storages.blob);
+    this.provider = this.storageFactory.create(this.config.storage);
   }
 
   async put(workspaceId: string, key: string, blob: Buffer) {
@@ -224,5 +228,12 @@ export class WorkspaceBlobStorage {
     key,
   }: Events['workspace.blob.delete']) {
     await this.delete(workspaceId, key, true);
+  }
+
+  @OnEvent('config.changed')
+  async onConfigChanged(event: Events['config.changed']) {
+    if (event.updates.storages?.blob?.storage) {
+      this.provider = this.storageFactory.create(this.config.storage);
+    }
   }
 }

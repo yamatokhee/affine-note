@@ -5,10 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
 
-import { AuthModule } from '../../core/auth';
 import { AuthService } from '../../core/auth/service';
-import { FeatureModule } from '../../core/features';
-import { UserModule } from '../../core/user';
 import {
   createTestingApp,
   currentUser,
@@ -23,9 +20,7 @@ const test = ava as TestFn<{
 }>;
 
 test.before(async t => {
-  const app = await createTestingApp({
-    imports: [FeatureModule, UserModule, AuthModule],
-  });
+  const app = await createTestingApp();
 
   t.context.auth = app.get(AuthService);
   t.context.db = app.get(PrismaClient);

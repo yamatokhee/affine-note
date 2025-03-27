@@ -6,12 +6,13 @@ import Sinon from 'sinon';
 import Stripe from 'stripe';
 
 import { AppModule } from '../../app.module';
-import { EventBus, Runtime } from '../../base';
-import { ConfigModule } from '../../base/config';
+import { EventBus } from '../../base';
+import { ConfigFactory, ConfigModule } from '../../base/config';
 import { CurrentUser } from '../../core/auth';
 import { AuthService } from '../../core/auth/service';
 import { EarlyAccessType, FeatureService } from '../../core/features';
 import { SubscriptionService } from '../../plugins/payment/service';
+import { StripeFactory } from '../../plugins/payment/stripe';
 import {
   CouponType,
   encodeLookupKey,
@@ -159,7 +160,6 @@ const test = ava as TestFn<{
   service: SubscriptionService;
   event: Sinon.SinonStubbedInstance<EventBus>;
   feature: Sinon.SinonStubbedInstance<FeatureService>;
-  runtime: Sinon.SinonStubbedInstance<Runtime>;
   stripe: {
     customers: Sinon.SinonStubbedInstance<Stripe.CustomersResource>;
     prices: Sinon.SinonStubbedInstance<Stripe.PricesResource>;
@@ -184,16 +184,12 @@ function getLastCheckoutPrice(checkoutStub: Sinon.SinonStub) {
 test.before(async t => {
   const app = await createTestingApp({
     imports: [
-      ConfigModule.forRoot({
-        plugins: {
-          payment: {
-            stripe: {
-              keys: {
-                APIKey: '1',
-                webhookKey: '1',
-              },
-            },
-          },
+      ConfigModule.override({
+        payment: {
+          enabled: true,
+          showLifetimePrice: true,
+          apiKey: '1',
+          webhookKey: '1',
         },
       }),
       AppModule,
@@ -203,18 +199,19 @@ test.before(async t => {
         Sinon.createStubInstance(FeatureService)
       );
       m.overrideProvider(EventBus).useValue(Sinon.createStubInstance(EventBus));
-      m.overrideProvider(Runtime).useValue(Sinon.createStubInstance(Runtime));
     },
   });
 
   t.context.event = app.get(EventBus);
   t.context.service = app.get(SubscriptionService);
   t.context.feature = app.get(FeatureService);
-  t.context.runtime = app.get(Runtime);
   t.context.db = app.get(PrismaClient);
   t.context.app = app;
 
-  const stripe = app.get(Stripe);
+  const stripeFactory = app.get(StripeFactory);
+  await stripeFactory.onConfigInit();
+
+  const stripe = stripeFactory.stripe;
   const stripeStubs = {
     customers: Sinon.stub(stripe.customers),
     prices: Sinon.stub(stripe.prices),
@@ -234,6 +231,12 @@ test.beforeEach(async t => {
   await t.context.app.initTestingDB();
   t.context.u1 = await app.get(AuthService).signUp('u1@affine.pro', '1');
 
+  app.get(ConfigFactory).override({
+    payment: {
+      showLifetimePrice: true,
+    },
+  });
+
   await db.workspace.create({
     data: {
       id: 'ws_1',
@@ -248,11 +251,6 @@ test.beforeEach(async t => {
   });
 
   Sinon.reset();
-
-  // default stubs
-  t.context.runtime.fetch
-    .withArgs('plugins.payment/showLifetimePrice')
-    .resolves(true);
 
   // @ts-expect-error stub
   stripe.prices.list.callsFake((params: Stripe.PriceListParams) => {
@@ -294,8 +292,13 @@ test('should list normal prices for authenticated user', async t => {
 });
 
 test('should not show lifetime price if not enabled', async t => {
-  const { service, runtime } = t.context;
-  runtime.fetch.withArgs('plugins.payment/showLifetimePrice').resolves(false);
+  const { service, app } = t.context;
+
+  app.get(ConfigFactory).override({
+    payment: {
+      showLifetimePrice: false,
+    },
+  });
 
   const prices = await service.listPrices(t.context.u1);
 
@@ -539,8 +542,11 @@ test('should get correct pro plan price for checking out', async t => {
   // any user, lifetime recurring
   {
     feature.isEarlyAccessUser.resolves(false);
-    const runtime = app.get(Runtime);
-    await runtime.set('plugins.payment/showLifetimePrice', true);
+    app.get(ConfigFactory).override({
+      payment: {
+        showLifetimePrice: true,
+      },
+    });
 
     await service.checkout(
       {
@@ -1181,8 +1187,12 @@ const onetimeYearlyInvoice: Stripe.Invoice = {
 };
 
 test('should not be able to checkout for lifetime recurring if not enabled', async t => {
-  const { service, u1, runtime } = t.context;
-  runtime.fetch.withArgs('plugins.payment/showLifetimePrice').resolves(false);
+  const { service, u1, app } = t.context;
+  app.get(ConfigFactory).override({
+    payment: {
+      showLifetimePrice: false,
+    },
+  });
 
   await t.throwsAsync(
     () =>
@@ -1202,7 +1212,13 @@ test('should not be able to checkout for lifetime recurring if not enabled', asy
 });
 
 test('should be able to checkout for lifetime recurring', async t => {
-  const { service, u1, stripe } = t.context;
+  const { service, u1, stripe, app } = t.context;
+
+  app.get(ConfigFactory).override({
+    payment: {
+      showLifetimePrice: true,
+    },
+  });
 
   await service.checkout(
     {

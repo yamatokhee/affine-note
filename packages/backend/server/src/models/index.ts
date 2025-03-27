@@ -7,6 +7,7 @@ import {
 import { ModuleRef } from '@nestjs/core';
 
 import { ApplyType } from '../base';
+import { AppConfigModel } from './config';
 import { CopilotContextModel } from './copilot-context';
 import { CopilotJobModel } from './copilot-job';
 import { CopilotSessionModel } from './copilot-session';
@@ -44,6 +45,7 @@ const MODELS = {
   copilotSession: CopilotSessionModel,
   copilotContext: CopilotContextModel,
   copilotJob: CopilotJobModel,
+  appConfig: AppConfigModel,
 };
 
 type ModelsType = {

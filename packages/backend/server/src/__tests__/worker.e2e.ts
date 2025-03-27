@@ -3,7 +3,6 @@ import ava from 'ava';
 import Sinon from 'sinon';
 import type { Response } from 'supertest';
 
-import { WorkerModule } from '../plugins/worker';
 import { createTestingApp, TestingApp } from './utils';
 
 type TestContext = {
@@ -13,9 +12,9 @@ type TestContext = {
 const test = ava as TestFn<TestContext>;
 
 test.before(async t => {
-  const app = await createTestingApp({
-    imports: [WorkerModule],
-  });
+  // @ts-expect-error test
+  env.DEPLOYMENT_TYPE = 'selfhosted';
+  const app = await createTestingApp();
 
   t.context.app = app;
 });

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient, UserStripeCustomer } from '@prisma/client';
 import { omit, pick } from 'lodash-es';
-import Stripe from 'stripe';
 import { z } from 'zod';
 
 import {
@@ -12,6 +11,7 @@ import {
   URLHelper,
 } from '../../../base';
 import { Models } from '../../../models';
+import { StripeFactory } from '../stripe';
 import {
   KnownStripeInvoice,
   KnownStripePrice,
@@ -46,13 +46,13 @@ export const WorkspaceSubscriptionCheckoutArgs = z.object({
 @Injectable()
 export class WorkspaceSubscriptionManager extends SubscriptionManager {
   constructor(
-    stripe: Stripe,
+    stripeProvider: StripeFactory,
     db: PrismaClient,
     private readonly url: URLHelper,
     private readonly event: EventBus,
     private readonly models: Models
   ) {
-    super(stripe, db);
+    super(stripeProvider, db);
   }
 
   filterPrices(

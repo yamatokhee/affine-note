@@ -3,7 +3,7 @@ import test from 'ava';
 import Sinon from 'sinon';
 
 import { AppModule } from '../app.module';
-import { Runtime, UseNamedGuard } from '../base';
+import { ConfigFactory, UseNamedGuard } from '../base';
 import { Public } from '../core/auth/guard';
 import { VersionService } from '../core/version/service';
 import { createTestingApp, TestingApp } from './utils';
@@ -19,28 +19,28 @@ class GuardedController {
 }
 
 let app: TestingApp;
-let runtime: Sinon.SinonStubbedInstance<Runtime>;
+let config: ConfigFactory;
 let version: VersionService;
 
 function checkVersion(enabled = true) {
-  runtime.fetch.withArgs('client/versionControl.enabled').resolves(enabled);
-
-  runtime.fetch
-    .withArgs('client/versionControl.requiredVersion')
-    .resolves('>=0.20.0');
+  config.override({
+    client: {
+      versionControl: {
+        enabled,
+        requiredVersion: '>=0.20.0',
+      },
+    },
+  });
 }
 
 test.before(async () => {
   app = await createTestingApp({
     imports: [AppModule],
     controllers: [GuardedController],
-    tapModule: m => {
-      m.overrideProvider(Runtime).useValue(Sinon.createStubInstance(Runtime));
-    },
   });
 
-  runtime = app.get(Runtime);
   version = app.get(VersionService, { strict: false });
+  config = app.get(ConfigFactory, { strict: false });
 });
 
 test.beforeEach(async () => {
@@ -74,9 +74,13 @@ test('should passthrough if version check is not enabled', async t => {
 });
 
 test('should passthrough is version range is invalid', async t => {
-  runtime.fetch
-    .withArgs('client/versionControl.requiredVersion')
-    .resolves('invalid');
+  config.override({
+    client: {
+      versionControl: {
+        requiredVersion: 'invalid',
+      },
+    },
+  });
 
   let res = await app.GET('/guarded/test').set('x-affine-version', 'invalid');
 
@@ -92,9 +96,13 @@ test('should pass if client version is allowed', async t => {
 
   t.is(res.status, 200);
 
-  runtime.fetch
-    .withArgs('client/versionControl.requiredVersion')
-    .resolves('>=0.19.0');
+  config.override({
+    client: {
+      versionControl: {
+        requiredVersion: '>=0.19.0',
+      },
+    },
+  });
 
   res = await app.GET('/guarded/test').set('x-affine-version', '0.19.0');
 
@@ -120,9 +128,13 @@ test('should fail if client version is not set or invalid', async t => {
 });
 
 test('should tell upgrade if client version is lower than allowed', async t => {
-  runtime.fetch
-    .withArgs('client/versionControl.requiredVersion')
-    .resolves('>=0.21.0 <=0.22.0');
+  config.override({
+    client: {
+      versionControl: {
+        requiredVersion: '>=0.21.0 <=0.22.0',
+      },
+    },
+  });
 
   let res = await app.GET('/guarded/test').set('x-affine-version', '0.20.0');
 
@@ -134,9 +146,13 @@ test('should tell upgrade if client version is lower than allowed', async t => {
 });
 
 test('should tell downgrade if client version is higher than allowed', async t => {
-  runtime.fetch
-    .withArgs('client/versionControl.requiredVersion')
-    .resolves('>=0.20.0 <=0.22.0');
+  config.override({
+    client: {
+      versionControl: {
+        requiredVersion: '>=0.20.0 <=0.22.0',
+      },
+    },
+  });
 
   let res = await app.GET('/guarded/test').set('x-affine-version', '0.23.0');
 
@@ -148,9 +164,13 @@ test('should tell downgrade if client version is higher than allowed', async t =
 });
 
 test('should test prerelease version', async t => {
-  runtime.fetch
-    .withArgs('client/versionControl.requiredVersion')
-    .resolves('>=0.19.0');
+  config.override({
+    client: {
+      versionControl: {
+        requiredVersion: '>=0.19.0',
+      },
+    },
+  });
 
   let res = await app
     .GET('/guarded/test')

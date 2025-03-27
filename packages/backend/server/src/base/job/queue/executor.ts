@@ -1,49 +1,51 @@
-import {
-  Injectable,
-  Logger,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Worker } from 'bullmq';
-import { difference } from 'lodash-es';
+import { difference, merge } from 'lodash-es';
 import { CLS_ID, ClsServiceManager } from 'nestjs-cls';
 
 import { Config } from '../../config';
+import { OnEvent } from '../../event';
 import { metrics, wrapCallMetric } from '../../metrics';
 import { QueueRedis } from '../../redis';
-import { Runtime } from '../../runtime';
 import { genRequestId } from '../../utils';
 import { JOB_SIGNAL, namespace, Queue, QUEUES } from './def';
 import { JobHandlerScanner } from './scanner';
 
 @Injectable()
-export class JobExecutor
-  implements OnApplicationBootstrap, OnApplicationShutdown
-{
+export class JobExecutor implements OnModuleDestroy {
   private readonly logger = new Logger('job');
-  private readonly workers: Record<string, Worker> = {};
+  private readonly workers: Map<Queue, Worker> = new Map();
 
   constructor(
     private readonly config: Config,
     private readonly redis: QueueRedis,
-    private readonly scanner: JobHandlerScanner,
-    private readonly runtime: Runtime
+    private readonly scanner: JobHandlerScanner
   ) {}
 
-  async onApplicationBootstrap() {
-    const queues = this.config.flavor.graphql
-      ? difference(QUEUES, [Queue.DOC])
-      : [];
+  @OnEvent('config.init')
+  async onConfigInit() {
+    const queues = env.flavors.graphql ? difference(QUEUES, [Queue.DOC]) : [];
 
     // NOTE(@forehalo): only enable doc queue in doc service
-    if (this.config.flavor.doc) {
+    if (env.flavors.doc) {
       queues.push(Queue.DOC);
     }
 
     await this.startWorkers(queues);
   }
 
-  async onApplicationShutdown() {
+  @OnEvent('config.changed')
+  async onConfigChanged({ updates }: Events['config.changed']) {
+    if (updates.job?.queues) {
+      Object.entries(updates.job.queues).forEach(([queue, options]) => {
+        if (options.concurrency) {
+          this.setConcurrency(queue as Queue, options.concurrency);
+        }
+      });
+    }
+  }
+
+  async onModuleDestroy() {
     await this.stopWorkers();
   }
 
@@ -98,38 +100,35 @@ export class JobExecutor
     }
   }
 
-  private async startWorkers(queues: Queue[]) {
-    const configs =
-      (await this.runtime.fetchAll(
-        queues.reduce(
-          (ret, queue) => {
-            ret[`job/queues.${queue}.concurrency`] = true;
-            return ret;
-          },
-          {} as {
-            [key in `job/queues.${Queue}.concurrency`]: true;
-          }
-        )
-        // TODO(@forehalo): fix the override by [payment/service.spec.ts]
-      )) ?? {};
+  setConcurrency(queue: Queue, concurrency: number) {
+    const worker = this.workers.get(queue);
+    if (!worker) {
+      throw new Error(`Worker for [${queue}] not found.`);
+    }
 
+    worker.concurrency = concurrency;
+  }
+
+  private async startWorkers(queues: Queue[]) {
     for (const queue of queues) {
-      const concurrency =
-        (configs[`job/queues.${queue}.concurrency`] as number) ??
-        this.config.job.worker.concurrency ??
-        1;
+      const queueOptions = this.config.job.queues[queue];
+      const concurrency = queueOptions.concurrency ?? 1;
 
       const worker = new Worker(
         queue,
         async job => {
           await this.run(job.name as JobName, job.data);
         },
-        {
-          ...this.config.job.queue,
-          ...this.config.job.worker,
-          connection: this.redis,
-          concurrency,
-        }
+        merge(
+          {},
+          this.config.job.queue,
+          this.config.job.worker.defaultWorkerOptions,
+          queueOptions,
+          {
+            concurrency,
+            connection: this.redis,
+          }
+        )
       );
 
       worker.on('error', error => {
@@ -140,13 +139,13 @@ export class JobExecutor
         `Queue Worker [${queue}] started; concurrency=${concurrency};`
       );
 
-      this.workers[queue] = worker;
+      this.workers.set(queue, worker);
     }
   }
 
   private async stopWorkers() {
     await Promise.all(
-      Object.values(this.workers).map(async worker => {
+      Array.from(this.workers.values()).map(async worker => {
         await worker.close(true);
       })
     );

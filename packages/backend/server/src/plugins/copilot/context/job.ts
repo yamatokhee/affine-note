@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 
 import {
@@ -37,12 +37,12 @@ declare global {
 }
 
 @Injectable()
-export class CopilotContextDocJob implements OnModuleInit {
+export class CopilotContextDocJob {
   private supportEmbedding = false;
-  private readonly client: EmbeddingClient | undefined;
+  private client: EmbeddingClient | undefined;
 
   constructor(
-    config: Config,
+    private readonly config: Config,
     private readonly doc: DocReader,
     private readonly event: EventBus,
     private readonly logger: AFFiNELogger,
@@ -51,15 +51,24 @@ export class CopilotContextDocJob implements OnModuleInit {
     private readonly storage: CopilotStorage
   ) {
     this.logger.setContext(CopilotContextDocJob.name);
-    const configure = config.plugins.copilot.openai;
-    if (configure) {
-      this.client = new OpenAIEmbeddingClient(new OpenAI(configure));
-    }
   }
 
-  async onModuleInit() {
+  @OnEvent('config.init')
+  async onConfigInit() {
+    await this.setup();
+  }
+
+  @OnEvent('config.changed')
+  async onConfigChanged() {
+    await this.setup();
+  }
+
+  private async setup() {
     this.supportEmbedding =
       await this.models.copilotContext.checkEmbeddingAvailable();
+    this.client = new OpenAIEmbeddingClient(
+      new OpenAI(this.config.copilot.providers.openai)
+    );
   }
 
   // public this client to allow overriding in tests

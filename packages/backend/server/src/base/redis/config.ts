@@ -1,11 +1,54 @@
 import { RedisOptions } from 'ioredis';
+import { z } from 'zod';
 
-import { defineStartupConfig, ModuleConfig } from '../../base/config';
+import { defineModuleConfig } from '../config';
 
-declare module '../config' {
-  interface AppConfig {
-    redis: ModuleConfig<RedisOptions>;
+declare global {
+  interface AppConfigSchema {
+    redis: {
+      host: string;
+      port: number;
+      db: number;
+      username: string;
+      password: string;
+      ioredis: ConfigItem<
+        Omit<RedisOptions, 'host' | 'port' | 'db' | 'username' | 'password'>
+      >;
+    };
   }
 }
 
-defineStartupConfig('redis', {});
+defineModuleConfig('redis', {
+  db: {
+    desc: 'The database index of redis server to be used(Must be less than 10).',
+    default: 0,
+    env: ['REDIS_DATABASE', 'integer'],
+    validate: val => val >= 0 && val < 10,
+  },
+  host: {
+    desc: 'The host of the redis server.',
+    default: 'localhost',
+    env: ['REDIS_HOST', 'string'],
+  },
+  port: {
+    desc: 'The port of the redis server.',
+    default: 6379,
+    env: ['REDIS_PORT', 'integer'],
+    shape: z.number().positive(),
+  },
+  username: {
+    desc: 'The username of the redis server.',
+    default: '',
+    env: ['REDIS_USERNAME', 'string'],
+  },
+  password: {
+    desc: 'The password of the redis server.',
+    default: '',
+    env: ['REDIS_PASSWORD', 'string'],
+  },
+  ioredis: {
+    desc: 'The config for the ioredis client.',
+    default: {},
+    link: 'https://github.com/luin/ioredis',
+  },
+});

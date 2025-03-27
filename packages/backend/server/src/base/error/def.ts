@@ -815,4 +815,10 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'action_forbidden',
     message: 'You can not mention yourself.',
   },
+
+  // app config
+  invalid_app_config: {
+    type: 'invalid_input',
+    message: 'Invalid app config.',
+  },
 } satisfies Record<string, UserFriendlyErrorOptions>;

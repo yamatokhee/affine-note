@@ -10,7 +10,9 @@ export const ServerVersion = () => {
   const version = serverConfig?.version;
 
   const handleClick = useCallback(() => {
-    window.open(availableUpgrade.url, '_blank');
+    if (availableUpgrade) {
+      window.open(availableUpgrade.url, '_blank');
+    }
   }, [availableUpgrade]);
 
   if (availableUpgrade) {

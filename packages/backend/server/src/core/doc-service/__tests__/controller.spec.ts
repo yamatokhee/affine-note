@@ -5,9 +5,7 @@ import { User, Workspace } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
 import { createTestingApp, type TestingApp } from '../../../__tests__/utils';
-import { AppModule } from '../../../app.module';
 import { CryptoHelper } from '../../../base';
-import { ConfigModule } from '../../../base/config';
 import { Models } from '../../../models';
 import { DatabaseDocReader } from '../../doc';
 
@@ -19,9 +17,7 @@ const test = ava as TestFn<{
 }>;
 
 test.before(async t => {
-  const app = await createTestingApp({
-    imports: [ConfigModule.forRoot(), AppModule],
-  });
+  const app = await createTestingApp();
 
   t.context.models = app.get(Models);
   t.context.crypto = app.get(CryptoHelper);

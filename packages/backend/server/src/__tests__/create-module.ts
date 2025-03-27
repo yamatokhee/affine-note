@@ -4,9 +4,11 @@ import {
   TestingModule as NestjsTestingModule,
   TestingModuleBuilder,
 } from '@nestjs/testing';
+import { PrismaClient } from '@prisma/client';
 
 import { FunctionalityModules } from '../app.module';
-import { AFFiNELogger } from '../base';
+import { AFFiNELogger, EventBus, JobQueue } from '../base';
+import { createFactory, MockEventBus, MockJobQueue } from './mocks';
 import { TEST_LOG_LEVEL } from './utils';
 
 interface TestingModuleMetadata extends ModuleMetadata {
@@ -15,10 +17,13 @@ interface TestingModuleMetadata extends ModuleMetadata {
 
 export interface TestingModule extends NestjsTestingModule {
   [Symbol.asyncDispose](): Promise<void>;
+  create: ReturnType<typeof createFactory>;
+  queue: MockJobQueue;
+  event: MockEventBus;
 }
 
 export async function createModule(
-  metadata: TestingModuleMetadata
+  metadata: TestingModuleMetadata = {}
 ): Promise<TestingModule> {
   const { tapModule, ...meta } = metadata;
 
@@ -26,6 +31,12 @@ export async function createModule(
     ...meta,
     imports: [...FunctionalityModules, ...(meta.imports ?? [])],
   });
+
+  builder
+    .overrideProvider(JobQueue)
+    .useValue(new MockJobQueue())
+    .overrideProvider(EventBus)
+    .useValue(new MockEventBus());
 
   // when custom override happens
   if (tapModule) {
@@ -44,6 +55,9 @@ export async function createModule(
   module[Symbol.asyncDispose] = async () => {
     await module.close();
   };
+  module.create = createFactory(module.get(PrismaClient));
+  module.queue = module.get(JobQueue);
+  module.event = module.get(EventBus);
 
   return module;
 }

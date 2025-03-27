@@ -1,7 +1,6 @@
 import { User } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
-import { ConfigModule } from '../../base/config';
 import { FeatureType, Models, UserFeatureModel, UserModel } from '../../models';
 import { createTestingModule, TestingModule } from '../utils';
 
@@ -126,13 +125,9 @@ test('should not switch user quota if the new quota is the same as the current o
 });
 
 test('should use pro plan as free for selfhost instance', async t => {
-  await using module = await createTestingModule({
-    imports: [
-      ConfigModule.forRoot({
-        isSelfhosted: true,
-      }),
-    ],
-  });
+  // @ts-expect-error
+  env.DEPLOYMENT_TYPE = 'selfhosted';
+  await using module = await createTestingModule();
 
   const models = module.get(Models);
   const u1 = await models.user.create({

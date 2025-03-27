@@ -8048,6 +8048,10 @@ export function useAFFiNEI18N(): {
       * `You can not mention yourself.`
       */
     ["error.MENTION_USER_ONESELF_DENIED"](): string;
+    /**
+      * `Invalid app config.`
+      */
+    ["error.INVALID_APP_CONFIG"](): string;
 } { const { t } = useTranslation(); return useMemo(() => createProxy((key) => t.bind(null, key)), [t]); }
 function createComponent(i18nKey: string) {
     return (props) => createElement(Trans, { i18nKey, shouldUnescape: true, ...props });

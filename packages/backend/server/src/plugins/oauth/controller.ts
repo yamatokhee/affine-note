@@ -24,8 +24,8 @@ import {
 import { AuthService, Public } from '../../core/auth';
 import { Models } from '../../models';
 import { OAuthProviderName } from './config';
+import { OAuthProviderFactory } from './factory';
 import { OAuthAccount, Tokens } from './providers/def';
-import { OAuthProviderFactory } from './register';
 import { OAuthService } from './service';
 
 @Controller('/api/oauth')

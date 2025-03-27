@@ -8,9 +8,10 @@ import {
 } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 
-import { AppModule, FunctionalityModules } from '../../app.module';
-import { AFFiNELogger, JobQueue, Runtime } from '../../base';
+import { buildAppModule, FunctionalityModules } from '../../app.module';
+import { AFFiNELogger, JobQueue } from '../../base';
 import { GqlModule } from '../../base/graphql';
+import { ServerConfigModule } from '../../core';
 import { AuthGuard, AuthModule } from '../../core/auth';
 import { Mailer, MailModule } from '../../core/mail';
 import { ModelsModule } from '../../models';
@@ -63,16 +64,18 @@ export async function createTestingModule(
   autoInitialize = true
 ): Promise<TestingModule> {
   // setting up
-  let imports = moduleDef.imports ?? [AppModule];
+  let imports = moduleDef.imports ?? [buildAppModule(globalThis.env)];
   imports =
-    imports[0] === AppModule
-      ? [AppModule]
+    // @ts-expect-error
+    imports[0].module?.name === 'AppModule'
+      ? imports
       : dedupeModules([
           ...FunctionalityModules,
           ModelsModule,
           AuthModule,
           GqlModule,
           MailModule,
+          ServerConfigModule,
           ...imports,
         ]);
 
@@ -101,10 +104,6 @@ export async function createTestingModule(
 
   testingModule.initTestingDB = async () => {
     await initTestingDB(module);
-
-    const runtime = module.get(Runtime);
-    // by pass password min length validation
-    await runtime.set('auth/password.min', 1);
   };
 
   testingModule.create = createFactory(

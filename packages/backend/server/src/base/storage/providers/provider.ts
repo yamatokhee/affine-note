@@ -1,7 +1,5 @@
 import type { Readable } from 'node:stream';
 
-import { StorageProviderType } from '../config';
-
 export interface GetObjectMetadata {
   /**
    * @default 'application/octet-stream'
@@ -28,7 +26,6 @@ export type BlobInputType = Buffer | Readable | string;
 export type BlobOutputType = Readable;
 
 export interface StorageProvider {
-  readonly type: StorageProviderType;
   put(
     key: string,
     body: BlobInputType,

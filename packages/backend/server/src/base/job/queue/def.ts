@@ -49,7 +49,7 @@ export const OnJob = (job: JobName) => {
   if (!QUEUES.includes(ns as Queue)) {
     throw new Error(
       `Invalid job queue: ${ns}, must be one of [${QUEUES.join(', ')}].
-If you want to introduce new job queue, please modify the Queue enum first in ${join(AFFiNE.projectRoot, 'src/base/job/queue/def.ts')}`
+If you want to introduce new job queue, please modify the Queue enum first in ${join(env.projectRoot, 'src/base/job/queue/def.ts')}`
     );
   }
 

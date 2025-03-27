@@ -17,6 +17,7 @@ import { QuotaService } from '../../core/quota';
 import { Models } from '../../models';
 import { ChatMessageCache } from './message';
 import { PromptService } from './prompt';
+import { PromptMessage, PromptParams } from './providers';
 import {
   AvailableModel,
   ChatHistory,
@@ -28,8 +29,6 @@ import {
   ChatSessionState,
   getTokenEncoder,
   ListHistoriesOptions,
-  PromptMessage,
-  PromptParams,
   SubmittedMessage,
 } from './types';
 
@@ -533,15 +532,17 @@ export class ChatSessionService {
                 const ret = ChatMessageSchema.array().safeParse(messages);
                 if (ret.success) {
                   // render system prompt
-                  const preload = options?.withPrompt
-                    ? prompt
-                        .finish(ret.data[0]?.params || {}, id)
-                        .filter(({ role }) => role !== 'system')
-                    : [];
+                  const preload = (
+                    options?.withPrompt
+                      ? prompt
+                          .finish(ret.data[0]?.params || {}, id)
+                          .filter(({ role }) => role !== 'system')
+                      : []
+                  ) as ChatMessage[];
 
                   // `createdAt` is required for history sorting in frontend
                   // let's fake the creating time of prompt messages
-                  (preload as ChatMessage[]).forEach((msg, i) => {
+                  preload.forEach((msg, i) => {
                     msg.createdAt = new Date(
                       createdAt.getTime() - preload.length - i - 1
                     );

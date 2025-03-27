@@ -6,9 +6,9 @@ import type {
 import { Injectable } from '@nestjs/common';
 
 import {
+  Config,
   getRequestResponseFromContext,
   GuardProvider,
-  Runtime,
 } from '../../base';
 import { VersionService } from './service';
 
@@ -20,14 +20,14 @@ export class VersionGuardProvider
   name = 'version' as const;
 
   constructor(
-    private readonly runtime: Runtime,
+    private readonly config: Config,
     private readonly version: VersionService
   ) {
     super();
   }
 
   async canActivate(context: ExecutionContext) {
-    if (!(await this.runtime.fetch('client/versionControl.enabled'))) {
+    if (!this.config.client.versionControl.enabled) {
       return true;
     }
 

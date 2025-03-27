@@ -1,5 +1,3 @@
-import '../../plugins/config';
-
 import { Controller, Get, HttpStatus, UseGuards } from '@nestjs/common';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
@@ -89,11 +87,13 @@ class NonThrottledController {
 test.before(async t => {
   const app = await createTestingApp({
     imports: [
-      ConfigModule.forRoot({
-        throttler: {
-          default: {
-            ttl: 60,
-            limit: 120,
+      ConfigModule.override({
+        throttle: {
+          throttlers: {
+            default: {
+              ttl: 60,
+              limit: 120,
+            },
           },
         },
       }),

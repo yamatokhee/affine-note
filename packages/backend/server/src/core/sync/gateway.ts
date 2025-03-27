@@ -17,9 +17,7 @@ import {
   GatewayErrorWrapper,
   metrics,
   NotInSpace,
-  Runtime,
   SpaceAccessDenied,
-  VersionRejected,
 } from '../../base';
 import { Models } from '../../models';
 import { CurrentUser } from '../auth';
@@ -145,7 +143,6 @@ export class SpaceSyncGateway
   private connectionCount = 0;
 
   constructor(
-    private readonly runtime: Runtime,
     private readonly ac: AccessController,
     private readonly workspace: PgWorkspaceDocStorageAdapter,
     private readonly userspace: PgUserspaceDocStorageAdapter,
@@ -186,30 +183,6 @@ export class SpaceSyncGateway
     return adapters[spaceType];
   }
 
-  async assertVersion(client: Socket, version?: string) {
-    const shouldCheckClientVersion = await this.runtime.fetch(
-      'flags/syncClientVersionCheck'
-    );
-    if (
-      // @todo(@darkskygit): remove this flag after 0.12 goes stable
-      shouldCheckClientVersion &&
-      version !== AFFiNE.version
-    ) {
-      client.emit('server-version-rejected', {
-        currentVersion: version,
-        requiredVersion: AFFiNE.version,
-        reason: `Client version${
-          version ? ` ${version}` : ''
-        } is outdated, please update to ${AFFiNE.version}`,
-      });
-
-      throw new VersionRejected({
-        version: version || 'unknown',
-        serverVersion: AFFiNE.version,
-      });
-    }
-  }
-
   // v3
   @SubscribeMessage('space:join')
   async onJoinSpace(
@@ -218,8 +191,6 @@ export class SpaceSyncGateway
     @MessageBody()
     { spaceType, spaceId, clientVersion }: JoinSpaceMessage
   ): Promise<EventResponse<{ clientId: string; success: true }>> {
-    await this.assertVersion(client, clientVersion);
-
     // TODO(@forehalo): remove this after 0.19 goes out of life
     // simple match 0.19.x
     if (/^0.19.[\d]$/.test(clientVersion)) {
@@ -396,10 +367,8 @@ export class SpaceSyncGateway
     @ConnectedSocket() client: Socket,
     @CurrentUser() user: CurrentUser,
     @MessageBody()
-    { spaceType, spaceId, docId, clientVersion }: JoinSpaceAwarenessMessage
+    { spaceType, spaceId, docId }: JoinSpaceAwarenessMessage
   ) {
-    await this.assertVersion(client, clientVersion);
-
     await this.selectAdapter(client, spaceType).join(
       user.id,
       spaceId,

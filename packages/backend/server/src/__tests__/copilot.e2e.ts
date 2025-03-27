@@ -6,12 +6,11 @@ import type { TestFn } from 'ava';
 import ava from 'ava';
 import Sinon from 'sinon';
 
+import { AppModule } from '../app.module';
 import { JobQueue } from '../base';
 import { ConfigModule } from '../base/config';
 import { AuthService } from '../core/auth';
 import { DocReader } from '../core/doc';
-import { WorkspaceModule } from '../core/workspaces';
-import { CopilotModule } from '../plugins/copilot';
 import {
   CopilotContextDocJob,
   CopilotContextService,
@@ -19,14 +18,11 @@ import {
 import { MockEmbeddingClient } from '../plugins/copilot/context/embedding';
 import { prompts, PromptService } from '../plugins/copilot/prompt';
 import {
-  CopilotProviderService,
-  FalProvider,
+  CopilotProviderFactory,
   OpenAIProvider,
-  PerplexityProvider,
-  registerCopilotProvider,
-  unregisterCopilotProvider,
 } from '../plugins/copilot/providers';
 import { CopilotStorage } from '../plugins/copilot/storage';
+import { MockCopilotProvider } from './mocks';
 import {
   acceptInviteById,
   createTestingApp,
@@ -53,7 +49,6 @@ import {
   listContextDocAndFiles,
   matchFiles,
   matchWorkspaceDocs,
-  MockCopilotTestProvider,
   sse2array,
   textToEventStream,
   unsplashSearch,
@@ -67,7 +62,7 @@ const test = ava as TestFn<{
   context: CopilotContextService;
   jobs: CopilotContextDocJob;
   prompt: PromptService;
-  provider: CopilotProviderService;
+  factory: CopilotProviderFactory;
   storage: CopilotStorage;
   u1: TestUser;
 }>;
@@ -75,24 +70,19 @@ const test = ava as TestFn<{
 test.before(async t => {
   const app = await createTestingApp({
     imports: [
-      ConfigModule.forRoot({
-        plugins: {
-          copilot: {
-            openai: {
-              apiKey: '1',
-            },
-            fal: {
-              apiKey: '1',
-            },
-            perplexity: {
-              apiKey: '1',
-            },
-            unsplashKey: process.env.UNSPLASH_ACCESS_KEY || '1',
+      ConfigModule.override({
+        copilot: {
+          providers: {
+            openai: { apiKey: '1' },
+            fal: {},
+            perplexity: {},
+          },
+          unsplash: {
+            key: process.env.UNSPLASH_ACCESS_KEY || '1',
           },
         },
       }),
-      WorkspaceModule,
-      CopilotModule,
+      AppModule,
     ],
     tapModule: m => {
       // use real JobQueue for testing
@@ -105,6 +95,7 @@ test.before(async t => {
           };
         },
       });
+      m.overrideProvider(OpenAIProvider).useClass(MockCopilotProvider);
     },
   });
 
@@ -129,13 +120,8 @@ test.beforeEach(async t => {
   Sinon.restore();
   const { app, prompt } = t.context;
   await app.initTestingDB();
-  await prompt.onModuleInit();
+  await prompt.onApplicationBootstrap();
   t.context.u1 = await app.signupV1('u1@affine.pro');
-
-  unregisterCopilotProvider(OpenAIProvider.type);
-  unregisterCopilotProvider(FalProvider.type);
-  unregisterCopilotProvider(PerplexityProvider.type);
-  registerCopilotProvider(MockCopilotTestProvider);
 
   await prompt.set(promptName, 'test', [
     { role: 'system', content: 'hello {{word}}' },
@@ -761,13 +747,12 @@ test('should be able to manage context', async t => {
       'should throw error if create context with invalid session id'
     );
 
-    const context = createCopilotContext(app, workspaceId, sessionId);
-    await t.notThrowsAsync(context, 'should create context with chat session');
+    const context = await createCopilotContext(app, workspaceId, sessionId);
 
     const list = await listContext(app, workspaceId, sessionId);
     t.deepEqual(
       list.map(f => ({ id: f.id })),
-      [{ id: await context }],
+      [{ id: context }],
       'should list context'
     );
   }

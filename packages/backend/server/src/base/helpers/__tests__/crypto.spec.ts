@@ -1,5 +1,3 @@
-import { createPrivateKey, createPublicKey } from 'node:crypto';
-
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
 
@@ -9,42 +7,19 @@ const test = ava as TestFn<{
   crypto: CryptoHelper;
 }>;
 
-const key = `-----BEGIN EC PRIVATE KEY-----
-MHcCAQEEIEtyAJLIULkphVhqXqxk4Nr8Ggty3XLwUJWBxzAWCWTMoAoGCCqGSM49
-AwEHoUQDQgAEF3U/0wIeJ3jRKXeFKqQyBKlr9F7xaAUScRrAuSP33rajm3cdfihI
-3JvMxVNsS2lE8PSGQrvDrJZaDo0L+Lq9Gg==
------END EC PRIVATE KEY-----`;
-const privateKey = createPrivateKey({
-  key,
-  format: 'pem',
-  type: 'sec1',
-})
-  .export({
-    type: 'pkcs8',
-    format: 'pem',
-  })
-  .toString('utf8');
-
-const publicKey = createPublicKey({
-  key,
-  format: 'pem',
-  type: 'spki',
-})
-  .export({
-    format: 'pem',
-    type: 'spki',
-  })
-  .toString('utf8');
+const privateKey = `-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgS3IAkshQuSmFWGpe
+rGTg2vwaC3LdcvBQlYHHMBYJZMyhRANCAAQXdT/TAh4neNEpd4UqpDIEqWv0XvFo
+BRJxGsC5I/fetqObdx1+KEjcm8zFU2xLaUTw9IZCu8OslloOjQv4ur0a
+-----END PRIVATE KEY-----`;
 
 test.beforeEach(async t => {
   t.context.crypto = new CryptoHelper({
     crypto: {
-      secret: {
-        publicKey,
-        privateKey,
-      },
+      privateKey,
     },
   } as any);
+  t.context.crypto.onConfigInit();
 });
 
 test('should be able to sign and verify', t => {

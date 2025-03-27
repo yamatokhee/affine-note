@@ -1,12 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
-import {
-  Config,
-  NotificationNotFound,
-  PaginationInput,
-  URLHelper,
-} from '../../base';
+import { NotificationNotFound, PaginationInput, URLHelper } from '../../base';
 import {
   DEFAULT_WORKSPACE_NAME,
   InvitationNotificationCreate,
@@ -30,8 +25,7 @@ export class NotificationService {
     private readonly models: Models,
     private readonly docReader: DocReader,
     private readonly mailer: Mailer,
-    private readonly url: URLHelper,
-    private readonly config: Config
+    private readonly url: URLHelper
   ) {}
 
   async cleanExpiredNotifications() {
@@ -100,7 +94,7 @@ export class NotificationService {
 
   private async sendInvitationEmail(input: InvitationNotificationCreate) {
     const inviteUrl = this.url.link(`/invite/${input.body.inviteId}`);
-    if (this.config.node.dev) {
+    if (env.dev) {
       // make it easier to test in dev mode
       this.logger.debug(`Invite link: ${inviteUrl}`);
     }

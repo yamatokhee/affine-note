@@ -1,11 +1,12 @@
 import './config';
 
-import { ServerFeature } from '../../core/config';
+import { Module } from '@nestjs/common';
+
+import { ServerConfigModule } from '../../core';
 import { DocStorageModule } from '../../core/doc';
 import { FeatureModule } from '../../core/features';
 import { PermissionModule } from '../../core/permission';
 import { QuotaModule } from '../../core/quota';
-import { Plugin } from '../registry';
 import {
   CopilotContextDocJob,
   CopilotContextResolver,
@@ -15,15 +16,7 @@ import {
 import { CopilotController } from './controller';
 import { ChatMessageCache } from './message';
 import { PromptService } from './prompt';
-import {
-  assertProvidersConfigs,
-  CopilotProviderService,
-  FalProvider,
-  OpenAIProvider,
-  PerplexityProvider,
-  registerCopilotProvider,
-} from './providers';
-import { GoogleProvider } from './providers/google';
+import { CopilotProviderFactory, CopilotProviders } from './providers';
 import {
   CopilotResolver,
   PromptsManagementResolver,
@@ -37,42 +30,39 @@ import {
 } from './transcript';
 import { CopilotWorkflowExecutors, CopilotWorkflowService } from './workflow';
 
-registerCopilotProvider(FalProvider);
-registerCopilotProvider(OpenAIProvider);
-registerCopilotProvider(GoogleProvider);
-registerCopilotProvider(PerplexityProvider);
-
-@Plugin({
-  name: 'copilot',
-  imports: [DocStorageModule, FeatureModule, QuotaModule, PermissionModule],
+@Module({
+  imports: [
+    DocStorageModule,
+    FeatureModule,
+    QuotaModule,
+    PermissionModule,
+    ServerConfigModule,
+  ],
   providers: [
+    // providers
+    ...CopilotProviders,
+    CopilotProviderFactory,
+    // services
     ChatSessionService,
     CopilotResolver,
     ChatMessageCache,
-    UserCopilotResolver,
     PromptService,
-    CopilotProviderService,
     CopilotStorage,
-    PromptsManagementResolver,
     // workflow
     CopilotWorkflowService,
     ...CopilotWorkflowExecutors,
     // context
-    CopilotContextRootResolver,
     CopilotContextResolver,
     CopilotContextService,
     CopilotContextDocJob,
     // transcription
     CopilotTranscriptionService,
     CopilotTranscriptionResolver,
+    // gql resolvers
+    UserCopilotResolver,
+    PromptsManagementResolver,
+    CopilotContextRootResolver,
   ],
   controllers: [CopilotController],
-  contributesTo: ServerFeature.Copilot,
-  if: config => {
-    if (config.flavor.graphql || config.flavor.doc) {
-      return assertProvidersConfigs(config);
-    }
-    return false;
-  },
 })
 export class CopilotModule {}

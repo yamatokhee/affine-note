@@ -8,7 +8,7 @@
     "run-test": "./scripts/run-test.ts"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "dev": "nodemon ./src/index.ts",
     "dev:mail": "email dev -d src/mails",
     "test": "ava --concurrency 1 --serial",
@@ -20,6 +20,7 @@
     "data-migration": "cross-env NODE_ENV=development r ./src/data/index.ts",
     "init": "yarn prisma migrate dev && yarn data-migration run",
     "seed": "r ./src/seed/index.ts",
+    "genconfig": "r ./scripts/genconfig.ts",
     "predeploy": "yarn prisma migrate deploy && node --import ./scripts/register.js ./dist/data/index.js run",
     "postinstall": "prisma generate"
   },
@@ -139,7 +140,8 @@
     "nodemon": "^3.1.7",
     "react-email": "3.0.7",
     "sinon": "^19.0.2",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "why-is-node-running": "^3.2.2"
   },
   "nodemonConfig": {
     "exec": "node",

@@ -23,7 +23,6 @@ import {
   InvalidAuthState,
   InvalidEmail,
   InvalidEmailToken,
-  Runtime,
   SignUpForbidden,
   Throttle,
   URLHelper,
@@ -66,11 +65,10 @@ export class AuthController {
     private readonly auth: AuthService,
     private readonly models: Models,
     private readonly config: Config,
-    private readonly runtime: Runtime,
     private readonly cache: Cache,
     private readonly crypto: CryptoHelper
   ) {
-    if (config.node.dev) {
+    if (env.dev) {
       // set DNS servers in dev mode
       // NOTE: some network debugging software uses DNS hijacking
       // to better debug traffic, but their DNS servers may not
@@ -93,7 +91,7 @@ export class AuthController {
 
     const user = await this.models.user.getUserByEmail(params.email);
 
-    const magicLinkAvailable = !!this.config.mailer.host;
+    const magicLinkAvailable = this.config.mailer.enabled;
 
     if (!user) {
       return {
@@ -171,15 +169,11 @@ export class AuthController {
     // send email magic link
     const user = await this.models.user.getUserByEmail(email);
     if (!user) {
-      const allowSignup = await this.runtime.fetch('auth/allowSignup');
-      if (!allowSignup) {
+      if (!this.config.auth.allowSignup) {
         throw new SignUpForbidden();
       }
 
-      const requireEmailDomainVerification = await this.runtime.fetch(
-        'auth/requireEmailDomainVerification'
-      );
-      if (requireEmailDomainVerification) {
+      if (this.config.auth.requireEmailDomainVerification) {
         // verify domain has MX, SPF, DMARC records
         const [name, domain, ...rest] = email.split('@');
         if (rest.length || !domain) {
@@ -229,7 +223,7 @@ export class AuthController {
           }
         : {}),
     });
-    if (this.config.node.dev) {
+    if (env.dev) {
       // make it easier to test in dev mode
       this.logger.debug(`Magic link: ${magicLink}`);
     }

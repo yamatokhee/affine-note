@@ -7,7 +7,6 @@ import type { TestFn } from 'ava';
 import ava from 'ava';
 import request from 'supertest';
 
-import { DocRendererModule } from '../../core/doc-renderer';
 import { createTestingApp } from '../utils';
 
 const test = ava as TestFn<{
@@ -45,13 +44,11 @@ function initTestStaticFiles(staticPath: string) {
   }
 }
 
-test.before('init selfhost server', async t => {
+test.before(async t => {
   const staticPath = new Package('@affine/server').join('static').value;
   initTestStaticFiles(staticPath);
 
-  const app = await createTestingApp({
-    imports: [DocRendererModule],
-  });
+  const app = await createTestingApp();
 
   t.context.app = app;
 });

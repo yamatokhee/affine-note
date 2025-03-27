@@ -908,6 +908,7 @@ export const PackageList = [
     workspaceDependencies: [
       'packages/frontend/component',
       'packages/frontend/core',
+      'packages/common/error',
       'packages/common/graphql',
       'packages/common/infra',
     ],

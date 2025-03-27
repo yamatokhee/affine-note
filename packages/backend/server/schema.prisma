@@ -24,23 +24,25 @@ model User {
   registered      Boolean   @default(true)
   disabled        Boolean   @default(false)
 
-  features              UserFeature[]
-  userStripeCustomer    UserStripeCustomer?
-  workspacePermissions  WorkspaceUserRole[]
-  docPermissions        WorkspaceDocUserRole[]
-  connectedAccounts     ConnectedAccount[]
-  sessions              UserSession[]
-  aiSessions            AiSession[]
-  updatedRuntimeConfigs RuntimeConfig[]
-  userSnapshots         UserSnapshot[]
-  createdSnapshot       Snapshot[]             @relation("createdSnapshot")
-  updatedSnapshot       Snapshot[]             @relation("updatedSnapshot")
-  createdUpdate         Update[]               @relation("createdUpdate")
-  createdHistory        SnapshotHistory[]      @relation("createdHistory")
-  createdAiJobs         AiJobs[]               @relation("createdAiJobs")
+  features                     UserFeature[]
+  userStripeCustomer           UserStripeCustomer?
+  workspacePermissions         WorkspaceUserRole[]
+  docPermissions               WorkspaceDocUserRole[]
+  connectedAccounts            ConnectedAccount[]
+  sessions                     UserSession[]
+  aiSessions                   AiSession[]
+  /// @deprecated
+  deprecatedAppRuntimeSettings DeprecatedAppRuntimeSettings[]
+  appConfigs                   AppConfig[]
+  userSnapshots                UserSnapshot[]
+  createdSnapshot              Snapshot[]                     @relation("createdSnapshot")
+  updatedSnapshot              Snapshot[]                     @relation("updatedSnapshot")
+  createdUpdate                Update[]                       @relation("createdUpdate")
+  createdHistory               SnapshotHistory[]              @relation("createdHistory")
+  createdAiJobs                AiJobs[]                       @relation("createdAiJobs")
   // receive notifications
-  notifications         Notification[]         @relation("user_notifications")
-  settings              UserSettings?
+  notifications                Notification[]                 @relation("user_notifications")
+  settings                     UserSettings?
 
   @@index([email])
   @@map("users")
@@ -438,12 +440,12 @@ model AiContext {
 }
 
 model AiContextEmbedding {
-  id        String                     @id @default(uuid()) @db.VarChar
-  contextId String                     @map("context_id") @db.VarChar
-  fileId    String                     @map("file_id") @db.VarChar
+  id        String                      @id @default(uuid()) @db.VarChar
+  contextId String                      @map("context_id") @db.VarChar
+  fileId    String                      @map("file_id") @db.VarChar
   // a file can be divided into multiple chunks and embedded separately.
-  chunk     Int                        @db.Integer
-  content   String                     @db.VarChar
+  chunk     Int                         @db.Integer
+  content   String                      @db.VarChar
   embedding Unsupported("vector(1024)")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -457,11 +459,11 @@ model AiContextEmbedding {
 }
 
 model AiWorkspaceEmbedding {
-  workspaceId String                     @map("workspace_id") @db.VarChar
-  docId       String                     @map("doc_id") @db.VarChar
+  workspaceId String                      @map("workspace_id") @db.VarChar
+  docId       String                      @map("doc_id") @db.VarChar
   // a doc can be divided into multiple chunks and embedded separately.
-  chunk       Int                        @db.Integer
-  content     String                     @db.VarChar
+  chunk       Int                         @db.Integer
+  content     String                      @db.VarChar
   embedding   Unsupported("vector(1024)")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -527,7 +529,8 @@ enum RuntimeConfigType {
   Array
 }
 
-model RuntimeConfig {
+/// @deprecated use AppConfig instead
+model DeprecatedAppRuntimeSettings {
   id            String            @id @db.VarChar
   type          RuntimeConfigType
   module        String            @db.VarChar
@@ -542,6 +545,18 @@ model RuntimeConfig {
 
   @@unique([module, key])
   @@map("app_runtime_settings")
+}
+
+model AppConfig {
+  id            String   @id @db.VarChar
+  value         Json     @db.JsonB
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  lastUpdatedBy String?  @map("last_updated_by") @db.VarChar
+
+  lastUpdatedByUser User? @relation(fields: [lastUpdatedBy], references: [id], onDelete: SetNull)
+
+  @@map("app_configs")
 }
 
 model DeprecatedUserSubscription {

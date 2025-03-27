@@ -1,6 +1,6 @@
 import { OnOptions } from 'eventemitter2';
 
-import { PushMetadata, sliceMetadata } from '../nestjs';
+import { PushMetadata, sliceMetadata } from '../nestjs/decorator';
 
 declare global {
   /**

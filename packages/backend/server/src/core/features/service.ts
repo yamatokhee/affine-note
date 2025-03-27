@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { Runtime } from '../../base';
+import { Config } from '../../base';
 import { Models } from '../../models';
 
 const STAFF = ['@toeverything.info', '@affine.pro'];
@@ -15,8 +15,8 @@ export class FeatureService {
   protected logger = new Logger(FeatureService.name);
 
   constructor(
-    private readonly models: Models,
-    private readonly runtime: Runtime
+    private readonly config: Config,
+    private readonly models: Models
   ) {}
 
   // ======== Admin ========
@@ -73,9 +73,7 @@ export class FeatureService {
     email: string,
     type: EarlyAccessType = EarlyAccessType.App
   ) {
-    const earlyAccessControlEnabled = await this.runtime.fetch(
-      'flags/earlyAccessControl'
-    );
+    const earlyAccessControlEnabled = this.config.flags.earlyAccessControl;
 
     if (earlyAccessControlEnabled && !this.isStaff(email)) {
       const user = await this.models.user.getUserByEmail(email);

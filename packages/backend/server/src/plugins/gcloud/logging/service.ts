@@ -9,7 +9,7 @@ const moreMetadata = format(info => {
   return info;
 });
 
-export const loggerProvider: Provider<LoggerService> = {
+export const LoggerProvider: Provider<LoggerService> = {
   provide: LoggerProvide,
   useFactory: () => {
     const instance = createLogger({

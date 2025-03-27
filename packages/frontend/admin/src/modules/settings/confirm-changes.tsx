@@ -7,22 +7,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@affine/admin/components/ui/dialog';
-
-import type { ModifiedValues } from './index';
+import { useCallback } from 'react';
 
 export const ConfirmChanges = ({
+  updates,
   open,
-  onClose,
-  onConfirm,
   onOpenChange,
-  modifiedValues,
+  onConfirm,
 }: {
+  updates: Record<string, { from: any; to: any }>;
   open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
   onOpenChange: (open: boolean) => void;
-  modifiedValues: ModifiedValues[];
+  onConfirm: () => void;
 }) => {
+  const onClose = useCallback(() => {
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  const modifiedKeys = Object.keys(updates).filter(
+    key => updates[key].from !== updates[key].to
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:w-[460px]">
@@ -34,12 +39,12 @@ export const ConfirmChanges = ({
             Are you sure you want to save the following changes?
           </DialogDescription>
         </DialogHeader>
-        {modifiedValues.length > 0 ? (
+        {modifiedKeys.length > 0 ? (
           <pre className="flex flex-col text-sm bg-zinc-100 gap-1 min-h-[64px] rounded-md p-[12px_16px_16px_12px] mt-2 overflow-hidden">
             <p>{'{'}</p>
-            {modifiedValues.map(({ id, expiredValue, newValue }) => (
-              <p key={id}>
-                {'  '} {id}:{' '}
+            {modifiedKeys.map(key => (
+              <p key={key}>
+                {'  '} {key}:{' '}
                 <span
                   className="mr-2 line-through "
                   style={{
@@ -47,7 +52,7 @@ export const ConfirmChanges = ({
                     backgroundColor: 'rgba(254, 213, 213, 1)',
                   }}
                 >
-                  {JSON.stringify(expiredValue)}
+                  {JSON.stringify(updates[key].from)}
                 </span>
                 <span
                   style={{
@@ -55,7 +60,7 @@ export const ConfirmChanges = ({
                     backgroundColor: 'rgba(225, 250, 177, 1)',
                   }}
                 >
-                  {JSON.stringify(newValue)}
+                  {JSON.stringify(updates[key].to)}
                 </span>
                 ,
               </p>
@@ -70,7 +75,11 @@ export const ConfirmChanges = ({
             <Button type="button" onClick={onClose} variant="outline">
               <span>Cancel</span>
             </Button>
-            <Button type="button" onClick={onConfirm}>
+            <Button
+              type="button"
+              onClick={onConfirm}
+              disabled={modifiedKeys.length === 0}
+            >
               <span>Save</span>
             </Button>
           </div>

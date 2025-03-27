@@ -10,23 +10,19 @@ import { SettingsIcon } from '@blocksuite/icons/rc';
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { cssVarV2 } from '@toeverything/theme/v2';
-import { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { useGetServerRuntimeConfig } from '../settings/use-get-server-runtime-config';
+import { ALL_CONFIGURABLE_MODULES } from '../settings/config';
 import { CollapsibleItem, OtherModules } from './collapsible-item';
 import { useNav } from './context';
-export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
-  const { moduleList } = useGetServerRuntimeConfig();
-  const { setCurrentModule } = useNav();
 
-  const { authModule, otherModules } = useMemo(() => {
-    const authModule = moduleList.find(module => module.moduleName === 'auth');
-    const otherModules = moduleList.filter(
-      module => module.moduleName !== 'auth'
-    );
-    return { authModule, otherModules };
-  }, [moduleList]);
+const authModule = ALL_CONFIGURABLE_MODULES.find(module => module === 'auth');
+const otherModules = ALL_CONFIGURABLE_MODULES.filter(
+  module => module !== 'auth'
+);
+
+export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
+  const { setCurrentModule } = useNav();
 
   if (isCollapsed) {
     return (
@@ -63,10 +59,10 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
                   borderColor: cssVarV2('layer/insideBorder/blackBorder'),
                 }}
               >
-                {moduleList.map(module => (
-                  <li key={module.moduleName} className="flex">
+                {ALL_CONFIGURABLE_MODULES.map(module => (
+                  <li key={module} className="flex">
                     <NavLink
-                      to={`/admin/settings/${module.moduleName}`}
+                      to={`/admin/settings/${module}`}
                       className={cn(
                         buttonVariants({
                           variant: 'ghost',
@@ -79,9 +75,9 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
                           ? cssVarV2('selfhost/button/sidebarButton/bg/select')
                           : undefined,
                       })}
-                      onClick={() => setCurrentModule?.(module.moduleName)}
+                      onClick={() => setCurrentModule?.(module)}
                     >
-                      {module.moduleName}
+                      {module}
                     </NavLink>
                   </li>
                 ))}
@@ -93,6 +89,7 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
       </NavigationMenuPrimitive.Root>
     );
   }
+
   return (
     <Accordion type="multiple" className="w-full h-full  overflow-hidden">
       <AccordionItem
@@ -134,8 +131,7 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
             <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit] [&>div]:!block">
               {authModule && (
                 <CollapsibleItem
-                  items={authModule.keys}
-                  title={authModule.moduleName}
+                  title={authModule}
                   changeModule={setCurrentModule}
                 />
               )}

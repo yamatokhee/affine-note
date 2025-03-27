@@ -4,16 +4,23 @@ import { Injectable } from '@nestjs/common';
 import type { Response } from 'express';
 
 import { Config } from '../config';
+import { OnEvent } from '../event';
 
 @Injectable()
 export class URLHelper {
-  private readonly redirectAllowHosts: string[];
+  redirectAllowHosts!: string[];
 
-  readonly origin: string;
-  readonly baseUrl: string;
-  readonly home: string;
+  origin!: string;
+  baseUrl!: string;
+  home!: string;
 
   constructor(private readonly config: Config) {
+    this.init();
+  }
+
+  @OnEvent('config.changed')
+  @OnEvent('config.init')
+  init() {
     if (this.config.server.externalUrl) {
       if (!this.verify(this.config.server.externalUrl)) {
         throw new Error(

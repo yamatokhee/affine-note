@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   Prisma,
   type Session,
@@ -6,6 +6,7 @@ import {
   type UserSession,
 } from '@prisma/client';
 
+import { Config } from '../base';
 import { BaseModel } from './base';
 
 export type { Session, UserSession };
@@ -13,6 +14,9 @@ export type UserSessionWithUser = UserSession & { user: User };
 
 @Injectable()
 export class SessionModel extends BaseModel {
+  @Inject(Config)
+  private readonly config!: Config;
+
   async createSession() {
     return await this.db.session.create({
       data: {},

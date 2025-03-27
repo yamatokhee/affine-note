@@ -603,6 +603,7 @@ export enum ErrorNames {
   GRAPHQL_BAD_REQUEST = 'GRAPHQL_BAD_REQUEST',
   HTTP_REQUEST_ERROR = 'HTTP_REQUEST_ERROR',
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
+  INVALID_APP_CONFIG = 'INVALID_APP_CONFIG',
   INVALID_AUTH_STATE = 'INVALID_AUTH_STATE',
   INVALID_CHECKOUT_PARAMETERS = 'INVALID_CHECKOUT_PARAMETERS',
   INVALID_EMAIL = 'INVALID_EMAIL',
@@ -1114,6 +1115,8 @@ export interface Mutation {
   sendVerifyEmail: Scalars['Boolean']['output'];
   setBlob: Scalars['String']['output'];
   submitAudioTranscription: Maybe<TranscriptionResultType>;
+  /** update app configuration */
+  updateAppConfig: Scalars['JSONObject']['output'];
   /** Update a copilot prompt */
   updateCopilotPrompt: CopilotPromptType;
   /** Update a chat session */
@@ -1121,10 +1124,6 @@ export interface Mutation {
   updateDocDefaultRole: Scalars['Boolean']['output'];
   updateDocUserRole: Scalars['Boolean']['output'];
   updateProfile: UserType;
-  /** update server runtime configurable setting */
-  updateRuntimeConfig: ServerRuntimeConfigType;
-  /** update multiple server runtime configurable settings */
-  updateRuntimeConfigs: Array<ServerRuntimeConfigType>;
   /** Update user settings */
   updateSettings: Scalars['Boolean']['output'];
   updateSubscriptionRecurring: SubscriptionType;
@@ -1426,6 +1425,10 @@ export interface MutationSubmitAudioTranscriptionArgs {
   workspaceId: Scalars['String']['input'];
 }
 
+export interface MutationUpdateAppConfigArgs {
+  updates: Array<UpdateAppConfigInput>;
+}
+
 export interface MutationUpdateCopilotPromptArgs {
   messages: Array<CopilotPromptMessageInput>;
   name: Scalars['String']['input'];
@@ -1445,15 +1448,6 @@ export interface MutationUpdateDocUserRoleArgs {
 
 export interface MutationUpdateProfileArgs {
   input: UpdateUserInput;
-}
-
-export interface MutationUpdateRuntimeConfigArgs {
-  id: Scalars['String']['input'];
-  value: Scalars['JSON']['input'];
-}
-
-export interface MutationUpdateRuntimeConfigsArgs {
-  updates: Scalars['JSONObject']['input'];
 }
 
 export interface MutationUpdateSettingsArgs {
@@ -1615,6 +1609,8 @@ export interface PublicUserType {
 
 export interface Query {
   __typename?: 'Query';
+  /** get the whole app configuration */
+  appConfig: Scalars['JSONObject']['output'];
   /** @deprecated use `user.quotaUsage` instead */
   collectAllBlobSizes: WorkspaceBlobSizes;
   /** Get current user */
@@ -1641,9 +1637,6 @@ export interface Query {
   queryWorkspaceEmbeddingStatus: ContextWorkspaceEmbeddingStatus;
   /** server config */
   serverConfig: ServerConfigType;
-  /** get all server runtime configurable settings */
-  serverRuntimeConfig: Array<ServerRuntimeConfigType>;
-  serverServiceConfigs: Array<ServerServiceConfig>;
   /** Get user by email */
   user: Maybe<UserOrLimitedUser>;
   /** Get user by email for admin */
@@ -1773,14 +1766,6 @@ export interface RuntimeConfigNotFoundDataType {
   key: Scalars['String']['output'];
 }
 
-export enum RuntimeConfigType {
-  Array = 'Array',
-  Boolean = 'Boolean',
-  Number = 'Number',
-  Object = 'Object',
-  String = 'String',
-}
-
 export interface SameSubscriptionRecurringDataType {
   __typename?: 'SameSubscriptionRecurringDataType';
   recurring: Scalars['String']['output'];
@@ -1789,24 +1774,15 @@ export interface SameSubscriptionRecurringDataType {
 export interface ServerConfigType {
   __typename?: 'ServerConfigType';
   /** fetch latest available upgradable release of server */
-  availableUpgrade: ReleaseVersionType;
+  availableUpgrade: Maybe<ReleaseVersionType>;
   /** Features for user that can be configured */
   availableUserFeatures: Array<FeatureType>;
   /** server base url */
   baseUrl: Scalars['String']['output'];
   /** credentials requirement */
   credentialsRequirement: CredentialsRequirementType;
-  /** enable telemetry */
-  enableTelemetry: Scalars['Boolean']['output'];
   /** enabled server features */
   features: Array<ServerFeature>;
-  /** server flags */
-  flags: ServerFlagsType;
-  /**
-   * server flavor
-   * @deprecated use `features`
-   */
-  flavor: Scalars['String']['output'];
   /** whether server has been initialized */
   initialized: Scalars['Boolean']['output'];
   /** server identical name could be shown as badge on user interface */
@@ -1828,29 +1804,6 @@ export enum ServerFeature {
   Copilot = 'Copilot',
   OAuth = 'OAuth',
   Payment = 'Payment',
-}
-
-export interface ServerFlagsType {
-  __typename?: 'ServerFlagsType';
-  earlyAccessControl: Scalars['Boolean']['output'];
-  syncClientVersionCheck: Scalars['Boolean']['output'];
-}
-
-export interface ServerRuntimeConfigType {
-  __typename?: 'ServerRuntimeConfigType';
-  description: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  key: Scalars['String']['output'];
-  module: Scalars['String']['output'];
-  type: RuntimeConfigType;
-  updatedAt: Scalars['DateTime']['output'];
-  value: Scalars['JSON']['output'];
-}
-
-export interface ServerServiceConfig {
-  __typename?: 'ServerServiceConfig';
-  config: Scalars['JSONObject']['output'];
-  name: Scalars['String']['output'];
 }
 
 export interface SpaceAccessDeniedDataType {
@@ -1993,6 +1946,12 @@ export interface UnsupportedClientVersionDataType {
 export interface UnsupportedSubscriptionPlanDataType {
   __typename?: 'UnsupportedSubscriptionPlanDataType';
   plan: Scalars['String']['output'];
+}
+
+export interface UpdateAppConfigInput {
+  key: Scalars['String']['input'];
+  module: Scalars['String']['input'];
+  value: Scalars['JSON']['input'];
 }
 
 export interface UpdateChatSessionInput {
@@ -2387,7 +2346,7 @@ export type AdminServerConfigQuery = {
       version: string;
       publishedAt: string;
       url: string;
-    };
+    } | null;
   };
 };
 
@@ -2400,6 +2359,10 @@ export type CreateChangePasswordUrlMutation = {
   __typename?: 'Mutation';
   createChangePasswordUrl: string;
 };
+
+export type AppConfigQueryVariables = Exact<{ [key: string]: never }>;
+
+export type AppConfigQuery = { __typename?: 'Query'; appConfig: any };
 
 export type GetPromptsQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -2492,37 +2455,6 @@ export type EnableUserMutation = {
   enableUser: { __typename?: 'UserType'; email: string; disabled: boolean };
 };
 
-export type GetServerRuntimeConfigQueryVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type GetServerRuntimeConfigQuery = {
-  __typename?: 'Query';
-  serverRuntimeConfig: Array<{
-    __typename?: 'ServerRuntimeConfigType';
-    id: string;
-    module: string;
-    key: string;
-    description: string;
-    value: Record<string, string>;
-    type: RuntimeConfigType;
-    updatedAt: string;
-  }>;
-};
-
-export type GetServerServiceConfigsQueryVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type GetServerServiceConfigsQuery = {
-  __typename?: 'Query';
-  serverServiceConfigs: Array<{
-    __typename?: 'ServerServiceConfig';
-    name: string;
-    config: any;
-  }>;
-};
-
 export type GetUserByEmailQueryVariables = Exact<{
   email: Scalars['String']['input'];
 }>;
@@ -2602,17 +2534,13 @@ export type UpdateAccountMutation = {
   };
 };
 
-export type UpdateServerRuntimeConfigsMutationVariables = Exact<{
-  updates: Scalars['JSONObject']['input'];
+export type UpdateAppConfigMutationVariables = Exact<{
+  updates: Array<UpdateAppConfigInput> | UpdateAppConfigInput;
 }>;
 
-export type UpdateServerRuntimeConfigsMutation = {
+export type UpdateAppConfigMutation = {
   __typename?: 'Mutation';
-  updateRuntimeConfigs: Array<{
-    __typename?: 'ServerRuntimeConfigType';
-    key: string;
-    value: Record<string, string>;
-  }>;
+  updateAppConfig: any;
 };
 
 export type DeleteBlobMutationVariables = Exact<{
@@ -4348,19 +4276,14 @@ export type Queries =
       response: AdminServerConfigQuery;
     }
   | {
+      name: 'appConfigQuery';
+      variables: AppConfigQueryVariables;
+      response: AppConfigQuery;
+    }
+  | {
       name: 'getPromptsQuery';
       variables: GetPromptsQueryVariables;
       response: GetPromptsQuery;
-    }
-  | {
-      name: 'getServerRuntimeConfigQuery';
-      variables: GetServerRuntimeConfigQueryVariables;
-      response: GetServerRuntimeConfigQuery;
-    }
-  | {
-      name: 'getServerServiceConfigsQuery';
-      variables: GetServerServiceConfigsQueryVariables;
-      response: GetServerServiceConfigsQuery;
     }
   | {
       name: 'getUserByEmailQuery';
@@ -4675,9 +4598,9 @@ export type Mutations =
       response: UpdateAccountMutation;
     }
   | {
-      name: 'updateServerRuntimeConfigsMutation';
-      variables: UpdateServerRuntimeConfigsMutationVariables;
-      response: UpdateServerRuntimeConfigsMutation;
+      name: 'updateAppConfigMutation';
+      variables: UpdateAppConfigMutationVariables;
+      response: UpdateAppConfigMutation;
     }
   | {
       name: 'deleteBlobMutation';

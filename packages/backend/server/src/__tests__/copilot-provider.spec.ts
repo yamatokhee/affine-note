@@ -7,14 +7,7 @@ import { AuthService } from '../core/auth';
 import { QuotaModule } from '../core/quota';
 import { CopilotModule } from '../plugins/copilot';
 import { prompts, PromptService } from '../plugins/copilot/prompt';
-import {
-  CopilotProviderService,
-  FalProvider,
-  OpenAIProvider,
-  PerplexityProvider,
-  registerCopilotProvider,
-  unregisterCopilotProvider,
-} from '../plugins/copilot/providers';
+import { CopilotProviderFactory } from '../plugins/copilot/providers';
 import {
   CopilotChatTextExecutor,
   CopilotWorkflowService,
@@ -32,7 +25,7 @@ type Tester = {
   auth: AuthService;
   module: TestingModule;
   prompt: PromptService;
-  provider: CopilotProviderService;
+  factory: CopilotProviderFactory;
   workflow: CopilotWorkflowService;
   executors: {
     image: CopilotChatImageExecutor;
@@ -67,9 +60,9 @@ const runIfCopilotConfigured = test.macro(
 test.serial.before(async t => {
   const module = await createTestingModule({
     imports: [
-      ConfigModule.forRoot({
-        plugins: {
-          copilot: {
+      ConfigModule.override({
+        copilot: {
+          providers: {
             openai: {
               apiKey: process.env.COPILOT_OPENAI_API_KEY,
             },
@@ -78,6 +71,9 @@ test.serial.before(async t => {
             },
             perplexity: {
               apiKey: process.env.COPILOT_PERPLEXITY_API_KEY,
+            },
+            gemini: {
+              apiKey: process.env.COPILOT_GOOGLE_API_KEY,
             },
           },
         },
@@ -89,13 +85,13 @@ test.serial.before(async t => {
 
   const auth = module.get(AuthService);
   const prompt = module.get(PromptService);
-  const provider = module.get(CopilotProviderService);
+  const factory = module.get(CopilotProviderFactory);
   const workflow = module.get(CopilotWorkflowService);
 
   t.context.module = module;
   t.context.auth = auth;
   t.context.prompt = prompt;
-  t.context.provider = provider;
+  t.context.factory = factory;
   t.context.workflow = workflow;
   t.context.executors = {
     image: module.get(CopilotChatImageExecutor),
@@ -113,10 +109,6 @@ test.serial.before(async t => {
   executors.html.register();
   executors.json.register();
 
-  registerCopilotProvider(OpenAIProvider);
-  registerCopilotProvider(FalProvider);
-  registerCopilotProvider(PerplexityProvider);
-
   for (const name of await prompt.listNames()) {
     await prompt.delete(name);
   }
@@ -124,12 +116,6 @@ test.serial.before(async t => {
   for (const p of prompts) {
     await prompt.set(p.name, p.model, p.messages, p.config);
   }
-});
-
-test.after(async _ => {
-  unregisterCopilotProvider(OpenAIProvider.type);
-  unregisterCopilotProvider(FalProvider.type);
-  unregisterCopilotProvider(PerplexityProvider.type);
 });
 
 test.after(async t => {
@@ -523,12 +509,10 @@ for (const { name, promptName, messages, verifier, type } of actions) {
       `should be able to run action: ${promptName}${name ? ` - ${name}` : ''}`,
       runIfCopilotConfigured,
       async t => {
-        const { provider: providerService, prompt: promptService } = t.context;
+        const { factory, prompt: promptService } = t.context;
         const prompt = (await promptService.get(promptName))!;
         t.truthy(prompt, 'should have prompt');
-        const provider = (await providerService.getProviderByModel(
-          prompt.model
-        ))!;
+        const provider = (await factory.getProviderByModel(prompt.model))!;
         t.truthy(provider, 'should have provider');
         await retry(`action: ${promptName}`, t, async t => {
           if (type === 'text' && 'generateText' in provider) {

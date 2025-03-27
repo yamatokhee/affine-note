@@ -5,7 +5,7 @@ import { Controller, Get, Logger, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import isMobile from 'is-mobile';
 
-import { Config, metrics } from '../../base';
+import { metrics } from '../../base';
 import { Models } from '../../models';
 import { htmlSanitize } from '../../native';
 import { Public } from '../auth';
@@ -51,14 +51,11 @@ export class DocRendererController {
 
   constructor(
     private readonly doc: DocReader,
-    private readonly config: Config,
     private readonly models: Models
   ) {
-    this.webAssets = this.readHtmlAssets(
-      join(this.config.projectRoot, 'static')
-    );
+    this.webAssets = this.readHtmlAssets(join(env.projectRoot, 'static'));
     this.mobileAssets = this.readHtmlAssets(
-      join(this.config.projectRoot, 'static/mobile')
+      join(env.projectRoot, 'static/mobile')
     );
   }
 
@@ -66,7 +63,7 @@ export class DocRendererController {
   @Get('/*')
   async render(@Req() req: Request, @Res() res: Response) {
     const assets: HtmlAssets =
-      this.config.affine.canary &&
+      env.namespaces.canary &&
       isMobile({
         ua: req.headers['user-agent'] ?? undefined,
       })
@@ -141,13 +138,13 @@ export class DocRendererController {
   // @TODO(@forehalo): pre-compile html template to accelerate serializing
   _render(opts: RenderOptions | null, assets: HtmlAssets): string {
     // TODO(@forehalo): how can we enable the type reference to @affine/env
-    const env: Record<string, any> = {
+    const envMeta: Record<string, any> = {
       publicPath: assets.publicPath,
       renderer: 'ssr',
     };
 
-    if (this.config.isSelfhosted) {
-      env.isSelfHosted = true;
+    if (env.selfhosted) {
+      envMeta.isSelfHosted = true;
     }
 
     const title = opts?.title
@@ -192,7 +189,7 @@ export class DocRendererController {
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${summary}" />
     <meta property="og:image" content="${image}" />
-    ${Object.entries(env)
+    ${Object.entries(envMeta)
       .map(([key, val]) => `<meta name="env:${key}" content="${val}" />`)
       .join('\n')}
     ${assets.css.map(url => `<link rel="stylesheet" href="${url}" />`).join('\n')}
@@ -216,7 +213,7 @@ export class DocRendererController {
         readFileSync(manifestPath, 'utf-8')
       );
 
-      const publicPath = this.config.isSelfhosted ? '/' : assets.publicPath;
+      const publicPath = env.selfhosted ? '/' : assets.publicPath;
 
       assets.publicPath = publicPath;
       assets.js = assets.js.map(path => publicPath + path);
@@ -224,7 +221,7 @@ export class DocRendererController {
 
       return assets;
     } catch (e) {
-      if (this.config.node.prod) {
+      if (env.prod) {
         throw e;
       } else {
         return defaultAssets;

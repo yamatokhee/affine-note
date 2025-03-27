@@ -1,12 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
-import { Config } from '../../base';
 import { Feature, UserFeatureName } from '../../models';
 
 @Injectable()
 export class AvailableUserFeatureConfig {
-  @Inject(Config) private readonly config!: Config;
-
   availableUserFeatures(): Set<UserFeatureName> {
     return new Set([
       Feature.Admin,
@@ -18,7 +15,7 @@ export class AvailableUserFeatureConfig {
 
   configurableUserFeatures(): Set<UserFeatureName> {
     return new Set(
-      this.config.isSelfhosted
+      env.selfhosted
         ? [Feature.Admin, Feature.UnlimitedCopilot]
         : [
             Feature.EarlyAccess,

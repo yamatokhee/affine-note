@@ -7,11 +7,11 @@ import {
   AFFiNELogger,
   CacheInterceptor,
   CloudThrottlerGuard,
+  Config,
   GlobalExceptionFilter,
 } from './base';
 import { SocketIoAdapter } from './base/websocket';
 import { AuthGuard } from './core/auth';
-import { ENABLED_FEATURES } from './core/config/server-feature';
 import { serverTimingAndCache } from './middleware/timing';
 
 const OneMB = 1024 * 1024;
@@ -29,9 +29,10 @@ export async function createApp() {
   app.useBodyParser('raw', { limit: 100 * OneMB });
 
   app.useLogger(app.get(AFFiNELogger));
+  const config = app.get(Config);
 
-  if (AFFiNE.server.path) {
-    app.setGlobalPrefix(AFFiNE.server.path);
+  if (config.server.path) {
+    app.setGlobalPrefix(config.server.path);
   }
 
   app.use(serverTimingAndCache);
@@ -49,22 +50,12 @@ export async function createApp() {
   app.use(cookieParser());
   // only enable shutdown hooks in production
   // https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown
-  if (AFFiNE.NODE_ENV === 'production') {
+  if (env.prod) {
     app.enableShutdownHooks();
   }
 
   const adapter = new SocketIoAdapter(app);
   app.useWebSocketAdapter(adapter);
-
-  if (AFFiNE.isSelfhosted && AFFiNE.metrics.telemetry.enabled) {
-    const mixpanel = await import('mixpanel');
-    mixpanel
-      .init(AFFiNE.metrics.telemetry.token)
-      .track('selfhost-server-started', {
-        version: AFFiNE.version,
-        features: Array.from(ENABLED_FEATURES),
-      });
-  }
 
   return app;
 }

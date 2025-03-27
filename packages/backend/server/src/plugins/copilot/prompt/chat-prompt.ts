@@ -3,12 +3,8 @@ import { Logger } from '@nestjs/common';
 import { AiPrompt } from '@prisma/client';
 import Mustache from 'mustache';
 
-import {
-  getTokenEncoder,
-  PromptConfig,
-  PromptMessage,
-  PromptParams,
-} from '../types';
+import { PromptConfig, PromptMessage, PromptParams } from '../providers';
+import { getTokenEncoder } from '../types';
 
 // disable escaping
 Mustache.escape = (text: string) => text;

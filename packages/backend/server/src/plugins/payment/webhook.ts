@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 
 import { OnEvent } from '../../base';
 import { SubscriptionService } from './service';
+import { StripeFactory } from './stripe';
 
 /**
  * Stripe webhook events sent in random order, and may be even sent more than once.
@@ -14,8 +15,12 @@ import { SubscriptionService } from './service';
 export class StripeWebhook {
   constructor(
     private readonly service: SubscriptionService,
-    private readonly stripe: Stripe
+    private readonly stripeProvider: StripeFactory
   ) {}
+
+  get stripe() {
+    return this.stripeProvider.stripe;
+  }
 
   @OnEvent('stripe.invoice.created')
   @OnEvent('stripe.invoice.updated')

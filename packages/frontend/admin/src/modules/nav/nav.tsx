@@ -85,12 +85,6 @@ export function Nav({ isCollapsed = false }: NavProps) {
         )}
       >
         <NavItem
-          to="/admin/config"
-          icon={<SelfhostIcon fontSize={20} />}
-          label="Server"
-          isCollapsed={isCollapsed}
-        />
-        <NavItem
           to="/admin/accounts"
           icon={<AccountIcon fontSize={20} />}
           label="Accounts"
@@ -102,8 +96,13 @@ export function Nav({ isCollapsed = false }: NavProps) {
           label="AI"
           isCollapsed={isCollapsed}
         />
-
         <SettingsItem isCollapsed={isCollapsed} />
+        <NavItem
+          to="/admin/config"
+          icon={<SelfhostIcon fontSize={20} />}
+          label="Server"
+          isCollapsed={isCollapsed}
+        />
       </nav>
       <div
         className={cn(

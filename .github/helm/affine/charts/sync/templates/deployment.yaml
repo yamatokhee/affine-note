@@ -42,7 +42,9 @@ spec:
           - name: NO_COLOR
             value: "1"
           - name: DEPLOYMENT_TYPE
-            value: "affine"
+            value: "{{ .Values.global.deployment.type }}"
+          - name: DEPLOYMENT_PLATFORM
+            value: "{{ .Values.global.deployment.platform }}"
           - name: SERVER_FLAVOR
             value: "sync"
           - name: AFFINE_ENV
@@ -54,8 +56,6 @@ spec:
                 key: postgres-password
           - name: DATABASE_URL
             value: postgres://{{ .Values.global.database.user }}:$(DATABASE_PASSWORD)@{{ .Values.global.database.url }}:{{ .Values.global.database.port }}/{{ .Values.global.database.name }}
-          - name: REDIS_SERVER_ENABLED
-            value: "true"
           - name: REDIS_SERVER_HOST
             value: "{{ .Values.global.redis.host }}"
           - name: REDIS_SERVER_PORT

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { Config, InvalidOauthCallbackCode, URLHelper } from '../../../base';
+import { InvalidOauthCallbackCode, URLHelper } from '../../../base';
 import { OAuthProviderName } from '../config';
-import { AutoRegisteredOAuthProvider } from '../register';
+import { OAuthProvider } from './def';
 
 interface AuthTokenResponse {
   access_token: string;
@@ -18,13 +18,10 @@ export interface UserInfo {
 }
 
 @Injectable()
-export class GithubOAuthProvider extends AutoRegisteredOAuthProvider {
+export class GithubOAuthProvider extends OAuthProvider {
   provider = OAuthProviderName.GitHub;
 
-  constructor(
-    protected readonly AFFiNEConfig: Config,
-    private readonly url: URLHelper
-  ) {
+  constructor(private readonly url: URLHelper) {
     super();
   }
 

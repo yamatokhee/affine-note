@@ -2,11 +2,28 @@ import {
   Gauge,
   Histogram,
   Meter,
+  MeterProvider,
   MetricOptions,
+  metrics as otelMetrics,
   UpDownCounter,
 } from '@opentelemetry/api';
+import { HostMetrics } from '@opentelemetry/host-metrics';
 
-import { getMeter } from './opentelemetry';
+function getMeterProvider() {
+  return otelMetrics.getMeterProvider();
+}
+
+export function registerCustomMetrics() {
+  const hostMetricsMonitoring = new HostMetrics({
+    name: 'instance-host-metrics',
+    meterProvider: getMeterProvider() as MeterProvider,
+  });
+  hostMetricsMonitoring.start();
+}
+
+export function getMeter(name = 'business') {
+  return getMeterProvider().getMeter(name);
+}
 
 type MetricType = 'counter' | 'gauge' | 'histogram';
 type Metric<T extends MetricType> = T extends 'counter'
@@ -122,5 +139,3 @@ export const metrics = new Proxy<Record<KnownMetricScopes, ScopedMetrics>>(
     },
   }
 );
-
-export function stopMetrics() {}

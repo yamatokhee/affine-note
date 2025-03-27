@@ -6,9 +6,8 @@ import ava, { TestFn } from 'ava';
 import { applyUpdate, Doc as YDoc } from 'yjs';
 
 import { createTestingApp, type TestingApp } from '../../../__tests__/utils';
-import { AppModule } from '../../../app.module';
-import { Config, UserFriendlyError } from '../../../base';
-import { ConfigModule } from '../../../base/config';
+import { UserFriendlyError } from '../../../base';
+import { ConfigFactory } from '../../../base/config';
 import { Models } from '../../../models';
 import { DatabaseDocReader, DocReader, PgWorkspaceDocStorageAdapter } from '..';
 import { RpcDocReader } from '../reader';
@@ -16,40 +15,45 @@ import { RpcDocReader } from '../reader';
 const test = ava as TestFn<{
   models: Models;
   app: TestingApp;
+  docApp: TestingApp;
   docReader: DocReader;
   databaseDocReader: DatabaseDocReader;
   adapter: PgWorkspaceDocStorageAdapter;
-  config: Config;
+  config: ConfigFactory;
 }>;
 
 test.before(async t => {
-  const app = await createTestingApp({
-    imports: [
-      ConfigModule.forRoot({
-        flavor: {
-          doc: false,
-        },
-        docService: {
-          endpoint: '',
-        },
-      }),
-      AppModule,
-    ],
-  });
+  // test key
+  process.env.AFFINE_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgS3IAkshQuSmFWGpe
+rGTg2vwaC3LdcvBQlYHHMBYJZMyhRANCAAQXdT/TAh4neNEpd4UqpDIEqWv0XvFo
+BRJxGsC5I/fetqObdx1+KEjcm8zFU2xLaUTw9IZCu8OslloOjQv4ur0a
+-----END PRIVATE KEY-----`;
+  // @ts-expect-error testing
+  env.FLAVOR = 'renderer';
+  const notDocApp = await createTestingApp();
+  // @ts-expect-error testing
+  env.FLAVOR = 'doc';
+  const docApp = await createTestingApp();
 
-  t.context.models = app.get(Models);
-  t.context.docReader = app.get(DocReader);
-  t.context.databaseDocReader = app.get(DatabaseDocReader);
-  t.context.adapter = app.get(PgWorkspaceDocStorageAdapter);
-  t.context.config = app.get(Config);
-  t.context.app = app;
+  t.context.models = notDocApp.get(Models);
+  t.context.docReader = notDocApp.get(DocReader);
+  t.context.databaseDocReader = docApp.get(DatabaseDocReader);
+  t.context.adapter = docApp.get(PgWorkspaceDocStorageAdapter);
+  t.context.config = notDocApp.get(ConfigFactory);
+  t.context.app = notDocApp;
+  t.context.docApp = docApp;
 });
 
 let user: User;
 let workspace: Workspace;
 
 test.beforeEach(async t => {
-  t.context.config.docService.endpoint = t.context.app.url();
+  t.context.config.override({
+    docService: {
+      endpoint: t.context.docApp.url(),
+    },
+  });
   await t.context.app.initTestingDB();
   user = await t.context.models.user.create({
     email: 'test@affine.pro',
@@ -63,6 +67,7 @@ test.afterEach.always(() => {
 
 test.after.always(async t => {
   await t.context.app.close();
+  await t.context.docApp.close();
 });
 
 test('should return null when doc not found', async t => {
@@ -113,7 +118,11 @@ test('should throw error when doc service internal error', async t => {
 
 test('should fallback to database doc reader when endpoint network error', async t => {
   const { docReader } = t.context;
-  t.context.config.docService.endpoint = 'http://localhost:13010';
+  t.context.config.override({
+    docService: {
+      endpoint: 'http://localhost:13010',
+    },
+  });
   const docId = randomUUID();
   const timestamp = Date.now();
   await t.context.models.doc.createUpdates([
@@ -223,7 +232,11 @@ test('should return doc diff', async t => {
 
 test('should get doc diff fallback to database doc reader when endpoint network error', async t => {
   const { docReader } = t.context;
-  t.context.config.docService.endpoint = 'http://localhost:13010';
+  t.context.config.override({
+    docService: {
+      endpoint: 'http://localhost:13010',
+    },
+  });
   const docId = randomUUID();
   const timestamp = Date.now();
   let updates: Buffer[] = [];

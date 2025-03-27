@@ -458,6 +458,7 @@ enum ErrorNames {
   GRAPHQL_BAD_REQUEST
   HTTP_REQUEST_ERROR
   INTERNAL_SERVER_ERROR
+  INVALID_APP_CONFIG
   INVALID_AUTH_STATE
   INVALID_CHECKOUT_PARAMETERS
   INVALID_EMAIL
@@ -1002,6 +1003,9 @@ type Mutation {
   setBlob(blob: Upload!, workspaceId: String!): String!
   submitAudioTranscription(blob: Upload!, blobId: String!, workspaceId: String!): TranscriptionResultType
 
+  """update app configuration"""
+  updateAppConfig(updates: [UpdateAppConfigInput!]!): JSONObject!
+
   """Update a copilot prompt"""
   updateCopilotPrompt(messages: [CopilotPromptMessageInput!]!, name: String!): CopilotPromptType!
 
@@ -1010,12 +1014,6 @@ type Mutation {
   updateDocDefaultRole(input: UpdateDocDefaultRoleInput!): Boolean!
   updateDocUserRole(input: UpdateDocUserRoleInput!): Boolean!
   updateProfile(input: UpdateUserInput!): UserType!
-
-  """update server runtime configurable setting"""
-  updateRuntimeConfig(id: String!, value: JSON!): ServerRuntimeConfigType!
-
-  """update multiple server runtime configurable settings"""
-  updateRuntimeConfigs(updates: JSONObject!): [ServerRuntimeConfigType!]!
 
   """Update user settings"""
   updateSettings(input: UpdateUserSettingsInput!): Boolean!
@@ -1162,6 +1160,8 @@ type PublicUserType {
 }
 
 type Query {
+  """get the whole app configuration"""
+  appConfig: JSONObject!
   collectAllBlobSizes: WorkspaceBlobSizes! @deprecated(reason: "use `user.quotaUsage` instead")
 
   """Get current user"""
@@ -1189,10 +1189,6 @@ type Query {
 
   """server config"""
   serverConfig: ServerConfigType!
-
-  """get all server runtime configurable settings"""
-  serverRuntimeConfig: [ServerRuntimeConfigType!]!
-  serverServiceConfigs: [ServerServiceConfig!]!
 
   """Get user by email"""
   user(email: String!): UserOrLimitedUser
@@ -1275,14 +1271,6 @@ type RuntimeConfigNotFoundDataType {
   key: String!
 }
 
-enum RuntimeConfigType {
-  Array
-  Boolean
-  Number
-  Object
-  String
-}
-
 """
 The `SafeInt` scalar type represents non-fractional signed whole numeric values that are considered safe as defined by the ECMAScript specification.
 """
@@ -1294,7 +1282,7 @@ type SameSubscriptionRecurringDataType {
 
 type ServerConfigType {
   """fetch latest available upgradable release of server"""
-  availableUpgrade: ReleaseVersionType!
+  availableUpgrade: ReleaseVersionType
 
   """Features for user that can be configured"""
   availableUserFeatures: [FeatureType!]!
@@ -1305,17 +1293,8 @@ type ServerConfigType {
   """credentials requirement"""
   credentialsRequirement: CredentialsRequirementType!
 
-  """enable telemetry"""
-  enableTelemetry: Boolean!
-
   """enabled server features"""
   features: [ServerFeature!]!
-
-  """server flags"""
-  flags: ServerFlagsType!
-
-  """server flavor"""
-  flavor: String! @deprecated(reason: "use `features`")
 
   """whether server has been initialized"""
   initialized: Boolean!
@@ -1341,26 +1320,6 @@ enum ServerFeature {
   Copilot
   OAuth
   Payment
-}
-
-type ServerFlagsType {
-  earlyAccessControl: Boolean!
-  syncClientVersionCheck: Boolean!
-}
-
-type ServerRuntimeConfigType {
-  description: String!
-  id: String!
-  key: String!
-  module: String!
-  type: RuntimeConfigType!
-  updatedAt: DateTime!
-  value: JSON!
-}
-
-type ServerServiceConfig {
-  config: JSONObject!
-  name: String!
 }
 
 type SpaceAccessDeniedDataType {
@@ -1482,6 +1441,12 @@ type UnsupportedClientVersionDataType {
 
 type UnsupportedSubscriptionPlanDataType {
   plan: String!
+}
+
+input UpdateAppConfigInput {
+  key: String!
+  module: String!
+  value: JSON!
 }
 
 input UpdateChatSessionInput {

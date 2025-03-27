@@ -4,7 +4,9 @@ export * from './user.mock';
 export * from './workspace.mock';
 export * from './workspace-user.mock';
 
+import { MockCopilotProvider } from './copilot.mock';
 import { MockDocMeta } from './doc-meta.mock';
+import { MockEventBus } from './eventbus.mock';
 import { MockMailer } from './mailer.mock';
 import { MockJobQueue } from './queue.mock';
 import { MockTeamWorkspace } from './team-workspace.mock';
@@ -22,4 +24,4 @@ export const Mockers = {
   DocMeta: MockDocMeta,
 };
 
-export { MockJobQueue, MockMailer };
+export { MockCopilotProvider, MockEventBus, MockJobQueue, MockMailer };

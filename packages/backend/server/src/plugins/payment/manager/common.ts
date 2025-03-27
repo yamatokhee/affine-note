@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { UserNotFound } from '../../../base';
 import { ScheduleManager } from '../schedule';
+import { StripeFactory } from '../stripe';
 import {
   encodeLookupKey,
   KnownStripeInvoice,
@@ -55,11 +56,15 @@ export const CheckoutParams = z.object({
 });
 
 export abstract class SubscriptionManager {
-  protected readonly scheduleManager = new ScheduleManager(this.stripe);
+  protected readonly scheduleManager = new ScheduleManager(this.stripeProvider);
   constructor(
-    protected readonly stripe: Stripe,
+    protected readonly stripeProvider: StripeFactory,
     protected readonly db: PrismaClient
   ) {}
+
+  get stripe() {
+    return this.stripeProvider.stripe;
+  }
 
   abstract filterPrices(
     prices: KnownStripePrice[],

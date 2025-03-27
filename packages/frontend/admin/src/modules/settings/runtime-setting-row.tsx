@@ -3,20 +3,15 @@ import { type ReactNode } from 'react';
 export const RuntimeSettingRow = ({
   id,
   description,
-  lastUpdatedTime,
-  operation,
   children,
 }: {
   id: string;
   description: string;
-  lastUpdatedTime: string;
-  operation: ReactNode;
   children: ReactNode;
 }) => {
-  const formatTime = new Date(lastUpdatedTime).toLocaleString();
   return (
     <div
-      className="flex justify-between flex-grow overflow-y-auto space-y-[10px] gap-5"
+      className="flex justify-between flex-grow overflow-y-auto space-y-[10px] gap-5 "
       id={id}
     >
       <div className="flex flex-col gap-1">
@@ -26,14 +21,8 @@ export const RuntimeSettingRow = ({
             {id}
           </code>
         </div>
-        <div className="text-xs text-gray-500">
-          last updated at: {formatTime}
-        </div>
       </div>
-      <div className="flex flex-col items-end gap-2 mr-1">
-        {operation}
-        {children}
-      </div>
+      <div className="flex flex-col items-end gap-2 mr-1">{children}</div>
     </div>
   );
 };

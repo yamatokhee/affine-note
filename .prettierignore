@@ -37,3 +37,4 @@ packages/frontend/apps/android/App/**
 packages/frontend/apps/ios/App/**
 tests/blocksuite/snapshots
 blocksuite/docs/api/**
+packages/frontend/admin/src/config.json

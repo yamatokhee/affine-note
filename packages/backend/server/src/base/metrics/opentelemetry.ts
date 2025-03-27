@@ -1,5 +1,4 @@
-import { OnModuleDestroy } from '@nestjs/common';
-import { metrics } from '@opentelemetry/api';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import {
   CompositePropagator,
   W3CBaggagePropagator,
@@ -7,7 +6,6 @@ import {
 } from '@opentelemetry/core';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
-import { HostMetrics } from '@opentelemetry/host-metrics';
 import { Instrumentation } from '@opentelemetry/instrumentation';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
@@ -15,7 +13,6 @@ import { IORedisInstrumentation } from '@opentelemetry/instrumentation-ioredis';
 import { NestInstrumentation } from '@opentelemetry/instrumentation-nestjs-core';
 import { SocketIoInstrumentation } from '@opentelemetry/instrumentation-socket.io';
 import { Resource } from '@opentelemetry/resources';
-import type { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { MetricProducer, MetricReader } from '@opentelemetry/sdk-metrics';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import {
@@ -30,11 +27,14 @@ import {
 } from '@opentelemetry/semantic-conventions/incubating';
 import prismaInstrument from '@prisma/instrumentation';
 
+import { Config } from '../config';
+import { OnEvent } from '../event/def';
+import { registerCustomMetrics } from './metrics';
 import { PrismaMetricProducer } from './prisma';
 
 const { PrismaInstrumentation } = prismaInstrument;
 
-export abstract class OpentelemetryFactory {
+export abstract class BaseOpentelemetryFactory {
   abstract getMetricReader(): MetricReader;
   abstract getSpanExporter(): SpanExporter;
 
@@ -55,9 +55,9 @@ export abstract class OpentelemetryFactory {
 
   getResource() {
     return new Resource({
-      [ATTR_K8S_NAMESPACE_NAME]: AFFiNE.AFFINE_ENV,
-      [ATTR_SERVICE_NAME]: AFFiNE.flavor.type,
-      [ATTR_SERVICE_VERSION]: AFFiNE.version,
+      [ATTR_K8S_NAMESPACE_NAME]: env.NAMESPACE,
+      [ATTR_SERVICE_NAME]: env.FLAVOR,
+      [ATTR_SERVICE_VERSION]: env.version,
     });
   }
 
@@ -81,39 +81,58 @@ export abstract class OpentelemetryFactory {
   }
 }
 
-export class LocalOpentelemetryFactory
-  extends OpentelemetryFactory
+@Injectable()
+export class OpentelemetryFactory
+  extends BaseOpentelemetryFactory
   implements OnModuleDestroy
 {
-  private readonly metricsExporter = new PrometheusExporter({
-    metricProducers: this.getMetricsProducers(),
-  });
+  private readonly logger = new Logger(OpentelemetryFactory.name);
+  #sdk: NodeSDK | null = null;
+
+  constructor(private readonly config: Config) {
+    super();
+  }
+
+  @OnEvent('config.init')
+  async init(event: Events['config.init']) {
+    if (event.config.metrics.enabled) {
+      await this.setup();
+      registerCustomMetrics();
+    }
+  }
+
+  @OnEvent('config.changed')
+  async onConfigChanged(event: Events['config.changed']) {
+    if ('metrics' in event.updates) {
+      await this.setup();
+    }
+  }
 
   async onModuleDestroy() {
-    await this.metricsExporter.shutdown();
+    await this.#sdk?.shutdown();
   }
 
   override getMetricReader(): MetricReader {
-    return this.metricsExporter;
+    return new PrometheusExporter({
+      metricProducers: this.getMetricsProducers(),
+    });
   }
 
   override getSpanExporter(): SpanExporter {
     return new ZipkinExporter();
   }
-}
 
-function getMeterProvider() {
-  return metrics.getMeterProvider();
-}
-
-export function registerCustomMetrics() {
-  const hostMetricsMonitoring = new HostMetrics({
-    name: 'instance-host-metrics',
-    meterProvider: getMeterProvider() as MeterProvider,
-  });
-  hostMetricsMonitoring.start();
-}
-
-export function getMeter(name = 'business') {
-  return getMeterProvider().getMeter(name);
+  private async setup() {
+    if (this.config.metrics.enabled) {
+      if (!this.#sdk) {
+        this.#sdk = this.create();
+      }
+      this.#sdk.start();
+      this.logger.log('OpenTelemetry SDK started');
+    } else {
+      await this.#sdk?.shutdown();
+      this.#sdk = null;
+      this.logger.log('OpenTelemetry SDK stopped');
+    }
+  }
 }

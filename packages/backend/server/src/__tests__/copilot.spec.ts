@@ -19,18 +19,14 @@ import {
 import { MockEmbeddingClient } from '../plugins/copilot/context/embedding';
 import { prompts, PromptService } from '../plugins/copilot/prompt';
 import {
-  CopilotProviderService,
+  CopilotCapability,
+  CopilotProviderFactory,
+  CopilotProviderType,
   OpenAIProvider,
-  registerCopilotProvider,
-  unregisterCopilotProvider,
 } from '../plugins/copilot/providers';
 import { CitationParser } from '../plugins/copilot/providers/perplexity';
 import { ChatSessionService } from '../plugins/copilot/session';
 import { CopilotStorage } from '../plugins/copilot/storage';
-import {
-  CopilotCapability,
-  CopilotProviderType,
-} from '../plugins/copilot/types';
 import {
   CopilotChatTextExecutor,
   CopilotWorkflowService,
@@ -50,8 +46,9 @@ import {
 } from '../plugins/copilot/workflow/executor';
 import { AutoRegisteredWorkflowExecutor } from '../plugins/copilot/workflow/executor/utils';
 import { WorkflowGraphList } from '../plugins/copilot/workflow/graph';
+import { MockCopilotProvider } from './mocks';
 import { createTestingModule, TestingModule } from './utils';
-import { MockCopilotTestProvider, WorkflowTestCases } from './utils/copilot';
+import { WorkflowTestCases } from './utils/copilot';
 
 const test = ava as TestFn<{
   auth: AuthService;
@@ -60,7 +57,7 @@ const test = ava as TestFn<{
   event: EventBus;
   context: CopilotContextService;
   prompt: PromptService;
-  provider: CopilotProviderService;
+  factory: CopilotProviderFactory;
   session: ChatSessionService;
   jobs: CopilotContextDocJob;
   storage: CopilotStorage;
@@ -77,9 +74,9 @@ let userId: string;
 test.before(async t => {
   const module = await createTestingModule({
     imports: [
-      ConfigModule.forRoot({
-        plugins: {
-          copilot: {
+      ConfigModule.override({
+        copilot: {
+          providers: {
             openai: {
               apiKey: process.env.COPILOT_OPENAI_API_KEY ?? '1',
             },
@@ -95,6 +92,9 @@ test.before(async t => {
       QuotaModule,
       CopilotModule,
     ],
+    tapModule: builder => {
+      builder.overrideProvider(OpenAIProvider).useClass(MockCopilotProvider);
+    },
   });
 
   const auth = module.get(AuthService);
@@ -102,7 +102,7 @@ test.before(async t => {
   const event = module.get(EventBus);
   const context = module.get(CopilotContextService);
   const prompt = module.get(PromptService);
-  const provider = module.get(CopilotProviderService);
+  const factory = module.get(CopilotProviderFactory);
   const session = module.get(ChatSessionService);
   const workflow = module.get(CopilotWorkflowService);
   const jobs = module.get(CopilotContextDocJob);
@@ -114,7 +114,7 @@ test.before(async t => {
   t.context.event = event;
   t.context.context = context;
   t.context.prompt = prompt;
-  t.context.provider = provider;
+  t.context.factory = factory;
   t.context.session = session;
   t.context.workflow = workflow;
   t.context.jobs = jobs;
@@ -131,7 +131,7 @@ test.beforeEach(async t => {
   Sinon.restore();
   const { module, auth, prompt } = t.context;
   await module.initTestingDB();
-  await prompt.onModuleInit();
+  await prompt.onApplicationBootstrap();
   const user = await auth.signUp('test@affine.pro', '123456');
   userId = user.id;
 });
@@ -730,10 +730,10 @@ test('should handle params correctly in chat session', async t => {
 // ==================== provider ====================
 
 test('should be able to get provider', async t => {
-  const { provider } = t.context;
+  const { factory } = t.context;
 
   {
-    const p = await provider.getProviderByCapability(
+    const p = await factory.getProviderByCapability(
       CopilotCapability.TextToText
     );
     t.is(
@@ -744,106 +744,38 @@ test('should be able to get provider', async t => {
   }
 
   {
-    const p = await provider.getProviderByCapability(
-      CopilotCapability.TextToEmbedding
+    const p = await factory.getProviderByCapability(
+      CopilotCapability.ImageToImage,
+      { model: 'lora/image-to-image' }
     );
     t.is(
       p?.type.toString(),
-      'openai',
+      'fal',
       'should get provider support text-to-embedding'
     );
   }
 
   {
-    const p = await provider.getProviderByCapability(
-      CopilotCapability.TextToImage
-    );
-    t.is(
-      p?.type.toString(),
-      'fal',
-      'should get provider support text-to-image'
-    );
-  }
-
-  {
-    const p = await provider.getProviderByCapability(
-      CopilotCapability.ImageToImage
-    );
-    t.is(
-      p?.type.toString(),
-      'fal',
-      'should get provider support image-to-image'
-    );
-  }
-
-  {
-    const p = await provider.getProviderByCapability(
-      CopilotCapability.ImageToText
-    );
-    t.is(
-      p?.type.toString(),
-      'fal',
-      'should get provider support image-to-text'
-    );
-  }
-
-  // text-to-image use fal by default, but this case can use
-  // model dall-e-3 to select openai provider
-  {
-    const p = await provider.getProviderByCapability(
-      CopilotCapability.TextToImage,
-      'dall-e-3'
-    );
-    t.is(
-      p?.type.toString(),
-      'openai',
-      'should get provider support text-to-image and model'
-    );
-  }
-
-  // gpt4o is not defined now, but it already published by openai
-  // we should check from online api if it is available
-  {
-    const p = await provider.getProviderByCapability(
+    const p = await factory.getProviderByCapability(
       CopilotCapability.ImageToText,
-      'gpt-4o-2024-08-06'
+      { prefer: CopilotProviderType.FAL }
     );
     t.is(
       p?.type.toString(),
-      'openai',
-      'should get provider support text-to-image and model'
+      'fal',
+      'should get provider support text-to-embedding'
     );
   }
 
   // if a model is not defined and not available in online api
   // it should return null
   {
-    const p = await provider.getProviderByCapability(
+    const p = await factory.getProviderByCapability(
       CopilotCapability.ImageToText,
-      'gpt-4-not-exist'
+      { model: 'gpt-4-not-exist' }
     );
     t.falsy(p, 'should not get provider');
   }
-});
-
-test('should be able to register test provider', async t => {
-  const { provider } = t.context;
-  registerCopilotProvider(MockCopilotTestProvider);
-
-  const assertProvider = async (cap: CopilotCapability) => {
-    const p = await provider.getProviderByCapability(cap, 'test');
-    t.is(
-      p?.type,
-      CopilotProviderType.Test,
-      `should get test provider with ${cap}`
-    );
-  };
-
-  await assertProvider(CopilotCapability.TextToText);
-  await assertProvider(CopilotCapability.TextToEmbedding);
-  await assertProvider(CopilotCapability.TextToImage);
-  await assertProvider(CopilotCapability.ImageToImage);
-  await assertProvider(CopilotCapability.ImageToText);
 });
 
 // ==================== workflow ====================
@@ -854,7 +786,6 @@ test.skip('should be able to preview workflow', async t => {
   const { prompt, workflow, executors } = t.context;
 
   executors.text.register();
-  registerCopilotProvider(OpenAIProvider);
 
   for (const p of prompts) {
     await prompt.set(p.name, p.model, p.messages, p.config);
@@ -878,8 +809,6 @@ test.skip('should be able to preview workflow', async t => {
   }
   console.log('final stream result:', result);
   t.truthy(result, 'should return result');
-
-  unregisterCopilotProvider(OpenAIProvider.type);
 });
 
 const runWorkflow = async function* runWorkflow(
@@ -900,8 +829,6 @@ test('should be able to run pre defined workflow', async t => {
   executors.text.register();
   executors.html.register();
   executors.json.register();
-  unregisterCopilotProvider(OpenAIProvider.type);
-  registerCopilotProvider(MockCopilotTestProvider);
 
   const executor = Sinon.spy(executors.text, 'next');
 
@@ -941,17 +868,12 @@ test('should be able to run pre defined workflow', async t => {
       }
     }
   }
-
-  unregisterCopilotProvider(MockCopilotTestProvider.type);
-  registerCopilotProvider(OpenAIProvider);
 });
 
 test('should be able to run workflow', async t => {
   const { workflow, executors } = t.context;
 
   executors.text.register();
-  unregisterCopilotProvider(OpenAIProvider.type);
-  registerCopilotProvider(MockCopilotTestProvider);
 
   const executor = Sinon.spy(executors.text, 'next');
 
@@ -998,9 +920,6 @@ test('should be able to run workflow', async t => {
       'graph params should correct'
     );
   }
-
-  unregisterCopilotProvider(MockCopilotTestProvider.type);
-  registerCopilotProvider(OpenAIProvider);
 });
 
 // ==================== workflow executor ====================
@@ -1037,18 +956,16 @@ test('should be able to run executor', async t => {
 });
 
 test('should be able to run text executor', async t => {
-  const { executors, provider, prompt } = t.context;
+  const { executors, factory, prompt } = t.context;
 
   executors.text.register();
   const executor = getWorkflowExecutor(executors.text.type);
-  unregisterCopilotProvider(OpenAIProvider.type);
-  registerCopilotProvider(MockCopilotTestProvider);
   await prompt.set('test', 'test', [
     { role: 'system', content: 'hello {{word}}' },
   ]);
   // mock provider
   const testProvider =
-    (await provider.getProviderByModel<CopilotCapability.TextToText>('test'))!;
+    (await factory.getProviderByModel<CopilotCapability.TextToText>('test'))!;
   const text = Sinon.spy(testProvider, 'generateText');
   const textStream = Sinon.spy(testProvider, 'generateTextStream');
 
@@ -1103,23 +1020,19 @@ test('should be able to run text executor', async t => {
   }
 
   Sinon.restore();
-  unregisterCopilotProvider(MockCopilotTestProvider.type);
-  registerCopilotProvider(OpenAIProvider);
 });
 
 test('should be able to run image executor', async t => {
-  const { executors, provider, prompt } = t.context;
+  const { executors, factory, prompt } = t.context;
 
   executors.image.register();
   const executor = getWorkflowExecutor(executors.image.type);
-  unregisterCopilotProvider(OpenAIProvider.type);
-  registerCopilotProvider(MockCopilotTestProvider);
   await prompt.set('test', 'test', [
     { role: 'user', content: 'tag1, tag2, tag3, {{#tags}}{{.}}, {{/tags}}' },
   ]);
   // mock provider
   const testProvider =
-    (await provider.getProviderByModel<CopilotCapability.TextToImage>('test'))!;
+    (await factory.getProviderByModel<CopilotCapability.TextToImage>('test'))!;
   const image = Sinon.spy(testProvider, 'generateImages');
   const imageStream = Sinon.spy(testProvider, 'generateImagesStream');
 
@@ -1184,8 +1097,6 @@ test('should be able to run image executor', async t => {
   }
 
   Sinon.restore();
-  unregisterCopilotProvider(MockCopilotTestProvider.type);
-  registerCopilotProvider(OpenAIProvider);
 });
 
 test('CitationParser should replace citation placeholders with URLs', t => {
