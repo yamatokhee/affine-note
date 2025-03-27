@@ -248,7 +248,7 @@ export function ImportUsersDialog({
             <>
               <div
                 onClick={downloadCsvTemplate}
-                className="mb-2 sm:mb-0 text-[15px] px-4 py-2 h-10 underline cursor-pointer"
+                className="mb-2 sm:mb-0 text-[15px] px-0 py-2 h-10 underline cursor-pointer"
               >
                 CSV template
               </div>
