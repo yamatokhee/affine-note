@@ -16,14 +16,15 @@ export const Component = () => {
   const t = useI18n();
   const [params] = useSearchParams();
 
-  const { jumpToIndex, jumpToOpenInApp } = useNavigateHelper();
-  const openAffine = useCallback(() => {
-    if (params.get('scheme')) {
-      jumpToOpenInApp('bring-to-front');
+  const { jumpToOpenInApp } = useNavigateHelper();
+  const openAFFiNE = useCallback(() => {
+    if (params.get('client')) {
+      return jumpToOpenInApp('bring-to-front');
     } else {
-      jumpToIndex();
+      // close popup window
+      return window.close();
     }
-  }, [jumpToIndex, jumpToOpenInApp, params]);
+  }, [jumpToOpenInApp, params]);
 
   const subtitle = (
     <div className={styles.leftContentText}>
@@ -49,7 +50,7 @@ export const Component = () => {
       title={t['com.affine.payment.ai-upgrade-success-page.title']()}
       subtitle={subtitle}
     >
-      <Button variant="primary" size="extraLarge" onClick={openAffine}>
+      <Button variant="primary" size="extraLarge" onClick={openAFFiNE}>
         {t['com.affine.other-page.nav.open-affine']()}
       </Button>
     </AuthPageContainer>

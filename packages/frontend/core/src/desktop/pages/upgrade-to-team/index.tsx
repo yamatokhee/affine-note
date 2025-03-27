@@ -71,9 +71,12 @@ export const UpgradeToTeam = ({ recurring }: { recurring: string | null }) => {
   const [selectedWorkspace, setSelectedWorkspace] =
     useState<WorkspaceMetadata | null>(null);
 
-  const information = useWorkspaceInfo(selectedWorkspace || undefined);
-
-  const name = information?.name ?? UNTITLED_WORKSPACE_NAME;
+  const workspacesService = useService(WorkspacesService);
+  const profile = selectedWorkspace
+    ? workspacesService.getProfile(selectedWorkspace)
+    : undefined;
+  const workspaceInfo = useLiveData(profile?.profile$);
+  const name = workspaceInfo?.name ?? UNTITLED_WORKSPACE_NAME;
 
   const menuTriggerText = useMemo(() => {
     if (selectedWorkspace) {
@@ -91,6 +94,39 @@ export const UpgradeToTeam = ({ recurring }: { recurring: string | null }) => {
   const onClickCreateWorkspace = useCallback(() => {
     setOpenCreate(true);
   }, []);
+
+  const revalidate = useCallback(() => {
+    profile?.revalidate();
+  }, [profile]);
+
+  const { jumpToPage, jumpToOpenInApp } = useNavigateHelper();
+  const [params] = useSearchParams();
+  const isTeam = workspaceInfo?.isTeam;
+
+  const openAFFiNE = useCallback(() => {
+    if (params.get('client')) {
+      jumpToOpenInApp(`/workspace/${selectedWorkspace?.id}/all`);
+    } else if (selectedWorkspace) {
+      jumpToPage(selectedWorkspace.id, 'all');
+    }
+  }, [jumpToOpenInApp, jumpToPage, params, selectedWorkspace]);
+
+  useEffect(() => {
+    revalidate();
+  }, [selectedWorkspace, revalidate]);
+
+  useEffect(() => {
+    window.addEventListener('focus', revalidate);
+    return () => {
+      window.removeEventListener('focus', revalidate);
+    };
+  }, [revalidate]);
+
+  useEffect(() => {
+    if (isTeam && selectedWorkspace) {
+      return openAFFiNE();
+    }
+  }, [isTeam, jumpToPage, openAFFiNE, selectedWorkspace]);
 
   return (
     <AuthPageContainer title={t['com.affine.upgrade-to-team-page.title']()}>
@@ -139,12 +175,15 @@ export const UpgradeToTeam = ({ recurring }: { recurring: string | null }) => {
           <div>
             {t['com.affine.upgrade-to-team-page.benefit.description']()}
           </div>
-          <UpgradeDialog
-            recurring={recurring}
-            open={openUpgrade}
-            onOpenChange={setOpenUpgrade}
-            selectedWorkspace={selectedWorkspace}
-          />
+          {selectedWorkspace && (
+            <UpgradeDialog
+              recurring={recurring}
+              open={openUpgrade}
+              onOpenChange={setOpenUpgrade}
+              workspaceId={selectedWorkspace.id}
+              workspaceName={name}
+            />
+          )}
           <CreateWorkspaceDialog
             open={openCreate}
             onOpenChange={setOpenCreate}
@@ -172,51 +211,21 @@ export const UpgradeToTeam = ({ recurring }: { recurring: string | null }) => {
 const UpgradeDialog = ({
   open,
   onOpenChange,
-  selectedWorkspace,
+  workspaceId,
+  workspaceName,
   recurring,
 }: {
   open: boolean;
-  selectedWorkspace: WorkspaceMetadata | null;
+  workspaceId: string;
+  workspaceName: string;
   recurring: string | null;
   onOpenChange: (open: boolean) => void;
 }) => {
   const t = useI18n();
-  const workspacesService = useService(WorkspacesService);
-  const { jumpToPage } = useNavigateHelper();
-
-  const profile = selectedWorkspace
-    ? workspacesService.getProfile(selectedWorkspace)
-    : undefined;
-  const workspaceInfo = useLiveData(profile?.profile$);
-  const isTeam = workspaceInfo?.isTeam;
-  const workspaceName = workspaceInfo?.name;
-  const workspaceId = selectedWorkspace?.id;
 
   const onClose = useCallback(() => {
     onOpenChange(false);
   }, [onOpenChange]);
-
-  const revalidate = useCallback(() => {
-    profile?.revalidate();
-  }, [profile]);
-
-  useEffect(() => {
-    revalidate();
-  }, [selectedWorkspace, revalidate]);
-
-  useEffect(() => {
-    window.addEventListener('focus', revalidate);
-    return () => {
-      window.removeEventListener('focus', revalidate);
-    };
-  }, [revalidate]);
-
-  useEffect(() => {
-    if (isTeam && selectedWorkspace) {
-      onClose();
-      return jumpToPage(selectedWorkspace.id, 'all');
-    }
-  }, [isTeam, jumpToPage, onClose, selectedWorkspace]);
 
   const currentRecurring =
     recurring &&

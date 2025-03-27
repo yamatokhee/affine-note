@@ -1,4 +1,5 @@
 import { Button, Loading } from '@affine/component';
+import { UrlService } from '@affine/core/modules/url';
 import { UserFriendlyError } from '@affine/error';
 import {
   SubscriptionPlan,
@@ -95,9 +96,10 @@ function getProductTriple(searchParams: URLSearchParams): ProductTriple {
 }
 
 export const Component = () => {
-  const { authService, subscriptionService } = useServices({
+  const { authService, subscriptionService, urlService } = useServices({
     AuthService,
     SubscriptionService,
+    UrlService,
   });
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState('');
@@ -155,7 +157,8 @@ export const Component = () => {
               ),
             });
             setMessage('Redirecting...');
-            location.href = checkout;
+            urlService.openPopupWindow(checkout);
+            jumpToIndex();
           } catch (err) {
             const e = UserFriendlyError.fromAny(err);
             setMessage(e.message);
@@ -180,6 +183,7 @@ export const Component = () => {
     retryKey,
     variant,
     coupon,
+    urlService,
   ]);
 
   return (
