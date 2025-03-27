@@ -587,3 +587,31 @@ test('should send mention email by user setting', async t => {
   // should not send mention email
   t.is(module.mails.count('Mention'), mentionMailCount);
 });
+
+test('should send mention email with use client doc title if server doc title is empty', async t => {
+  const { notificationService, module } = t.context;
+  const docId = randomUUID();
+  await module.create(Mockers.DocMeta, {
+    workspaceId: workspace.id,
+    docId,
+    // mock empty title
+    title: '',
+  });
+  const notification = await notificationService.createMention({
+    userId: member.id,
+    body: {
+      workspaceId: workspace.id,
+      createdByUserId: owner.id,
+      doc: {
+        id: docId,
+        title: 'doc-title-1',
+        blockId: 'block-id-1',
+        mode: DocMode.page,
+      },
+    },
+  });
+  t.truthy(notification);
+  const mentionMail = module.mails.last('Mention');
+  t.is(mentionMail.to, member.email);
+  t.is(mentionMail.props.doc.title, 'doc-title-1');
+});

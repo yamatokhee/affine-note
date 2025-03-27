@@ -4,6 +4,7 @@ export * from './user.mock';
 export * from './workspace.mock';
 export * from './workspace-user.mock';
 
+import { MockDocMeta } from './doc-meta.mock';
 import { MockMailer } from './mailer.mock';
 import { MockJobQueue } from './queue.mock';
 import { MockTeamWorkspace } from './team-workspace.mock';
@@ -18,6 +19,7 @@ export const Mockers = {
   TeamWorkspace: MockTeamWorkspace,
   WorkspaceUser: MockWorkspaceUser,
   UserSettings: MockUserSettings,
+  DocMeta: MockDocMeta,
 };
 
 export { MockJobQueue, MockMailer };

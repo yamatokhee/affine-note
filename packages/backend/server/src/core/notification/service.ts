@@ -57,7 +57,7 @@ export class NotificationService {
       input.body.workspaceId,
       input.body.doc.id
     );
-    const title = doc?.title ?? input.body.doc.title;
+    const title = doc?.title || input.body.doc.title;
     const url = this.url.link(
       generateDocPath({
         workspaceId: input.body.workspaceId,
