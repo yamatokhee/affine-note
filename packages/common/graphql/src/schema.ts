@@ -123,7 +123,7 @@ export interface ContextWorkspaceEmbeddingStatus {
 
 export interface Copilot {
   __typename?: 'Copilot';
-  audioTranscription: Array<TranscriptionResultType>;
+  audioTranscription: Maybe<TranscriptionResultType>;
   /** Get the context list of a session */
   contexts: Array<CopilotContext>;
   histories: Array<CopilotHistories>;
@@ -140,6 +140,7 @@ export interface Copilot {
 }
 
 export interface CopilotAudioTranscriptionArgs {
+  blobId?: InputMaybe<Scalars['String']['input']>;
   jobId?: InputMaybe<Scalars['String']['input']>;
 }
 
@@ -1965,6 +1966,7 @@ export interface TranscriptionResultType {
   id: Scalars['ID']['output'];
   status: AiJobStatus;
   summary: Maybe<Scalars['String']['output']>;
+  title: Maybe<Scalars['String']['output']>;
   transcription: Maybe<Array<TranscriptionItemType>>;
 }
 
@@ -3057,6 +3059,7 @@ export type ClaimAudioTranscriptionMutation = {
     __typename?: 'TranscriptionResultType';
     id: string;
     status: AiJobStatus;
+    title: string | null;
     summary: string | null;
     transcription: Array<{
       __typename?: 'TranscriptionItemType';
@@ -3070,7 +3073,8 @@ export type ClaimAudioTranscriptionMutation = {
 
 export type GetAudioTranscriptionQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
-  jobId: Scalars['String']['input'];
+  jobId?: InputMaybe<Scalars['String']['input']>;
+  blobId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type GetAudioTranscriptionQuery = {
@@ -3079,10 +3083,11 @@ export type GetAudioTranscriptionQuery = {
     __typename?: 'UserType';
     copilot: {
       __typename?: 'Copilot';
-      audioTranscription: Array<{
+      audioTranscription: {
         __typename?: 'TranscriptionResultType';
         id: string;
         status: AiJobStatus;
+        title: string | null;
         summary: string | null;
         transcription: Array<{
           __typename?: 'TranscriptionItemType';
@@ -3091,7 +3096,7 @@ export type GetAudioTranscriptionQuery = {
           end: string;
           transcription: string;
         }> | null;
-      }>;
+      } | null;
     };
   } | null;
 };

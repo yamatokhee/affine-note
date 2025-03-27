@@ -385,6 +385,7 @@ const actions = [
   {
     promptName: [
       'Summary',
+      'Summary as title',
       'Explain this',
       'Write an article about this',
       'Write a twitter about this',

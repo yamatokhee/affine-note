@@ -10,6 +10,7 @@ export const promptKeys = [
   'Chat With AFFiNE AI',
   'Search With AFFiNE AI',
   'Summary',
+  'Summary as title',
   'Generate a caption',
   'Summary the webpage',
   'Explain this',

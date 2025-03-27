@@ -506,8 +506,7 @@ model AiJobs {
   // will delete creator record if creator's account is deleted
   createdByUser User? @relation(name: "createdAiJobs", fields: [createdBy], references: [id], onDelete: SetNull)
 
-  @@unique([workspaceId, blobId])
-  @@index([createdBy, workspaceId, blobId])
+  @@unique([createdBy, workspaceId, blobId])
   @@map("ai_jobs")
 }
 

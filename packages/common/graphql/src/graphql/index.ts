@@ -633,13 +633,14 @@ export const claimAudioTranscriptionMutation = {
   claimAudioTranscription(jobId: $jobId) {
     id
     status
+    title
+    summary
     transcription {
       speaker
       start
       end
       transcription
     }
-    summary
   }
 }`,
 };
@@ -647,19 +648,20 @@ export const claimAudioTranscriptionMutation = {
 export const getAudioTranscriptionQuery = {
   id: 'getAudioTranscriptionQuery' as const,
   op: 'getAudioTranscription',
-  query: `query getAudioTranscription($workspaceId: String!, $jobId: String!) {
+  query: `query getAudioTranscription($workspaceId: String!, $jobId: String, $blobId: String) {
   currentUser {
     copilot(workspaceId: $workspaceId) {
-      audioTranscription(jobId: $jobId) {
+      audioTranscription(jobId: $jobId, blobId: $blobId) {
         id
         status
+        title
+        summary
         transcription {
           speaker
           start
           end
           transcription
         }
-        summary
       }
     }
   }

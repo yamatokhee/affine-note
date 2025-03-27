@@ -86,7 +86,11 @@ test('should update job', async t => {
     type: AiJobType.transcription,
   });
 
-  const hasJob = await t.context.copilotJob.has(workspace.id, 'blob-id');
+  const hasJob = await t.context.copilotJob.has(
+    user.id,
+    workspace.id,
+    'blob-id'
+  );
   t.true(hasJob);
 
   const job = await t.context.copilotJob.get(jobId);

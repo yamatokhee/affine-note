@@ -32,14 +32,54 @@ export class CopilotJobModel extends BaseModel {
     return row;
   }
 
-  async has(workspaceId: string, blobId: string) {
+  async has(userId: string, workspaceId: string, blobId: string) {
     const row = await this.db.aiJobs.findFirst({
       where: {
+        createdBy: userId,
         workspaceId,
         blobId,
       },
     });
     return !!row;
+  }
+
+  async getWithUser(
+    userId: string,
+    workspaceId: string,
+    jobId?: string,
+    blobId?: string,
+    type?: AiJobType
+  ) {
+    if (!jobId && !blobId) {
+      return null;
+    }
+
+    const row = await this.db.aiJobs.findFirst({
+      where: {
+        id: jobId,
+        blobId,
+        workspaceId,
+        type,
+        OR: [
+          { createdBy: userId },
+          { createdBy: { not: userId }, status: AiJobStatus.claimed },
+        ],
+      },
+    });
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      id: row.id,
+      workspaceId: row.workspaceId,
+      blobId: row.blobId,
+      createdBy: row.createdBy || undefined,
+      type: row.type,
+      status: row.status,
+      payload: row.payload,
+    };
   }
 
   async update(jobId: string, data: UpdateCopilotJobInput) {
@@ -72,42 +112,6 @@ export class CopilotJobModel extends BaseModel {
       select: { status: true },
     });
     return ret?.status;
-  }
-
-  async getWithUser(
-    userId: string,
-    workspaceId: string,
-    jobId?: string,
-    type?: AiJobType
-  ) {
-    const row = await this.db.aiJobs.findFirst({
-      where: {
-        id: jobId,
-        workspaceId,
-        type,
-        OR: [
-          {
-            createdBy: userId,
-            status: { in: [AiJobStatus.finished, AiJobStatus.claimed] },
-          },
-          { createdBy: { not: userId }, status: AiJobStatus.claimed },
-        ],
-      },
-    });
-
-    if (!row) {
-      return null;
-    }
-
-    return {
-      id: row.id,
-      workspaceId: row.workspaceId,
-      blobId: row.blobId,
-      createdBy: row.createdBy || undefined,
-      type: row.type,
-      status: row.status,
-      payload: row.payload,
-    };
   }
 
   async get(jobId: string): Promise<CopilotJob | null> {

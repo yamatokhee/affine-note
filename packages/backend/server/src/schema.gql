@@ -81,7 +81,7 @@ type ContextWorkspaceEmbeddingStatus {
 }
 
 type Copilot {
-  audioTranscription(jobId: String): [TranscriptionResultType!]!
+  audioTranscription(blobId: String, jobId: String): TranscriptionResultType
 
   """Get the context list of a session"""
   contexts(contextId: String, sessionId: String): [CopilotContext!]!
@@ -1465,6 +1465,7 @@ type TranscriptionResultType {
   id: ID!
   status: AiJobStatus!
   summary: String
+  title: String
   transcription: [TranscriptionItemType!]
 }
 

@@ -47,7 +47,7 @@ export class CopilotTranscriptionService {
     blobId: string,
     blob: FileUpload
   ): Promise<TranscriptionJob> {
-    if (await this.models.copilotJob.has(workspaceId, blobId)) {
+    if (await this.models.copilotJob.has(userId, workspaceId, blobId)) {
       throw new CopilotTranscriptionJobExists();
     }
 
@@ -97,12 +97,14 @@ export class CopilotTranscriptionService {
   async queryTranscriptionJob(
     userId: string,
     workspaceId: string,
-    jobId: string
+    jobId?: string,
+    blobId?: string
   ) {
     const job = await this.models.copilotJob.getWithUser(
       userId,
       workspaceId,
       jobId,
+      blobId,
       AiJobType.transcription
     );
 
@@ -170,10 +172,12 @@ export class CopilotTranscriptionService {
     const transcription = TranscriptionSchema.parse(
       JSON.parse(this.cleanupResponse(result))
     );
-    await this.models.copilotJob.update(jobId, { payload: { transcription } });
+    await this.models.copilotJob.update(jobId, {
+      payload: { transcription },
+    });
 
     await this.job.add(
-      'copilot.summary.submit',
+      'copilot.transcriptSummary.submit',
       {
         jobId,
       },
@@ -182,8 +186,8 @@ export class CopilotTranscriptionService {
     );
   }
 
-  @OnJob('copilot.summary.submit')
-  async summaryTranscription({ jobId }: Jobs['copilot.summary.submit']) {
+  @OnJob('copilot.transcriptSummary.submit')
+  async transcriptSummary({ jobId }: Jobs['copilot.transcriptSummary.submit']) {
     const payload = await this.models.copilotJob.getPayload(
       jobId,
       TranscriptPayloadSchema
@@ -196,7 +200,41 @@ export class CopilotTranscriptionService {
       const result = await this.chatWithPrompt('Summary', { content });
 
       payload.summary = this.cleanupResponse(result);
-      await this.models.copilotJob.update(jobId, { payload });
+      await this.models.copilotJob.update(jobId, {
+        payload,
+      });
+
+      await this.job.add(
+        'copilot.transcriptTitle.submit',
+        { jobId },
+        // retry 3 times
+        { removeOnFail: 3 }
+      );
+    } else {
+      await this.models.copilotJob.update(jobId, {
+        status: AiJobStatus.failed,
+      });
+    }
+  }
+
+  @OnJob('copilot.transcriptTitle.submit')
+  async transcriptTitle({ jobId }: Jobs['copilot.transcriptTitle.submit']) {
+    const payload = await this.models.copilotJob.getPayload(
+      jobId,
+      TranscriptPayloadSchema
+    );
+    if (payload.transcription && payload.summary) {
+      const content = payload.transcription
+        .map(t => t.transcription)
+        .join('\n');
+
+      const result = await this.chatWithPrompt('Summary as title', { content });
+
+      payload.title = this.cleanupResponse(result);
+      await this.models.copilotJob.update(jobId, {
+        payload,
+        status: AiJobStatus.finished,
+      });
     } else {
       await this.models.copilotJob.update(jobId, {
         status: AiJobStatus.failed,

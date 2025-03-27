@@ -44,15 +44,23 @@ class TranscriptionResultType implements TranscriptionPayload {
   @Field(() => ID)
   id!: string;
 
-  @Field(() => [TranscriptionItemType], { nullable: true })
-  transcription!: TranscriptionItemType[] | null;
+  @Field(() => String, { nullable: true })
+  title!: string | null;
 
   @Field(() => String, { nullable: true })
   summary!: string | null;
 
+  @Field(() => [TranscriptionItemType], { nullable: true })
+  transcription!: TranscriptionItemType[] | null;
+
   @Field(() => AiJobStatus)
   status!: AiJobStatus;
 }
+
+const FinishedStatus: Set<AiJobStatus> = new Set([
+  AiJobStatus.finished,
+  AiJobStatus.claimed,
+]);
 
 @Injectable()
 @Resolver(() => CopilotType)
@@ -67,12 +75,19 @@ export class CopilotTranscriptionResolver {
   ): TranscriptionResultType | null {
     if (job) {
       const { transcription: ret, status } = job;
-      return {
+      const finalJob: TranscriptionResultType = {
         id: job.id,
-        transcription: ret?.transcription || null,
-        summary: ret?.summary || null,
         status,
+        title: null,
+        summary: null,
+        transcription: null,
       };
+      if (FinishedStatus.has(finalJob.status)) {
+        finalJob.title = ret?.title || null;
+        finalJob.summary = ret?.summary || null;
+        finalJob.transcription = ret?.transcription || null;
+      }
+      return finalJob;
     }
     return null;
   }
@@ -110,14 +125,20 @@ export class CopilotTranscriptionResolver {
     return this.handleJobResult(job);
   }
 
-  @ResolveField(() => [TranscriptionResultType], {})
+  @ResolveField(() => TranscriptionResultType, {
+    nullable: true,
+  })
   async audioTranscription(
     @Parent() copilot: CopilotType,
     @CurrentUser() user: CurrentUser,
     @Args('jobId', { nullable: true })
-    jobId: string
+    jobId?: string,
+    @Args('blobId', { nullable: true })
+    blobId?: string
   ): Promise<TranscriptionResultType | null> {
     if (!copilot.workspaceId) return null;
+    if (!jobId && !blobId) return null;
+
     await this.ac
       .user(user.id)
       .workspace(copilot.workspaceId)
@@ -127,7 +148,8 @@ export class CopilotTranscriptionResolver {
     const job = await this.service.queryTranscriptionJob(
       user.id,
       copilot.workspaceId,
-      jobId
+      jobId,
+      blobId
     );
     return this.handleJobResult(job);
   }

@@ -12,8 +12,9 @@ const TranscriptionItemSchema = z.object({
 export const TranscriptionSchema = z.array(TranscriptionItemSchema);
 
 export const TranscriptPayloadSchema = z.object({
-  transcription: TranscriptionSchema.nullable().optional(),
+  title: z.string().nullable().optional(),
   summary: z.string().nullable().optional(),
+  transcription: TranscriptionSchema.nullable().optional(),
 });
 
 export type TranscriptionItem = z.infer<typeof TranscriptionItemSchema>;
@@ -27,7 +28,10 @@ declare global {
       url: string;
       mimeType: string;
     };
-    'copilot.summary.submit': {
+    'copilot.transcriptSummary.submit': {
+      jobId: string;
+    };
+    'copilot.transcriptTitle.submit': {
       jobId: string;
     };
   }
