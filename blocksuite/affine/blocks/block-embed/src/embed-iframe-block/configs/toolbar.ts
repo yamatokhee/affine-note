@@ -24,30 +24,77 @@ import {
   CopyIcon,
   DeleteIcon,
   DuplicateIcon,
+  LinkedPageIcon,
+  OpenInNewIcon,
   ResetIcon,
 } from '@blocksuite/icons/lit';
-import { type ExtensionType, Slice, Text } from '@blocksuite/store';
+import {
+  type ExtensionType,
+  Slice,
+  Text,
+  toDraftModel,
+} from '@blocksuite/store';
 import { computed, signal } from '@preact/signals-core';
 import { html } from 'lit';
 import { keyed } from 'lit/directives/keyed.js';
 import * as Y from 'yjs';
 
+import {
+  convertSelectedBlocksToLinkedDoc,
+  getTitleFromSelectedModels,
+  notifyDocCreated,
+  promptDocTitle,
+} from '../../common/render-linked-doc';
 import { EmbedIframeBlockComponent } from '../embed-iframe-block';
 
 const trackBaseProps = {
   category: 'embed iframe block',
 };
 
+const showWhenUrlExists = (ctx: ToolbarContext) => {
+  const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
+  if (!model) return false;
+
+  return !!model.props.url;
+};
+
+const openLinkAction = (id: string): ToolbarAction => {
+  return {
+    id,
+    when: showWhenUrlExists,
+    tooltip: 'Original',
+    icon: OpenInNewIcon(),
+    run(ctx) {
+      const component = ctx.getCurrentBlockByType(EmbedIframeBlockComponent);
+      component?.open();
+    },
+  };
+};
+
+const captionAction = (id: string): ToolbarAction => {
+  return {
+    id,
+    when: showWhenUrlExists,
+    tooltip: 'Caption',
+    icon: CaptionIcon(),
+    run(ctx) {
+      const component = ctx.getCurrentBlockByType(EmbedIframeBlockComponent);
+      component?.captionEditor?.show();
+
+      ctx.track('OpenedCaptionEditor', {
+        ...trackBaseProps,
+        control: 'add caption',
+      });
+    },
+  };
+};
+
 export const builtinToolbarConfig = {
   actions: [
+    openLinkAction('a.open-link'),
     {
-      id: 'b.conversions',
-      when: (ctx: ToolbarContext) => {
-        const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
-        if (!model) return false;
-
-        return !!model.props.url;
-      },
+      id: 'c.conversions',
+      when: showWhenUrlExists,
       actions: [
         {
           id: 'inline',
@@ -155,24 +202,48 @@ export const builtinToolbarConfig = {
         )}`;
       },
     } satisfies ToolbarActionGroup<ToolbarAction>,
+    captionAction('d.caption'),
     {
-      id: 'c.caption',
-      when: (ctx: ToolbarContext) => {
-        const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
-        if (!model) return false;
-
-        return !!model.props.url;
-      },
-      tooltip: 'Caption',
-      icon: CaptionIcon(),
+      id: 'e.convert-to-linked-doc',
+      tooltip: 'Create Linked Doc',
+      icon: LinkedPageIcon(),
       run(ctx) {
-        const component = ctx.getCurrentBlockByType(EmbedIframeBlockComponent);
-        component?.captionEditor?.show();
+        const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
+        if (!model) return;
 
-        ctx.track('OpenedCaptionEditor', {
-          ...trackBaseProps,
-          control: 'add caption',
-        });
+        const { store, std, selection, track } = ctx;
+        selection.clear();
+
+        const draftedModels = [model].map(toDraftModel);
+        const autofill = getTitleFromSelectedModels(draftedModels);
+        promptDocTitle(std, autofill)
+          .then(async title => {
+            if (title === null) return;
+            await convertSelectedBlocksToLinkedDoc(
+              std,
+              store,
+              draftedModels,
+              title
+            );
+            notifyDocCreated(std, store);
+
+            track('DocCreated', {
+              segment: 'doc',
+              page: 'doc editor',
+              module: 'toolbar',
+              control: 'create linked doc',
+              type: 'embed-linked-doc',
+            });
+
+            track('LinkedDocCreated', {
+              segment: 'doc',
+              page: 'doc editor',
+              module: 'toolbar',
+              control: 'create linked doc',
+              type: 'embed-linked-doc',
+            });
+          })
+          .catch(console.error);
       },
     },
     {
@@ -243,14 +314,10 @@ export const builtinToolbarConfig = {
 
 export const builtinSurfaceToolbarConfig = {
   actions: [
+    openLinkAction('a.open-link'),
     {
-      id: 'b.conversions',
-      when: (ctx: ToolbarContext) => {
-        const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
-        if (!model) return false;
-
-        return !!model.props.url;
-      },
+      id: 'c.conversions',
+      when: showWhenUrlExists,
       actions: [
         {
           id: 'card',
@@ -324,28 +391,9 @@ export const builtinSurfaceToolbarConfig = {
         )}`;
       },
     } satisfies ToolbarActionGroup<ToolbarAction>,
+    captionAction('d.caption'),
     {
-      id: 'c.caption',
-      when: (ctx: ToolbarContext) => {
-        const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
-        if (!model) return false;
-
-        return !!model.props.url;
-      },
-      tooltip: 'Caption',
-      icon: CaptionIcon(),
-      run(ctx) {
-        const component = ctx.getCurrentBlockByType(EmbedIframeBlockComponent);
-        component?.captionEditor?.show();
-
-        ctx.track('OpenedCaptionEditor', {
-          ...trackBaseProps,
-          control: 'add caption',
-        });
-      },
-    },
-    {
-      id: 'd.scale',
+      id: 'e.scale',
       content(ctx) {
         const model = ctx.getCurrentModelByType(EmbedIframeBlockModel);
         if (!model) return null;

@@ -102,7 +102,7 @@ export class EmbedIframeLinkInputPopup extends EmbedIframeLinkInputBase {
         outline: none;
       }
       .link-input::placeholder {
-        color: var(--affine-placeholder-color);
+        color: ${unsafeCSSVarV2('text/placeholder')};
       }
     }
 
