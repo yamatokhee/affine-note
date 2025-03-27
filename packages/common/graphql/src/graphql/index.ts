@@ -48,7 +48,9 @@ export const adminServerConfigQuery = {
     }
     availableUserFeatures
   }
-}`,
+}
+${passwordLimitsFragment}
+${credentialsRequirementsFragment}`,
 };
 
 export const createChangePasswordUrlMutation = {

@@ -1,5 +1,5 @@
-#import './fragments/password-limits.gql'
-#import './fragments/credentials-requirement.gql'
+#import '../fragments/password-limits.gql'
+#import '../fragments/credentials-requirement.gql'
 
 query adminServerConfig {
   serverConfig {
