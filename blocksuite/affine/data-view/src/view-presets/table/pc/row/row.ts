@@ -86,7 +86,7 @@ export class TableRow extends SignalWatcher(WithDisposable(ShadowlessElement)) {
       display: flex;
       padding: 4px;
       border-radius: 4px;
-      box-shadow: 0px 0px 4px 0px rgba(66, 65, 73, 0.14);
+      box-shadow: var(--affine-button-shadow);
       background-color: var(--affine-background-primary-color);
       position: relative;
     }

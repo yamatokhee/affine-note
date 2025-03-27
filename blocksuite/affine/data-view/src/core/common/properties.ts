@@ -53,6 +53,7 @@ export class DataViewPropertiesSettingView extends SignalWatcher(
       font-weight: 500;
       border-radius: 4px;
       cursor: pointer;
+      color: ${unsafeCSS(cssVarV2.button.primary)};
     }
 
     .properties-group-op:hover {
