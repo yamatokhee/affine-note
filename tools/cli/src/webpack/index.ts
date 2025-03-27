@@ -72,6 +72,7 @@ export function createWebpackConfig(
   flags: BuildFlags
 ): webpack.Configuration {
   const buildConfig = getBuildConfig(pkg, flags);
+  const httpProxyMiddlewareLogLevel = process.env.CI ? 'silent' : 'error';
 
   const config = {
     name: 'affine',
@@ -340,6 +341,7 @@ export function createWebpackConfig(
       liveReload: true,
       client: {
         overlay: process.env.DISABLE_DEV_OVERLAY === 'true' ? false : undefined,
+        logging: process.env.CI ? 'none' : 'error',
       },
       historyApiFallback: {
         rewrites: [
@@ -362,9 +364,22 @@ export function createWebpackConfig(
         },
       ],
       proxy: [
-        { context: '/api', target: 'http://localhost:3010' },
-        { context: '/socket.io', target: 'http://localhost:3010', ws: true },
-        { context: '/graphql', target: 'http://localhost:3010' },
+        {
+          context: '/api',
+          target: 'http://localhost:3010',
+          logLevel: httpProxyMiddlewareLogLevel,
+        },
+        {
+          context: '/socket.io',
+          target: 'http://localhost:3010',
+          ws: true,
+          logLevel: httpProxyMiddlewareLogLevel,
+        },
+        {
+          context: '/graphql',
+          target: 'http://localhost:3010',
+          logLevel: httpProxyMiddlewareLogLevel,
+        },
       ],
     } as DevServerConfiguration,
   } satisfies webpack.Configuration;
