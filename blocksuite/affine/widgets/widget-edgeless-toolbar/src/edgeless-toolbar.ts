@@ -145,7 +145,7 @@ export class EdgelessToolbarWidget extends WidgetComponent<RootBlockModel> {
       height: 100%;
       background-color: var(--affine-border-color);
     }
-    .brush-and-eraser {
+    .pen-and-eraser {
       display: flex;
       height: 100%;
       gap: 4px;

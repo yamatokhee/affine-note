@@ -62,7 +62,6 @@ export async function focusDocTitle(page: Page, editorIndex = 0) {
   await locateDocTitle(page, editorIndex).locator('.inline-editor').focus();
 }
 
-// ================== Page ==================
 export function locateToolbar(page: Page, editorIndex = 0) {
   return locateEditorContainer(page, editorIndex).locator(
     'affine-toolbar-widget editor-toolbar'
@@ -231,7 +230,9 @@ type EdgelessTool =
   | 'pan'
   | 'note'
   | 'shape'
+  | 'pen'
   | 'brush'
+  | 'highlighter'
   | 'eraser'
   | 'text'
   | 'connector'
@@ -255,7 +256,9 @@ export async function locateEdgelessToolButton(
     default: '.edgeless-default-button',
     pan: '.edgeless-default-button',
     shape: '.edgeless-shape-button',
+    pen: '.edgeless-pen-button',
     brush: '.edgeless-brush-button',
+    highlighter: '.edgeless-highlighter-button',
     eraser: '.edgeless-eraser-button',
     text: '.edgeless-mindmap-button',
     connector: '.edgeless-connector-button',
@@ -268,6 +271,10 @@ export async function locateEdgelessToolButton(
   let buttonType;
   switch (type) {
     case 'brush':
+    case 'highlighter':
+      buttonType = 'div';
+      break;
+    case 'pen':
     case 'text':
     case 'eraser':
     case 'shape':
@@ -362,9 +369,30 @@ export async function setEdgelessTool(
       }
       break;
     }
+    case 'brush':
+    case 'highlighter': {
+      const penButton = await locateEdgelessToolButton(
+        page,
+        'pen',
+        false,
+        editorIndex
+      );
+      await penButton.click();
+
+      await page.waitForTimeout(250);
+
+      const button = await locateEdgelessToolButton(
+        page,
+        tool,
+        false,
+        editorIndex
+      );
+      await button.click();
+
+      break;
+    }
     case 'lasso':
     case 'note':
-    case 'brush':
     case 'eraser':
     case 'frame':
     case 'connector': {

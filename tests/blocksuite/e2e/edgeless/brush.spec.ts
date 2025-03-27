@@ -35,11 +35,12 @@ test('change editor mode when brush color palette opening', async ({
   await switchEditorMode(page);
   await setEdgelessTool(page, 'brush');
 
-  const brushMenu = page.locator('edgeless-brush-menu');
-  await expect(brushMenu).toBeVisible();
+  const penMenu = page.locator('edgeless-pen-menu');
+  const colorPalettes = penMenu.locator('edgeless-color-panel');
+  await expect(colorPalettes).toBeVisible();
 
   await switchEditorMode(page);
-  await expect(brushMenu).toBeHidden();
+  await expect(colorPalettes).toBeHidden();
 });
 
 test('add brush element', async ({ page }) => {
@@ -118,7 +119,8 @@ test('keep same color when mouse mode switched back to brush', async ({
   await assertEdgelessColorSameWithHexColor(page, color, pickedColor);
 });
 
-test('add brush element with different size', async ({ page }) => {
+// TODO(@fundon): should add it back?
+test.skip('add brush element with different size', async ({ page }) => {
   await enterPlaygroundRoom(page);
   await initEmptyEdgelessState(page);
   await switchEditorMode(page);

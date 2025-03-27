@@ -1,6 +1,9 @@
 import { edgelessTextToolbarExtension } from '@blocksuite/affine-block-edgeless-text';
 import { frameToolbarExtension } from '@blocksuite/affine-block-frame';
-import { brushToolbarExtension } from '@blocksuite/affine-gfx-brush';
+import {
+  brushToolbarExtension,
+  highlighterToolbarExtension,
+} from '@blocksuite/affine-gfx-brush';
 import { connectorToolbarExtension } from '@blocksuite/affine-gfx-connector';
 import { groupToolbarExtension } from '@blocksuite/affine-gfx-group';
 import { mindmapToolbarExtension } from '@blocksuite/affine-gfx-mindmap';
@@ -18,6 +21,8 @@ export const EdgelessElementToolbarExtension: ExtensionType[] = [
   groupToolbarExtension,
 
   brushToolbarExtension,
+
+  highlighterToolbarExtension,
 
   connectorToolbarExtension,
 

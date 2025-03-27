@@ -55,7 +55,7 @@ test('shortcut', async ({ page }) => {
   await expect(shapeButton).toHaveAttribute('active', '');
 
   await page.keyboard.press('p');
-  const penButton = await locatorEdgelessToolButton(page, 'brush');
+  const penButton = await locatorEdgelessToolButton(page, 'pen');
   await expect(penButton).toHaveAttribute('active', '');
 
   await page.keyboard.press('h');

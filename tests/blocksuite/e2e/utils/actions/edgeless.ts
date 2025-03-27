@@ -159,7 +159,9 @@ type EdgelessTool =
   | 'pan'
   | 'note'
   | 'shape'
+  | 'pen'
   | 'brush'
+  | 'highlighter'
   | 'eraser'
   | 'text'
   | 'connector'
@@ -200,7 +202,9 @@ export async function locatorEdgelessToolButton(
     default: '.edgeless-default-button',
     pan: '.edgeless-default-button',
     shape: '.edgeless-shape-button',
+    pen: '.edgeless-pen-button',
     brush: '.edgeless-brush-button',
+    highlighter: '.edgeless-highlighter-button',
     eraser: '.edgeless-eraser-button',
     text: '.edgeless-mindmap-button',
     connector: '.edgeless-connector-button',
@@ -213,6 +217,10 @@ export async function locatorEdgelessToolButton(
   let buttonType;
   switch (type) {
     case 'brush':
+    case 'highlighter':
+      buttonType = 'div';
+      break;
+    case 'pen':
     case 'text':
     case 'eraser':
     case 'shape':
@@ -342,9 +350,20 @@ export async function setEdgelessTool(
       }
       break;
     }
+    case 'brush':
+    case 'highlighter': {
+      const penButton = await locatorEdgelessToolButton(page, 'pen', false);
+      await penButton.click();
+
+      await page.waitForTimeout(250);
+
+      const button = await locatorEdgelessToolButton(page, mode, false);
+      await button.click();
+
+      break;
+    }
     case 'lasso':
     case 'note':
-    case 'brush':
     case 'eraser':
     case 'frame':
     case 'connector': {
@@ -648,7 +667,7 @@ export async function rotateElementByHandle(
 
 export async function selectBrushColor(page: Page, label: string) {
   const colorButton = page
-    .locator('edgeless-brush-menu')
+    .locator('edgeless-pen-menu')
     .locator('edgeless-color-panel')
     .locator(`.color-unit[aria-label="${label}"]`);
   await colorButton.click();
@@ -664,7 +683,7 @@ export async function selectBrushSize(page: Page, size: string) {
     twelve: 6,
   };
   const sizeButton = page.locator(
-    `edgeless-brush-menu .line-width-panel .line-width-button:nth-child(${sizeIndexMap[size]})`
+    `edgeless-pen-menu .line-width-panel .line-width-button:nth-child(${sizeIndexMap[size]})`
   );
   await sizeButton.click();
 }

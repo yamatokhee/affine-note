@@ -4,7 +4,11 @@ import {
   PresentTool,
 } from '@blocksuite/affine-block-frame';
 import { ConnectionOverlay } from '@blocksuite/affine-block-surface';
-import { BrushTool, EraserTool } from '@blocksuite/affine-gfx-brush';
+import {
+  BrushTool,
+  EraserTool,
+  HighlighterTool,
+} from '@blocksuite/affine-gfx-brush';
 import {
   ConnectorFilter,
   ConnectorTool,
@@ -45,6 +49,7 @@ export const EdgelessToolExtension: ExtensionType[] = [
   FrameTool,
   LassoTool,
   PresentTool,
+  HighlighterTool,
 ];
 
 export const EdgelessEditExtensions: ExtensionType[] = [
