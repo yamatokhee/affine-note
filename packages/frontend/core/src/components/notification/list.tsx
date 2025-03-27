@@ -18,6 +18,9 @@ import type {
   InvitationAcceptedNotificationBodyType,
   InvitationBlockedNotificationBodyType,
   InvitationNotificationBodyType,
+  InvitationReviewApprovedNotificationBodyType,
+  InvitationReviewDeclinedNotificationBodyType,
+  InvitationReviewRequestNotificationBodyType,
   MentionNotificationBodyType,
 } from '@affine/graphql';
 import { i18nTime, Trans, useI18n } from '@affine/i18n';
@@ -118,6 +121,12 @@ const NotificationItem = ({ notification }: { notification: Notification }) => {
     <InvitationNotificationItem notification={notification} />
   ) : type === NotificationType.InvitationBlocked ? (
     <InvitationBlockedNotificationItem notification={notification} />
+  ) : type === NotificationType.InvitationReviewRequest ? (
+    <InvitationReviewRequestNotificationItem notification={notification} />
+  ) : type === NotificationType.InvitationReviewDeclined ? (
+    <InvitationReviewDeclinedNotificationItem notification={notification} />
+  ) : type === NotificationType.InvitationReviewApproved ? (
+    <InvitationReviewApprovedNotificationItem notification={notification} />
   ) : (
     <div className={styles.itemContainer}>
       <Avatar size={22} />
@@ -183,6 +192,189 @@ const MentionNotificationItem = ({
             }}
           />
         </span>
+        <div className={styles.itemDate}>
+          {i18nTime(notification.createdAt, {
+            relative: true,
+          })}
+        </div>
+      </div>
+      <DeleteButton notification={notification} />
+    </div>
+  );
+};
+
+const InvitationReviewRequestNotificationItem = ({
+  notification,
+}: {
+  notification: Notification;
+}) => {
+  const notificationListService = useService(NotificationListService);
+  const { jumpToWorkspaceSettings } = useNavigateHelper();
+  const t = useI18n();
+  const body = notification.body as InvitationReviewRequestNotificationBodyType;
+  const memberInactived = !body.createdByUser;
+  const workspaceInactived = !body.workspace;
+  const handleClick = useCallback(() => {
+    notificationListService.readNotification(notification.id).catch(err => {
+      console.error(err);
+    });
+    if (!body.workspace?.id) {
+      return;
+    }
+    jumpToWorkspaceSettings(body.workspace.id, 'workspace:members');
+  }, [body, jumpToWorkspaceSettings, notification, notificationListService]);
+
+  return (
+    <div className={styles.itemContainer} onClick={handleClick}>
+      <Avatar
+        size={22}
+        name={body.createdByUser?.name}
+        url={body.createdByUser?.avatarUrl}
+      />
+      <div className={styles.itemMain}>
+        <span>
+          <Trans
+            i18nKey={'com.affine.notification.invitation-review-request'}
+            components={{
+              1: (
+                <b
+                  className={styles.itemNameLabel}
+                  data-inactived={memberInactived}
+                />
+              ),
+              2: <WorkspaceNameWithIcon data-inactived={workspaceInactived} />,
+            }}
+            values={{
+              username:
+                body.createdByUser?.name ?? t['com.affine.inactive-member'](),
+              workspaceName:
+                body.workspace?.name ?? t['com.affine.inactive-workspace'](),
+            }}
+          />
+        </span>
+        <div className={styles.itemDate}>
+          {i18nTime(notification.createdAt, {
+            relative: true,
+          })}
+        </div>
+      </div>
+      <DeleteButton notification={notification} />
+    </div>
+  );
+};
+
+const InvitationReviewDeclinedNotificationItem = ({
+  notification,
+}: {
+  notification: Notification;
+}) => {
+  const t = useI18n();
+  const body =
+    notification.body as InvitationReviewDeclinedNotificationBodyType;
+  const memberInactived = !body.createdByUser;
+  const workspaceInactived = !body.workspace;
+
+  return (
+    <div className={styles.itemContainer}>
+      <Avatar
+        size={22}
+        name={body.createdByUser?.name}
+        url={body.createdByUser?.avatarUrl}
+      />
+      <div className={styles.itemMain}>
+        <span>
+          <Trans
+            i18nKey={'com.affine.notification.invitation-review-declined'}
+            components={{
+              1: (
+                <b
+                  className={styles.itemNameLabel}
+                  data-inactived={memberInactived}
+                />
+              ),
+              2: <WorkspaceNameWithIcon data-inactived={workspaceInactived} />,
+            }}
+            values={{
+              username:
+                body.createdByUser?.name ?? t['com.affine.inactive-member'](),
+              workspaceName:
+                body.workspace?.name ?? t['com.affine.inactive-workspace'](),
+            }}
+          />
+        </span>
+        <div className={styles.itemDate}>
+          {i18nTime(notification.createdAt, {
+            relative: true,
+          })}
+        </div>
+      </div>
+      <DeleteButton notification={notification} />
+    </div>
+  );
+};
+
+const InvitationReviewApprovedNotificationItem = ({
+  notification,
+}: {
+  notification: Notification;
+}) => {
+  const notificationListService = useService(NotificationListService);
+  const { jumpToPage } = useNavigateHelper();
+  const t = useI18n();
+  const body =
+    notification.body as InvitationReviewApprovedNotificationBodyType;
+  const memberInactived = !body.createdByUser;
+  const workspaceInactived = !body.workspace;
+
+  const handleClick = useCallback(() => {
+    notificationListService.readNotification(notification.id).catch(err => {
+      console.error(err);
+    });
+    if (!body.workspace?.id) {
+      return;
+    }
+    jumpToPage(body.workspace.id, 'all');
+  }, [body, jumpToPage, notification, notificationListService]);
+
+  return (
+    <div className={styles.itemContainer}>
+      <Avatar
+        size={22}
+        name={body.createdByUser?.name}
+        url={body.createdByUser?.avatarUrl}
+      />
+      <div className={styles.itemMain}>
+        <span>
+          <Trans
+            i18nKey={'com.affine.notification.invitation-review-approved'}
+            components={{
+              1: (
+                <b
+                  className={styles.itemNameLabel}
+                  data-inactived={memberInactived}
+                />
+              ),
+              2: <WorkspaceNameWithIcon data-inactived={workspaceInactived} />,
+            }}
+            values={{
+              username:
+                body.createdByUser?.name ?? t['com.affine.inactive-member'](),
+              workspaceName:
+                body.workspace?.name ?? t['com.affine.inactive-workspace'](),
+            }}
+          />
+        </span>
+        {!workspaceInactived && (
+          <Button
+            variant="secondary"
+            className={styles.itemActionButton}
+            onClick={handleClick}
+          >
+            {t[
+              'com.affine.notification.invitation-review-approved.open-workspace'
+            ]()}
+          </Button>
+        )}
         <div className={styles.itemDate}>
           {i18nTime(notification.createdAt, {
             relative: true,
@@ -320,21 +512,6 @@ const InvitationNotificationItem = ({
   const [isAccepting, setIsAccepting] = useState(false);
   const { jumpToPage } = useNavigateHelper();
 
-  const WorkspaceNameWithIcon = useCallback(
-    ({
-      children,
-      ...props
-    }: React.PropsWithChildren<React.HTMLAttributes<HTMLSpanElement>>) => {
-      return (
-        <b className={styles.itemNameLabel} {...props}>
-          <CollaborationIcon width={20} height={20} />
-          {children}
-        </b>
-      );
-    },
-    []
-  );
-
   const handleReadAndOpenWorkspace = useCallback(() => {
     notificationListService.readNotification(notification.id).catch(err => {
       console.error(err);
@@ -471,5 +648,17 @@ const DeleteButton = ({
       icon={<DeleteIcon />}
       onClick={handleDelete}
     />
+  );
+};
+
+const WorkspaceNameWithIcon = ({
+  children,
+  ...props
+}: React.PropsWithChildren<React.HTMLAttributes<HTMLSpanElement>>) => {
+  return (
+    <b className={styles.itemNameLabel} {...props}>
+      <CollaborationIcon width={20} height={20} />
+      {children}
+    </b>
   );
 };
