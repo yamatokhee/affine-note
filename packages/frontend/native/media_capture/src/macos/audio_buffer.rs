@@ -102,7 +102,7 @@ impl InputAndOutputAudioBufferList {
       let sample_in = processed_samples_input.get(sample_index).unwrap_or(&0.0);
       let sample_out = processed_samples_output.get(sample_index).unwrap_or(&0.0);
 
-      *mixed_sample = sample_in + sample_out;
+      *mixed_sample = (sample_in * 2.0 + sample_out * 1.5) / 2.0;
     }
 
     Ok(mixed_samples)
