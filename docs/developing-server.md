@@ -70,6 +70,14 @@ Workspace members up to 10
 - name: Pro User
 - password: pro
 
+### team user
+
+Include a default `Team Workspace` and the members up to 10
+
+- email: team@affine.pro
+- name: Team User
+- password: team
+
 ## Start frontend
 
 ```sh
