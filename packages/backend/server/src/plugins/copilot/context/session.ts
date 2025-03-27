@@ -114,7 +114,7 @@ export class ContextSession implements AsyncDisposable {
     if (doc) {
       return doc;
     }
-    const record = { id: docId, createdAt: Date.now(), status: null };
+    const record = { id: docId, createdAt: Date.now() };
     this.config.docs.push(record);
     await this.save();
     return record;

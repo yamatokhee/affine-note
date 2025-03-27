@@ -83,18 +83,15 @@ export class CopilotContextModel extends BaseModel {
     return row;
   }
 
-  async mergeDocStatus(
-    workspaceId: string,
-    docs: (ContextDoc & { status?: ContextEmbedStatus | null })[]
-  ) {
+  async mergeDocStatus(workspaceId: string, docs: ContextDoc[]) {
     const docIds = Array.from(new Set(docs.map(doc => doc.id)));
     const finishedDoc = await this.hasWorkspaceEmbedding(workspaceId, docIds);
 
     for (const doc of docs) {
       const status = finishedDoc.has(doc.id)
         ? ContextEmbedStatus.finished
-        : null;
-      doc.status = status;
+        : undefined;
+      doc.status = status || doc.status;
     }
 
     return docs;

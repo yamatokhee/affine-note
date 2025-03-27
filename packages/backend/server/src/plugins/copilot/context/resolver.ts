@@ -127,7 +127,7 @@ export class CopilotContextType {
 registerEnumType(ContextCategories, { name: 'ContextCategories' });
 
 @ObjectType()
-class CopilotDocType implements ContextDoc {
+class CopilotDocType implements Omit<ContextDoc, 'status'> {
   @Field(() => ID)
   id!: string;
 
@@ -418,12 +418,12 @@ export class CopilotContextResolver {
     description: 'list files in context',
   })
   @CallMetric('ai', 'context_file_list')
-  async docs(@Parent() context: CopilotContextType): Promise<ContextDoc[]> {
+  async docs(@Parent() context: CopilotContextType): Promise<CopilotDocType[]> {
     const session = await this.context.get(context.id);
     const docs = session.docs;
     await this.models.copilotContext.mergeDocStatus(session.workspaceId, docs);
 
-    return docs;
+    return docs.map(doc => ({ ...doc, status: doc.status || null }));
   }
 
   @ResolveField(() => [CopilotContextFile], {
@@ -512,11 +512,11 @@ export class CopilotContextResolver {
   async addContextDoc(
     @Args({ name: 'options', type: () => AddContextDocInput })
     options: AddContextDocInput
-  ) {
+  ): Promise<CopilotDocType> {
     const lockFlag = `${COPILOT_LOCKER}:context:${options.contextId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
     const session = await this.context.get(options.contextId);
 
@@ -530,7 +530,7 @@ export class CopilotContextResolver {
         },
       ]);
 
-      return record;
+      return { ...record, status: record.status || null };
     } catch (e: any) {
       throw new CopilotFailedToModifyContext({
         contextId: options.contextId,
