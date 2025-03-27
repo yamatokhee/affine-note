@@ -24,12 +24,6 @@ export function toEdgelessEmbedBlock<
   return class extends toGfxBlockComponent(block) {
     override selectedStyle$ = null;
 
-    _isDragging = false;
-
-    _isResizing = false;
-
-    _showOverlay = false;
-
     override [blockComponentSymbol] = true;
 
     override blockDraggable = false;
@@ -55,16 +49,13 @@ export function toEdgelessEmbedBlock<
 
       this._disposables.add(
         this.edgelessSlots.elementResizeStart.subscribe(() => {
-          this._isResizing = true;
-          this._showOverlay = true;
+          this.isResizing$.value = true;
         })
       );
 
       this._disposables.add(
         this.edgelessSlots.elementResizeEnd.subscribe(() => {
-          this._isResizing = false;
-          this._showOverlay =
-            this._isResizing || this._isDragging || !this.selected$.peek();
+          this.isResizing$.value = false;
         })
       );
     }

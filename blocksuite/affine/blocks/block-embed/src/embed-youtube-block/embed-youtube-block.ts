@@ -25,10 +25,6 @@ export class EmbedYoutubeBlockComponent extends EmbedBlockComponent<
 
   override _cardStyle: (typeof EmbedYoutubeStyles)[number] = 'video';
 
-  protected _isDragging = false;
-
-  protected _isResizing = false;
-
   open = () => {
     let link = this.model.props.url;
     if (!link.match(/^[a-zA-Z]+:\/\//)) {
@@ -92,25 +88,6 @@ export class EmbedYoutubeBlockComponent extends EmbedBlockComponent<
         }
       })
     );
-
-    // this is required to prevent iframe from capturing pointer events
-    this.disposables.add(
-      this.selected$.subscribe(selected => {
-        this._showOverlay = this._isResizing || this._isDragging || !selected;
-      })
-    );
-    // this is required to prevent iframe from capturing pointer events
-    this.handleEvent('dragStart', () => {
-      this._isDragging = true;
-      this._showOverlay =
-        this._isResizing || this._isDragging || !this.selected$.peek();
-    });
-
-    this.handleEvent('dragEnd', () => {
-      this._isDragging = false;
-      this._showOverlay =
-        this._isResizing || this._isDragging || !this.selected$.peek();
-    });
 
     matchMedia('print').addEventListener('change', () => {
       this._showImage = matchMedia('print').matches;
@@ -177,10 +154,12 @@ export class EmbedYoutubeBlockComponent extends EmbedBlockComponent<
                       allowfullscreen
                       loading="lazy"
                     ></iframe>
+
+                    <!-- overlay to prevent the iframe from capturing pointer events -->
                     <div
                       class=${classMap({
                         'affine-embed-youtube-video-iframe-overlay': true,
-                        hide: !this._showOverlay,
+                        hide: !this.showOverlay$.value,
                       })}
                     ></div>
                     <img
@@ -241,9 +220,6 @@ export class EmbedYoutubeBlockComponent extends EmbedBlockComponent<
 
   @state()
   private accessor _showImage = false;
-
-  @state()
-  protected accessor _showOverlay = true;
 
   @property({ attribute: false })
   accessor loading = false;
