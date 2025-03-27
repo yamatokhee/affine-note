@@ -6,7 +6,7 @@ import type {
 } from '@affine/core/modules/search-menu/services';
 import type { Collection } from '@affine/env/filter';
 import type { LinkedMenuGroup } from '@blocksuite/affine/blocks/root';
-import type { Store } from '@blocksuite/affine/store';
+import type { DocMeta, Store } from '@blocksuite/affine/store';
 import type { Signal } from '@preact/signals-core';
 
 export interface AppSidebarConfig {
@@ -33,6 +33,7 @@ export interface DocDisplayConfig {
     signal: Signal<string>;
     cleanup: () => void;
   };
+  getDocMeta: (docId: string) => Partial<DocMeta> | null;
   getDoc: (docId: string) => Store | null;
   getReferenceDocs: (docIds: string[]) => {
     signal: Signal<
@@ -47,6 +48,7 @@ export interface DocDisplayConfig {
     signal: Signal<TagMeta[]>;
     cleanup: () => void;
   };
+  getTagTitle: (tagId: string) => string;
   getTagPageIds: (tagId: string) => string[];
   getCollections: () => {
     signal: Signal<Collection[]>;

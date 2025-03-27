@@ -3,6 +3,7 @@ import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-
 import { enableFootnoteConfigExtension } from '@affine/core/blocksuite/extensions';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import { CollectionService } from '@affine/core/modules/collection';
+import { DocsService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { DocsSearchService } from '@affine/core/modules/docs-search';
 import { SearchMenuService } from '@affine/core/modules/search-menu/services';
@@ -66,6 +67,8 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
       const docsSearchService = framework.get(DocsSearchService);
       const tagService = framework.get(TagService);
       const collectionService = framework.get(CollectionService);
+      const docsService = framework.get(DocsService);
+
       chatPanelRef.current.appSidebarConfig = {
         getWidth: () => {
           const width$ = workbench.sidebarWidth$;
@@ -94,6 +97,10 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
           const title$ = docDisplayMetaService.title$(docId);
           return createSignalFromObservable(title$, '');
         },
+        getDocMeta: (docId: string) => {
+          const docRecord = docsService.list.doc$(docId).value;
+          return docRecord?.meta$.value ?? null;
+        },
         getDoc: (docId: string) => {
           const doc = workspaceService.workspace.docCollection.getDoc(docId);
           return doc?.getStore() ?? null;
@@ -105,6 +112,10 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
         getTags: () => {
           const tagMetas$ = tagService.tagList.tagMetas$;
           return createSignalFromObservable(tagMetas$, []);
+        },
+        getTagTitle: (tagId: string) => {
+          const tag$ = tagService.tagList.tagByTagId$(tagId);
+          return tag$.value?.value$.value ?? '';
         },
         getTagPageIds: (tagId: string) => {
           const tag$ = tagService.tagList.tagByTagId$(tagId);

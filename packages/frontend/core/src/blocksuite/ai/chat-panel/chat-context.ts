@@ -36,7 +36,11 @@ export type ChatStatus =
 
 export interface DocContext {
   docId: string;
+  docTitle: string;
   docContent: string;
+  tags: string;
+  createDate: string;
+  updatedDate: string;
 }
 
 export interface FileContext {

@@ -18,7 +18,7 @@ import type { AIError } from '../components/ai-item/types';
 import { AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { readBlobAsURL } from '../utils/image';
-import type { AINetworkSearchConfig } from './chat-config';
+import type { AINetworkSearchConfig, DocDisplayConfig } from './chat-config';
 import type {
   ChatContextValue,
   ChatMessage,
@@ -216,6 +216,9 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
 
   @property({ attribute: false })
   accessor networkSearchConfig!: AINetworkSearchConfig;
+
+  @property({ attribute: false })
+  accessor docDisplayConfig!: DocDisplayConfig;
 
   private get _isNetworkActive() {
     return (
@@ -561,7 +564,10 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       return { files: [], docs: [] };
     }
 
-    const docContexts = new Map<string, DocContext>();
+    const docContexts = new Map<
+      string,
+      { docId: string; docContent: string }
+    >();
     const fileContexts = new Map<string, FileContext>();
 
     const { files: matchedFiles = [], docs: matchedDocs = [] } =
@@ -602,8 +608,30 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       }
     });
 
+    const docs: DocContext[] = Array.from(docContexts.values()).map(doc => {
+      const docMeta = this.docDisplayConfig.getDocMeta(doc.docId);
+      const docTitle = this.docDisplayConfig.getTitle(doc.docId);
+      const tags = docMeta?.tags
+        ? docMeta.tags
+            .map(tagId => this.docDisplayConfig.getTagTitle(tagId))
+            .join(',')
+        : '';
+      return {
+        docId: doc.docId,
+        docContent: doc.docContent,
+        docTitle,
+        tags,
+        createDate: docMeta?.createDate
+          ? new Date(docMeta.createDate).toISOString()
+          : '',
+        updatedDate: docMeta?.updatedDate
+          ? new Date(docMeta.updatedDate).toISOString()
+          : '',
+      };
+    });
+
     return {
-      docs: Array.from(docContexts.values()),
+      docs,
       files: Array.from(fileContexts.values()),
     };
   }

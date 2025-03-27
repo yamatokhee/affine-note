@@ -1045,6 +1045,10 @@ The following content is a relevant content segment:
 ==========
 - type: document
 - document_id: {{docId}}
+- document_title: {{docTitle}}
+- document_tags: {{tags}}
+- document_create_date: {{createDate}}
+- document_updated_date: {{updatedDate}}
 - document_content:
 {{docContent}}
 ==========

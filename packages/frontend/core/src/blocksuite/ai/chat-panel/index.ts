@@ -629,6 +629,7 @@ export class ChatPanel extends SignalWatcher(
         .getSessionId=${this._getSessionId}
         .getContextId=${this._getContextId}
         .networkSearchConfig=${this.networkSearchConfig}
+        .docDisplayConfig=${this.docDisplayConfig}
         .updateContext=${this.updateContext}
         .host=${this.host}
         .cleanupHistories=${this._cleanupHistories}
