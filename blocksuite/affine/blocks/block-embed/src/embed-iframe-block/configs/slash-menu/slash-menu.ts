@@ -16,7 +16,7 @@ export const embedIframeSlashMenuConfig: SlashMenuConfig = {
         figure: EmbedIframeTooltip,
         caption: 'Embed',
       },
-      group: '4_Content & Media@10',
+      group: '4_Content & Media@5',
       when: ({ model, std }) => {
         const featureFlagService = std.get(FeatureFlagService);
         return (
