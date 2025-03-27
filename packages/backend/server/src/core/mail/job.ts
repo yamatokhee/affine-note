@@ -67,7 +67,6 @@ export class MailJob {
           }
 
           if (workspaceProps.avatar) {
-            workspaceProps.avatar = 'cid:workspaceAvatar';
             options.attachments = [
               {
                 cid: 'workspaceAvatar',
@@ -76,6 +75,7 @@ export class MailJob {
                 encoding: 'base64',
               },
             ];
+            workspaceProps.avatar = 'cid:workspaceAvatar';
           }
           // @ts-expect-error replacement
           props[key] = workspaceProps;
