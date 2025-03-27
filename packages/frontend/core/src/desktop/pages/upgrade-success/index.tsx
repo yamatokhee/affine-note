@@ -23,6 +23,8 @@ export const Component = () => {
     } else {
       jumpToIndex();
     }
+    // close popup window
+    window.close();
   }, [jumpToIndex, jumpToOpenInApp, params]);
 
   const subtitle = (
