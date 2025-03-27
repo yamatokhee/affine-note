@@ -41,10 +41,12 @@ export class BlobSyncPeer {
   private readonly downloadingPromise = new Map<string, Promise<boolean>>();
 
   /**
-   * Downloads a blob from the peer with retry logic
-   * @returns true if the blob is downloaded successfully, false if the blob is not found or encounters an error
+   * Downloads a blob from the peer with exponential backoff retry logic
+   * @param blobId - The ID of the blob to download
+   * @param signal - Optional AbortSignal to cancel the download
+   * @returns true if the blob is downloaded successfully, false if the blob is not found after retries
    *
-   * @throws This method will never throw (errors are saved to the sync status) unless the signal is aborted
+   * @throws This method will throw an error if the download operation fails due to network issues or is aborted
    */
   downloadBlob(blobId: string, signal?: AbortSignal): Promise<boolean> {
     // if the blob is already downloading, return the existing promise
@@ -111,7 +113,7 @@ export class BlobSyncPeer {
           blobId,
           error instanceof Error ? error.message : String(error)
         );
-        return false;
+        throw error;
       })
       .finally(() => {
         this.status.blobDownloadFinish(blobId);
@@ -122,11 +124,35 @@ export class BlobSyncPeer {
     return promise;
   }
 
-  uploadingPromise = new Map<string, Promise<void>>();
+  uploadingPromise = new Map<string, Promise<true>>();
 
-  uploadBlob(blob: BlobRecord, signal?: AbortSignal): Promise<void> {
+  /**
+   * Upload a blob to the peer
+   * @param blob - The blob to upload
+   * @param force - Whether to force upload the blob, even if it has already been uploaded
+   * @param signal - The abort signal
+   * @returns The promise should always resolve to true when the upload is complete.
+   *
+   * @throws This method will throw an error if the upload is aborted or fails due to storage limitations.
+   */
+  async uploadBlob(
+    blob: BlobRecord,
+    force = false,
+    signal?: AbortSignal
+  ): Promise<true> {
     if (this.remote.isReadonly) {
-      return Promise.resolve();
+      return true;
+    }
+
+    if (!force) {
+      // if the blob has been uploaded, skip the upload
+      const uploadedAt = await this.blobSync.getBlobUploadedAt(
+        this.peerId,
+        blob.key
+      );
+      if (uploadedAt) {
+        return true;
+      }
     }
 
     const existing = this.uploadingPromise.get(blob.key);
@@ -149,6 +175,7 @@ export class BlobSyncPeer {
 
         // free the remote storage over capacity flag
         this.status.remoteOverCapacityFree();
+        return true;
       } catch (err) {
         if (err === MANUALLY_STOP) {
           throw err;
@@ -166,12 +193,13 @@ export class BlobSyncPeer {
             err instanceof Error ? err.message : String(err)
           );
         }
+        throw err;
       } finally {
         this.status.blobUploadFinish(blob.key);
       }
     })().finally(() => {
       this.uploadingPromise.delete(blob.key);
-    });
+    }) as Promise<true>;
 
     this.uploadingPromise.set(blob.key, promise);
     return promise;
@@ -246,7 +274,14 @@ export class BlobSyncPeer {
           const data = await this.local.get(blobKey);
           throwIfAborted(signal);
           if (data) {
-            await this.uploadBlob(data, signal);
+            try {
+              await this.uploadBlob(data, false, signal);
+            } catch (err) {
+              if (err === MANUALLY_STOP) {
+                throw err;
+              }
+              // ignore the error as it has already been recorded in the sync status
+            }
           }
         }
       } else {
@@ -275,7 +310,14 @@ export class BlobSyncPeer {
           const data = await this.local.get(blobKey);
           throwIfAborted(signal);
           if (data) {
-            await this.uploadBlob(data, signal);
+            try {
+              await this.uploadBlob(data, false, signal);
+            } catch (err) {
+              if (err === MANUALLY_STOP) {
+                throw err;
+              }
+              // ignore the error as it has already been recorded in the sync status
+            }
           }
         }
       }
@@ -305,7 +347,14 @@ export class BlobSyncPeer {
       for (const blobKey of needDownload) {
         throwIfAborted(signal);
         // download the blobs
-        await this.downloadBlob(blobKey, signal);
+        try {
+          await this.downloadBlob(blobKey, signal);
+        } catch (err) {
+          if (err === MANUALLY_STOP) {
+            throw err;
+          }
+          // ignore the error as it has already been recorded in the sync status
+        }
       }
     } finally {
       // remove all will download flags

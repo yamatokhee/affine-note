@@ -238,10 +238,10 @@ class WorkerBlobSync implements BlobSync {
     return this.client.ob$('blobSync.blobState', blobId);
   }
 
-  downloadBlob(blobId: string): Promise<void> {
+  downloadBlob(blobId: string): Promise<boolean> {
     return this.client.call('blobSync.downloadBlob', blobId);
   }
-  uploadBlob(blob: BlobRecord): Promise<void> {
+  uploadBlob(blob: BlobRecord): Promise<true> {
     return this.client.call('blobSync.uploadBlob', blob);
   }
   fullDownload(peerId?: string, signal?: AbortSignal): Promise<void> {

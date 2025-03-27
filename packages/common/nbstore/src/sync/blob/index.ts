@@ -8,7 +8,6 @@ import {
 } from 'rxjs';
 
 import type { BlobRecord, BlobStorage, BlobSyncStorage } from '../../storage';
-import { MANUALLY_STOP } from '../../utils/throw-if-aborted';
 import type { PeerStorageOptions } from '../types';
 import { BlobSyncPeer } from './peer';
 
@@ -29,13 +28,30 @@ export interface BlobSyncBlobState {
 export interface BlobSync {
   readonly state$: Observable<BlobSyncState>;
   blobState$(blobId: string): Observable<BlobSyncBlobState>;
-  downloadBlob(blobId: string): Promise<void>;
-  uploadBlob(blob: BlobRecord): Promise<void>;
+  /**
+   * Downloads a blob from all peers
+   * @param blobId - The blob ID to download
+   * @returns A promise that resolves to true when the download is complete from any peer, false if no peer has the blob
+   *
+   * @throws This method will throw an error if the download is aborted or fails due to network issues.
+   */
+  downloadBlob(blobId: string): Promise<boolean>;
+  /**
+   * Upload a blob to all peers
+   * @param blob - The blob to upload
+   * @param force - Whether to force upload the blob, even if it has already been uploaded
+   * @returns A promise that resolves when the upload is complete, should always resolve to true
+   *
+   * @throws This method will throw an error if the upload is aborted or fails due to storage limitations.
+   */
+  uploadBlob(blob: BlobRecord, force?: boolean): Promise<true>;
   /**
    * Download all blobs from a peer
    * @param peerId - The peer id to download from, if not provided, all peers will be downloaded
    * @param signal - The abort signal
    * @returns A promise that resolves when the download is complete
+   *
+   * @throws This method will never throw an error, but the promise will reject if the signal is aborted.
    */
   fullDownload(peerId?: string, signal?: AbortSignal): Promise<void>;
 }
@@ -102,15 +118,15 @@ export class BlobSyncImpl implements BlobSync {
     readonly blobSync: BlobSyncStorage
   ) {}
 
-  downloadBlob(blobId: string): Promise<void> {
+  downloadBlob(blobId: string): Promise<boolean> {
     const signal = this.abortController.signal;
 
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       let completed = 0;
       const totalPeers = this.peers.length;
 
       if (totalPeers === 0) {
-        resolve();
+        resolve(false);
         return;
       }
 
@@ -122,35 +138,29 @@ export class BlobSyncImpl implements BlobSync {
           .then(result => {
             if (result === true) {
               // resolve if the peer has success
-              resolve();
+              resolve(true);
             }
           })
           .catch(err => {
-            // should never throw
-            // unless the signal is aborted
             reject(err);
           })
           .finally(() => {
             completed++;
             if (completed === totalPeers) {
               // resolve if all peers finish
-              resolve();
+              resolve(false);
             }
           });
       });
     });
   }
 
-  uploadBlob(blob: BlobRecord) {
+  uploadBlob(blob: BlobRecord, force = false): Promise<true> {
     return Promise.all(
-      this.peers.map(p => p.uploadBlob(blob, this.abortController.signal))
-    ).catch(err => {
-      if (err === MANUALLY_STOP) {
-        return;
-      }
-      // should never reach here, `uploadBlob()` should never throw
-      console.error(err);
-    }) as Promise<void>;
+      this.peers.map(p =>
+        p.uploadBlob(blob, force, this.abortController.signal)
+      )
+    ).then(() => true as const);
   }
 
   // start the upload loop
