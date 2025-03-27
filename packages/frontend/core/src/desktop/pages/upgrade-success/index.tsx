@@ -15,16 +15,15 @@ import * as styles from './styles.css';
 export const Component = () => {
   const t = useI18n();
   const [params] = useSearchParams();
+  const { jumpToIndex, jumpToOpenInApp } = useNavigateHelper();
 
-  const { jumpToOpenInApp } = useNavigateHelper();
   const openAFFiNE = useCallback(() => {
     if (params.get('client')) {
       return jumpToOpenInApp('bring-to-front');
     } else {
-      // close popup window
-      return window.close();
+      jumpToIndex();
     }
-  }, [jumpToOpenInApp, params]);
+  }, [jumpToIndex, jumpToOpenInApp, params]);
 
   const subtitle = (
     <div className={styles.leftContentText}>

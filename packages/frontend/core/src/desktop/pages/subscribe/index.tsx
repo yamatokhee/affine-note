@@ -157,8 +157,7 @@ export const Component = () => {
               ),
             });
             setMessage('Redirecting...');
-            urlService.openPopupWindow(checkout);
-            jumpToIndex();
+            urlService.openExternal(checkout);
           } catch (err) {
             const e = UserFriendlyError.fromAny(err);
             setMessage(e.message);

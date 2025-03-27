@@ -1,4 +1,4 @@
-import { Button } from '@affine/component';
+import { Button, notify } from '@affine/component';
 import {
   SettingHeader,
   SettingRow,
@@ -13,6 +13,7 @@ import {
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { UrlService } from '@affine/core/modules/url';
 import { WorkspaceService } from '@affine/core/modules/workspace';
+import { UserFriendlyError } from '@affine/error';
 import {
   createSelfhostCustomerPortalMutation,
   SubscriptionPlan,
@@ -111,12 +112,13 @@ const PaymentMethodUpdater = () => {
       },
       {
         onSuccess: data => {
-          urlService.openPopupWindow(
-            data.createSelfhostWorkspaceCustomerPortal
-          );
+          urlService.openExternal(data.createSelfhostWorkspaceCustomerPortal);
         },
       }
-    );
+    ).catch(e => {
+      const userFriendlyError = UserFriendlyError.fromAny(e);
+      notify.error(userFriendlyError);
+    });
   }, [trigger, urlService, workspace.id]);
 
   if (!isTeam) {

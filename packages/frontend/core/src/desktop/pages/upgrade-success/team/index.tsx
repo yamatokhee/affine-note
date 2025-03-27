@@ -1,5 +1,6 @@
 import { Button } from '@affine/component';
 import { AuthPageContainer } from '@affine/component/auth-components';
+import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { Trans, useI18n } from '@affine/i18n';
 import { useCallback } from 'react';
 
@@ -12,11 +13,11 @@ import * as styles from './styles.css';
  */
 export const Component = () => {
   const t = useI18n();
+  const { jumpToIndex } = useNavigateHelper();
 
   const openWorkspace = useCallback(() => {
-    // close popup window
-    window.close();
-  }, []);
+    jumpToIndex();
+  }, [jumpToIndex]);
 
   const subtitle = (
     <div className={styles.leftContentText}>

@@ -16,15 +16,14 @@ export const Component = () => {
   const t = useI18n();
   const [params] = useSearchParams();
 
-  const { jumpToOpenInApp } = useNavigateHelper();
+  const { jumpToIndex, jumpToOpenInApp } = useNavigateHelper();
   const openAFFiNE = useCallback(() => {
     if (params.get('client')) {
       return jumpToOpenInApp('bring-to-front');
     } else {
-      // close popup window
-      return window.close();
+      jumpToIndex();
     }
-  }, [jumpToOpenInApp, params]);
+  }, [jumpToIndex, jumpToOpenInApp, params]);
 
   const subtitle = (
     <div className={styles.leftContentText}>
