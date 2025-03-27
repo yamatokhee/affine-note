@@ -524,10 +524,13 @@ async function getAllApps(): Promise<AppInfo[]> {
     }
   });
 
-  const filteredApps = apps.filter(
-    (v): v is AppInfo =>
-      v !== null && !v.bundleIdentifier.startsWith('com.apple')
-  );
+  const filteredApps = apps.filter((v): v is AppInfo => {
+    return (
+      v !== null &&
+      (!v.bundleIdentifier.startsWith('com.apple') ||
+        v.bundleIdentifier === 'com.apple.Music')
+    );
+  });
 
   for (const app of filteredApps) {
     if (filteredApps.some(a => a.processId === app.processGroupId)) {

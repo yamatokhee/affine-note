@@ -18,7 +18,19 @@ impl ToCoreFoundation for CFString {
   }
 }
 
+impl ToCoreFoundation for &CFString {
+  fn to_cf(&self) -> CFType {
+    self.as_CFType()
+  }
+}
+
 impl ToCoreFoundation for String {
+  fn to_cf(&self) -> CFType {
+    CFString::new(self).as_CFType()
+  }
+}
+
+impl ToCoreFoundation for &str {
   fn to_cf(&self) -> CFType {
     CFString::new(self).as_CFType()
   }

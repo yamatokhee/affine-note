@@ -14,7 +14,7 @@ use coreaudio::sys::{
   kAudioAggregateDeviceTapAutoStartKey, kAudioAggregateDeviceTapListKey,
   kAudioAggregateDeviceUIDKey, kAudioDevicePropertyNominalSampleRate, kAudioHardwareBadDeviceError,
   kAudioHardwareBadStreamError, kAudioHardwareNoError, kAudioHardwarePropertyDefaultInputDevice,
-  kAudioHardwarePropertyDefaultSystemOutputDevice, kAudioSubDeviceUIDKey, kAudioSubTapUIDKey,
+  kAudioHardwarePropertyDefaultOutputDevice, kAudioSubDeviceUIDKey, kAudioSubTapUIDKey,
   AudioDeviceCreateIOProcIDWithBlock, AudioDeviceDestroyIOProcID, AudioDeviceIOProcID,
   AudioDeviceStart, AudioDeviceStop, AudioHardwareCreateAggregateDevice,
   AudioHardwareDestroyAggregateDevice, AudioObjectID, AudioTimeStamp, OSStatus,
@@ -31,7 +31,7 @@ use crate::{
   audio_buffer::InputAndOutputAudioBufferList,
   ca_tap_description::CATapDescription,
   cf_types::CFDictionaryBuilder,
-  device::{get_device_audio_id, get_device_uid},
+  device::get_device_uid,
   error::CoreAudioError,
   queue::create_audio_tap_queue,
   screen_capture_kit::TappableApplication,
@@ -59,7 +59,7 @@ pub struct AggregateDevice {
   pub id: AudioObjectID,
   pub audio_stats: Option<AudioStats>,
   pub input_device_id: AudioObjectID,
-  pub output_device_id: Option<AudioObjectID>,
+  pub output_device_id: AudioObjectID,
   pub input_proc_id: Option<AudioDeviceIOProcID>,
   pub output_proc_id: Option<AudioDeviceIOProcID>,
 }
@@ -80,8 +80,15 @@ impl AggregateDevice {
     let (input_device_id, default_input_uid) =
       get_device_uid(kAudioHardwarePropertyDefaultInputDevice)?;
 
-    let description_dict =
-      Self::create_aggregate_description(tap_id, tap_description.get_uuid()?, default_input_uid)?;
+    // Get the default output device ID
+    let (output_device_id, output_device_uid) =
+      get_device_uid(kAudioHardwarePropertyDefaultOutputDevice)?;
+    let description_dict = Self::create_aggregate_description(
+      tap_id,
+      tap_description.get_uuid()?,
+      default_input_uid,
+      output_device_uid,
+    )?;
 
     let mut aggregate_device_id: AudioObjectID = 0;
 
@@ -101,7 +108,7 @@ impl AggregateDevice {
       id: aggregate_device_id,
       audio_stats: None,
       input_device_id,
-      output_device_id: None,
+      output_device_id,
       input_proc_id: None,
       output_proc_id: None,
     })
@@ -122,10 +129,15 @@ impl AggregateDevice {
       get_device_uid(kAudioHardwarePropertyDefaultInputDevice)?;
 
     // Get the default output device ID
-    let output_device_id = get_device_audio_id(kAudioHardwarePropertyDefaultSystemOutputDevice)?;
+    let (output_device_id, output_device_uid) =
+      get_device_uid(kAudioHardwarePropertyDefaultOutputDevice)?;
 
-    let description_dict =
-      Self::create_aggregate_description(tap_id, tap_description.get_uuid()?, default_input_uid)?;
+    let description_dict = Self::create_aggregate_description(
+      tap_id,
+      tap_description.get_uuid()?,
+      default_input_uid,
+      output_device_uid,
+    )?;
 
     let mut aggregate_device_id: AudioObjectID = 0;
 
@@ -147,7 +159,7 @@ impl AggregateDevice {
       id: aggregate_device_id,
       audio_stats: None,
       input_device_id,
-      output_device_id: Some(output_device_id),
+      output_device_id,
       input_proc_id: None,
       output_proc_id: None,
     };
@@ -317,24 +329,21 @@ impl AggregateDevice {
     tap_id: AudioObjectID,
     tap_uuid_string: ItemRef<CFString>,
     input_device_id: CFString,
+    output_device_id: CFString,
   ) -> Result<CFDictionary<CFType, CFType>> {
     let aggregate_device_name = CFString::new(&format!("Tap-{}", tap_id));
     let aggregate_device_uid: uuid::Uuid = CFUUID::new().into();
     let aggregate_device_uid_string = aggregate_device_uid.to_string();
 
-    let (_, output_device_uid) = get_device_uid(kAudioHardwarePropertyDefaultSystemOutputDevice)?;
-
-    let sub_device_input_dict = CFDictionary::from_CFType_pairs(&[(
-      cfstring_from_bytes_with_nul(kAudioSubDeviceUIDKey).as_CFType(),
-      input_device_id.as_CFType(),
-    )]);
+    let mut sub_device_input_dict = CFDictionaryBuilder::new();
+    sub_device_input_dict.add(kAudioSubDeviceUIDKey.as_slice(), &input_device_id);
 
     let tap_device_dict = CFDictionary::from_CFType_pairs(&[(
       cfstring_from_bytes_with_nul(kAudioSubTapUIDKey).as_CFType(),
       tap_uuid_string.as_CFType(),
     )]);
 
-    let capture_device_list = vec![sub_device_input_dict];
+    let capture_device_list = vec![sub_device_input_dict.build()];
 
     // Create the aggregate device description dictionary with a balanced
     // configuration
@@ -352,9 +361,10 @@ impl AggregateDevice {
       )
       .add(
         kAudioAggregateDeviceMainSubDeviceKey.as_slice(),
-        output_device_uid,
+        &output_device_id,
       )
       .add(kAudioAggregateDeviceIsPrivateKey.as_slice(), true)
+      // can't be stacked because we're using a tap
       .add(kAudioAggregateDeviceIsStackedKey.as_slice(), false)
       .add(kAudioAggregateDeviceTapAutoStartKey.as_slice(), true)
       .add(
@@ -381,7 +391,7 @@ pub struct AudioTapStream {
   stop_called: bool,
   audio_stats: AudioStats,
   input_device_id: AudioObjectID,
-  output_device_id: Option<AudioObjectID>,
+  output_device_id: AudioObjectID,
   input_proc_id: Option<AudioDeviceIOProcID>,
   output_proc_id: Option<AudioDeviceIOProcID>,
 }
@@ -408,11 +418,9 @@ impl AudioTapStream {
     }
 
     // Stop the output device if it was activated
-    if let Some(output_id) = self.output_device_id {
-      if let Some(proc_id) = self.output_proc_id {
-        let _ = unsafe { AudioDeviceStop(output_id, proc_id) };
-        let _ = unsafe { AudioDeviceDestroyIOProcID(output_id, proc_id) };
-      }
+    if let Some(proc_id) = self.output_proc_id {
+      let _ = unsafe { AudioDeviceStop(self.output_device_id, proc_id) };
+      let _ = unsafe { AudioDeviceDestroyIOProcID(self.output_device_id, proc_id) };
     }
 
     // Destroy the main IO proc

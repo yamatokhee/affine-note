@@ -98,12 +98,11 @@ impl InputAndOutputAudioBufferList {
       .max(processed_samples_output.len());
 
     let mut mixed_samples = vec![0.0; mixed_samples_length];
-
     for (sample_index, mixed_sample) in mixed_samples.iter_mut().enumerate() {
       let sample_in = processed_samples_input.get(sample_index).unwrap_or(&0.0);
       let sample_out = processed_samples_output.get(sample_index).unwrap_or(&0.0);
 
-      *mixed_sample = (sample_in + sample_out) / 2.0;
+      *mixed_sample = sample_in + sample_out;
     }
 
     Ok(mixed_samples)
