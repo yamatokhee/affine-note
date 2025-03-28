@@ -9,12 +9,12 @@ export interface ServerFlags {
 declare global {
   interface AppConfigSchema {
     server: {
-      externalUrl: string;
+      externalUrl?: string;
       https: boolean;
       host: string;
       port: number;
       path: string;
-      name: string | undefined;
+      name?: string;
     };
     flags: ServerFlags;
   }
@@ -29,9 +29,16 @@ defineModuleConfig('server', {
     desc: `Base url of AFFiNE server, used for generating external urls.
 Default to be \`[server.protocol]://[server.host][:server.port]\` if not specified.
     `,
-    default: 'http://localhost:3010',
+    default: '',
     env: 'AFFINE_SERVER_EXTERNAL_URL',
-    shape: z.string().url(),
+    validate: val => {
+      // allow to be nullable and empty string
+      if (!val) {
+        return { success: true, data: val };
+      }
+
+      return z.string().url().safeParse(val);
+    },
   },
   https: {
     desc: 'Whether the server is hosted on a ssl enabled domain (https://).',

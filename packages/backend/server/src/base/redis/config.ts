@@ -23,7 +23,7 @@ defineModuleConfig('redis', {
     desc: 'The database index of redis server to be used(Must be less than 10).',
     default: 0,
     env: ['REDIS_SERVER_DATABASE', 'integer'],
-    validate: val => val >= 0 && val < 10,
+    shape: z.number().int().nonnegative().max(10),
   },
   host: {
     desc: 'The host of the redis server.',

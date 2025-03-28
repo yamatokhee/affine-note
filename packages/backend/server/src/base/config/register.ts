@@ -37,7 +37,7 @@ export type ConfigDescriptor<T> = {
 type ConfigDefineDescriptor<T> = {
   desc: string;
   default: T;
-  validate?: (value: T) => boolean;
+  validate?: (value: T) => z.SafeParseReturnType<T, T>;
   shape?: z.ZodType<T>;
   env?: string | [string, EnvConfigType];
   link?: string;
@@ -158,7 +158,7 @@ function standardizeDescriptor<T>(
     default: desc.default,
     type,
     validate: (value: T) => {
-      return shape.safeParse(value);
+      return desc.validate ? desc.validate(value) : shape.safeParse(value);
     },
     env,
     link: desc.link,
@@ -257,7 +257,15 @@ export function getDefaultConfig(): AppConfigSchema {
       const { success, error } = desc.validate(defaultValue);
 
       if (!success) {
-        throw error;
+        throw new Error(
+          error.issues
+            .map(issue => {
+              return `Invalid config for module [${module}] with key [${key}]
+Value: ${JSON.stringify(defaultValue)}
+Error: ${issue.message}`;
+            })
+            .join('\n')
+        );
       }
 
       set(modulizedConfig, key, defaultValue);
