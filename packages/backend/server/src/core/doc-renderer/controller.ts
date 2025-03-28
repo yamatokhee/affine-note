@@ -60,7 +60,7 @@ export class DocRendererController {
   }
 
   @Public()
-  @Get('/*')
+  @Get('/*path')
   async render(@Req() req: Request, @Res() res: Response) {
     const assets: HtmlAssets =
       env.namespaces.canary &&

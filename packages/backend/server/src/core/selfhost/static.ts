@@ -62,7 +62,7 @@ export class StaticFilesResolver implements OnModuleInit {
 
     // fallback all unknown routes
     app.get(
-      [basePath + '/admin', basePath + '/admin/*'],
+      [basePath + '/admin', basePath + '/admin/*path'],
       this.check.use,
       (_req, res) => {
         res.sendFile(
@@ -101,11 +101,13 @@ export class StaticFilesResolver implements OnModuleInit {
         redirect: false,
         index: false,
         fallthrough: true,
+        immutable: true,
+        dotfiles: 'ignore',
       })
     );
 
     // fallback all unknown routes
-    app.get([basePath, basePath + '/*'], this.check.use, (req, res) => {
+    app.get([basePath, basePath + '/*path'], this.check.use, (req, res) => {
       const mobile =
         env.namespaces.canary &&
         isMobile({
