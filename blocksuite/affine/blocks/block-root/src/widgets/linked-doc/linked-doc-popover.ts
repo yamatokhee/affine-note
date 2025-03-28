@@ -299,7 +299,7 @@ export class LinkedDocPopover extends SignalWatcher(
                     >`
                   : nothing;
                 return html`<icon-button
-                  width="280px"
+                  width="260px"
                   height="30px"
                   data-id=${key}
                   .text=${name}
