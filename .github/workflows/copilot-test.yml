@@ -144,14 +144,18 @@ jobs:
           name: server-native.node
           path: ./packages/backend/server
 
+      - name: Prepare Server Test Environment
+        env:
+          COPILOT_OPENAI_API_KEY: ${{ secrets.COPILOT_OPENAI_API_KEY }}
+          COPILOT_FAL_API_KEY: ${{ secrets.COPILOT_FAL_API_KEY }}
+          COPILOT_GOOGLE_API_KEY: ${{ secrets.COPILOT_GOOGLE_API_KEY }}
+          COPILOT_PERPLEXITY_API_KEY: ${{ secrets.COPILOT_PERPLEXITY_API_KEY }}
+        uses: ./.github/actions/server-test-env
+
       - name: Run Copilot E2E Test ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         uses: ./.github/actions/copilot-test
         with:
           script: yarn affine @affine-test/affine-cloud-copilot e2e --forbid-only --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-          openai-key: ${{ secrets.COPILOT_OPENAI_API_KEY }}
-          google-key: ${{ secrets.COPILOT_GOOGLE_API_KEY }}
-          fal-key: ${{ secrets.COPILOT_FAL_API_KEY }}
-          perplexity-key: ${{ secrets.COPILOT_PERPLEXITY_API_KEY }}
 
   test-done:
     needs:
