@@ -144,7 +144,7 @@ export class Viewport {
     const newCenterX = initialTopLeftX + width / (2 * this.zoom);
     const newCenterY = initialTopLeftY + height / (2 * this.zoom);
 
-    this.setCenter(newCenterX, newCenterY);
+    this.setCenter(newCenterX, newCenterY, false);
     this._width = width;
     this._height = height;
     this._left = left;
@@ -362,7 +362,7 @@ export class Viewport {
    * @param centerY The new y coordinate of the center of the viewport.
    * @param forceUpdate Whether to force complete any pending resize operations before setting the viewport.
    */
-  setCenter(centerX: number, centerY: number, forceUpdate = false) {
+  setCenter(centerX: number, centerY: number, forceUpdate = true) {
     if (forceUpdate && this._isResizing) {
       this._forceCompleteResize();
     }
@@ -405,7 +405,7 @@ export class Viewport {
     newZoom: number,
     newCenter = Vec.toVec(this.center),
     smooth = false,
-    forceUpdate = smooth
+    forceUpdate = true
   ) {
     // Force complete any pending resize operations if forceUpdate is true
     if (forceUpdate && this._isResizing) {
@@ -445,7 +445,7 @@ export class Viewport {
     bound: Bound,
     padding: [number, number, number, number] = [0, 0, 0, 0],
     smooth = false,
-    forceUpdate = smooth
+    forceUpdate = true
   ) {
     let [pt, pr, pb, pl] = padding;
 
@@ -511,7 +511,7 @@ export class Viewport {
     zoom: number,
     focusPoint?: IPoint,
     wheel = false,
-    forceUpdate = false
+    forceUpdate = true
   ) {
     if (forceUpdate && this._isResizing) {
       this._forceCompleteResize();
