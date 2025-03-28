@@ -204,6 +204,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
                   workbench.openDoc(
                     {
                       docId: pageId,
+                      mode: params?.mode,
                       blockIds: params?.blockIds,
                       elementIds: params?.elementIds,
                     },

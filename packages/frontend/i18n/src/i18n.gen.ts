@@ -4352,6 +4352,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.peek-view-controls.open-doc"](): string;
     /**
+      * `Open in edgeless`
+      */
+    ["com.affine.peek-view-controls.open-doc-in-edgeless"](): string;
+    /**
       * `Open in new tab`
       */
     ["com.affine.peek-view-controls.open-doc-in-new-tab"](): string;

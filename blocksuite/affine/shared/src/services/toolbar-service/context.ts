@@ -1,5 +1,5 @@
 import {
-  type BlockComponent,
+  BlockComponent,
   BlockSelection,
   type BlockStdScope,
   SurfaceSelection,
@@ -177,17 +177,29 @@ abstract class ToolbarContextBase {
   }
 
   getCurrentBlockBy<T extends SelectionConstructor>(type: T) {
-    const selection = this.selection.find(type);
-    if (!selection) return null;
-    if (selection.is(SurfaceSelection)) {
-      const elementId = selection.elements[0];
-      const model = this.gfx.getElementById(elementId);
+    const getFromSelection = () => {
+      const selection = this.selection.find(type);
+      if (!selection) return null;
+      if (selection.is(SurfaceSelection)) {
+        const elementId = selection.elements[0];
+        const model = this.gfx.getElementById(elementId);
+        if (!model) return null;
+        return this.gfx.view.get(model.id) ?? null;
+      }
+      const model = this.store.getBlock(selection.blockId);
       if (!model) return null;
-      return this.gfx.view.get(model.id) ?? null;
-    }
-    const model = this.store.getBlock(selection.blockId);
-    if (!model) return null;
-    return this.view.getBlock(model.id);
+      return this.view.getBlock(model.id);
+    };
+
+    const getFromMessage = () => {
+      const msgEle = this.message$.peek()?.element;
+      if (msgEle instanceof BlockComponent) {
+        return msgEle;
+      }
+      return null;
+    };
+
+    return getFromSelection() ?? getFromMessage();
   }
 
   getCurrentBlock() {
@@ -211,13 +223,25 @@ abstract class ToolbarContextBase {
   }
 
   getCurrentModelBy<T extends SelectionConstructor>(type: T) {
-    const selection = this.selection.find(type);
-    if (!selection) return null;
-    if (selection.is(SurfaceSelection)) {
-      const elementId = selection.elements[0];
-      return elementId ? this.gfx.getElementById(elementId) : null;
-    }
-    return this.store.getBlock(selection.blockId)?.model ?? null;
+    const getFromSelection = () => {
+      const selection = this.selection.find(type);
+      if (!selection) return null;
+      if (selection.is(SurfaceSelection)) {
+        const elementId = selection.elements[0];
+        return elementId ? this.gfx.getElementById(elementId) : null;
+      }
+      return this.store.getBlock(selection.blockId)?.model ?? null;
+    };
+
+    const getFromMessage = () => {
+      const msgEle = this.message$.peek()?.element;
+      if (msgEle instanceof BlockComponent) {
+        return msgEle.model;
+      }
+      return null;
+    };
+
+    return getFromSelection() ?? getFromMessage();
   }
 
   getCurrentModel(): GfxModel | BlockModel | null {

@@ -1079,6 +1079,7 @@
   "com.affine.payment.license-success.copy": "Copied key to clipboard",
   "com.affine.peek-view-controls.close": "Close",
   "com.affine.peek-view-controls.open-doc": "Open this doc",
+  "com.affine.peek-view-controls.open-doc-in-edgeless": "Open in edgeless",
   "com.affine.peek-view-controls.open-doc-in-new-tab": "Open in new tab",
   "com.affine.peek-view-controls.open-doc-in-split-view": "Open in split view",
   "com.affine.peek-view-controls.open-info": "Open doc info",

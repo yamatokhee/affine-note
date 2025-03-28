@@ -361,6 +361,7 @@ export const PackageList = [
       'blocksuite/affine/blocks/block-frame',
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
+      'blocksuite/affine/inlines/reference',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
       'blocksuite/affine/widgets/widget-slash-menu',

@@ -10,7 +10,6 @@ import {
 } from '@blocksuite/affine/blocks/code';
 import { imageToolbarWidget } from '@blocksuite/affine/blocks/image';
 import { ParagraphBlockConfigExtension } from '@blocksuite/affine/blocks/paragraph';
-import { surfaceRefToolbarWidget } from '@blocksuite/affine/blocks/surface-ref';
 import type {
   Container,
   ServiceIdentifier,
@@ -136,7 +135,6 @@ export function enableMobileExtension(
 ): void {
   specBuilder.omit(codeToolbarWidget);
   specBuilder.omit(imageToolbarWidget);
-  specBuilder.omit(surfaceRefToolbarWidget);
   specBuilder.omit(toolbarWidget);
   specBuilder.omit(SlashMenuExtension);
   specBuilder.extend([

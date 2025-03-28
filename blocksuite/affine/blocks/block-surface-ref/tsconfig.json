@@ -10,6 +10,7 @@
     { "path": "../block-frame" },
     { "path": "../block-surface" },
     { "path": "../../components" },
+    { "path": "../../inlines/reference" },
     { "path": "../../model" },
     { "path": "../../shared" },
     { "path": "../../widgets/widget-slash-menu" },

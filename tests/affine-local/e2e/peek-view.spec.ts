@@ -134,11 +134,11 @@ test('can open peek view for embedded frames', async ({ page }) => {
   await expect(surfaceRef).toBeVisible();
   await surfaceRef.hover();
   await page
-    .locator('affine-surface-ref-toolbar editor-menu-button[aria-label="Open"]')
+    .locator('affine-toolbar-widget editor-menu-button[aria-label="Open"]')
     .click();
   await page
     .locator(
-      'affine-surface-ref-toolbar editor-menu-action[aria-label="Open in center peek"]'
+      'affine-toolbar-widget editor-menu-action[aria-label="Open in center peek"]'
     )
     .click();
 

@@ -4,7 +4,9 @@ import {
   getSurfaceBlock,
 } from '@blocksuite/affine-block-surface';
 import type { BlockCaptionEditor } from '@blocksuite/affine-components/caption';
+import { whenHover } from '@blocksuite/affine-components/hover';
 import { Peekable } from '@blocksuite/affine-components/peek';
+import { RefNodeSlotsProvider } from '@blocksuite/affine-inline-reference';
 import {
   FrameBlockModel,
   type SurfaceRefBlockModel,
@@ -12,7 +14,9 @@ import {
 import {
   DocModeProvider,
   EditPropsStore,
+  type OpenDocMode,
   ThemeProvider,
+  ToolbarRegistryIdentifier,
   ViewportElementExtension,
 } from '@blocksuite/affine-shared/services';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
@@ -424,6 +428,29 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     this._previewSpec.extend([SurfaceRefViewportWatcher]);
   }
 
+  private _initHover() {
+    const { setReference, setFloating, dispose } = whenHover(
+      hovered => {
+        const message$ = this.std.get(ToolbarRegistryIdentifier).message$;
+        if (hovered) {
+          message$.value = {
+            flavour: this.model.flavour,
+            element: this,
+            setFloating,
+          };
+          return;
+        }
+
+        // Clears previous bindings
+        message$.value = null;
+        setFloating();
+      },
+      { enterDelay: 500 }
+    );
+    setReference(this);
+    this._disposables.add(dispose);
+  }
+
   private _renderRefContent(referencedModel: GfxModel) {
     const [, , w, h] = deserializeXYWH(referencedModel.xywh);
     const _previewSpec = this._previewSpec.value;
@@ -468,6 +495,28 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     </div>`;
   }
 
+  readonly open = ({
+    openMode,
+    event,
+  }: {
+    openMode?: OpenDocMode;
+    event?: MouseEvent;
+  } = {}) => {
+    const pageId = this.referenceModel?.surface?.doc.id;
+    if (!pageId) return;
+
+    this.std.getOptional(RefNodeSlotsProvider)?.docLinkClicked.next({
+      pageId: pageId,
+      params: {
+        mode: 'edgeless',
+        elementIds: [this.model.props.reference],
+      },
+      openMode,
+      event,
+      host: this.host,
+    });
+  };
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -479,6 +528,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     this._initViewport();
     this._initReferencedModel();
     this._initSelection();
+    this._initHover();
   }
 
   override render() {

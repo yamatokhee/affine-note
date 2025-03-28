@@ -29,6 +29,7 @@ import {
   EmbedYoutubeBlockComponent,
   getDocContentWithMaxLength,
 } from '@blocksuite/affine/blocks/embed';
+import { SurfaceRefBlockComponent } from '@blocksuite/affine/blocks/surface-ref';
 import { toggleEmbedCardEditModal } from '@blocksuite/affine/components/embed-card-modal';
 import {
   notifyLinkedDocClearedAliases,
@@ -51,6 +52,7 @@ import {
   EmbedIframeBlockModel,
   EmbedLinkedDocModel,
   EmbedSyncedDocModel,
+  SurfaceRefBlockSchema,
 } from '@blocksuite/affine/model';
 import { getSelectedModelsCommand } from '@blocksuite/affine/shared/commands';
 import { ImageSelection } from '@blocksuite/affine/shared/selection';
@@ -70,6 +72,7 @@ import {
 import { matchModels } from '@blocksuite/affine/shared/utils';
 import type { ExtensionType } from '@blocksuite/affine/store';
 import {
+  ArrowDownSmallIcon,
   CopyAsImgaeIcon,
   CopyIcon,
   EditIcon,
@@ -481,7 +484,8 @@ function createOpenDocActions(
   target:
     | EmbedLinkedDocBlockComponent
     | EmbedSyncedDocBlockComponent
-    | AffineReference,
+    | AffineReference
+    | SurfaceRefBlockComponent,
   isSameDoc: boolean,
   actions = openDocActions.map(
     ({ type: mode, label, icon, enabled: when }, i) => ({
@@ -566,6 +570,131 @@ function createEdgelessOpenDocActionGroup(
 
       return { actions };
     },
+  };
+}
+
+function createSurfaceRefToolbarConfig(baseUrl?: string): ToolbarModuleConfig {
+  return {
+    actions: [
+      {
+        id: 'b.open-surface-ref',
+        when: ctx =>
+          !!ctx.getCurrentBlockByType(SurfaceRefBlockComponent)?.referenceModel,
+        content: ctx => {
+          const surfaceRefBlock = ctx.getCurrentBlockByType(
+            SurfaceRefBlockComponent
+          );
+          if (!surfaceRefBlock) return null;
+
+          const actions = createOpenDocActions(ctx, surfaceRefBlock, false)
+            .map(action => ({
+              ...action,
+              ...action.generate(ctx),
+            }))
+            .map(action => {
+              if (action.id.endsWith('open-in-active-view')) {
+                action.label =
+                  I18n['com.affine.peek-view-controls.open-doc-in-edgeless']();
+              }
+              return action;
+            });
+          if (!actions.length) return null;
+
+          const styles = styleMap({
+            gap: 4,
+          });
+
+          return html`${keyed(
+            surfaceRefBlock,
+            html`<editor-menu-button
+              aria-label="Open"
+              .contentPadding=${'8px'}
+              .button=${html`<editor-icon-button
+                .iconSize=${'16px'}
+                .iconContainerPadding=${4}
+              >
+                ${OpenInNewIcon()} ${ArrowDownSmallIcon()}
+              </editor-icon-button>`}
+            >
+              <div data-orientation="vertical" style=${styles}>
+                ${repeat(
+                  actions,
+                  action => action.id,
+                  ({ label, icon, run, disabled }) => html`
+                    <editor-menu-action
+                      aria-label=${ifDefined(label)}
+                      ?disabled=${disabled}
+                      @click=${() => {
+                        run?.(ctx);
+                      }}
+                    >
+                      ${icon}<span class="label">${label}</span>
+                    </editor-menu-action>
+                  `
+                )}
+              </div>
+            </editor-menu-button>`
+          )}`;
+        },
+      },
+      {
+        id: 'a.clipboard',
+        placement: ActionPlacement.More,
+        actions: [
+          {
+            id: 'copy-link-to-surface-ref',
+            label: 'Copy original link',
+            icon: LinkIcon(),
+            when: ctx =>
+              !!ctx.getCurrentBlockByType(SurfaceRefBlockComponent)
+                ?.referenceModel,
+            run: ctx => {
+              const surfaceRefBlock = ctx.getCurrentBlockByType(
+                SurfaceRefBlockComponent
+              );
+              if (!surfaceRefBlock) return;
+
+              const refModel = surfaceRefBlock.referenceModel;
+              if (!refModel) return;
+
+              const { store, workspace, std } = ctx;
+              const pageId = store.doc.id;
+              const workspaceId = workspace.id;
+              const options: UseSharingUrl = {
+                workspaceId,
+                pageId,
+                mode: 'edgeless',
+              };
+
+              let type = '';
+              if (refModel instanceof GfxPrimitiveElementModel) {
+                options.elementIds = [refModel.id];
+                type = refModel.type;
+              } else if (refModel instanceof GfxBlockElementModel) {
+                options.blockIds = [refModel.id];
+                type = refModel.flavour;
+              }
+
+              const str = generateUrl({
+                ...options,
+                baseUrl: baseUrl ?? location.origin,
+              });
+              if (!str) return;
+
+              copyLinkToBlockStdScopeClipboard(str, std.clipboard)
+                .then(ok => {
+                  if (!ok) return;
+
+                  notify.success({ title: I18n['Copied link to clipboard']() });
+                })
+                .catch(console.error);
+
+              track.doc.editor.toolbar.copyBlockToLink({ type });
+            },
+          },
+        ],
+      },
+    ],
   };
 }
 
@@ -877,11 +1006,11 @@ const embedIframeToolbarConfig = {
   },
   actions: [
     {
-      id: 'b.copy-link',
+      id: 'a.copy-link-and-edit',
       actions: [
         {
           id: 'copy-link',
-          tooltip: 'Copy original link',
+          tooltip: 'Copy link',
           icon: CopyIcon(),
           run(ctx) {
             const model = ctx.getCurrentBlockByType(
@@ -895,11 +1024,49 @@ const embedIframeToolbarConfig = {
             toast(ctx.host, 'Copied link to clipboard');
 
             ctx.track('CopiedLink', {
-              category: matchModels(model, [EmbedIframeBlockModel])
-                ? 'embed iframe block'
+              category: matchModels(model, [BookmarkBlockModel])
+                ? 'bookmark'
                 : 'link',
               type: 'card view',
               control: 'copy link',
+            });
+          },
+        },
+        {
+          id: 'edit',
+          tooltip: 'Edit',
+          icon: EditIcon(),
+          run(ctx) {
+            const component = ctx.getCurrentBlockByType(
+              EmbedIframeBlockComponent
+            );
+            if (!component) return;
+
+            ctx.hide();
+
+            const model = component.model;
+            const abortController = new AbortController();
+            abortController.signal.onabort = () => ctx.show();
+
+            toggleEmbedCardEditModal(
+              ctx.host,
+              model,
+              'card',
+              undefined,
+              undefined,
+              (_std, _component, props) => {
+                ctx.store.updateBlock(model, props);
+                component.requestUpdate();
+              },
+              abortController
+            );
+
+            ctx.track('OpenedAliasPopup', {
+              category: matchModels(model, [BookmarkBlockModel])
+                ? 'bookmark'
+                : 'link',
+              type: 'card view',
+              control: 'edit',
             });
           },
         },
@@ -1051,6 +1218,13 @@ export const createCustomToolbarExtension = (
 
         when: ctx => ctx.getSurfaceModels().length === 1,
       },
+    }),
+
+    ToolbarModuleExtension({
+      id: BlockFlavourIdentifier(
+        `custom:${SurfaceRefBlockSchema.model.flavour}`
+      ),
+      config: createSurfaceRefToolbarConfig(baseUrl),
     }),
   ];
 };
