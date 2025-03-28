@@ -154,14 +154,6 @@ export class HighlighterTool extends BaseTool {
       points,
     });
 
-    this.std.getOptional(TelemetryProvider)?.track('CanvasElementAdded', {
-      control: 'canvas:draw',
-      page: 'whiteboard editor',
-      module: 'toolbar',
-      segment: 'toolbar',
-      type: CanvasElementType.HIGHLIGHTER,
-    });
-
     const element = this.gfx.getElementById(id) as HighlighterElementModel;
 
     element.stash('points');
@@ -173,6 +165,16 @@ export class HighlighterTool extends BaseTool {
     this._draggingPathPoints = points;
     this._draggingPathPressures = [e.pressure];
     this._lastPopLength = 0;
+  }
+
+  override activate() {
+    this.std.getOptional(TelemetryProvider)?.track('EdgelessToolPicked', {
+      page: 'whiteboard editor',
+      module: 'global toolbar',
+      segment: 'global toolbar',
+      control: 'drawing',
+      type: CanvasElementType.HIGHLIGHTER,
+    });
   }
 }
 

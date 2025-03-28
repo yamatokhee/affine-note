@@ -75,5 +75,14 @@ export interface EdgelessToolPickedEvent extends TelemetryEvent {
   segment: 'global toolbar';
   module: 'global toolbar';
   control: 'drawing';
-  type: 'brush';
+  type: 'brush' | 'highlighter';
+}
+
+export interface ElementUpdatedEvent extends TelemetryEvent {
+  page: 'whiteboard editor';
+  segment: 'toolbar';
+  module: 'toolbar';
+  category: string;
+  control: string;
+  type?: string;
 }

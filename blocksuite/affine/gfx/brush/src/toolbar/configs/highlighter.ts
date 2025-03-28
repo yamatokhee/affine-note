@@ -23,6 +23,10 @@ import {
 import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { html } from 'lit';
 
+const trackBaseProps = {
+  category: 'highlighter',
+};
+
 export const highlighterToolbarConfig = {
   actions: [
     {
@@ -44,6 +48,11 @@ export const highlighterToolbarConfig = {
               .get(EdgelessCRUDIdentifier)
               .updateElement(model.id, { lineWidth });
           }
+
+          ctx.track('CanvasElementUpdated', {
+            ...trackBaseProps,
+            control: 'line width',
+          });
         };
 
         return html`
@@ -91,9 +100,16 @@ export const highlighterToolbarConfig = {
             return;
           }
 
+          const isStartEvent = e.type === 'start';
           for (const model of models) {
-            model[e.type === 'start' ? 'stash' : 'pop'](field);
+            model[isStartEvent ? 'stash' : 'pop'](field);
           }
+
+          if (!isStartEvent) return;
+          ctx.track('CanvasElementUpdated', {
+            ...trackBaseProps,
+            control: 'color picker',
+          });
         };
 
         return html`

@@ -10,6 +10,7 @@ import type {
   EdgelessToolPickedEvent,
   ElementCreationEvent,
   ElementLockEvent,
+  ElementUpdatedEvent,
   LinkedDocCreatedEvent,
   MindMapCollapseEvent,
   TelemetryEvent,
@@ -23,6 +24,7 @@ export type TelemetryEventMap = OutDatabaseAllEvents &
     LinkedDocCreated: LinkedDocCreatedEvent;
     SplitNote: TelemetryEvent;
     CanvasElementAdded: ElementCreationEvent;
+    CanvasElementUpdated: ElementUpdatedEvent;
     EdgelessElementLocked: ElementLockEvent;
     ExpandedAndCollapsed: MindMapCollapseEvent;
     AttachmentUploadedEvent: AttachmentUploadedEvent;
