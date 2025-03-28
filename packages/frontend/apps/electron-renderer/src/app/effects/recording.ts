@@ -97,7 +97,9 @@ export function setupRecordingEvents(frameworkProvider: FrameworkProvider) {
                 using audioAttachment = workspace.scope
                   .get(AudioAttachmentService)
                   .get(model);
-                audioAttachment?.obj.transcribe();
+                audioAttachment?.obj.transcribe().catch(err => {
+                  logger.error('Failed to transcribe recording', err);
+                });
               }
             })().catch(console.error);
           },

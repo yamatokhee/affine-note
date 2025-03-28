@@ -23,7 +23,7 @@ const formatTime = (seconds: number): string => {
 export interface AudioPlayerProps {
   // Audio metadata
   name: string;
-  size: number;
+  size: number | ReactNode; // the size entry may be used for drawing error message
   waveform: number[] | null;
   // Playback state
   playbackState: 'idle' | 'playing' | 'paused' | 'stopped';
@@ -97,7 +97,9 @@ export const AudioPlayer = ({
             <div className={styles.nameLabel}>{name}</div>
           </div>
           <div className={styles.upperRow}>
-            <div className={styles.sizeInfo}>{bytes(size)}</div>
+            <div className={styles.sizeInfo}>
+              {typeof size === 'number' ? bytes(size) : size}
+            </div>
           </div>
         </div>
         <div className={styles.upperRight}>

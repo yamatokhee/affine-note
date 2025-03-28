@@ -1,13 +1,17 @@
-import { Button, Tooltip } from '@affine/component';
+import { Button, Tooltip, useConfirmModal } from '@affine/component';
 import { AudioPlayer } from '@affine/core/components/audio-player';
 import { AnimatedTranscribeIcon } from '@affine/core/components/audio-player/lottie/animated-transcribe-icon';
 import { useSeekTime } from '@affine/core/components/audio-player/use-seek-time';
 import { useEnableAI } from '@affine/core/components/hooks/affine/use-enable-ai';
+import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
+import { CurrentServerScopeProvider } from '@affine/core/components/providers/current-server-scope';
+import { PublicUserLabel } from '@affine/core/modules/cloud/views/public-user';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import type { AudioAttachmentBlock } from '@affine/core/modules/media/entities/audio-attachment-block';
 import { useAttachmentMediaBlock } from '@affine/core/modules/media/views/use-attachment-media';
-import { useI18n } from '@affine/i18n';
-import { useLiveData } from '@toeverything/infra';
-import { useCallback, useMemo } from 'react';
+import { Trans, useI18n } from '@affine/i18n';
+import { useLiveData, useService } from '@toeverything/infra';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { AttachmentViewerProps } from '../types';
 import * as styles from './audio-block.css';
@@ -19,12 +23,15 @@ const AttachmentAudioPlayer = ({ block }: { block: AudioAttachmentBlock }) => {
   const stats = useLiveData(audioMedia.stats$);
   const loading = useLiveData(audioMedia.loading$);
   const expanded = useLiveData(block.expanded$);
-  const transcribing = useLiveData(block.transcribing$);
-  const transcribed = useLiveData(block.transcribed$);
+  const [preflightChecking, setPreflightChecking] = useState(false);
+  const transcribing =
+    useLiveData(block.transcriptionJob.transcribing$) || preflightChecking;
+  const error = useLiveData(block.transcriptionJob.error$);
+  const transcribed = useLiveData(block.hasTranscription$);
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
   }, []);
-
+  const confirmModal = useConfirmModal();
   const seekTime = useSeekTime(playbackState, stats.duration);
 
   const handlePlay = useCallback(() => {
@@ -50,6 +57,66 @@ const AttachmentAudioPlayer = ({ block }: { block: AudioAttachmentBlock }) => {
 
   const enableAi = useEnableAI();
 
+  const globalDialogService = useService(GlobalDialogService);
+
+  const handleNotesClick = useAsyncCallback(async () => {
+    if (!enableAi || transcribing) {
+      return;
+    }
+
+    if (transcribed) {
+      block.expanded$.setValue(!expanded);
+      return;
+    }
+
+    if (!block.transcriptionJob.currentUserId) {
+      confirmModal.openConfirmModal({
+        title: t['com.affine.ai.login-required.dialog-title'](),
+        description: t['com.affine.ai.login-required.dialog-content'](),
+        confirmText: t['com.affine.ai.login-required.dialog-confirm'](),
+        confirmButtonOptions: {
+          variant: 'primary',
+        },
+        cancelText: t['com.affine.ai.login-required.dialog-cancel'](),
+        onConfirm: () => {
+          globalDialogService.open('sign-in', {});
+        },
+      });
+      return;
+    }
+
+    setPreflightChecking(true);
+    const result = await block.transcriptionJob.preflightCheck();
+    setPreflightChecking(false);
+    if (result?.error === 'created-by-others') {
+      confirmModal.openConfirmModal({
+        title: t['com.affine.audio.transcribe.non-owner.confirm.title'](),
+        description: (
+          <Trans i18nKey="com.affine.audio.transcribe.non-owner.confirm.message">
+            Please contact <PublicUserLabel id={result.userId} /> to upgrade AI
+            rights or resend the attachment.
+          </Trans>
+        ),
+        onCancel: false,
+        confirmText: t['Confirm'](),
+        confirmButtonOptions: {
+          variant: 'primary',
+        },
+      });
+    } else {
+      await block.transcribe();
+    }
+  }, [
+    enableAi,
+    transcribing,
+    transcribed,
+    block,
+    expanded,
+    confirmModal,
+    t,
+    globalDialogService,
+  ]);
+
   const notesEntry = useMemo(() => {
     if (!enableAi) {
       return null;
@@ -62,37 +129,37 @@ const AttachmentAudioPlayer = ({ block }: { block: AudioAttachmentBlock }) => {
             state={transcribing ? 'transcribing' : 'idle'}
           />
         }
-        disabled={transcribing}
         size="large"
         prefixClassName={styles.notesButtonIcon}
         className={styles.notesButton}
-        onClick={() => {
-          if (transcribed) {
-            block.expanded$.setValue(!expanded);
-          } else {
-            block.transcribe();
-          }
-        }}
+        onClick={handleNotesClick}
       >
-        {t['com.affine.attachmentViewer.audio.notes']()}
+        {transcribing
+          ? t['com.affine.audio.transcribing']()
+          : t['com.affine.audio.notes']()}
       </Button>
     );
     if (transcribing) {
       return (
-        <Tooltip
-          content={t['com.affine.attachmentViewer.audio.transcribing']()}
-        >
+        <Tooltip content={t['com.affine.audio.transcribing']()}>
           {inner}
         </Tooltip>
       );
     }
     return inner;
-  }, [enableAi, transcribing, t, transcribed, block, expanded]);
+  }, [enableAi, transcribing, handleNotesClick, t]);
+
+  const sizeEntry = useMemo(() => {
+    if (error) {
+      return <div className={styles.error}>{error.message}</div>;
+    }
+    return block.props.props.size;
+  }, [error, block.props.props.size]);
 
   return (
     <AudioPlayer
       name={block.props.props.name}
-      size={block.props.props.size}
+      size={sizeEntry}
       loading={loading}
       playbackState={playbackState?.state || 'idle'}
       waveform={stats.waveform}
@@ -103,7 +170,9 @@ const AttachmentAudioPlayer = ({ block }: { block: AudioAttachmentBlock }) => {
       onPause={handlePause}
       onStop={handleStop}
       onSeek={handleSeek}
-      notesEntry={notesEntry}
+      notesEntry={
+        <CurrentServerScopeProvider>{notesEntry}</CurrentServerScopeProvider>
+      }
     />
   );
 };

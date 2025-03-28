@@ -1,6 +1,8 @@
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { globalStyle, style } from '@vanilla-extract/css';
-export const root = style({});
+export const root = style({
+  display: 'inline-flex',
+});
 
 // replace primary colors to cssVarV2('icon/primary')
 const iconPrimaryColors = [

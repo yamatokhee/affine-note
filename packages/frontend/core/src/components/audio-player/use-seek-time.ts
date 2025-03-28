@@ -26,7 +26,7 @@ export const useSeekTime = (
           playbackState.state === 'playing'
             ? (Date.now() - playbackState.updateTime) / 1000
             : 0;
-        // if timeElapsed + playbackState.seekOffset is closed to duration,
+        // if timeElapsed + playbackState.seekOffset is close to duration,
         // set seekTime to duration
         // this is to avoid the seek time being set to a value that is not exactly the same as the duration
         // at the end of the audio

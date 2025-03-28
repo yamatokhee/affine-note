@@ -162,7 +162,7 @@ export class AudioMedia extends Entity<AudioSource> {
 
     const startTime = performance.now();
     // calculating audio stats is expensive. Maybe persist the result in cache?
-    const stats = await this.calcuateStatsFromBuffer(blob);
+    const stats = await this.calculateStatsFromBuffer(blob);
     logger.debug(
       `Calculate audio stats time: ${performance.now() - startTime}ms`
     );
@@ -177,9 +177,8 @@ export class AudioMedia extends Entity<AudioSource> {
       return fromPromise(async () => {
         return this.loadAudioBuffer();
       }).pipe(
-        mergeMap(({ blob, duration, waveform }) => {
+        mergeMap(({ blob, waveform }) => {
           const url = URL.createObjectURL(blob);
-          this.duration$.setValue(duration);
           // Set the audio element source
           this.audioElement.src = url;
           this.waveform$.setValue(waveform);
@@ -187,6 +186,9 @@ export class AudioMedia extends Entity<AudioSource> {
           if (this.playbackState$.getValue().state === 'playing') {
             this.play(true);
           }
+          this.audioElement.onloadedmetadata = () => {
+            this.duration$.setValue(this.audioElement.duration);
+          };
           return EMPTY;
         }),
         onStart(() => this.loading$.setValue(true)),
@@ -397,13 +399,13 @@ export class AudioMedia extends Entity<AudioSource> {
     return this.playbackState$.getValue();
   }
 
-  private async calcuateStatsFromBuffer(buffer: Blob) {
+  private async calculateStatsFromBuffer(buffer: Blob) {
     const audioContext = new AudioContext();
     const audioBuffer = await audioContext.decodeAudioData(
       await buffer.arrayBuffer()
     );
     const waveform = await this.calculateWaveform(audioBuffer);
-    return { waveform, duration: audioBuffer.duration };
+    return { waveform };
   }
 
   /**

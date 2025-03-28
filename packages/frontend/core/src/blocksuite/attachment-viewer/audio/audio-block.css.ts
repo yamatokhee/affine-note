@@ -22,4 +22,17 @@ export const notesButtonIcon = style({
   fontSize: 24,
   width: '1em',
   height: '1em',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const error = style({
+  color: cssVarV2('aI/errorText'),
+});
+
+export const publicUserLabel = style({
+  fontSize: cssVar('fontXs'),
+  fontWeight: 500,
+  userSelect: 'none',
 });
