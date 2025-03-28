@@ -693,8 +693,6 @@ __metadata:
     "@types/multer": "npm:^1"
     "@types/react": "npm:^19.0.1"
     "@types/react-dom": "npm:^19.0.2"
-    "@types/socket.io": "npm:^3.0.2"
-    "@types/socket.io-client": "npm:^3.0.0"
     "@vitejs/plugin-react": "npm:^4.3.4"
     chokidar: "npm:^4.0.3"
     express: "npm:^4.21.2"
@@ -15159,24 +15157,6 @@ __metadata:
   version: 4.0.0
   resolution: "@types/slice-ansi@npm:4.0.0"
   checksum: 10/343086bc4e686349382b386a6fb49d632fb4dd08ecc08f1b9872815199efe8db7648731e56c1d10dc0f596fe77a8fce6136e0067136f8e0cefda6b29797aa4f1
-  languageName: node
-  linkType: hard
-
-"@types/socket.io-client@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@types/socket.io-client@npm:3.0.0"
-  dependencies:
-    socket.io-client: "npm:*"
-  checksum: 10/6eef7529afc1d732fb4091864aa6396a2f676ad25eda0035dd1f2c228cbcaf8520b15236ee0f2c714e061307eeab2b6c8edad637bc83a317c326ae70729d88b0
-  languageName: node
-  linkType: hard
-
-"@types/socket.io@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@types/socket.io@npm:3.0.2"
-  dependencies:
-    socket.io: "npm:*"
-  checksum: 10/168cf77e48b466582bd69d1c25930bb657225e742288d658a03a1e8af254350daa61f9441ec2be0d8354f1dcc747966e4342000bce875549fe54ec03e2fafec3
   languageName: node
   linkType: hard
 
@@ -31309,7 +31289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io-client@npm:*, socket.io-client@npm:^4.7.4, socket.io-client@npm:^4.8.1":
+"socket.io-client@npm:^4.7.4, socket.io-client@npm:^4.8.1":
   version: 4.8.1
   resolution: "socket.io-client@npm:4.8.1"
   dependencies:
@@ -31331,7 +31311,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io@npm:*, socket.io@npm:4.8.1, socket.io@npm:^4.7.4, socket.io@npm:^4.8.1":
+"socket.io@npm:4.8.1, socket.io@npm:^4.7.4, socket.io@npm:^4.8.1":
   version: 4.8.1
   resolution: "socket.io@npm:4.8.1"
   dependencies:
