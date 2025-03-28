@@ -135,7 +135,6 @@ export class EmbedYoutubeBlockComponent extends EmbedBlockComponent<
             selected: this.selected$.value,
           })}
           style=${styleMap({
-            transform: `scale(${this._scale})`,
             transformOrigin: '0 0',
           })}
           @click=${this._handleClick}
