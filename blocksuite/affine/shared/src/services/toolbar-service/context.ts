@@ -123,6 +123,10 @@ abstract class ToolbarContextBase {
     return this.toolbarRegistry.flavour$;
   }
 
+  get placement$() {
+    return this.toolbarRegistry.placement$;
+  }
+
   get message$() {
     return this.toolbarRegistry.message$;
   }

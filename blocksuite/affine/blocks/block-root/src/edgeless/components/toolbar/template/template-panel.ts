@@ -46,12 +46,8 @@ export class EdgelessTemplatePanel extends WithDisposable(LitElement) {
       display: flex;
       flex-direction: column;
     }
-    .edgeless-templates-panel[data-app-theme='light'] {
-      ${unsafeCSS(lightToolbarStyles.join('\n'))}
-    }
-    .edgeless-templates-panel[data-app-theme='dark'] {
-      ${unsafeCSS(darkToolbarStyles.join('\n'))}
-    }
+    ${unsafeCSS(lightToolbarStyles('.edgeless-templates-panel'))}
+    ${unsafeCSS(darkToolbarStyles('.edgeless-templates-panel'))}
 
     .search-bar {
       padding: 21px 24px;

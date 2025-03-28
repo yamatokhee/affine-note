@@ -77,12 +77,9 @@ export class EdgelessToolbarWidget extends WidgetComponent<RootBlockModel> {
       display: flex;
       justify-content: center;
     }
-    .edgeless-toolbar-wrapper[data-app-theme='light'] {
-      ${unsafeCSS(lightToolbarStyles.join('\n'))}
-    }
-    .edgeless-toolbar-wrapper[data-app-theme='dark'] {
-      ${unsafeCSS(darkToolbarStyles.join('\n'))}
-    }
+    ${unsafeCSS(lightToolbarStyles('.edgeless-toolbar-wrapper'))}
+    ${unsafeCSS(darkToolbarStyles('.edgeless-toolbar-wrapper'))}
+
     .edgeless-toolbar-toggle-control {
       pointer-events: auto;
       padding-bottom: 16px;
