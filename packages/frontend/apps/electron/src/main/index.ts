@@ -14,7 +14,7 @@ import { registerEvents } from './events';
 import { registerHandlers } from './handlers';
 import { logger } from './logger';
 import { registerProtocol } from './protocol';
-import { setupRecording } from './recording';
+import { setupRecordingFeature } from './recording/feature';
 import { setupTrayState } from './tray';
 import { registerUpdater } from './updater';
 import { launch } from './windows-manager/launcher';
@@ -89,17 +89,9 @@ app
   .then(launch)
   .then(createApplicationMenu)
   .then(registerUpdater)
+  .then(setupRecordingFeature)
+  .then(setupTrayState)
   .catch(e => console.error('Failed create window:', e));
-
-if (isDev) {
-  app
-    .whenReady()
-    .then(setupRecording)
-    .then(setupTrayState)
-    .catch(e => {
-      logger.error('Failed setup recording or tray state:', e);
-    });
-}
 
 if (process.env.SENTRY_RELEASE) {
   // https://docs.sentry.io/platforms/javascript/guides/electron/

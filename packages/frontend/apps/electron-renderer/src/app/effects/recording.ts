@@ -2,6 +2,7 @@ import type { DocProps } from '@affine/core/blocksuite/initialization';
 import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { AudioAttachmentService } from '@affine/core/modules/media/services/audio-attachment';
+import { MeetingSettingsService } from '@affine/core/modules/media/services/meeting-settings';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { DebugLogger } from '@affine/debug';
 import { apis, events } from '@affine/electron-api';
@@ -34,6 +35,8 @@ export function setupRecordingEvents(frameworkProvider: FrameworkProvider) {
       if ((await apis?.ui.isActiveTab()) && status?.status === 'ready') {
         using currentWorkspace = getCurrentWorkspace(frameworkProvider);
         if (!currentWorkspace) {
+          // maybe the workspace is not ready yet, eg. for shared workspace view
+          await apis?.recording.handleBlockCreationFailed(status.id);
           return;
         }
         const { workspace } = currentWorkspace;
@@ -89,6 +92,16 @@ export function setupRecordingEvents(frameworkProvider: FrameworkProvider) {
                 model.props.sourceId = blobId;
                 model.props.embed = true;
 
+                const meetingSettingsService = frameworkProvider.get(
+                  MeetingSettingsService
+                );
+
+                if (!meetingSettingsService.settings.autoTranscription) {
+                  // auto transcription is disabled,
+                  // so we don't need to transcribe the recording by default
+                  return;
+                }
+
                 using currentWorkspace = getCurrentWorkspace(frameworkProvider);
                 if (!currentWorkspace) {
                   return;
@@ -100,8 +113,23 @@ export function setupRecordingEvents(frameworkProvider: FrameworkProvider) {
                 audioAttachment?.obj.transcribe().catch(err => {
                   logger.error('Failed to transcribe recording', err);
                 });
+              } else {
+                throw new Error('No attachment model found');
               }
-            })().catch(console.error);
+            })()
+              .then(async () => {
+                await apis?.recording.handleBlockCreationSuccess(status.id);
+              })
+              .catch(error => {
+                logger.error('Failed to transcribe recording', error);
+                return apis?.recording.handleBlockCreationFailed(
+                  status.id,
+                  error
+                );
+              })
+              .catch(error => {
+                console.error('unknown error', error);
+              });
           },
         };
         const page = docsService.createDoc({ docProps, primaryMode: 'page' });

@@ -1,19 +1,27 @@
 import { Button } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { appIconMap } from '@affine/core/utils';
+import { encodeRawBufferToOpus } from '@affine/core/utils/webm-encoding';
 import { apis, events } from '@affine/electron-api';
 import { useI18n } from '@affine/i18n';
 import { useEffect, useMemo, useState } from 'react';
 
-import { encodeRawBufferToOpus } from './encode';
 import * as styles from './styles.css';
 
 type Status = {
   id: number;
-  status: 'new' | 'recording' | 'paused' | 'stopped' | 'ready';
+  status:
+    | 'new'
+    | 'recording'
+    | 'paused'
+    | 'stopped'
+    | 'ready'
+    | 'create-block-success'
+    | 'create-block-failed';
   appName?: string;
   appGroupId?: number;
   icon?: Buffer;
+  filepath?: string;
 };
 
 export const useRecordingStatus = () => {
@@ -23,12 +31,12 @@ export const useRecordingStatus = () => {
     // Get initial status
     apis?.recording
       .getCurrentRecording()
-      .then(status => setStatus(status as Status))
+      .then(status => setStatus(status satisfies Status | null))
       .catch(console.error);
 
     // Subscribe to status changes
     const unsubscribe = events?.recording.onRecordingStatusChanged(status =>
-      setStatus(status as Status)
+      setStatus(status satisfies Status | null)
     );
 
     return () => {
@@ -51,15 +59,24 @@ export function Recording() {
     }
     if (status.status === 'new') {
       return t['com.affine.recording.new']();
-    } else if (status.status === 'ready') {
-      return t['com.affine.recording.ready']();
-    } else if (status.appName) {
-      return t['com.affine.recording.recording']({
-        appName: status.appName,
-      });
-    } else {
-      return t['com.affine.recording.recording.unnamed']();
+    } else if (status.status === 'create-block-success') {
+      return t['com.affine.recording.success.prompt']();
+    } else if (status.status === 'create-block-failed') {
+      return t['com.affine.recording.failed.prompt']();
+    } else if (
+      status.status === 'recording' ||
+      status.status === 'ready' ||
+      status.status === 'stopped'
+    ) {
+      if (status.appName) {
+        return t['com.affine.recording.recording']({
+          appName: status.appName,
+        });
+      } else {
+        return t['com.affine.recording.recording.unnamed']();
+      }
     }
+    return null;
   }, [status, t]);
 
   const handleDismiss = useAsyncCallback(async () => {
@@ -96,7 +113,7 @@ export function Recording() {
         new Promise<void>(resolve => {
           setTimeout(() => {
             resolve();
-          }, 1000); // wait at least 1 second for better user experience
+          }, 500); // wait at least 500ms for better user experience
         }),
       ]);
       await apis?.recording.readyRecording(result.id, buffer);
@@ -125,6 +142,13 @@ export function Recording() {
     await apis?.recording?.startRecording(status.appGroupId);
   }, [status]);
 
+  const handleOpenFile = useAsyncCallback(async () => {
+    if (!status) {
+      return;
+    }
+    await apis?.recording?.showSavedRecordings(status.filepath);
+  }, [status]);
+
   const controlsElement = useMemo(() => {
     if (!status) {
       return null;
@@ -150,7 +174,7 @@ export function Recording() {
           {t['com.affine.recording.stop']()}
         </Button>
       );
-    } else if (status.status === 'stopped') {
+    } else if (status.status === 'stopped' || status.status === 'ready') {
       return (
         <Button
           variant="error"
@@ -159,15 +183,33 @@ export function Recording() {
           disabled
         />
       );
-    } else if (status.status === 'ready') {
+    } else if (status.status === 'create-block-success') {
       return (
         <Button variant="primary" onClick={handleDismiss}>
-          {t['com.affine.recording.ready']()}
+          {t['com.affine.recording.success.button']()}
         </Button>
+      );
+    } else if (status.status === 'create-block-failed') {
+      return (
+        <>
+          <Button variant="plain" onClick={handleDismiss}>
+            {t['com.affine.recording.dismiss']()}
+          </Button>
+          <Button variant="error" onClick={handleOpenFile}>
+            {t['com.affine.recording.failed.button']()}
+          </Button>
+        </>
       );
     }
     return null;
-  }, [handleDismiss, handleStartRecording, handleStopRecording, status, t]);
+  }, [
+    handleDismiss,
+    handleOpenFile,
+    handleStartRecording,
+    handleStopRecording,
+    status,
+    t,
+  ]);
 
   if (!status) {
     return null;

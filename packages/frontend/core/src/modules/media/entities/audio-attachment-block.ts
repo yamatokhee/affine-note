@@ -1,3 +1,4 @@
+import { encodeAudioBlobToOpus } from '@affine/core/utils/webm-encoding';
 import { DebugLogger } from '@affine/debug';
 import { AiJobStatus } from '@affine/graphql';
 import {
@@ -118,7 +119,8 @@ export class AudioAttachmentBlock extends Entity<AttachmentBlockModel> {
         if (!buffer) {
           throw new Error('No audio buffer available');
         }
-        const blob = new Blob([buffer], { type: this.props.props.type });
+        const encodedBuffer = await encodeAudioBlobToOpus(buffer, 64000);
+        const blob = new Blob([encodedBuffer], { type: this.props.props.type });
         const file = new File([blob], this.props.props.name, {
           type: this.props.props.type,
         });

@@ -169,6 +169,10 @@ export default {
     ],
     executableName: productName,
     asar: true,
+    extendInfo: {
+      NSAudioCaptureUsageDescription:
+        'Please allow access in order to capture audio from other apps by AFFiNE.',
+    },
   },
   makers,
   plugins: [{ name: '@electron-forge/plugin-auto-unpack-natives', config: {} }],

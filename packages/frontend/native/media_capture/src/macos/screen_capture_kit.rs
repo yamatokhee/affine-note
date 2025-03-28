@@ -448,7 +448,7 @@ impl TappableApplication {
 
 #[napi]
 pub struct ApplicationListChangedSubscriber {
-  listener_block: *const Block<dyn Fn(u32, *mut c_void)>,
+  listener_block: RcBlock<dyn Fn(u32, *mut c_void)>,
 }
 
 #[napi]
@@ -464,7 +464,9 @@ impl ApplicationListChangedSubscriber {
           mElement: kAudioObjectPropertyElementMain,
         },
         ptr::null_mut(),
-        self.listener_block.cast_mut().cast(),
+        (&*self.listener_block as *const Block<dyn Fn(u32, *mut c_void)>)
+          .cast_mut()
+          .cast(),
       )
     };
     if status != 0 {
@@ -554,7 +556,7 @@ impl ShareableContent {
           callback.call(Ok(()), ThreadsafeFunctionCallMode::NonBlocking);
         }
       });
-    let listener_block = &*callback_block as *const Block<dyn Fn(u32, *mut c_void)>;
+
     let status = unsafe {
       AudioObjectAddPropertyListenerBlock(
         kAudioObjectSystemObject,
@@ -564,7 +566,9 @@ impl ShareableContent {
           mElement: kAudioObjectPropertyElementMain,
         },
         ptr::null_mut(),
-        listener_block.cast_mut().cast(),
+        (&*callback_block as *const Block<dyn Fn(u32, *mut c_void)>)
+          .cast_mut()
+          .cast(),
       )
     };
     if status != 0 {
@@ -573,7 +577,9 @@ impl ShareableContent {
         "Failed to add property listener",
       ));
     }
-    Ok(ApplicationListChangedSubscriber { listener_block })
+    Ok(ApplicationListChangedSubscriber {
+      listener_block: callback_block,
+    })
   }
 
   #[napi]

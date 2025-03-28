@@ -14,11 +14,14 @@ import { beforeAppQuit } from '../cleanup';
 import { logger } from '../logger';
 import {
   appGroups$,
+  checkRecordingAvailable,
+  checkScreenRecordingPermission,
+  MeetingsSettingsState,
   recordingStatus$,
   startRecording,
   stopRecording,
   updateApplicationsPing$,
-} from '../recording';
+} from '../recording/feature';
 import { getMainWindow } from '../windows-manager';
 import { icons } from './icons';
 
@@ -125,30 +128,37 @@ class TrayState {
     };
   }
 
-  getRecordingMenuProvider(): TrayMenuProvider {
-    const appGroups = appGroups$.value;
-    const runningAppGroups = appGroups.filter(appGroup => appGroup.isRunning);
-
-    const recordingStatus = recordingStatus$.value;
-
+  getRecordingMenuProvider(): TrayMenuProvider | null {
     if (
-      !recordingStatus ||
-      (recordingStatus?.status !== 'paused' &&
-        recordingStatus?.status !== 'recording')
+      !checkRecordingAvailable() ||
+      !checkScreenRecordingPermission() ||
+      !MeetingsSettingsState.value.enabled
     ) {
-      const appMenuItems = runningAppGroups.map(appGroup => ({
-        label: appGroup.name,
-        icon: appGroup.icon || undefined,
-        click: () => {
-          logger.info(
-            `User action: Start Recording Meeting (${appGroup.name})`
-          );
-          startRecording(appGroup);
-        },
-      }));
-      return {
-        key: 'recording',
-        getConfig: () => [
+      return null;
+    }
+
+    const getConfig = () => {
+      const appGroups = appGroups$.value;
+      const runningAppGroups = appGroups.filter(appGroup => appGroup.isRunning);
+
+      const recordingStatus = recordingStatus$.value;
+
+      if (
+        !recordingStatus ||
+        (recordingStatus?.status !== 'paused' &&
+          recordingStatus?.status !== 'recording')
+      ) {
+        const appMenuItems = runningAppGroups.map(appGroup => ({
+          label: appGroup.name,
+          icon: appGroup.icon || undefined,
+          click: () => {
+            logger.info(
+              `User action: Start Recording Meeting (${appGroup.name})`
+            );
+            startRecording(appGroup);
+          },
+        }));
+        return [
           {
             label: 'Start Recording Meeting',
             icon: icons.record,
@@ -167,18 +177,22 @@ class TrayState {
             ],
           },
           ...appMenuItems,
-        ],
-      };
-    }
+          {
+            label: `Meetings Settings...`,
+            click: async () => {
+              showMainWindow();
+              applicationMenuSubjects.openInSettingModal$.next('meetings');
+            },
+          },
+        ];
+      }
 
-    const recordingLabel = recordingStatus.appGroup?.name
-      ? `Recording (${recordingStatus.appGroup?.name})`
-      : 'Recording';
+      const recordingLabel = recordingStatus.appGroup?.name
+        ? `Recording (${recordingStatus.appGroup?.name})`
+        : 'Recording';
 
-    // recording is either started or paused
-    return {
-      key: 'recording',
-      getConfig: () => [
+      // recording is either started or paused
+      return [
         {
           label: recordingLabel,
           icon: icons.recording,
@@ -193,7 +207,12 @@ class TrayState {
             });
           },
         },
-      ],
+      ];
+    };
+
+    return {
+      key: 'recording',
+      getConfig,
     };
   }
 
@@ -212,6 +231,13 @@ class TrayState {
               .catch(err => {
                 logger.error('Failed to open AFFiNE:', err);
               });
+          },
+        },
+        {
+          label: `About ${app.getName()}`,
+          click: () => {
+            showMainWindow();
+            applicationMenuSubjects.openInSettingModal$.next('about');
           },
         },
         'separator',
@@ -267,7 +293,7 @@ class TrayState {
 
     const providers = [
       this.getPrimaryMenuProvider(),
-      isMacOS() ? this.getRecordingMenuProvider() : null,
+      this.getRecordingMenuProvider(),
       this.getSecondaryMenuProvider(),
     ].filter(p => p !== null);
 

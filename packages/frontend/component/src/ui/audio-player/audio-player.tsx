@@ -1,4 +1,3 @@
-import { IconButton } from '@affine/component';
 import {
   AddThirtySecondIcon,
   CloseIcon,
@@ -9,9 +8,10 @@ import bytes from 'bytes';
 import { clamp } from 'lodash-es';
 import { type MouseEventHandler, type ReactNode, useCallback } from 'react';
 
+import { IconButton } from '../button';
+import { AnimatedPlayIcon } from '../lottie';
 import * as styles from './audio-player.css';
 import { AudioWaveform } from './audio-waveform';
-import { AnimatedPlayIcon } from './lottie/animated-play-icon';
 
 // Format seconds to mm:ss
 const formatTime = (seconds: number): string => {

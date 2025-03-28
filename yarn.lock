@@ -328,13 +328,16 @@ __metadata:
     "@testing-library/dom": "npm:^10.4.0"
     "@testing-library/react": "npm:^16.1.0"
     "@toeverything/theme": "npm:^1.1.12"
+    "@types/bytes": "npm:^3.1.5"
     "@types/react": "npm:^19.0.1"
     "@types/react-dom": "npm:^19.0.2"
     "@vanilla-extract/css": "npm:^1.17.0"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
+    bytes: "npm:^3.1.2"
     check-password-strength: "npm:^3.0.0"
     clsx: "npm:^2.1.1"
     dayjs: "npm:^1.11.13"
+    foxact: "npm:^0.2.45"
     jotai: "npm:^2.10.3"
     lit: "npm:^3.2.1"
     lodash-es: "npm:^4.17.21"
@@ -456,6 +459,7 @@ __metadata:
     swr: "npm:2.3.3"
     tinykeys: "patch:tinykeys@npm%3A2.1.0#~/.yarn/patches/tinykeys-npm-2.1.0-819feeaed0.patch"
     vitest: "npm:3.0.9"
+    webm-muxer: "npm:^5.1.0"
     y-protocols: "npm:^1.0.6"
     yjs: "npm:^13.6.21"
     zod: "npm:^3.24.1"
@@ -21594,7 +21598,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"foxact@npm:^0.2.43":
+"foxact@npm:^0.2.43, foxact@npm:^0.2.45":
   version: 0.2.45
   resolution: "foxact@npm:0.2.45"
   dependencies:
@@ -33879,7 +33883,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webm-muxer@npm:^5.0.3":
+"webm-muxer@npm:^5.0.3, webm-muxer@npm:^5.1.0":
   version: 5.1.0
   resolution: "webm-muxer@npm:5.1.0"
   dependencies:

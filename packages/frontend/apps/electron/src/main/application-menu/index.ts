@@ -17,9 +17,9 @@ export const applicationMenuEvents = {
       sub.unsubscribe();
     };
   },
-  openAboutPageInSettingModal: (fn: () => void) => {
-    const sub =
-      applicationMenuSubjects.openAboutPageInSettingModal$.subscribe(fn);
+  // todo: properly define the active tab type
+  openInSettingModal: (fn: (activeTab: string) => void) => {
+    const sub = applicationMenuSubjects.openInSettingModal$.subscribe(fn);
     return () => {
       sub.unsubscribe();
     };

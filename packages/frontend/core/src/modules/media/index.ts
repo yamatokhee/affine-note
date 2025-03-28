@@ -1,8 +1,7 @@
 import type { Framework } from '@toeverything/infra';
 
 import { DefaultServerService, WorkspaceServerService } from '../cloud';
-import { DesktopApiService } from '../desktop-api';
-import { GlobalState } from '../storage';
+import { GlobalState, GlobalStateService } from '../storage';
 import { WorkbenchService } from '../workbench';
 import { WorkspaceScope, WorkspaceService } from '../workspace';
 import { AudioAttachmentBlock } from './entities/audio-attachment-block';
@@ -16,9 +15,11 @@ import {
 } from './providers/global-audio-state';
 import { AudioAttachmentService } from './services/audio-attachment';
 import { AudioMediaManagerService } from './services/audio-media-manager';
+import { MeetingSettingsService } from './services/meeting-settings';
 
 export function configureMediaModule(framework: Framework) {
   framework
+    .service(MeetingSettingsService, [GlobalStateService])
     .scope(WorkspaceScope)
     .entity(AudioMedia, [WorkspaceService])
     .entity(AudioAttachmentBlock, [AudioMediaManagerService, WorkspaceService])
@@ -31,27 +32,18 @@ export function configureMediaModule(framework: Framework) {
       WorkspaceServerService,
       DefaultServerService,
     ])
-    .service(AudioAttachmentService);
+    .service(AudioAttachmentService)
+    .service(AudioMediaManagerService, [
+      GlobalMediaStateProvider,
+      WorkbenchService,
+    ]);
 
   if (BUILD_CONFIG.isElectron) {
-    framework
-      .impl(GlobalMediaStateProvider, ElectronGlobalMediaStateProvider, [
-        GlobalState,
-      ])
-      .scope(WorkspaceScope)
-      .service(AudioMediaManagerService, [
-        GlobalMediaStateProvider,
-        WorkbenchService,
-        DesktopApiService,
-      ]);
+    framework.impl(GlobalMediaStateProvider, ElectronGlobalMediaStateProvider, [
+      GlobalState,
+    ]);
   } else {
-    framework
-      .impl(GlobalMediaStateProvider, WebGlobalMediaStateProvider)
-      .scope(WorkspaceScope)
-      .service(AudioMediaManagerService, [
-        GlobalMediaStateProvider,
-        WorkbenchService,
-      ]);
+    framework.impl(GlobalMediaStateProvider, WebGlobalMediaStateProvider);
   }
 }
 

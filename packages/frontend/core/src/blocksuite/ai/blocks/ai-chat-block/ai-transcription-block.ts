@@ -13,8 +13,21 @@ export class LitTranscriptionBlock extends BlockComponent<TranscriptionBlockMode
       }
     `,
   ];
+
+  get lastCalloutBlock() {
+    for (const child of this.model.children.toReversed()) {
+      if (child.flavour === 'affine:callout') {
+        return child;
+      }
+    }
+    return null;
+  }
+
   override render() {
-    return this.std.host.renderChildren(this.model);
+    return this.std.host.renderChildren(this.model, model => {
+      // if model is the last transcription block, we should render it
+      return model === this.lastCalloutBlock;
+    });
   }
 
   @property({ type: String, attribute: 'data-block-id' })

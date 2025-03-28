@@ -1,17 +1,22 @@
-import { Button, Tooltip, useConfirmModal } from '@affine/component';
-import { AudioPlayer } from '@affine/core/components/audio-player';
-import { AnimatedTranscribeIcon } from '@affine/core/components/audio-player/lottie/animated-transcribe-icon';
-import { useSeekTime } from '@affine/core/components/audio-player/use-seek-time';
+import {
+  AnimatedTranscribeIcon,
+  Button,
+  Tooltip,
+  useConfirmModal,
+} from '@affine/component';
+import { AudioPlayer } from '@affine/component/ui/audio-player';
 import { useEnableAI } from '@affine/core/components/hooks/affine/use-enable-ai';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
+import { useSeekTime } from '@affine/core/components/hooks/use-seek-time';
 import { CurrentServerScopeProvider } from '@affine/core/components/providers/current-server-scope';
 import { PublicUserLabel } from '@affine/core/modules/cloud/views/public-user';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import type { AudioAttachmentBlock } from '@affine/core/modules/media/entities/audio-attachment-block';
-import { useAttachmentMediaBlock } from '@affine/core/modules/media/views/use-attachment-media';
+import { AudioAttachmentService } from '@affine/core/modules/media/services/audio-attachment';
 import { Trans, useI18n } from '@affine/i18n';
+import type { AttachmentBlockModel } from '@blocksuite/affine/model';
 import { useLiveData, useService } from '@toeverything/infra';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { AttachmentViewerProps } from '../types';
 import * as styles from './audio-block.css';
@@ -175,6 +180,31 @@ const AttachmentAudioPlayer = ({ block }: { block: AudioAttachmentBlock }) => {
       }
     />
   );
+};
+
+const useAttachmentMediaBlock = (model: AttachmentBlockModel) => {
+  const audioAttachmentService = useService(AudioAttachmentService);
+  const [audioAttachmentBlock, setAttachmentMedia] = useState<
+    AudioAttachmentBlock | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (!model.props.sourceId) {
+      return;
+    }
+    const entity = audioAttachmentService.get(model);
+    if (!entity) {
+      return;
+    }
+    const audioAttachmentBlock = entity.obj;
+    setAttachmentMedia(audioAttachmentBlock);
+    audioAttachmentBlock.mount();
+    return () => {
+      audioAttachmentBlock.unmount();
+      entity.release();
+    };
+  }, [audioAttachmentService, model]);
+  return audioAttachmentBlock;
 };
 
 export const AudioBlockEmbedded = (props: AttachmentViewerProps) => {

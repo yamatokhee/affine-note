@@ -8,6 +8,7 @@ import {
   FolderIcon,
   InformationIcon,
   KeyboardIcon,
+  MeetingIcon,
   NotificationIcon,
   PenIcon,
 } from '@blocksuite/icons/rc';
@@ -23,6 +24,7 @@ import { BillingSettings } from './billing';
 import { EditorSettings } from './editor';
 import { ExperimentalFeatures } from './experimental-features';
 import { PaymentIcon, UpgradeIcon } from './icons';
+import { MeetingsSettings } from './meetings';
 import { NotificationSettings } from './notifications';
 import { AFFiNEPricingPlans } from './plans';
 import { Shortcuts } from './shortcuts';
@@ -45,6 +47,9 @@ export const useGeneralSettingList = (): GeneralSettingList => {
   );
   const enableEditorSettings = useLiveData(
     featureFlagService.flags.enable_editor_settings.$
+  );
+  const enableMeetings = useLiveData(
+    featureFlagService.flags.enable_meetings.$
   );
 
   useEffect(() => {
@@ -80,6 +85,15 @@ export const useGeneralSettingList = (): GeneralSettingList => {
       title: t['com.affine.settings.editorSettings'](),
       icon: <PenIcon />,
       testId: 'editor-panel-trigger',
+    });
+  }
+
+  if (enableMeetings) {
+    settings.push({
+      key: 'meetings',
+      title: t['com.affine.settings.meetings'](),
+      icon: <MeetingIcon />,
+      testId: 'meetings-panel-trigger',
     });
   }
 
@@ -147,6 +161,8 @@ export const GeneralSetting = ({
       return <EditorSettings />;
     case 'appearance':
       return <AppearanceSettings />;
+    case 'meetings':
+      return <MeetingsSettings />;
     case 'about':
       return <AboutAffine />;
     case 'plans':

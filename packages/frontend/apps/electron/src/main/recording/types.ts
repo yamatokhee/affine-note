@@ -39,7 +39,16 @@ export interface RecordingStatus {
   // paused: the recording is paused
   // stopped: the recording is stopped (processing audio file for use in the editor)
   // ready: the recording is ready to be used
-  status: 'new' | 'recording' | 'paused' | 'stopped' | 'ready';
+  // create-block-success: the recording is successfully created as a block
+  // create-block-failed: creating block failed
+  status:
+    | 'new'
+    | 'recording'
+    | 'paused'
+    | 'stopped'
+    | 'ready'
+    | 'create-block-success'
+    | 'create-block-failed';
   app?: TappableAppInfo;
   appGroup?: AppGroupInfo;
   startTime: number; // 0 means not started yet

@@ -13,6 +13,7 @@ export type SettingTab =
   | 'experimental-features'
   | 'editor'
   | 'account'
+  | 'meetings'
   | `workspace:${'preference' | 'properties' | 'members' | 'storage' | 'billing' | 'license' | 'integrations'}`;
 
 export type GLOBAL_DIALOG_SCHEMA = {

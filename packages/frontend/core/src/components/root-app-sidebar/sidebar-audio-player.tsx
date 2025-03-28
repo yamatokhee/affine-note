@@ -1,3 +1,4 @@
+import { MiniAudioPlayer } from '@affine/component/ui/audio-player';
 import { AudioMediaManagerService } from '@affine/core/modules/media';
 import type { AudioAttachmentBlock } from '@affine/core/modules/media/entities/audio-attachment-block';
 import { AudioAttachmentService } from '@affine/core/modules/media/services/audio-attachment';
@@ -5,8 +6,7 @@ import { LiveData, useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { combineLatest, debounceTime, map, of } from 'rxjs';
 
-import { MiniAudioPlayer } from '../audio-player';
-import { useSeekTime } from '../audio-player/use-seek-time';
+import { useSeekTime } from '../hooks/use-seek-time';
 import * as styles from './sidebar-audio-player.css';
 
 export const SidebarAudioPlayer = () => {

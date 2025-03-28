@@ -13,7 +13,7 @@ import {
 import { clamp } from 'lodash-es';
 import { distinctUntilChanged } from 'rxjs';
 
-import type { DesktopApiService } from '../../desktop-api';
+import { DesktopApiService } from '../../desktop-api';
 import type { WorkbenchService } from '../../workbench';
 import { AudioMedia } from '../entities/audio-media';
 import type { BaseGlobalMediaStateProvider } from '../providers/global-audio-state';
@@ -36,18 +36,13 @@ export class AudioMediaManagerService extends Service {
   });
 
   private readonly mediaDisposables = new WeakMap<AudioMedia, (() => void)[]>();
+  private readonly desktopApi = this.framework.getOptional(DesktopApiService);
 
   constructor(
     private readonly globalMediaState: BaseGlobalMediaStateProvider,
-    private readonly workbench: WorkbenchService,
-    private readonly desktopApi?: DesktopApiService
+    private readonly workbench: WorkbenchService
   ) {
     super();
-
-    if (!BUILD_CONFIG.isElectron) {
-      this.desktopApi = undefined;
-    }
-
     this.disposables.push(() => {
       this.mediaPool.clear();
     });

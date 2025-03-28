@@ -5328,6 +5328,94 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.translucent-style-description"](): string;
     /**
+      * `Meetings`
+      */
+    ["com.affine.settings.meetings"](): string;
+    /**
+      * `Enable meeting notes`
+      */
+    ["com.affine.settings.meetings.enable.title"](): string;
+    /**
+      * `Utilize the meeting notes and AI summarization features provided by AFFiNE.`
+      */
+    ["com.affine.settings.meetings.enable.description"](): string;
+    /**
+      * `Meeting recording`
+      */
+    ["com.affine.settings.meetings.record.header"](): string;
+    /**
+      * `When meeting starts`
+      */
+    ["com.affine.settings.meetings.record.recording-mode"](): string;
+    /**
+      * `Choose the behavior when the meeting starts.`
+      */
+    ["com.affine.settings.meetings.record.recording-mode.description"](): string;
+    /**
+      * `Open saved recordings`
+      */
+    ["com.affine.settings.meetings.record.open-saved-file"](): string;
+    /**
+      * `Open the locally stored recording files.`
+      */
+    ["com.affine.settings.meetings.record.open-saved-file.description"](): string;
+    /**
+      * `Transcription with AI`
+      */
+    ["com.affine.settings.meetings.transcription.header"](): string;
+    /**
+      * `Auto transcription`
+      */
+    ["com.affine.settings.meetings.transcription.auto-transcription"](): string;
+    /**
+      * `Automatically transcribe the meeting notes.`
+      */
+    ["com.affine.settings.meetings.transcription.auto-transcription.description"](): string;
+    /**
+      * `Privacy & Security`
+      */
+    ["com.affine.settings.meetings.privacy.header"](): string;
+    /**
+      * `Screen & System audio recording`
+      */
+    ["com.affine.settings.meetings.privacy.screen-system-audio-recording"](): string;
+    /**
+      * `The Meeting feature requires permission to be used.`
+      */
+    ["com.affine.settings.meetings.privacy.screen-system-audio-recording.description"](): string;
+    /**
+      * `Click to allow`
+      */
+    ["com.affine.settings.meetings.privacy.screen-system-audio-recording.permission-setting"](): string;
+    /**
+      * `Do nothing`
+      */
+    ["com.affine.settings.meetings.record.recording-mode.none"](): string;
+    /**
+      * `Auto start recording`
+      */
+    ["com.affine.settings.meetings.record.recording-mode.auto-start"](): string;
+    /**
+      * `Show a recording prompt`
+      */
+    ["com.affine.settings.meetings.record.recording-mode.prompt"](): string;
+    /**
+      * `Screen & System Audio Recording`
+      */
+    ["com.affine.settings.meetings.record.permission-modal.title"](): string;
+    /**
+      * `AFFiNE will generate meeting notes by recording your meetings. Authorization to "Screen & System Audio Recording" is necessary.`
+      */
+    ["com.affine.settings.meetings.record.permission-modal.description"](): string;
+    /**
+      * `Save meeting's recording block to`
+      */
+    ["com.affine.settings.meetings.record.save-mode"](): string;
+    /**
+      * `Open System Settings`
+      */
+    ["com.affine.settings.meetings.record.permission-modal.open-setting"](): string;
+    /**
       * `Workspace`
       */
     ["com.affine.settings.workspace"](): string;
@@ -5583,6 +5671,14 @@ export function useAFFiNEI18N(): {
       * `Audio block allows you to play audio files globally and add notes to them.`
       */
     ["com.affine.settings.workspace.experimental-features.enable-audio-block.description"](): string;
+    /**
+      * `Meetings`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-meetings.name"](): string;
+    /**
+      * `Meetings allows you to record and transcribe meetings. Don't forget to enable it in AFFiNE settings.`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-meetings.description"](): string;
     /**
       * `Editor RTL`
       */
@@ -7450,9 +7546,21 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.recording.new"](): string;
     /**
+      * `Finished`
+      */
+    ["com.affine.recording.success.prompt"](): string;
+    /**
       * `Open app`
       */
-    ["com.affine.recording.ready"](): string;
+    ["com.affine.recording.success.button"](): string;
+    /**
+      * `Failed to save`
+      */
+    ["com.affine.recording.failed.prompt"](): string;
+    /**
+      * `Open file`
+      */
+    ["com.affine.recording.failed.button"](): string;
     /**
       * `{{appName}}'s audio`
       */

@@ -39,7 +39,7 @@ export function createApplicationMenu() {
                 label: `About ${app.getName()}`,
                 click: async () => {
                   await showMainWindow();
-                  applicationMenuSubjects.openAboutPageInSettingModal$.next();
+                  applicationMenuSubjects.openInSettingModal$.next('about');
                 },
               },
               { type: 'separator' },

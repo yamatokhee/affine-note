@@ -225,15 +225,6 @@ export const AFFINE_FLAGS = {
     configurable: !isMobile,
     defaultState: false,
   },
-  enable_audio_block: {
-    category: 'affine',
-    displayName:
-      'com.affine.settings.workspace.experimental-features.enable-audio-block.name',
-    description:
-      'com.affine.settings.workspace.experimental-features.enable-audio-block.description',
-    configurable: !isMobile,
-    defaultState: false,
-  },
   enable_editor_rtl: {
     category: 'affine',
     displayName:
@@ -272,6 +263,24 @@ export const AFFINE_FLAGS = {
     description:
       'com.affine.settings.workspace.experimental-features.enable-edgeless-scribbled-style.description',
     configurable: isCanaryBuild,
+    defaultState: false,
+  },
+  enable_audio_block: {
+    category: 'affine',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-audio-block.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-audio-block.description',
+    configurable: !isMobile,
+    defaultState: false,
+  },
+  enable_meetings: {
+    category: 'affine',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-meetings.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-meetings.description',
+    configurable: !isMobile && environment.isMacOs,
     defaultState: false,
   },
 } satisfies { [key in string]: FlagInfo };

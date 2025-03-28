@@ -5,17 +5,6 @@ import { logger } from '../logger';
 import type { AppGroupInfo, RecordingStatus } from './types';
 
 /**
- * Possible states for a recording
- */
-export type RecordingState =
-  | 'new'
-  | 'recording'
-  | 'paused'
-  | 'stopped'
-  | 'ready'
-  | 'inactive';
-
-/**
  * Recording state machine events
  */
 export type RecordingEvent =
@@ -34,6 +23,15 @@ export type RecordingEvent =
       type: 'SAVE_RECORDING';
       id: number;
       filepath: string;
+    }
+  | {
+      type: 'CREATE_BLOCK_FAILED';
+      id: number;
+      error?: Error;
+    }
+  | {
+      type: 'CREATE_BLOCK_SUCCESS';
+      id: number;
     }
   | { type: 'REMOVE_RECORDING'; id: number };
 
@@ -92,6 +90,12 @@ export class RecordingStateMachine {
         break;
       case 'SAVE_RECORDING':
         newStatus = this.handleSaveRecording(event.id, event.filepath);
+        break;
+      case 'CREATE_BLOCK_SUCCESS':
+        newStatus = this.handleCreateBlockSuccess(event.id);
+        break;
+      case 'CREATE_BLOCK_FAILED':
+        newStatus = this.handleCreateBlockFailed(event.id, event.error);
         break;
       case 'REMOVE_RECORDING':
         this.handleRemoveRecording(event.id);
@@ -252,6 +256,47 @@ export class RecordingStateMachine {
       ...currentStatus,
       status: 'ready',
       filepath,
+    };
+  }
+
+  /**
+   * Handle the CREATE_BLOCK_SUCCESS event
+   */
+  private handleCreateBlockSuccess(id: number): RecordingStatus | null {
+    const currentStatus = this.recordingStatus$.value;
+
+    if (!currentStatus || currentStatus.id !== id) {
+      logger.error(`Recording ${id} not found for create-block-success`);
+      return currentStatus;
+    }
+
+    return {
+      ...currentStatus,
+      status: 'create-block-success',
+    };
+  }
+
+  /**
+   * Handle the CREATE_BLOCK_FAILED event
+   */
+  private handleCreateBlockFailed(
+    id: number,
+    error?: Error
+  ): RecordingStatus | null {
+    const currentStatus = this.recordingStatus$.value;
+
+    if (!currentStatus || currentStatus.id !== id) {
+      logger.error(`Recording ${id} not found for create-block-failed`);
+      return currentStatus;
+    }
+
+    if (error) {
+      logger.error(`Recording ${id} create block failed:`, error);
+    }
+
+    return {
+      ...currentStatus,
+      status: 'create-block-failed',
     };
   }
 

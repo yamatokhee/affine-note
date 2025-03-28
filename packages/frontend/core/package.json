@@ -76,6 +76,7 @@
     "socket.io-client": "^4.8.1",
     "swr": "2.3.3",
     "tinykeys": "patch:tinykeys@npm%3A2.1.0#~/.yarn/patches/tinykeys-npm-2.1.0-819feeaed0.patch",
+    "webm-muxer": "^5.1.0",
     "y-protocols": "^1.0.6",
     "yjs": "^13.6.21",
     "zod": "^3.24.1"

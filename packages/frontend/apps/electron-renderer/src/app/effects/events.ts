@@ -1,5 +1,6 @@
 import { DesktopApiService } from '@affine/core/modules/desktop-api';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
+import type { SettingTab } from '@affine/core/modules/dialogs/constant';
 import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { JournalService } from '@affine/core/modules/journal';
@@ -24,14 +25,14 @@ export function setupEvents(frameworkProvider: FrameworkProvider) {
       .catch(console.error);
   });
 
-  events?.applicationMenu.openAboutPageInSettingModal(() => {
+  events?.applicationMenu.openInSettingModal(activeTab => {
     using currentWorkspace = getCurrentWorkspace(frameworkProvider);
     if (!currentWorkspace) {
       return;
     }
     const { workspace } = currentWorkspace;
     workspace.scope.get(WorkspaceDialogService).open('setting', {
-      activeTab: 'about',
+      activeTab: activeTab as unknown as SettingTab,
     });
   });
 
