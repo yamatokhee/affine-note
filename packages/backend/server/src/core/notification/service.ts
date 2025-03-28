@@ -16,6 +16,10 @@ import {
 import { DocReader } from '../doc';
 import { Mailer } from '../mail';
 import { generateDocPath } from '../utils/doc';
+import {
+  generateWorkspaceSettingsPath,
+  WorkspaceSettingsTab,
+} from '../utils/workspace';
 
 @Injectable()
 export class NotificationService {
@@ -167,6 +171,12 @@ export class NotificationService {
         workspace: {
           $$workspaceId: workspaceId,
         },
+        url: this.url.link(
+          generateWorkspaceSettingsPath({
+            workspaceId,
+            tab: WorkspaceSettingsTab.members,
+          })
+        ),
       },
     });
     this.logger.log(
@@ -226,7 +236,12 @@ export class NotificationService {
         workspace: {
           $$workspaceId: workspaceId,
         },
-        url: this.url.link(`/workspace/${workspaceId}`),
+        url: this.url.link(
+          generateWorkspaceSettingsPath({
+            workspaceId,
+            tab: WorkspaceSettingsTab.members,
+          })
+        ),
       },
     });
     this.logger.log(
