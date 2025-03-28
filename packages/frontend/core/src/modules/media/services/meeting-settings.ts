@@ -53,6 +53,11 @@ export class MeetingSettingsService extends Service {
       return;
     }
 
+    this.globalStateService.globalState.set(MEETING_SETTINGS_KEY, {
+      ...this.settings$.value,
+      enabled,
+    });
+
     // when the user enable the recording feature the first time,
     // the app may prompt the user to allow the recording feature by MacOS.
     // when the user allows the recording feature, the app may be required to restart.
@@ -77,12 +82,6 @@ export class MeetingSettingsService extends Service {
       // if the user disabled the recording feature, we need to setup the recording feature
       await this.desktopApiService?.handler.recording.disableRecordingFeature();
     }
-
-    // Only update the state after successful feature setup/disable
-    this.globalStateService.globalState.set(MEETING_SETTINGS_KEY, {
-      ...this.settings$.value,
-      enabled,
-    });
   }
 
   setRecordingSavingMode(mode: MeetingSettingsSchema['recordingSavingMode']) {
