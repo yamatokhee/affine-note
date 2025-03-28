@@ -17,7 +17,12 @@ import { matchModels } from '@blocksuite/affine-shared/utils';
 import { BlockSelection } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { flip, offset, shift } from '@floating-ui/dom';
-import { computed, type ReadonlySignal, signal } from '@preact/signals-core';
+import {
+  computed,
+  effect,
+  type ReadonlySignal,
+  signal,
+} from '@preact/signals-core';
 import { html, nothing } from 'lit';
 import { query } from 'lit/decorators.js';
 import { type ClassInfo, classMap } from 'lit/directives/class-map.js';
@@ -244,7 +249,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
   };
 
   private readonly _selectBlock = () => {
-    const selectionManager = this.host.selection;
+    const { selectionManager } = this;
     const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.blockId,
     });
@@ -256,11 +261,17 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
     if (this.inSurface) {
       return;
     }
+
+    // when the block is in idle status and the url is not set, clear the selection
+    // and show the link input popup
     if (this.isIdle$.value && !this.model.props.url) {
+      this.selectionManager.clear(['block']);
       this.toggleLinkInputPopup();
-    } else {
-      this._selectBlock();
+      return;
     }
+
+    // otherwise, select the block
+    this._selectBlock();
   };
 
   private readonly _handleRetry = async () => {
@@ -327,6 +338,23 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
     super.connectedCallback();
 
     this.contentEditable = 'false';
+
+    // update the selected style when the block is in the note
+    this.disposables.add(
+      effect(() => {
+        if (this.inSurface) {
+          return;
+        }
+
+        // when the block is in idle status, use the background style
+        // otherwise, use the border style
+        if (this.status$.value === 'idle') {
+          this.selectedStyle = SelectedStyle.Background;
+        } else {
+          this.selectedStyle = SelectedStyle.Border;
+        }
+      })
+    );
 
     if (!this.model.props.iframeUrl) {
       this.doc.withoutTransact(() => {
@@ -413,6 +441,10 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
 
   get readonly() {
     return this.doc.readonly;
+  }
+
+  get selectionManager() {
+    return this.host.selection;
   }
 
   override accessor useCaptionEditor = true;

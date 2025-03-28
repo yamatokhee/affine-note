@@ -19,7 +19,6 @@ export class EmbedIframeIdleCard extends WithDisposable(LitElement) {
       padding: 12px;
       gap: 8px;
       border-radius: 8px;
-      border: 1px solid var(--affine-border-color);
       background-color: ${unsafeCSSVarV2('layer/background/secondary')};
 
       .icon {
