@@ -3,11 +3,11 @@ import type {
   CollectionMeta,
   TagMeta,
 } from '@affine/core/components/page-list';
-import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { scrollbarStyle } from '@blocksuite/affine/shared/styles';
 import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine/shared/theme';
 import { openFileOrFiles } from '@blocksuite/affine/shared/utils';
+import { ShadowlessElement } from '@blocksuite/affine/std';
 import {
   CollectionsIcon,
   MoreHorizontalIcon,

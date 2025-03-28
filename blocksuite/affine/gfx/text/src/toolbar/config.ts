@@ -8,8 +8,8 @@ import {
   ToolbarModuleExtension,
 } from '@blocksuite/affine-shared/services';
 import { createTextActions } from '@blocksuite/affine-widget-edgeless-toolbar';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
+import { BlockFlavourIdentifier } from '@blocksuite/std';
 
 export const textToolbarConfig = {
   actions: createTextActions(TextElementModel, 'text', (ctx, model, props) => {

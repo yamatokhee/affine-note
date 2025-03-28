@@ -1,8 +1,8 @@
 import '../content/images';
 import '../content/pure-text';
 
-import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { WithDisposable } from '@blocksuite/affine/global/lit';
+import { ShadowlessElement } from '@blocksuite/affine/std';
 import { css, html, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 

@@ -36,18 +36,6 @@ import {
   matchModels,
   referenceToNode,
 } from '@blocksuite/affine-shared/utils';
-import type {
-  EditorHost,
-  SurfaceSelection,
-  UIEventStateContext,
-} from '@blocksuite/block-std';
-import {
-  compareLayer,
-  type GfxBlockElementModel,
-  GfxControllerIdentifier,
-  type GfxPrimitiveElementModel,
-  type SerializedElement,
-} from '@blocksuite/block-std/gfx';
 import { DisposableGroup } from '@blocksuite/global/disposable';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import {
@@ -57,6 +45,18 @@ import {
   type IVec,
   Vec,
 } from '@blocksuite/global/gfx';
+import type {
+  EditorHost,
+  SurfaceSelection,
+  UIEventStateContext,
+} from '@blocksuite/std';
+import {
+  compareLayer,
+  type GfxBlockElementModel,
+  GfxControllerIdentifier,
+  type GfxPrimitiveElementModel,
+  type SerializedElement,
+} from '@blocksuite/std/gfx';
 import { type BlockSnapshot, type SliceSnapshot } from '@blocksuite/store';
 import * as Y from 'yjs';
 

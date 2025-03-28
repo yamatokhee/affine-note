@@ -4,7 +4,7 @@ import {
   ToolbarModuleExtension,
 } from '@blocksuite/affine-shared/services';
 import { createTextActions } from '@blocksuite/affine-widget-edgeless-toolbar';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
+import { BlockFlavourIdentifier } from '@blocksuite/std';
 
 export const edgelessTextToolbarConfig = {
   // No need to adjust element bounds, which updates itself using ResizeObserver

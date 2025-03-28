@@ -1,10 +1,5 @@
 import { VirtualKeyboardProvider } from '@affine/core/mobile/modules/virtual-keyboard';
 import {
-  type BlockStdScope,
-  LifeCycleWatcher,
-  LifeCycleWatcherIdentifier,
-} from '@blocksuite/affine/block-std';
-import {
   CodeBlockConfigExtension,
   codeToolbarWidget,
 } from '@blocksuite/affine/blocks/code';
@@ -21,6 +16,11 @@ import {
   VirtualKeyboardProvider as BSVirtualKeyboardProvider,
 } from '@blocksuite/affine/shared/services';
 import type { SpecBuilder } from '@blocksuite/affine/shared/utils';
+import {
+  type BlockStdScope,
+  LifeCycleWatcher,
+  LifeCycleWatcherIdentifier,
+} from '@blocksuite/affine/std';
 import type { ExtensionType } from '@blocksuite/affine/store';
 import { SlashMenuExtension } from '@blocksuite/affine/widgets/slash-menu';
 import { toolbarWidget } from '@blocksuite/affine/widgets/toolbar';

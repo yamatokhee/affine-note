@@ -9,12 +9,15 @@ import {
   isInsidePageEditor,
   matchModels,
 } from '@blocksuite/affine-shared/utils';
+import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import type { IBound } from '@blocksuite/global/gfx';
+import { deserializeXYWH } from '@blocksuite/global/gfx';
 import {
   type BlockComponent,
   type BlockStdScope,
   type EditorHost,
   StdIdentifier,
-} from '@blocksuite/block-std';
+} from '@blocksuite/std';
 import {
   GfxBlockElementModel,
   type GfxController,
@@ -22,10 +25,7 @@ import {
   type GfxModel,
   GfxPrimitiveElementModel,
   isGfxGroupCompatibleModel,
-} from '@blocksuite/block-std/gfx';
-import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import type { IBound } from '@blocksuite/global/gfx';
-import { deserializeXYWH } from '@blocksuite/global/gfx';
+} from '@blocksuite/std/gfx';
 import type { ExtensionType, Store } from '@blocksuite/store';
 
 import type { CanvasRenderer } from '../../renderer/canvas-renderer.js';

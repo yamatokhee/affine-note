@@ -1,6 +1,6 @@
 import { DebugLogger } from '@affine/debug';
-import { BlockStdScope } from '@blocksuite/affine/block-std';
 import { PageEditorBlockSpecs } from '@blocksuite/affine/extensions';
+import { BlockStdScope } from '@blocksuite/affine/std';
 import type { Store } from '@blocksuite/affine/store';
 import { useEffect, useMemo, useState } from 'react';
 import { Observable } from 'rxjs';

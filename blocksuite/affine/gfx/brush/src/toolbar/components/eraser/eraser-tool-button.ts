@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { EdgelessToolbarToolMixin } from '@blocksuite/affine-widget-edgeless-toolbar';
-import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
+import type { GfxToolsFullOptionValue } from '@blocksuite/std/gfx';
 import { css, html, LitElement } from 'lit';
 
 import { EdgelessEraserDarkIcon, EdgelessEraserLightIcon } from './icons.js';

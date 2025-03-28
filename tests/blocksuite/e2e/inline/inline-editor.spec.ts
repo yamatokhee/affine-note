@@ -1,7 +1,4 @@
-import type {
-  InlineEditor,
-  InlineRange,
-} from '@blocksuite/affine/block-std/inline';
+import type { InlineEditor, InlineRange } from '@blocksuite/affine/std/inline';
 import type { DeltaInsert } from '@blocksuite/affine/store';
 import { expect, type Page, test } from '@playwright/test';
 

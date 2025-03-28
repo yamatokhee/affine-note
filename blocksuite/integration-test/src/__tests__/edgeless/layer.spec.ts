@@ -1,4 +1,3 @@
-import { generateKeyBetween } from '@blocksuite/affine/block-std/gfx';
 import type { EdgelessRootBlockComponent } from '@blocksuite/affine/blocks/root';
 import type { SurfaceElementModel } from '@blocksuite/affine/blocks/surface';
 import { ungroupCommand } from '@blocksuite/affine/gfx/group';
@@ -6,7 +5,8 @@ import type {
   GroupElementModel,
   NoteBlockModel,
 } from '@blocksuite/affine/model';
-import type { BlockComponent } from '@blocksuite/block-std';
+import { generateKeyBetween } from '@blocksuite/affine/std/gfx';
+import type { BlockComponent } from '@blocksuite/std';
 import type { BlockModel, Store } from '@blocksuite/store';
 import { beforeEach, describe, expect, test } from 'vitest';
 import * as Y from 'yjs';

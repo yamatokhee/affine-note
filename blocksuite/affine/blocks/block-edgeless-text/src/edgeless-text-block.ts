@@ -11,14 +11,14 @@ import {
   handleNativeRangeAtPoint,
   matchModels,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent } from '@blocksuite/block-std';
+import { Bound, clamp } from '@blocksuite/global/gfx';
+import type { BlockComponent } from '@blocksuite/std';
 import {
   BlockSelection,
   GfxBlockComponent,
   TextSelection,
-} from '@blocksuite/block-std';
-import type { SelectedContext } from '@blocksuite/block-std/gfx';
-import { Bound, clamp } from '@blocksuite/global/gfx';
+} from '@blocksuite/std';
+import type { SelectedContext } from '@blocksuite/std/gfx';
 import { css, html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';

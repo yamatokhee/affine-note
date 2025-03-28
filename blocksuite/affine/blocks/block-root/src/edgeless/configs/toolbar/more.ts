@@ -29,8 +29,6 @@ import type {
   ToolbarContext,
 } from '@blocksuite/affine-shared/services';
 import { type ReorderingType } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent } from '@blocksuite/block-std';
-import { GfxBlockElementModel, type GfxModel } from '@blocksuite/block-std/gfx';
 import { Bound, getCommonBoundWithRotation } from '@blocksuite/global/gfx';
 import {
   ArrowDownBigBottomIcon,
@@ -45,6 +43,8 @@ import {
   LinkedPageIcon,
   ResetIcon,
 } from '@blocksuite/icons/lit';
+import type { BlockComponent } from '@blocksuite/std';
+import { GfxBlockElementModel, type GfxModel } from '@blocksuite/std/gfx';
 
 import { EdgelessClipboardController } from '../../clipboard/clipboard';
 import { duplicate } from '../../utils/clipboard-utils';

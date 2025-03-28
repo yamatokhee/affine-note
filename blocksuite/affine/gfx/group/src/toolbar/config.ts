@@ -13,9 +13,9 @@ import {
 } from '@blocksuite/affine-shared/services';
 import { matchModels } from '@blocksuite/affine-shared/utils';
 import { getRootBlock } from '@blocksuite/affine-widget-edgeless-toolbar';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
 import { EditIcon, PageIcon, UngroupIcon } from '@blocksuite/icons/lit';
+import { BlockFlavourIdentifier } from '@blocksuite/std';
 
 import { ungroupCommand } from '../command';
 import { mountGroupTitleEditor } from '../text/text';

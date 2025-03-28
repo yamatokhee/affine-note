@@ -4,8 +4,8 @@ import {
   NotificationProvider,
 } from '@blocksuite/affine-shared/services';
 import { isValidUrl, stopPropagation } from '@blocksuite/affine-shared/utils';
-import { BlockSelection, type BlockStdScope } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/lit';
+import { BlockSelection, type BlockStdScope } from '@blocksuite/std';
 import { LitElement } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 

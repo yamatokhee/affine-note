@@ -17,7 +17,6 @@ import {
   ToolbarModuleExtension,
 } from '@blocksuite/affine-shared/services';
 import { getBlockProps } from '@blocksuite/affine-shared/utils';
-import { BlockFlavourIdentifier, BlockSelection } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
 import {
   CaptionIcon,
@@ -28,6 +27,7 @@ import {
   OpenInNewIcon,
   ResetIcon,
 } from '@blocksuite/icons/lit';
+import { BlockFlavourIdentifier, BlockSelection } from '@blocksuite/std';
 import {
   type ExtensionType,
   Slice,

@@ -16,8 +16,8 @@ import {
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
 import { openFileOrFiles } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
+import type { BlockComponent } from '@blocksuite/std';
 import type { TemplateResult } from 'lit';
 import * as Y from 'yjs';
 

@@ -14,8 +14,8 @@ import {
   NotificationProvider,
 } from '@blocksuite/affine-shared/services';
 import { matchModels } from '@blocksuite/affine-shared/utils';
-import { BlockSelection } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import { BlockSelection } from '@blocksuite/std';
 import { flip, offset, shift } from '@floating-ui/dom';
 import {
   computed,

@@ -1,5 +1,5 @@
 import type { TextElementModel } from '@blocksuite/affine-model';
-import { GfxElementModelView } from '@blocksuite/block-std/gfx';
+import { GfxElementModelView } from '@blocksuite/std/gfx';
 
 import { mountTextElementEditor } from './edgeless-text-editor';
 

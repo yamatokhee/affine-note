@@ -4,11 +4,6 @@ import { type DocMode as GraphqlDocMode } from '@affine/graphql';
 import { I18n, i18nTime } from '@affine/i18n';
 import track from '@affine/track';
 import {
-  BLOCK_ID_ATTR,
-  type BlockComponent,
-  type EditorHost,
-} from '@blocksuite/affine/block-std';
-import {
   type LinkedMenuGroup,
   type LinkedMenuItem,
   type LinkedWidgetConfig,
@@ -17,6 +12,11 @@ import {
 import type { DocMode } from '@blocksuite/affine/model';
 import { DocModeProvider } from '@blocksuite/affine/shared/services';
 import type { AffineInlineEditor } from '@blocksuite/affine/shared/types';
+import {
+  BLOCK_ID_ATTR,
+  type BlockComponent,
+  type EditorHost,
+} from '@blocksuite/affine/std';
 import type { DocMeta } from '@blocksuite/affine/store';
 import { Text } from '@blocksuite/affine/store';
 import {

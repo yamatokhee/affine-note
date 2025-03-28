@@ -12,7 +12,10 @@ import {
   MindmapElementModel,
 } from '@blocksuite/affine-model';
 import { resetNativeSelection } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent, PointerEventState } from '@blocksuite/block-std';
+import { DisposableGroup } from '@blocksuite/global/disposable';
+import type { IVec } from '@blocksuite/global/gfx';
+import { Bound, getCommonBoundWithRotation, Vec } from '@blocksuite/global/gfx';
+import type { BlockComponent, PointerEventState } from '@blocksuite/std';
 import {
   BaseTool,
   getTopElements,
@@ -20,10 +23,7 @@ import {
   isGfxGroupCompatibleModel,
   type PointTestOptions,
   TransformManagerIdentifier,
-} from '@blocksuite/block-std/gfx';
-import { DisposableGroup } from '@blocksuite/global/disposable';
-import type { IVec } from '@blocksuite/global/gfx';
-import { Bound, getCommonBoundWithRotation, Vec } from '@blocksuite/global/gfx';
+} from '@blocksuite/std/gfx';
 import { effect } from '@preact/signals-core';
 
 import { createElementsFromClipboardDataCommand } from '../clipboard/command.js';
@@ -546,7 +546,7 @@ export class DefaultTool extends BaseTool {
   override unmounted(): void {}
 }
 
-declare module '@blocksuite/block-std/gfx' {
+declare module '@blocksuite/std/gfx' {
   interface GfxToolsMap {
     default: DefaultTool;
   }

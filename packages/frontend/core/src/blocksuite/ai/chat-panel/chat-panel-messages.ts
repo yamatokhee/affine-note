@@ -1,11 +1,11 @@
-import type { EditorHost } from '@blocksuite/affine/block-std';
-import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { WithDisposable } from '@blocksuite/affine/global/lit';
 import {
   DocModeProvider,
   FeatureFlagService,
 } from '@blocksuite/affine/shared/services';
 import { type SpecBuilder } from '@blocksuite/affine/shared/utils';
+import type { EditorHost } from '@blocksuite/affine/std';
+import { ShadowlessElement } from '@blocksuite/affine/std';
 import type { BaseSelection } from '@blocksuite/affine/store';
 import { ArrowDownBigIcon as ArrowDownIcon } from '@blocksuite/icons/lit';
 import { css, html, nothing, type PropertyValues } from 'lit';

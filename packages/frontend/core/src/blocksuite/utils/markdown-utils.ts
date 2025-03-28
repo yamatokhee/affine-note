@@ -1,9 +1,4 @@
 import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
-import {
-  type EditorHost,
-  type TextRangePoint,
-  TextSelection,
-} from '@blocksuite/affine/block-std';
 import { defaultImageProxyMiddleware } from '@blocksuite/affine/blocks/image';
 import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import {
@@ -14,6 +9,11 @@ import {
   PlainTextAdapter,
   titleMiddleware,
 } from '@blocksuite/affine/shared/adapters';
+import {
+  type EditorHost,
+  type TextRangePoint,
+  TextSelection,
+} from '@blocksuite/affine/std';
 import type {
   BlockModel,
   BlockSnapshot,

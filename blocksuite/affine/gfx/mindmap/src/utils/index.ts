@@ -3,7 +3,7 @@ import type {
   GfxBlockElementModel,
   GfxModel,
   Viewport,
-} from '@blocksuite/block-std/gfx';
+} from '@blocksuite/std/gfx';
 
 export function isMindmapNode(element: GfxBlockElementModel | GfxModel | null) {
   return element?.group instanceof MindmapElementModel;

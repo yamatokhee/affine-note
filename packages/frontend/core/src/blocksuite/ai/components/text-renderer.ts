@@ -1,12 +1,6 @@
 import { createReactComponentFromLit } from '@affine/component';
 import { defaultBlockMarkdownAdapterMatchers } from '@blocksuite/affine/adapters';
 import {
-  BlockStdScope,
-  BlockViewIdentifier,
-  type EditorHost,
-  ShadowlessElement,
-} from '@blocksuite/affine/block-std';
-import {
   defaultImageProxyMiddleware,
   ImageProxyService,
 } from '@blocksuite/affine/blocks/image';
@@ -19,6 +13,12 @@ import {
 } from '@blocksuite/affine/inlines/preset';
 import { codeBlockWrapMiddleware } from '@blocksuite/affine/shared/adapters';
 import { LinkPreviewerService } from '@blocksuite/affine/shared/services';
+import {
+  BlockStdScope,
+  BlockViewIdentifier,
+  type EditorHost,
+  ShadowlessElement,
+} from '@blocksuite/affine/std';
 import type {
   ExtensionType,
   Query,

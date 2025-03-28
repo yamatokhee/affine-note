@@ -8,6 +8,7 @@ import {
   MindmapElementModel,
   type MindmapNode,
 } from '@blocksuite/affine-model';
+import type { Bound, IVec } from '@blocksuite/global/gfx';
 import {
   type DragExtensionInitializeContext,
   type ExtensionDragEndContext,
@@ -17,8 +18,7 @@ import {
   type GfxPrimitiveElementModel,
   isGfxGroupCompatibleModel,
   TransformExtension,
-} from '@blocksuite/block-std/gfx';
-import type { Bound, IVec } from '@blocksuite/global/gfx';
+} from '@blocksuite/std/gfx';
 
 import type { MindMapIndicatorOverlay } from '../indicator-overlay';
 import { isMindmapNode, isSingleMindMapNode } from '../utils';

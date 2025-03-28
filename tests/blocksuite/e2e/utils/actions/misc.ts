@@ -1,11 +1,11 @@
 import '../declare-test-window.js';
 
+import type { DatabaseBlockModel, ListType } from '@blocksuite/affine/model';
+import type { RichText } from '@blocksuite/affine/rich-text';
 import type {
   InlineRange,
   InlineRootElement,
-} from '@blocksuite/affine/block-std/inline';
-import type { DatabaseBlockModel, ListType } from '@blocksuite/affine/model';
-import type { RichText } from '@blocksuite/affine/rich-text';
+} from '@blocksuite/affine/std/inline';
 import type { BlockModel } from '@blocksuite/affine/store';
 import { uuidv4 } from '@blocksuite/affine/store';
 import type { TestAffineEditorContainer } from '@blocksuite/integration-test';

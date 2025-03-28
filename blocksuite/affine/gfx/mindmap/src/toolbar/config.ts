@@ -13,8 +13,8 @@ import {
   type MenuItem,
   renderMenu,
 } from '@blocksuite/affine-widget-edgeless-toolbar';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { RadiantIcon, RightLayoutIcon, StyleIcon } from '@blocksuite/icons/lit';
+import { BlockFlavourIdentifier } from '@blocksuite/std';
 
 import {
   MindmapStyleFour,

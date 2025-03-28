@@ -1,6 +1,5 @@
 import type { ElementOrFactory } from '@affine/component';
 import { JournalService } from '@affine/core/modules/journal';
-import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import { NoteConfigExtension } from '@blocksuite/affine/blocks/note';
 import { EDGELESS_BLOCK_CHILD_PADDING } from '@blocksuite/affine/blocks/root';
 import { Bound, Vec } from '@blocksuite/affine/global/gfx';
@@ -8,6 +7,7 @@ import {
   DocModeProvider,
   EditPropsStore,
 } from '@blocksuite/affine/shared/services';
+import { GfxControllerIdentifier } from '@blocksuite/affine/std/gfx';
 import type { FrameworkProvider } from '@toeverything/infra';
 import { html, type TemplateResult } from 'lit';
 

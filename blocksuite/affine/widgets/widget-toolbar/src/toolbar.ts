@@ -20,23 +20,23 @@ import {
 import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { matchModels } from '@blocksuite/affine-shared/utils';
 import {
-  type BlockComponent,
-  BlockSelection,
-  TextSelection,
-  WidgetComponent,
-} from '@blocksuite/block-std';
-import {
-  GfxBlockElementModel,
-  type GfxController,
-  type GfxModel,
-  GfxPrimitiveElementModel,
-} from '@blocksuite/block-std/gfx';
-import {
   Bound,
   getCommonBound,
   getCommonBoundWithRotation,
 } from '@blocksuite/global/gfx';
 import { nextTick } from '@blocksuite/global/utils';
+import {
+  type BlockComponent,
+  BlockSelection,
+  TextSelection,
+  WidgetComponent,
+} from '@blocksuite/std';
+import {
+  GfxBlockElementModel,
+  type GfxController,
+  type GfxModel,
+  GfxPrimitiveElementModel,
+} from '@blocksuite/std/gfx';
 import type { ReferenceElement, SideObject } from '@floating-ui/dom';
 import { batch, effect, signal } from '@preact/signals-core';
 import { css, unsafeCSS } from 'lit';

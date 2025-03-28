@@ -20,7 +20,7 @@ import {
   getMostCommonResolvedValue,
   getMostCommonValue,
 } from '@blocksuite/affine-shared/utils';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
+import { BlockFlavourIdentifier } from '@blocksuite/std';
 import { html } from 'lit';
 
 const trackBaseProps = {

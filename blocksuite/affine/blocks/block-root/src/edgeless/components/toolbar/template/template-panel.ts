@@ -11,10 +11,10 @@ import {
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
 import { EdgelessDraggableElementController } from '@blocksuite/affine-widget-edgeless-toolbar';
-import type { BlockComponent } from '@blocksuite/block-std';
-import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import type { Bound } from '@blocksuite/global/gfx';
 import { WithDisposable } from '@blocksuite/global/lit';
+import type { BlockComponent } from '@blocksuite/std';
+import { GfxControllerIdentifier } from '@blocksuite/std/gfx';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property, state } from 'lit/decorators.js';

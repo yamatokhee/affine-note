@@ -14,12 +14,12 @@ import {
   draftSelectedModelsCommand,
   getSelectedModelsCommand,
 } from '@blocksuite/affine-shared/commands';
+import { DisposableGroup } from '@blocksuite/global/disposable';
 import {
   ClipboardAdapterConfigExtension,
   LifeCycleWatcher,
   type UIEventHandler,
-} from '@blocksuite/block-std';
-import { DisposableGroup } from '@blocksuite/global/disposable';
+} from '@blocksuite/std';
 import type { ExtensionType } from '@blocksuite/store';
 
 const SnapshotClipboardConfig = ClipboardAdapterConfigExtension({

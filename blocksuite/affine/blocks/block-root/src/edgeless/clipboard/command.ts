@@ -4,7 +4,9 @@ import {
   EdgelessCRUDIdentifier,
   SurfaceGroupLikeModel,
 } from '@blocksuite/affine-block-surface';
-import type { BlockStdScope, Command } from '@blocksuite/block-std';
+import { Bound, type IVec, type SerializedXYWH } from '@blocksuite/global/gfx';
+import { assertType } from '@blocksuite/global/utils';
+import type { BlockStdScope, Command } from '@blocksuite/std';
 import {
   type GfxBlockElementModel,
   type GfxCompatibleProps,
@@ -13,9 +15,7 @@ import {
   type GfxPrimitiveElementModel,
   type SerializedElement,
   SortOrder,
-} from '@blocksuite/block-std/gfx';
-import { Bound, type IVec, type SerializedXYWH } from '@blocksuite/global/gfx';
-import { assertType } from '@blocksuite/global/utils';
+} from '@blocksuite/std/gfx';
 import { type BlockSnapshot, BlockSnapshotSchema } from '@blocksuite/store';
 
 import { createCanvasElement } from './canvas';

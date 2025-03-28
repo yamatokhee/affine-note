@@ -4,13 +4,13 @@ import {
 } from '@blocksuite/affine-block-frame';
 import type { FrameBlockProps } from '@blocksuite/affine-model';
 import { encodeClipboardBlobs } from '@blocksuite/affine-shared/adapters';
-import type { BlockStdScope } from '@blocksuite/block-std';
+import { Bound, getBoundWithRotation } from '@blocksuite/global/gfx';
+import type { BlockStdScope } from '@blocksuite/std';
 import {
   generateKeyBetweenV2,
   type GfxModel,
   type SerializedElement,
-} from '@blocksuite/block-std/gfx';
-import { Bound, getBoundWithRotation } from '@blocksuite/global/gfx';
+} from '@blocksuite/std/gfx';
 import { type BlockSnapshot, BlockSnapshotSchema } from '@blocksuite/store';
 import DOMPurify from 'dompurify';
 

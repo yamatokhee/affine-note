@@ -1,8 +1,5 @@
-import {
-  BlockComponent,
-  BlockViewExtension,
-} from '@blocksuite/affine/block-std';
 import type { TranscriptionBlockModel } from '@blocksuite/affine/model';
+import { BlockComponent, BlockViewExtension } from '@blocksuite/affine/std';
 import type { ExtensionType } from '@blocksuite/affine/store';
 import { css, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';

@@ -1,6 +1,6 @@
-import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
-import type { GfxModel } from '@blocksuite/block-std/gfx';
 import { type Container, createIdentifier } from '@blocksuite/global/di';
+import { type BlockStdScope, StdIdentifier } from '@blocksuite/std';
+import type { GfxModel } from '@blocksuite/std/gfx';
 import { Extension, type ExtensionType } from '@blocksuite/store';
 import { signal } from '@preact/signals-core';
 

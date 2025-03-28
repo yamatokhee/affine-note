@@ -1,4 +1,4 @@
-import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
+import type { GfxToolsFullOptionValue } from '@blocksuite/std/gfx';
 
 export type Pen = Extract<
   GfxToolsFullOptionValue['type'],

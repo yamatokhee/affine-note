@@ -1,5 +1,5 @@
 import type { GroupElementModel } from '@blocksuite/affine-model';
-import { GfxElementModelView } from '@blocksuite/block-std/gfx';
+import { GfxElementModelView } from '@blocksuite/std/gfx';
 
 import { mountGroupTitleEditor } from './text/edgeless-group-title-editor';
 

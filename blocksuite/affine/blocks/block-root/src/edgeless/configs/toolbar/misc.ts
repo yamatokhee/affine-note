@@ -21,7 +21,6 @@ import {
   type ToolbarContext,
   type ToolbarModuleConfig,
 } from '@blocksuite/affine-shared/services';
-import type { GfxModel } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import {
   AlignLeftIcon,
@@ -32,6 +31,7 @@ import {
   ReleaseFromGroupIcon,
   UnlockIcon,
 } from '@blocksuite/icons/lit';
+import type { GfxModel } from '@blocksuite/std/gfx';
 import { html } from 'lit';
 
 import { renderAlignmentMenu } from './alignment';

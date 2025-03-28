@@ -7,7 +7,7 @@ import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import {
   type InlineRootElement,
   InlineSpecExtension,
-} from '@blocksuite/block-std/inline';
+} from '@blocksuite/std/inline';
 import type { ExtensionType } from '@blocksuite/store';
 import { html } from 'lit';
 import { z } from 'zod';

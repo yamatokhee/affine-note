@@ -4,7 +4,7 @@ import { LinkInlineSpecExtension } from '@blocksuite/affine-inline-link';
 import { MentionInlineSpecExtension } from '@blocksuite/affine-inline-mention';
 import { ReferenceInlineSpecExtension } from '@blocksuite/affine-inline-reference';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
-import { InlineManagerExtension } from '@blocksuite/block-std/inline';
+import { InlineManagerExtension } from '@blocksuite/std/inline';
 
 import {
   BackgroundInlineSpecExtension,

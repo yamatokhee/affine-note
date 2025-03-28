@@ -40,9 +40,9 @@ import {
   LINE_STYLE_LIST,
   renderMenu,
 } from '@blocksuite/affine-widget-edgeless-toolbar';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
 import { AddTextIcon, ShapeIcon } from '@blocksuite/icons/lit';
+import { BlockFlavourIdentifier } from '@blocksuite/std';
 import { html } from 'lit';
 import isEqual from 'lodash-es/isEqual';
 

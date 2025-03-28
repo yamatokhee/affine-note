@@ -1,10 +1,10 @@
 import type { SurfaceBlockComponent } from '@blocksuite/affine-block-surface';
 import { ExportManager } from '@blocksuite/affine-block-surface';
 import type { SurfaceRefBlockComponent } from '@blocksuite/affine-block-surface-ref';
-import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError } from '@blocksuite/global/exceptions';
 import { Bound } from '@blocksuite/global/gfx';
 import { assertType } from '@blocksuite/global/utils';
+import { GfxControllerIdentifier } from '@blocksuite/std/gfx';
 import { html } from 'lit';
 
 export const noContentPlaceholder = html`

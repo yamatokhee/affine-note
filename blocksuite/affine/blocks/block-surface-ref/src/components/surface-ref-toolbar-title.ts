@@ -5,14 +5,14 @@ import {
   ShapeElementModel,
 } from '@blocksuite/affine-model';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
-import { ShadowlessElement } from '@blocksuite/block-std';
-import type { GfxModel } from '@blocksuite/block-std/gfx';
 import {
   EdgelessIcon,
   FrameIcon,
   GroupIcon,
   MindmapIcon,
 } from '@blocksuite/icons/lit';
+import { ShadowlessElement } from '@blocksuite/std';
+import type { GfxModel } from '@blocksuite/std/gfx';
 import { css, html, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 

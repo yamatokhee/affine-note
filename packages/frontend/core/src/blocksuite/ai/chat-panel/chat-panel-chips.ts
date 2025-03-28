@@ -1,12 +1,9 @@
 import type { TagMeta } from '@affine/core/components/page-list';
 import type { Collection } from '@affine/env/filter';
-import {
-  type EditorHost,
-  ShadowlessElement,
-} from '@blocksuite/affine/block-std';
 import { createLitPortal } from '@blocksuite/affine/components/portal';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { unsafeCSSVarV2 } from '@blocksuite/affine/shared/theme';
+import { type EditorHost, ShadowlessElement } from '@blocksuite/affine/std';
 import { MoreVerticalIcon, PlusIcon } from '@blocksuite/icons/lit';
 import { flip, offset } from '@floating-ui/dom';
 import { computed, type Signal, signal } from '@preact/signals-core';

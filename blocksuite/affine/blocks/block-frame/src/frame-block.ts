@@ -1,8 +1,8 @@
 import { DefaultTheme, type FrameBlockModel } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
-import { GfxBlockComponent } from '@blocksuite/block-std';
-import type { SelectedContext } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
+import { GfxBlockComponent } from '@blocksuite/std';
+import type { SelectedContext } from '@blocksuite/std/gfx';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
 import { state } from 'lit/decorators.js';

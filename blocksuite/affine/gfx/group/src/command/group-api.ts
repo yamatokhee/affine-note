@@ -3,11 +3,8 @@ import {
   type GroupElementModel,
   MindmapElementModel,
 } from '@blocksuite/affine-model';
-import type { Command } from '@blocksuite/block-std';
-import {
-  GfxControllerIdentifier,
-  type GfxModel,
-} from '@blocksuite/block-std/gfx';
+import type { Command } from '@blocksuite/std';
+import { GfxControllerIdentifier, type GfxModel } from '@blocksuite/std/gfx';
 
 export const createGroupCommand: Command<
   { elements: GfxModel[] | string[] },

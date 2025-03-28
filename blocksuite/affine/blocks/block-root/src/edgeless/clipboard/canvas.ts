@@ -5,12 +5,12 @@ import {
 } from '@blocksuite/affine-block-surface';
 import type { Connection } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
-import type { BlockStdScope } from '@blocksuite/block-std';
+import { Bound, type SerializedXYWH, Vec } from '@blocksuite/global/gfx';
+import type { BlockStdScope } from '@blocksuite/std';
 import type {
   GfxPrimitiveElementModel,
   SerializedElement,
-} from '@blocksuite/block-std/gfx';
-import { Bound, type SerializedXYWH, Vec } from '@blocksuite/global/gfx';
+} from '@blocksuite/std/gfx';
 import * as Y from 'yjs';
 
 const { GROUP, MINDMAP, CONNECTOR } = CanvasElementType;

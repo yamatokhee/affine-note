@@ -1,6 +1,6 @@
-import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
 import { type Container, createIdentifier } from '@blocksuite/global/di';
 import { BlockSuiteError } from '@blocksuite/global/exceptions';
+import { type BlockStdScope, StdIdentifier } from '@blocksuite/std';
 import { type BlockSnapshot, Extension, type Store } from '@blocksuite/store';
 
 import { getSurfaceComponent } from '../utils/get-surface-block';

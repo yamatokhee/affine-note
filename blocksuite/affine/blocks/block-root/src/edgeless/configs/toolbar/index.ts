@@ -10,7 +10,7 @@ import { mindmapToolbarExtension } from '@blocksuite/affine-gfx-mindmap';
 import { shapeToolbarExtension } from '@blocksuite/affine-gfx-shape';
 import { textToolbarExtension } from '@blocksuite/affine-gfx-text';
 import { ToolbarModuleExtension } from '@blocksuite/affine-shared/services';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
+import { BlockFlavourIdentifier } from '@blocksuite/std';
 import type { ExtensionType } from '@blocksuite/store';
 
 import { builtinLockedToolbarConfig, builtinMiscToolbarConfig } from './misc';

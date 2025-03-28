@@ -1,10 +1,10 @@
 import '../content/assistant-avatar';
 import '../content/rich-text';
 
-import type { EditorHost } from '@blocksuite/affine/block-std';
-import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { WithDisposable } from '@blocksuite/affine/global/lit';
 import { isInsidePageEditor } from '@blocksuite/affine/shared/utils';
+import type { EditorHost } from '@blocksuite/affine/std';
+import { ShadowlessElement } from '@blocksuite/affine/std';
 import { css, html, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 

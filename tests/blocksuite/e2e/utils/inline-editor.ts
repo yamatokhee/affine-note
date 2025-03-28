@@ -21,7 +21,7 @@ export async function getStringFromRichText(
   );
 }
 
-// Why? we can't import from `@blocksuite/affine/block-std/inline` because playwright will throw an error
+// Why? we can't import from `@blocksuite/affine/std/inline` because playwright will throw an error
 export const ZERO_WIDTH_SPACE = /Apple Computer/.test(
   globalThis.navigator?.vendor
 )

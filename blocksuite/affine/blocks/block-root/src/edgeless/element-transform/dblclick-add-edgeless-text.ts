@@ -4,8 +4,8 @@ import {
   FeatureFlagService,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
-import type { PointerEventState } from '@blocksuite/block-std';
-import { TransformExtension } from '@blocksuite/block-std/gfx';
+import type { PointerEventState } from '@blocksuite/std';
+import { TransformExtension } from '@blocksuite/std/gfx';
 
 export class DblClickAddEdgelessText extends TransformExtension {
   static override key = 'dbl-click-add-edgeless-text';

@@ -8,9 +8,9 @@ import {
   handleNativeRangeAtPoint,
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
-import { toGfxBlockComponent } from '@blocksuite/block-std';
-import type { SelectedContext } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/gfx';
+import { toGfxBlockComponent } from '@blocksuite/std';
+import type { SelectedContext } from '@blocksuite/std/gfx';
 import { html, nothing, type PropertyValues } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';

@@ -1,5 +1,5 @@
 import type { EmbedIframeBlockProps } from '@blocksuite/affine-model';
-import type { Command } from '@blocksuite/block-std';
+import type { Command } from '@blocksuite/std';
 import type { BlockModel } from '@blocksuite/store';
 
 import type { EmbedLinkInputPopupOptions } from '../components/embed-iframe-link-input-popup';

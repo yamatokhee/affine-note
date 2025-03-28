@@ -15,11 +15,11 @@ import {
   type ShapeName,
   type ShapeStyle,
 } from '@blocksuite/affine-model';
-import type { BlockComponent } from '@blocksuite/block-std';
-import type { GfxController, GfxModel } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { Bound, normalizeDegAngle, type XYWH } from '@blocksuite/global/gfx';
 import { assertType } from '@blocksuite/global/utils';
+import type { BlockComponent } from '@blocksuite/std';
+import type { GfxController, GfxModel } from '@blocksuite/std/gfx';
 import * as Y from 'yjs';
 
 export enum Direction {

@@ -12,12 +12,9 @@ import type {
   ShapeElementModel,
 } from '@blocksuite/affine-model';
 import { getElementsWithoutGroup } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent } from '@blocksuite/block-std';
-import {
-  GfxControllerIdentifier,
-  type GfxModel,
-} from '@blocksuite/block-std/gfx';
 import { getCommonBoundWithRotation } from '@blocksuite/global/gfx';
+import type { BlockComponent } from '@blocksuite/std';
+import { GfxControllerIdentifier, type GfxModel } from '@blocksuite/std/gfx';
 import groupBy from 'lodash-es/groupBy';
 
 import { createElementsFromClipboardDataCommand } from '../clipboard/command.js';

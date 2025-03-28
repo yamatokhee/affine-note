@@ -2,7 +2,7 @@ import {
   EmbedIframeService,
   FeatureFlagService,
 } from '@blocksuite/affine-shared/services';
-import type { BlockStdScope } from '@blocksuite/block-std';
+import type { BlockStdScope } from '@blocksuite/std';
 
 /**
  * The options for the embed iframe url validation

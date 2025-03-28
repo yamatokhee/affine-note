@@ -2,7 +2,7 @@ import { ConnectorElementModel } from '@blocksuite/affine-model';
 import {
   type DragExtensionInitializeContext,
   TransformExtension,
-} from '@blocksuite/block-std/gfx';
+} from '@blocksuite/std/gfx';
 
 export class ConnectorFilter extends TransformExtension {
   static override key = 'connector-filter';

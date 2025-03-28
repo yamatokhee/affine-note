@@ -1,4 +1,4 @@
-import { ShadowlessElement } from '@blocksuite/affine/block-std';
+import { ShadowlessElement } from '@blocksuite/affine/std';
 import { AiIcon } from '@blocksuite/icons/lit';
 import { css, html } from 'lit';
 

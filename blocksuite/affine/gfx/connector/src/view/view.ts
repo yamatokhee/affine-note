@@ -4,7 +4,7 @@ import {
   type DragMoveContext,
   type DragStartContext,
   GfxElementModelView,
-} from '@blocksuite/block-std/gfx';
+} from '@blocksuite/std/gfx';
 
 import { mountConnectorLabelEditor } from '../text/edgeless-connector-label-editor';
 

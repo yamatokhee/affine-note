@@ -1,4 +1,3 @@
-import type { BlockComponent, EditorHost } from '@blocksuite/affine/block-std';
 import type { SurfaceRefBlockComponent } from '@blocksuite/affine/blocks/surface-ref';
 import { AffineReference } from '@blocksuite/affine/inlines/reference';
 import type {
@@ -9,6 +8,7 @@ import type {
   ImageBlockModel,
   SurfaceRefBlockModel,
 } from '@blocksuite/affine/model';
+import type { BlockComponent, EditorHost } from '@blocksuite/affine/std';
 import type { Block, BlockModel } from '@blocksuite/affine/store';
 import { Entity, LiveData } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';

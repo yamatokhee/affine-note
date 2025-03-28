@@ -38,7 +38,6 @@ import {
   LINE_STYLE_LIST,
   renderMenu,
 } from '@blocksuite/affine-widget-edgeless-toolbar';
-import { BlockFlavourIdentifier } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/gfx';
 import {
   AddTextIcon,
@@ -56,6 +55,7 @@ import {
   StartPointIcon,
   StartPointTriangleIcon,
 } from '@blocksuite/icons/lit';
+import { BlockFlavourIdentifier } from '@blocksuite/std';
 import { html } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 

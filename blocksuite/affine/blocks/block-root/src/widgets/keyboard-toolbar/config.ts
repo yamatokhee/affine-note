@@ -58,7 +58,6 @@ import {
   openFileOrFiles,
   type Signal,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockStdScope } from '@blocksuite/block-std';
 import { viewPresets } from '@blocksuite/data-view/view-presets';
 import { assertType } from '@blocksuite/global/utils';
 import {
@@ -103,6 +102,7 @@ import {
   YesterdayIcon,
   YoutubeDuotoneIcon,
 } from '@blocksuite/icons/lit';
+import type { BlockStdScope } from '@blocksuite/std';
 import { computed } from '@preact/signals-core';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import type { TemplateResult } from 'lit';

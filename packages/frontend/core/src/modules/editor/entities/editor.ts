@@ -1,11 +1,11 @@
 import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
 import type { DefaultOpenProperty } from '@affine/core/components/doc-properties';
-import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type { DocTitle } from '@blocksuite/affine/fragments/doc-title';
 import type { DocMode, ReferenceParams } from '@blocksuite/affine/model';
 import { HighlightSelection } from '@blocksuite/affine/shared/selection';
 import { FeatureFlagService as BSFeatureFlagService } from '@blocksuite/affine/shared/services';
-import type { InlineEditor } from '@blocksuite/block-std/inline';
+import { GfxControllerIdentifier } from '@blocksuite/affine/std/gfx';
+import type { InlineEditor } from '@blocksuite/std/inline';
 import { effect } from '@preact/signals-core';
 import { Entity, LiveData } from '@toeverything/infra';
 import { defaults, isEqual, omit } from 'lodash-es';

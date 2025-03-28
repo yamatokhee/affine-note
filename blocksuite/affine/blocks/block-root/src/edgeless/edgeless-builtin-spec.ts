@@ -20,7 +20,7 @@ import {
 import { NoteTool } from '@blocksuite/affine-gfx-note';
 import { ShapeTool } from '@blocksuite/affine-gfx-shape';
 import { TextTool } from '@blocksuite/affine-gfx-text';
-import { ElementTransformManager } from '@blocksuite/block-std/gfx';
+import { ElementTransformManager } from '@blocksuite/std/gfx';
 import type { ExtensionType } from '@blocksuite/store';
 
 import { EdgelessElementToolbarExtension } from './configs/toolbar';
