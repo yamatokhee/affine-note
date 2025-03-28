@@ -12,5 +12,6 @@ defineModuleConfig('docService', {
   endpoint: {
     desc: 'The endpoint of the doc service.',
     default: '',
+    env: 'DOC_SERVICE_ENDPOINT',
   },
 });

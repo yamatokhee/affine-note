@@ -16,7 +16,6 @@ global:
     name: 'affine'
     password: ''
   redis:
-    enabled: true
     host: 'redis-master'
     port: '6379'
     username: ''

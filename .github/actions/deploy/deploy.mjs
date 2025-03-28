@@ -12,8 +12,8 @@ const {
   DATABASE_NAME,
   CLOUD_SQL_IAM_ACCOUNT,
   APP_IAM_ACCOUNT,
-  REDIS_HOST,
-  REDIS_PASSWORD,
+  REDIS_SERVER_HOST,
+  REDIS_SERVER_PASSWORD,
   STATIC_IP_NAME,
 } = process.env;
 
@@ -75,8 +75,8 @@ const createHelmCommand = ({ isDryRun }) => {
           `--set-string global.database.user=${DATABASE_USERNAME}`,
           `--set-string global.database.password=${DATABASE_PASSWORD}`,
           `--set-string global.database.name=${DATABASE_NAME}`,
-          `--set-string global.redis.host="${REDIS_HOST}"`,
-          `--set-string global.redis.password="${REDIS_PASSWORD}"`,
+          `--set-string global.redis.host="${REDIS_SERVER_HOST}"`,
+          `--set-string global.redis.password="${REDIS_SERVER_PASSWORD}"`,
         ]
       : [];
   const serviceAnnotations = [

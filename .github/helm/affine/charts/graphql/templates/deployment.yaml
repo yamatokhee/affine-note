@@ -53,7 +53,7 @@ spec:
                 name: pg-postgresql
                 key: postgres-password
           - name: DATABASE_URL
-            value: postgres://{{ .Values.global.database.user }}:$(DATABASE_PASSWORD)@{{ .Values.global.database.url }}:{{ .Values.global.database.port }}/{{ .Values.global.database.name }}
+            value: postgres://{{ .Values.global.database.user }}:$(DATABASE_PASSWORD)@{{ .Values.global.database.host }}:{{ .Values.global.database.port }}/{{ .Values.global.database.name }}
           - name: REDIS_SERVER_HOST
             value: "{{ .Values.global.redis.host }}"
           - name: REDIS_SERVER_PORT

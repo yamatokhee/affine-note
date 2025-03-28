@@ -25,7 +25,7 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           electron-install: false
-          extra-flags: workspaces focus @affine/server
+          extra-flags: workspaces focus @affine/server @types/affine__env
       - name: Build Server
         run: |
           find packages/backend/server/src -type d -name "__tests__" -exec rm -rf {} +
