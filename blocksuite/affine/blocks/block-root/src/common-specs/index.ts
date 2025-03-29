@@ -1,4 +1,9 @@
 import { FileDropExtension } from '@blocksuite/affine-components/drop-indicator';
+import { ConnectorElementView } from '@blocksuite/affine-gfx-connector';
+import { GroupElementView } from '@blocksuite/affine-gfx-group';
+import { MindMapView } from '@blocksuite/affine-gfx-mindmap';
+import { ShapeElementView } from '@blocksuite/affine-gfx-shape';
+import { TextElementView } from '@blocksuite/affine-gfx-text';
 import { NoteBlockSchema } from '@blocksuite/affine-model';
 import {
   DNDAPIExtension,
@@ -27,6 +32,19 @@ import {
   viewportOverlayWidget,
 } from './widgets';
 
+/**
+ * Why do we add these extensions into CommonSpecs?
+ * Because in some cases we need to create edgeless elements in page mode.
+ * And these view may contain some logic when elements initialize.
+ */
+const EdgelessElementViews = [
+  ConnectorElementView,
+  MindMapView,
+  GroupElementView,
+  TextElementView,
+  ShapeElementView,
+];
+
 export const CommonSpecs: ExtensionType[] = [
   FlavourExtension('affine:page'),
   DocModeService,
@@ -38,6 +56,7 @@ export const CommonSpecs: ExtensionType[] = [
   ToolbarRegistryExtension,
   ...RootBlockAdapterExtensions,
   ...clipboardConfigs,
+  ...EdgelessElementViews,
 
   modalWidget,
   innerModalWidget,
