@@ -1403,14 +1403,14 @@ export class DragEventWatcher {
 
         const { snapshot, fromMode } = source.data.bsEntity;
 
-        this.previewHelper.renderDragPreview({
+        const offset = this.previewHelper.renderDragPreview({
           blockIds: source.data?.bsEntity?.modelIds,
           snapshot,
           container,
           mode: fromMode ?? 'block',
         });
 
-        setOffset({ x: 0, y: 0 });
+        setOffset(offset);
       },
       setDragData: () => {
         const { fromMode, snapshot } = this._getDraggedSnapshot();
