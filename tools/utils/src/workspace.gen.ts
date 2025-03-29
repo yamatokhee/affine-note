@@ -250,6 +250,7 @@ export const PackageList = [
     name: '@blocksuite/affine-block-list',
     workspaceDependencies: [
       'blocksuite/affine/components',
+      'blocksuite/affine/gfx/turbo-renderer',
       'blocksuite/affine/inlines/preset',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',

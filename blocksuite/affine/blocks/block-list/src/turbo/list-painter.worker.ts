@@ -9,47 +9,51 @@ import {
   getBaseline,
 } from '@blocksuite/affine-gfx-turbo-renderer/painter';
 
-interface SentenceLayout {
+interface ListItemLayout {
   text: string;
   rects: TextRect[];
   fontSize: number;
+  type: 'bulleted' | 'numbered' | 'todo' | 'toggle';
+  prefix?: string;
+  checked?: boolean;
+  collapsed?: boolean;
 }
 
-export interface ParagraphLayout extends BlockLayout {
-  type: 'affine:paragraph';
-  sentences: SentenceLayout[];
+export interface ListLayout extends BlockLayout {
+  type: 'affine:list';
+  items: ListItemLayout[];
 }
 
-const debugSentenceBorder = false;
+const debugListBorder = false;
 
-function isParagraphLayout(layout: BlockLayout): layout is ParagraphLayout {
-  return layout.type === 'affine:paragraph';
+function isListLayout(layout: BlockLayout): layout is ListLayout {
+  return layout.type === 'affine:list';
 }
 
-class ParagraphLayoutPainter implements BlockLayoutPainter {
+class ListLayoutPainter implements BlockLayoutPainter {
   private static readonly supportFontFace =
     typeof FontFace !== 'undefined' &&
     typeof self !== 'undefined' &&
     'fonts' in self;
 
-  static readonly font = ParagraphLayoutPainter.supportFontFace
+  static readonly font = ListLayoutPainter.supportFontFace
     ? new FontFace(
         'Inter',
         `url(https://fonts.gstatic.com/s/inter/v18/UcCo3FwrK3iLTcviYwYZ8UA3.woff2)`
       )
     : null;
 
-  static fontLoaded = !ParagraphLayoutPainter.supportFontFace;
+  static fontLoaded = !ListLayoutPainter.supportFontFace;
 
   static {
-    if (ParagraphLayoutPainter.supportFontFace && ParagraphLayoutPainter.font) {
+    if (ListLayoutPainter.supportFontFace && ListLayoutPainter.font) {
       // @ts-expect-error worker fonts API
-      self.fonts.add(ParagraphLayoutPainter.font);
+      self.fonts.add(ListLayoutPainter.font);
 
-      ParagraphLayoutPainter.font
+      ListLayoutPainter.font
         .load()
         .then(() => {
-          ParagraphLayoutPainter.fontLoaded = true;
+          ListLayoutPainter.fontLoaded = true;
         })
         .catch(error => {
           console.error('Failed to load Inter font:', error);
@@ -63,28 +67,28 @@ class ParagraphLayoutPainter implements BlockLayoutPainter {
     layoutBaseX: number,
     layoutBaseY: number
   ): void {
-    if (!ParagraphLayoutPainter.fontLoaded) {
+    if (!ListLayoutPainter.fontLoaded) {
       const message: WorkerToHostMessage = {
         type: 'paintError',
         error: 'Font not loaded',
-        blockType: 'affine:paragraph',
+        blockType: 'affine:list',
       };
       self.postMessage(message);
       return;
     }
 
-    if (!isParagraphLayout(layout)) return; // cast to ParagraphLayout
+    if (!isListLayout(layout)) return;
 
     const renderedPositions = new Set<string>();
 
-    layout.sentences.forEach(sentence => {
-      const fontSize = sentence.fontSize;
+    layout.items.forEach(item => {
+      const fontSize = item.fontSize;
       const baselineY = getBaseline(fontSize);
-      if (fontSize !== 15) return; // TODO: fine-tune for heading font sizes
 
       ctx.font = `${fontSize}px Inter`;
       ctx.strokeStyle = 'yellow';
-      sentence.rects.forEach(textRect => {
+      // Render the text content
+      item.rects.forEach(textRect => {
         const x = textRect.rect.x - layoutBaseX;
         const y = textRect.rect.y - layoutBaseY;
 
@@ -92,7 +96,7 @@ class ParagraphLayoutPainter implements BlockLayoutPainter {
         // Only render if we haven't rendered at this position before
         if (renderedPositions.has(posKey)) return;
 
-        if (debugSentenceBorder) {
+        if (debugListBorder) {
           ctx.strokeRect(x, y, textRect.rect.w, textRect.rect.h);
         }
         ctx.fillStyle = 'black';
@@ -104,7 +108,7 @@ class ParagraphLayoutPainter implements BlockLayoutPainter {
   }
 }
 
-export const ParagraphLayoutPainterExtension = BlockLayoutPainterExtension(
-  'affine:paragraph',
-  ParagraphLayoutPainter
+export const ListLayoutPainterExtension = BlockLayoutPainterExtension(
+  'affine:list',
+  ListLayoutPainter
 );

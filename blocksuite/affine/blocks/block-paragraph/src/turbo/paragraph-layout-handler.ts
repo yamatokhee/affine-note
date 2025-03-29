@@ -15,8 +15,10 @@ export class ParagraphLayoutHandlerExtension extends BlockLayoutHandlerExtension
   readonly blockType = 'affine:paragraph';
 
   static override setup(di: Container) {
-    const layoutHandler = new ParagraphLayoutHandlerExtension();
-    di.addImpl(BlockLayoutHandlersIdentifier, layoutHandler);
+    di.addImpl(
+      BlockLayoutHandlersIdentifier('paragraph'),
+      ParagraphLayoutHandlerExtension
+    );
   }
 
   queryLayout(component: GfxBlockComponent): ParagraphLayout | null {

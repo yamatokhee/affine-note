@@ -1,3 +1,4 @@
+import { ListLayoutHandlerExtension } from '@blocksuite/affine/blocks/list';
 import { ParagraphLayoutHandlerExtension } from '@blocksuite/affine/blocks/paragraph';
 import {
   TurboRendererConfigFactory,
@@ -20,6 +21,7 @@ function createPainterWorker() {
 export function patchTurboRendererExtension() {
   return [
     ParagraphLayoutHandlerExtension,
+    ListLayoutHandlerExtension,
     TurboRendererConfigFactory({
       options: {
         zoomThreshold: 1,

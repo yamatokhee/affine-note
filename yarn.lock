@@ -2643,6 +2643,7 @@ __metadata:
   resolution: "@blocksuite/affine-block-list@workspace:blocksuite/affine/blocks/block-list"
   dependencies:
     "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-gfx-turbo-renderer": "workspace:*"
     "@blocksuite/affine-inline-preset": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-rich-text": "workspace:*"
