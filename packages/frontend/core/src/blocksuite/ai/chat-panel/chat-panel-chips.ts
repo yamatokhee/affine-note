@@ -43,6 +43,7 @@ export class ChatPanelChips extends SignalWatcher(
     .chips-wrapper {
       display: flex;
       flex-wrap: wrap;
+      margin: 0 -4px 0 -4px;
     }
     .add-button,
     .collapse-button,

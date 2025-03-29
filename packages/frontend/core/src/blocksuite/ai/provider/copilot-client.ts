@@ -1,8 +1,3 @@
-import {
-  GeneralNetworkError,
-  PaymentRequiredError,
-  UnauthorizedError,
-} from '@affine/core/blocksuite/ai/components/ai-item/types';
 import { showAILoginRequiredAtom } from '@affine/core/components/affine/auth/ai-login-required';
 import type { UserFriendlyError } from '@affine/error';
 import {
@@ -30,6 +25,12 @@ import {
   updateCopilotSessionMutation,
 } from '@affine/graphql';
 import { getCurrentStore } from '@toeverything/infra';
+
+import {
+  GeneralNetworkError,
+  PaymentRequiredError,
+  UnauthorizedError,
+} from './error';
 
 type OptionsField<T extends GraphQLQuery> =
   RequestOptions<T>['variables'] extends { options: infer U } ? U : never;

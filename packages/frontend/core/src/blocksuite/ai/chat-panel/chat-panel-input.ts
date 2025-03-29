@@ -14,8 +14,7 @@ import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import { ChatAbortIcon, ChatSendIcon } from '../_common/icons';
-import type { AIError } from '../components/ai-item/types';
-import { AIProvider } from '../provider';
+import { type AIError, AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { readBlobAsURL } from '../utils/image';
 import type { AINetworkSearchConfig, DocDisplayConfig } from './chat-config';

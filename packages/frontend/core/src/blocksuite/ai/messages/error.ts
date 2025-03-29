@@ -10,10 +10,10 @@ import { property } from 'lit/decorators.js';
 
 import {
   type AIError,
+  AIProvider,
   PaymentRequiredError,
   UnauthorizedError,
-} from '../components/ai-item/types';
-import { AIProvider } from '../provider';
+} from '../provider';
 
 export class AIErrorWrapper extends SignalWatcher(WithDisposable(LitElement)) {
   static override styles = css`

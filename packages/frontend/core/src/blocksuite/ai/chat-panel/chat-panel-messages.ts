@@ -14,8 +14,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { debounce } from 'lodash-es';
 
 import { AffineIcon } from '../_common/icons';
-import { type AIError, UnauthorizedError } from '../components/ai-item/types';
-import { AIProvider } from '../provider';
+import { type AIError, AIProvider, UnauthorizedError } from '../provider';
 import {
   type ChatContextValue,
   type ChatMessage,

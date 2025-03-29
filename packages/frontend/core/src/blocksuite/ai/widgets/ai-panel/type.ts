@@ -1,10 +1,8 @@
 import type { Signal } from '@preact/signals-core';
 import type { nothing, TemplateResult } from 'lit';
 
-import type {
-  AIError,
-  AIItemGroupConfig,
-} from '../../components/ai-item/types';
+import type { AIItemGroupConfig } from '../../components/ai-item/types';
+import type { AIError } from '../../provider';
 
 export interface CopyConfig {
   allowed: boolean;

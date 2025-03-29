@@ -10,8 +10,8 @@ import {
   buildFinishConfig,
   buildGeneratingConfig,
 } from '../ai-panel';
-import type { AIError, AIItemGroupConfig } from '../components/ai-item/types';
-import { AIProvider } from '../provider';
+import { type AIItemGroupConfig } from '../components/ai-item/types';
+import { type AIError, AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { getAIPanelWidget } from '../utils/ai-widgets';
 import { AIContext } from '../utils/context';

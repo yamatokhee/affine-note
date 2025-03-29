@@ -1,5 +1,5 @@
 import type { ChatMessage } from '../blocks';
-import type { AIError } from '../components/ai-item/types';
+import type { AIError } from '../provider';
 
 export type ChatStatus =
   | 'success'

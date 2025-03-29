@@ -5,10 +5,8 @@ import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 
-import {
-  AIErrorType,
-  type AIItemGroupConfig,
-} from '../../../../components/ai-item/types.js';
+import { type AIItemGroupConfig } from '../../../../components/ai-item/types.js';
+import { AIErrorType } from '../../../../provider';
 import type { AIPanelErrorConfig, CopyConfig } from '../../type.js';
 import { filterAIItemGroup } from '../../utils.js';
 

@@ -28,10 +28,9 @@ import {
   ChatMessagesSchema,
 } from '../blocks';
 import type { AINetworkSearchConfig } from '../chat-panel/chat-config';
-import type { AIError } from '../components/ai-item/types';
 import type { TextRendererOptions } from '../components/text-renderer';
 import { AIChatErrorRenderer } from '../messages/error';
-import { AIProvider } from '../provider';
+import { type AIError, AIProvider } from '../provider';
 import { PeekViewStyles } from './styles';
 import type { ChatContext } from './types';
 import { calcChildBound } from './utils';

@@ -39,6 +39,7 @@ type AIActionEventProperties = {
     | 'policy wall'
     | 'server error'
     | 'login required'
+    | 'request timeout'
     | 'insert'
     | 'replace'
     | 'use as caption'
@@ -193,6 +194,8 @@ function inferControl(
     return 'server error';
   } else if (event.event === 'aborted:login-required') {
     return 'login required';
+  } else if (event.event === 'aborted:timeout') {
+    return 'request timeout';
   } else if (event.options.control === 'chat-send') {
     return 'AI chat send button';
   } else if (event.options.control === 'block-action-bar') {

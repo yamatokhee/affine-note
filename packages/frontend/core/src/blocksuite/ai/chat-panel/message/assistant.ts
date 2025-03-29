@@ -12,8 +12,8 @@ import {
   EdgelessEditorActions,
   PageEditorActions,
 } from '../../_common/chat-actions-handle';
-import { type AIError } from '../../components/ai-item/types';
 import { AIChatErrorRenderer } from '../../messages/error';
+import { type AIError } from '../../provider';
 import { type ChatMessage, isChatMessage } from '../chat-context';
 
 export class ChatMessageAssistant extends WithDisposable(ShadowlessElement) {

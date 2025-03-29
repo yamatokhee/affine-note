@@ -20,8 +20,7 @@ import type { TemplateResult } from 'lit';
 
 import { getContentFromSlice } from '../../utils';
 import { AIChatBlockModel } from '../blocks';
-import type { AIError } from '../components/ai-item/types';
-import { AIProvider } from '../provider';
+import { type AIError, AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { getAIPanelWidget } from '../utils/ai-widgets';
 import { AIContext } from '../utils/context';

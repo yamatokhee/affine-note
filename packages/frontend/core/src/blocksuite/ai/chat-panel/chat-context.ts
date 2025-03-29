@@ -1,6 +1,6 @@
 import type { Signal } from '@preact/signals-core';
 
-import type { AIError } from '../components/ai-item/types';
+import type { AIError } from '../provider';
 
 export type ChatMessage = {
   id: string;

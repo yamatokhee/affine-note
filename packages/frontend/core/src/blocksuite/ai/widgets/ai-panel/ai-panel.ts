@@ -31,10 +31,9 @@ import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import { literal, unsafeStatic } from 'lit/static-html.js';
 
-import type { AIError } from '../../components/ai-item/types.js';
+import { type AIError } from '../../provider';
 import type { AIPanelGenerating } from './components/index.js';
 import type { AffineAIPanelState, AffineAIPanelWidgetConfig } from './type.js';
-
 export const AFFINE_AI_PANEL_WIDGET = 'affine-ai-panel-widget';
 
 export class AffineAIPanelWidget extends WidgetComponent {

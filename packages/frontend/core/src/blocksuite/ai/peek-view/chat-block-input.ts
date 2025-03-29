@@ -14,8 +14,7 @@ import {
   PROMPT_NAME_AFFINE_AI,
   PROMPT_NAME_NETWORK_SEARCH,
 } from '../chat-panel/const';
-import type { AIError } from '../components/ai-item/types';
-import { AIProvider } from '../provider';
+import { type AIError, AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { readBlobAsURL } from '../utils/image';
 import { stopPropagation } from '../utils/selection-utils';

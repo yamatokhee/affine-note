@@ -5,8 +5,9 @@ import { Subject } from 'rxjs';
 import type { ChatContextValue } from '../chat-panel/chat-context';
 import {
   PaymentRequiredError,
+  RequestTimeoutError,
   UnauthorizedError,
-} from '../components/ai-item/types';
+} from './error';
 
 export interface AIUserInfo {
   id: string;
@@ -36,6 +37,7 @@ export type ActionEventType =
   | 'aborted:login-required'
   | 'aborted:server-error'
   | 'aborted:stop'
+  | 'aborted:timeout'
   | 'result:insert'
   | 'result:replace'
   | 'result:use-as-caption'
@@ -199,7 +201,13 @@ export class AIProvider {
                 options,
                 event: 'error',
               });
-              if (err instanceof PaymentRequiredError) {
+              if (err instanceof RequestTimeoutError) {
+                slots.actions.next({
+                  action: id,
+                  options,
+                  event: 'aborted:timeout',
+                });
+              } else if (err instanceof PaymentRequiredError) {
                 slots.actions.next({
                   action: id,
                   options,
