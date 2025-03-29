@@ -2,6 +2,10 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { globalStyle, style } from '@vanilla-extract/css';
 export const root = style({
   display: 'inline-flex',
+  height: '1em',
+  width: '1em',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 // replace primary colors to cssVarV2('icon/primary')
@@ -28,14 +32,14 @@ const backgroundSecondaryColors = [
 globalStyle(
   `${root} :is(${iconPrimaryColors.map(color => `path[fill="${color}"]`).join(',')})`,
   {
-    fill: cssVarV2('icon/primary'),
+    fill: 'currentColor',
   }
 );
 
 globalStyle(
   `${root} :is(${iconPrimaryColors.map(color => `path[stroke="${color}"]`).join(',')})`,
   {
-    stroke: cssVarV2('icon/primary'),
+    stroke: 'currentColor',
   }
 );
 

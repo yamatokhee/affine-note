@@ -83,7 +83,7 @@ export const controlButton = style({
   justifyContent: 'center',
   borderRadius: '50%',
   backgroundColor: cssVarV2('layer/background/secondary'),
-  color: cssVarV2('text/primary'),
+  color: cssVarV2('icon/primary'),
 });
 
 export const controls = style({
