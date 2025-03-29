@@ -389,6 +389,7 @@ function getAllApps(): TappableAppInfo[] {
     (v): v is TappableAppInfo =>
       v !== null &&
       !v.bundleIdentifier.startsWith('com.apple') &&
+      !v.bundleIdentifier.startsWith('pro.affine') &&
       v.processId !== process.pid
   );
   return filteredApps;
