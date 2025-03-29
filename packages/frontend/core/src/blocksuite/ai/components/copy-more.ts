@@ -127,6 +127,9 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor retry = () => {};
 
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'chat-actions';
+
   private _toggle() {
     this._morePopper?.toggle();
   }
@@ -197,7 +200,11 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
           : nothing}
         ${isLast
           ? nothing
-          : html`<div class="button more" @click=${this._toggle}>
+          : html`<div
+              class="button more"
+              data-testid="action-more-button"
+              @click=${this._toggle}
+            >
               ${MoreHorizontalIcon({ width: '20px', height: '20px' })}
             </div> `}
       </div>

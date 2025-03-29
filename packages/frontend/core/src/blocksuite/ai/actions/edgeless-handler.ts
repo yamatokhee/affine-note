@@ -462,7 +462,6 @@ export function noteBlockOrTextShowWhen(
   host: EditorHost
 ) {
   const selected = getCopilotSelectedElems(host);
-
   return selected.some(
     el =>
       el instanceof NoteBlockModel ||

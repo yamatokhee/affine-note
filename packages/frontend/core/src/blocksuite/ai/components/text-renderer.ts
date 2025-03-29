@@ -84,6 +84,7 @@ export type TextRendererOptions = {
   customHeading?: boolean;
   extensions?: ExtensionType[];
   additionalMiddlewares?: TransformerMiddleware[];
+  testId?: string;
 };
 
 export const CustomPageEditorBlockSpecs: ExtensionType[] = [
@@ -290,13 +291,13 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
       return nothing;
     }
 
-    const { customHeading } = this.options;
+    const { customHeading, testId } = this.options;
     const classes = classMap({
       'text-renderer-container': true,
       'custom-heading': !!customHeading,
     });
     return html`
-      <div class=${classes}>
+      <div class=${classes} data-testid=${testId}>
         ${keyed(
           this._doc,
           html`<div class="ai-answer-text-editor affine-page-viewport">

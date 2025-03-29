@@ -142,6 +142,7 @@ export class ActionWrapper extends WithDisposable(LitElement) {
       <slot></slot>
       <div
         class="action-name"
+        data-testid="action-name"
         @click=${() => (this.promptShow = !this.promptShow)}
       >
         ${icons[item.action] ? icons[item.action] : DoneIcon()}
@@ -152,22 +153,27 @@ export class ActionWrapper extends WithDisposable(LitElement) {
       </div>
       ${this.promptShow
         ? html`
-            <div class="answer-prompt">
+            <div class="answer-prompt" data-testid="answer-prompt">
               <div class="subtitle">Answer</div>
               ${HISTORY_IMAGE_ACTIONS.includes(item.action)
                 ? images &&
                   html`<chat-content-images
                     .images=${images}
+                    data-testid="generated-image"
                   ></chat-content-images>`
                 : nothing}
               ${answer
-                ? createTextRenderer(this.host, { customHeading: true })(answer)
+                ? createTextRenderer(this.host, {
+                    customHeading: true,
+                    testId: 'chat-message-action-answer',
+                  })(answer)
                 : nothing}
               ${originalText
                 ? html`<div class="subtitle prompt">Prompt</div>
-                    ${createTextRenderer(this.host, { customHeading: true })(
-                      item.messages[0].content + originalText
-                    )}`
+                    ${createTextRenderer(this.host, {
+                      customHeading: true,
+                      testId: 'chat-message-action-prompt',
+                    })(item.messages[0].content + originalText)}`
                 : nothing}
             </div>
           `

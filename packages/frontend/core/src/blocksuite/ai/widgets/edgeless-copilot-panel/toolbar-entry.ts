@@ -62,6 +62,7 @@ export class EdgelessCopilotToolbarEntry extends WithDisposable(LitElement) {
     return html`<edgeless-tool-icon-button
       aria-label="Ask AI"
       class="copilot-icon-button"
+      data-testid="ask-ai-button"
       @click=${this._onClick}
     >
       ${AIStarIcon} <span class="label medium">Ask AI</span>

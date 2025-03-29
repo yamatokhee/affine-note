@@ -44,6 +44,8 @@ export type MenuItem = {
   name: string | TemplateResult<1>;
   icon: TemplateResult<1>;
   action: MenuAction;
+  suffix?: string | TemplateResult<1>;
+  testId?: string;
 };
 
 export type MenuAction = () => Promise<void> | void;
@@ -140,6 +142,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
       {
         key: 'tags',
         name: 'Tags',
+        testId: 'ai-chat-with-tags',
         icon: TagsIcon(),
         action: () => {
           this._toggleMode(AddPopoverMode.Tags);
@@ -148,6 +151,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
       {
         key: 'collections',
         name: 'Collections',
+        testId: 'ai-chat-with-collections',
         icon: CollectionsIcon(),
         action: () => {
           this._toggleMode(AddPopoverMode.Collections);
@@ -176,6 +180,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
       {
         key: 'files',
         name: 'Upload files (pdf, txt, csv)',
+        testId: 'ai-chat-with-files',
         icon: UploadIcon(),
         action: this._addFileChip,
       },
@@ -330,13 +335,14 @@ export class ChatPanelAddPopover extends SignalWatcher(
       ${repeat(
         items,
         item => item.key,
-        ({ key, name, icon, action }, idx) => {
+        ({ key, name, icon, action, testId }, idx) => {
           const curIdx = startIndex + idx;
           return html`<icon-button
             width="280px"
             height="30px"
             data-id=${key}
             data-index=${curIdx}
+            data-testid=${testId}
             .text=${name}
             hover=${this._activatedIndex === curIdx}
             @click=${() => action()?.catch(console.error)}

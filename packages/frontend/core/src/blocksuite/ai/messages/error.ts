@@ -181,6 +181,9 @@ export class AIErrorWrapper extends SignalWatcher(WithDisposable(LitElement)) {
 
   @property({ attribute: false })
   accessor showDetailPanel: boolean = false;
+
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'ai-error';
 }
 
 const PaymentRequiredErrorRenderer = (host: EditorHost) => html`

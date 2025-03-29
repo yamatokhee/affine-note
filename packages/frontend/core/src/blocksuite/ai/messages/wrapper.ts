@@ -107,7 +107,7 @@ export const createImageRenderer: (
         object-fit: contain;
       }
     </style>
-    <div class="ai-answer-image">
+    <div class="ai-answer-image" data-testid="ai-answer-image">
       <img src=${answer}></img>
     </div>`;
 

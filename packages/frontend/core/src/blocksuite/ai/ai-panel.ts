@@ -53,6 +53,7 @@ function asCaption<T extends keyof BlockSuitePresets.AIActions>(
   return {
     name: 'Use as caption',
     icon: PenIcon(),
+    testId: 'answer-use-as-caption',
     showWhen: () => {
       const panel = getAIPanelWidget(host);
       return id === 'generateCaption' && !!panel.answer;
@@ -79,6 +80,7 @@ function createNewNote(host: EditorHost): AIItemConfig {
   return {
     name: 'Create new note',
     icon: PageIcon(),
+    testId: 'answer-create-new-note',
     showWhen: () => {
       const panel = getAIPanelWidget(host);
       return !!panel.answer && isInsideEdgelessEditor(host);
@@ -147,9 +149,11 @@ function buildPageResponseConfig<T extends keyof BlockSuitePresets.AIActions>(
   return [
     {
       name: 'Response',
+      testId: 'answer-responses',
       items: [
         {
           name: 'Insert below',
+          testId: 'answer-insert-below',
           icon: InsertBelowIcon(),
           showWhen: () =>
             !!panel.answer && (!id || !INSERT_ABOVE_ACTIONS.includes(id)),
@@ -161,6 +165,7 @@ function buildPageResponseConfig<T extends keyof BlockSuitePresets.AIActions>(
         },
         {
           name: 'Insert above',
+          testId: 'answer-insert-above',
           icon: InsertTopIcon(),
           showWhen: () =>
             !!panel.answer && !!id && INSERT_ABOVE_ACTIONS.includes(id),
@@ -173,6 +178,7 @@ function buildPageResponseConfig<T extends keyof BlockSuitePresets.AIActions>(
         asCaption(host, id),
         {
           name: 'Replace selection',
+          testId: 'answer-replace',
           icon: ReplaceIcon(),
           showWhen: () =>
             !!panel.answer && !EXCLUDING_REPLACE_ACTIONS.includes(id),
@@ -187,10 +193,12 @@ function buildPageResponseConfig<T extends keyof BlockSuitePresets.AIActions>(
     },
     {
       name: '',
+      testId: 'answer-common-responses',
       items: [
         {
           name: 'Continue in chat',
           icon: ChatWithAiIcon(),
+          testId: 'answer-continue-in-chat',
           handler: () => {
             reportResponse('result:continue-in-chat');
             AIProvider.slots.requestOpenWithChat.next({ host });
@@ -200,6 +208,7 @@ function buildPageResponseConfig<T extends keyof BlockSuitePresets.AIActions>(
         {
           name: 'Regenerate',
           icon: ResetIcon(),
+          testId: 'answer-regenerate',
           handler: () => {
             reportResponse('result:retry');
             panel.generate();
@@ -208,6 +217,7 @@ function buildPageResponseConfig<T extends keyof BlockSuitePresets.AIActions>(
         {
           name: 'Discard',
           icon: DeleteIcon(),
+          testId: 'answer-discard',
           handler: () => {
             panel.discard();
           },
@@ -225,6 +235,7 @@ export function buildErrorResponseConfig(panel: AffineAIPanelWidget) {
         {
           name: 'Retry',
           icon: ResetIcon(),
+          testId: 'error-retry',
           showWhen: () => true,
           handler: () => {
             reportResponse('result:retry');
@@ -234,6 +245,7 @@ export function buildErrorResponseConfig(panel: AffineAIPanelWidget) {
         {
           name: 'Discard',
           icon: DeleteIcon(),
+          testId: 'error-discard',
           showWhen: () => !!panel.answer,
           handler: () => {
             panel.discard();

@@ -54,6 +54,7 @@ export class ActionText extends WithDisposable(LitElement) {
           border: isCode ? 'none' : '1px solid var(--affine-border-color)',
         })}
         class="original-text"
+        data-testid="original-text"
       >
         ${createTextRenderer(this.host, {
           customHeading: true,

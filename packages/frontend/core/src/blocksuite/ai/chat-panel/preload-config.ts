@@ -17,6 +17,7 @@ export const AIPreloadConfig = [
   {
     icon: LanguageIcon(),
     text: 'Read a foreign language article with AI',
+    testId: 'read-foreign-language-article-with-ai',
     handler: () => {
       AIProvider.slots.requestInsertTemplate.next({
         template: readAforeign,
@@ -27,6 +28,7 @@ export const AIPreloadConfig = [
   {
     icon: MindmapIcon(),
     text: 'Tidy an article with AI MindMap Action',
+    testId: 'tidy-an-article-with-ai-mindmap-action',
     handler: () => {
       AIProvider.slots.requestInsertTemplate.next({
         template: TidyMindMapV3,
@@ -37,6 +39,7 @@ export const AIPreloadConfig = [
   {
     icon: ImageIcon(),
     text: 'Add illustrations to the article',
+    testId: 'add-illustrations-to-the-article',
     handler: () => {
       AIProvider.slots.requestInsertTemplate.next({
         template: redHat,
@@ -47,6 +50,7 @@ export const AIPreloadConfig = [
   {
     icon: PenIcon(),
     text: 'Complete writing with AI',
+    testId: 'complete-writing-with-ai',
     handler: () => {
       AIProvider.slots.requestInsertTemplate.next({
         template: completeWritingWithAI,
@@ -57,6 +61,7 @@ export const AIPreloadConfig = [
   {
     icon: SendIcon(),
     text: 'Freely communicate with AI',
+    testId: 'freely-communicate-with-ai',
     handler: () => {
       AIProvider.slots.requestInsertTemplate.next({
         template: freelyCommunicateWithAI,

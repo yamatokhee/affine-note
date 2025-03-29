@@ -1,6 +1,3 @@
-import './action-wrapper';
-import '../content/images';
-
 import { WithDisposable } from '@blocksuite/affine/global/lit';
 import type { EditorHost } from '@blocksuite/affine/std';
 import { ShadowlessElement } from '@blocksuite/affine/std';
@@ -27,7 +24,10 @@ export class ActionImageToText extends WithDisposable(ShadowlessElement) {
         })}
       >
         ${answer
-          ? html`<chat-content-images .images=${answer}></chat-content-images>`
+          ? html`<chat-content-images
+              data-testid="original-images"
+              .images=${answer}
+            ></chat-content-images>`
           : nothing}
       </div>
     </action-wrapper>`;

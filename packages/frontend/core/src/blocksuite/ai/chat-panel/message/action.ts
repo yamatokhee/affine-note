@@ -16,6 +16,9 @@ export class ChatMessageAction extends WithDisposable(ShadowlessElement) {
   @property({ attribute: false })
   accessor item!: ChatAction;
 
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'chat-message-action';
+
   renderHeader() {
     return html`
       <div class="user-info">

@@ -70,6 +70,7 @@ export class AISubItemList extends WithDisposable(LitElement) {
         subItem => subItem.type,
         subItem =>
           html`<div
+            data-testid=${subItem.testId}
             class="menu-item"
             @click=${() => this._handleClick(subItem)}
           >

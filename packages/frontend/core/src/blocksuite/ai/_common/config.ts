@@ -49,6 +49,7 @@ import {
 export const translateSubItem: AISubItemConfig[] = translateLangs.map(lang => {
   return {
     type: lang,
+    testId: `action-translate-${lang}`,
     handler: actionToHandler('translate', AIStarIconWithAnimation, { lang }),
   };
 });
@@ -56,6 +57,7 @@ export const translateSubItem: AISubItemConfig[] = translateLangs.map(lang => {
 export const toneSubItem: AISubItemConfig[] = textTones.map(tone => {
   return {
     type: tone,
+    testId: `action-change-tone-${tone.toLowerCase()}`,
     handler: actionToHandler('changeTone', AIStarIconWithAnimation, { tone }),
   };
 });
@@ -66,6 +68,7 @@ export function createImageFilterSubItem(
   return imageFilterStyles.map(style => {
     return {
       type: style,
+      testId: `action-image-filter-${style.toLowerCase().replace(' ', '-')}`,
       handler: actionToHandler(
         'filterImage',
         AIImageIconWithAnimation,
@@ -84,6 +87,7 @@ export function createImageProcessingSubItem(
   return imageProcessingTypes.map(type => {
     return {
       type,
+      testId: `action-image-processing-${type.toLowerCase().replace(' ', '-')}`,
       handler: actionToHandler(
         'processImage',
         AIImageIconWithAnimation,
@@ -146,36 +150,42 @@ const EditAIGroup: AIItemGroupConfig = {
   items: [
     {
       name: 'Translate to',
+      testId: 'action-translate',
       icon: LanguageIcon(),
       showWhen: textBlockShowWhen,
       subItem: translateSubItem,
     },
     {
       name: 'Change tone to',
+      testId: 'action-change-tone',
       icon: ToneIcon(),
       showWhen: textBlockShowWhen,
       subItem: toneSubItem,
     },
     {
       name: 'Improve writing',
+      testId: 'action-improve-writing',
       icon: ImproveWritingIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('improveWriting', AIStarIconWithAnimation),
     },
     {
       name: 'Make it longer',
+      testId: 'action-make-it-longer',
       icon: LongerIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('makeLonger', AIStarIconWithAnimation),
     },
     {
       name: 'Make it shorter',
+      testId: 'action-make-it-shorter',
       icon: ShorterIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('makeShorter', AIStarIconWithAnimation),
     },
     {
       name: 'Continue writing',
+      testId: 'action-continue-writing',
       icon: PenIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('continueWriting', AIPenIconWithAnimation),
@@ -188,30 +198,35 @@ const DraftAIGroup: AIItemGroupConfig = {
   items: [
     {
       name: 'Write an article about this',
+      testId: 'action-write-article',
       icon: PenIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('writeArticle', AIPenIconWithAnimation),
     },
     {
       name: 'Write a tweet about this',
+      testId: 'action-write-twitter-post',
       icon: PenIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('writeTwitterPost', AIPenIconWithAnimation),
     },
     {
       name: 'Write a poem about this',
+      testId: 'action-write-poem',
       icon: PenIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('writePoem', AIPenIconWithAnimation),
     },
     {
       name: 'Write a blog post about this',
+      testId: 'action-write-blog-post',
       icon: PenIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('writeBlogPost', AIPenIconWithAnimation),
     },
     {
       name: 'Brainstorm ideas about this',
+      testId: 'action-brainstorm',
       icon: PenIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('brainstorm', AIPenIconWithAnimation),
@@ -224,36 +239,42 @@ const ReviewWIthAIGroup: AIItemGroupConfig = {
   items: [
     {
       name: 'Fix spelling',
+      testId: 'action-fix-spelling',
       icon: DoneIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('fixSpelling', AIStarIconWithAnimation),
     },
     {
       name: 'Fix grammar',
+      testId: 'action-fix-grammar',
       icon: DoneIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('improveGrammar', AIStarIconWithAnimation),
     },
     {
       name: 'Explain this image',
+      testId: 'action-explain-image',
       icon: PenIcon(),
       showWhen: imageBlockShowWhen,
       handler: actionToHandler('explainImage', AIStarIconWithAnimation),
     },
     {
       name: 'Explain this code',
+      testId: 'action-explain-code',
       icon: ExplainIcon(),
       showWhen: codeBlockShowWhen,
       handler: actionToHandler('explainCode', AIStarIconWithAnimation),
     },
     {
       name: 'Check code error',
+      testId: 'action-check-code-error',
       icon: ExplainIcon(),
       showWhen: codeBlockShowWhen,
       handler: actionToHandler('checkCodeErrors', AIStarIconWithAnimation),
     },
     {
       name: 'Explain selection',
+      testId: 'action-explain-selection',
       icon: SelectionIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('explain', AIStarIconWithAnimation),
@@ -266,12 +287,14 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
   items: [
     {
       name: 'Summarize',
+      testId: 'action-summarize',
       icon: PenIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('summary', AIPenIconWithAnimation),
     },
     {
       name: 'Generate headings',
+      testId: 'action-generate-headings',
       icon: PenIcon(),
       beta: true,
       handler: actionToHandler('createHeadings', AIPenIconWithAnimation),
@@ -293,24 +316,28 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
     },
     {
       name: 'Generate an image',
+      testId: 'action-generate-image',
       icon: ImageIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('createImage', AIImageIconWithAnimation),
     },
     {
       name: 'Generate outline',
+      testId: 'action-generate-outline',
       icon: PenIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('writeOutline', AIPenIconWithAnimation),
     },
     {
       name: 'Brainstorm ideas with mind map',
+      testId: 'action-brainstorm-mindmap',
       icon: MindmapIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('brainstormMindmap', AIPenIconWithAnimation),
     },
     {
       name: 'Generate presentation',
+      testId: 'action-generate-presentation',
       icon: PresentationIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('createSlides', AIPresentationIconWithAnimation),
@@ -318,6 +345,7 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
     },
     {
       name: 'Make it real',
+      testId: 'action-make-it-real',
       icon: MakeItRealIcon(),
       beta: true,
       showWhen: textBlockShowWhen,
@@ -325,6 +353,7 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
     },
     {
       name: 'Find actions',
+      testId: 'action-find-actions',
       icon: SearchIcon(),
       showWhen: textBlockShowWhen,
       handler: actionToHandler('findActions', AIStarIconWithAnimation),
@@ -338,6 +367,7 @@ const OthersAIGroup: AIItemGroupConfig = {
   items: [
     {
       name: 'Continue with AI',
+      testId: 'action-continue-with-ai',
       icon: CommentIcon(),
       handler: host => {
         const panel = getAIPanelWidget(host);
@@ -366,6 +396,7 @@ export function buildAIImageItemGroups(): AIItemGroupConfig[] {
       items: [
         {
           name: 'Explain this image',
+          testId: 'action-explain-image',
           icon: ImageIcon(),
           showWhen: () => true,
           handler: actionToHandler(
@@ -382,6 +413,7 @@ export function buildAIImageItemGroups(): AIItemGroupConfig[] {
       items: [
         {
           name: 'Generate an image',
+          testId: 'action-generate-image',
           icon: ImageIcon(),
           showWhen: () => true,
           handler: actionToHandler(
@@ -393,6 +425,7 @@ export function buildAIImageItemGroups(): AIItemGroupConfig[] {
         },
         {
           name: 'Image processing',
+          testId: 'action-image-processing',
           icon: ImageIcon(),
           showWhen: () => true,
           subItem: createImageProcessingSubItem(blockActionTrackerOptions),
@@ -401,6 +434,7 @@ export function buildAIImageItemGroups(): AIItemGroupConfig[] {
         },
         {
           name: 'AI image filter',
+          testId: 'action-ai-image-filter',
           icon: ImproveWritingIcon(),
           showWhen: () => true,
           subItem: createImageFilterSubItem(blockActionTrackerOptions),
@@ -409,6 +443,7 @@ export function buildAIImageItemGroups(): AIItemGroupConfig[] {
         },
         {
           name: 'Generate a caption',
+          testId: 'action-generate-caption',
           icon: PenIcon(),
           showWhen: () => true,
           beta: true,
@@ -432,6 +467,7 @@ export function buildAICodeItemGroups(): AIItemGroupConfig[] {
       items: [
         {
           name: 'Explain this code',
+          testId: 'action-explain-code',
           icon: ExplainIcon(),
           showWhen: () => true,
           handler: actionToHandler(
@@ -443,6 +479,7 @@ export function buildAICodeItemGroups(): AIItemGroupConfig[] {
         },
         {
           name: 'Check code error',
+          testId: 'action-check-code-error',
           icon: ExplainIcon(),
           showWhen: () => true,
           handler: actionToHandler(

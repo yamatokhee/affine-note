@@ -110,7 +110,11 @@ export class AskAIToolbarButton extends WithDisposable(LitElement) {
   };
 
   override render() {
-    return html`<div class="ask-ai-button" @click=${this._onClick}>
+    return html`<div
+      class="ask-ai-button"
+      data-testid="ask-ai-button"
+      @click=${this._onClick}
+    >
       <ask-ai-icon .size=${'middle'}></ask-ai-icon>
     </div>`;
   }

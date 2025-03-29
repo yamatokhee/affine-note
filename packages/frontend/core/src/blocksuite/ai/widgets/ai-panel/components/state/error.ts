@@ -210,7 +210,7 @@ export class AIPanelError extends WithDisposable(LitElement) {
     );
 
     return html`
-      <div class="error">
+      <div class="error" data-testid="ai-error">
         <div class="answer-tip">
           <div class="answer-label">Answer</div>
           <slot></slot>

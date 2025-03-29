@@ -188,12 +188,21 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
               `
             : nothing}
           ${images.length < MaximumImageCount
-            ? html`<div class="image-upload" @click=${this._handleImageUpload}>
+            ? html`<div
+                data-testid="chat-block-input-image-upload"
+                class="image-upload"
+                @click=${this._handleImageUpload}
+              >
                 ${ImageIcon()}
               </div>`
             : nothing}
           ${status === 'transmitting'
-            ? html`<div @click=${this._handleAbort}>${ChatAbortIcon}</div>`
+            ? html`<div
+                @click=${this._handleAbort}
+                data-testid="chat-panel-peek-view-stop"
+              >
+                ${ChatAbortIcon}
+              </div>`
             : html`<div
                 @click=${this._onTextareaSend}
                 class="chat-panel-send"

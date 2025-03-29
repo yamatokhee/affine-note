@@ -34,7 +34,7 @@ export class ChatMessageAssistant extends WithDisposable(ShadowlessElement) {
   @property({ attribute: false })
   accessor isLast: boolean = false;
 
-  @property({ attribute: false })
+  @property({ attribute: 'data-status', reflect: true })
   accessor status: string = 'idle';
 
   @property({ attribute: false })
@@ -48,6 +48,9 @@ export class ChatMessageAssistant extends WithDisposable(ShadowlessElement) {
 
   @property({ attribute: false })
   accessor retry!: () => void;
+
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'chat-message-assistant';
 
   renderHeader() {
     const isWithDocs =

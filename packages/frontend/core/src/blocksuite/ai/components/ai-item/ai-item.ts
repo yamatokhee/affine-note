@@ -23,8 +23,10 @@ export class AIItem extends WithDisposable(LitElement) {
   override render() {
     const { item } = this;
     const className = item.name.split(' ').join('-').toLocaleLowerCase();
+    const testId = item.testId;
 
     return html`<div
+      data-testid=${testId}
       class="menu-item ${className}"
       @pointerdown=${(e: MouseEvent) => e.stopPropagation()}
       @click=${() => {

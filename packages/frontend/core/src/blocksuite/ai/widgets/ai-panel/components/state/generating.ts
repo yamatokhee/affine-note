@@ -85,10 +85,10 @@ export class AIPanelGenerating extends WithDisposable(LitElement) {
             .showHeader=${!this.withAnswer}
           ></generating-placeholder>`
         : nothing}
-      <div class="generating-tip">
+      <div class="generating-tip" data-testid="ai-generating">
         <div class="left">${generatingIcon}</div>
         <div class="text">AI is generating...</div>
-        <div @click=${this.stopGenerating} class="right">
+        <div @click=${this.stopGenerating} class="right" data-testid="ai-stop">
           <span class="stop-icon">${AIStopIcon}</span>
           <span class="esc-label">ESC</span>
         </div>

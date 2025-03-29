@@ -74,9 +74,12 @@ export class AIFinishTip extends WithDisposable(LitElement) {
       ${this.copy?.allowed
         ? html`<div class="right">
             ${this.copied
-              ? html`<div class="copied">${AIDoneIcon}</div>`
+              ? html`<div class="copied" data-testid="answer-copied">
+                  ${AIDoneIcon}
+                </div>`
               : html`<div
                   class="copy"
+                  data-testid="answer-copy-button"
                   @click=${async () => {
                     this.copied = !!(await this.copy?.onCopy());
                     if (this.copied) {

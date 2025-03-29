@@ -37,6 +37,9 @@ export class ChatContentPureText extends ShadowlessElement {
   @property({ attribute: false })
   accessor text: string = '';
 
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'chat-content-pure-text';
+
   protected override render() {
     return this.text.length > 0
       ? html`<div class="chat-content-pure-text">${this.text}</div>`

@@ -17,13 +17,19 @@ export class ActionImage extends WithDisposable(ShadowlessElement) {
   @property({ attribute: false })
   accessor host!: EditorHost;
 
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'action-image';
+
   protected override render() {
     const images = this.item.messages[0].attachments;
 
     return html`<action-wrapper .host=${this.host} .item=${this.item}>
       <div style=${styleMap({ marginBottom: '12px' })}>
         ${images
-          ? html`<chat-content-images .images=${images}></chat-content-images>`
+          ? html`<chat-content-images
+              .images=${images}
+              data-testid="original-image"
+            ></chat-content-images>`
           : nothing}
       </div>
     </action-wrapper>`;

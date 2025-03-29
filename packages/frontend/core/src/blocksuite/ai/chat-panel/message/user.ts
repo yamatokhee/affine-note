@@ -31,6 +31,9 @@ export class ChatMessageUser extends WithDisposable(ShadowlessElement) {
   @property({ attribute: false })
   accessor item!: ChatMessage;
 
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'chat-message-user';
+
   renderContent() {
     const { item } = this;
 
@@ -41,7 +44,7 @@ export class ChatMessageUser extends WithDisposable(ShadowlessElement) {
             .images=${item.attachments}
           ></chat-content-images>`
         : nothing}
-      <div class="text-content-wrapper">
+      <div class="text-content-wrapper" data-test-id="chat-content-user-text">
         <chat-content-pure-text .text=${item.content}></chat-content-pure-text>
       </div>
     `;

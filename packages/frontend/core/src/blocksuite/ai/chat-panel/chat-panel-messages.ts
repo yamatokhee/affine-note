@@ -31,7 +31,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
       position: relative;
     }
 
-    .chat-panel-messages {
+    .chat-panel-messages-container {
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -157,8 +157,15 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   @property({ attribute: false })
   accessor previewSpecBuilder!: SpecBuilder;
 
-  @query('.chat-panel-messages')
+  @query('.chat-panel-messages-container')
   accessor messagesContainer: HTMLDivElement | null = null;
+
+  @property({
+    type: String,
+    attribute: 'data-testid',
+    reflect: true,
+  })
+  accessor testId = 'chat-panel-messages';
 
   getScrollContainer(): HTMLDivElement | null {
     return this.messagesContainer;
@@ -168,12 +175,13 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
     return this.isLoading ||
       !this.host?.doc.get(FeatureFlagService).getFlag('enable_ai_onboarding')
       ? nothing
-      : html`<div class="onboarding-wrapper">
+      : html`<div class="onboarding-wrapper" data-testid="ai-onboarding">
           ${repeat(
             AIPreloadConfig,
             config => config.text,
             config => {
               return html`<div
+                data-testid=${config.testId}
                 @click=${() => config.handler()}
                 class="onboarding-item"
               >
@@ -220,7 +228,8 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
 
     return html`
       <div
-        class="chat-panel-messages"
+        class="chat-panel-messages-container"
+        data-testid="chat-panel-messages-container"
         @scroll=${() => this._debouncedOnScroll()}
       >
         ${filteredItems.length === 0
@@ -232,8 +241,12 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
               )}
               <div class="messages-placeholder-title" data-loading=${isLoading}>
                 ${this.isLoading
-                  ? 'AFFiNE AI is loading history...'
-                  : 'What can I help you with?'}
+                  ? html`<span data-testid="chat-panel-loading-state"
+                      >AFFiNE AI is loading history...</span
+                    >`
+                  : html`<span data-testid="chat-panel-empty-state"
+                      >What can I help you with?</span
+                    >`}
               </div>
               ${this._renderAIOnboarding()}
             </div> `
@@ -268,7 +281,11 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
             )}
       </div>
       ${showDownIndicator && filteredItems.length > 0
-        ? html`<div class="down-indicator" @click=${this._onDownIndicatorClick}>
+        ? html`<div
+            data-testid="chat-panel-scroll-down-indicator"
+            class="down-indicator"
+            @click=${this._onDownIndicatorClick}
+          >
             ${ArrowDownIcon()}
           </div>`
         : nothing}

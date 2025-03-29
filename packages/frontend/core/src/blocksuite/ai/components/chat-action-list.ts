@@ -92,6 +92,9 @@ export class ChatActionList extends LitElement {
   @property({ attribute: false })
   accessor withMargin = false;
 
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'chat-action-list';
+
   override render() {
     const { actions } = this;
     if (!actions.length) {

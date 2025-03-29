@@ -517,7 +517,12 @@ export class AffineAIPanelWidget extends WidgetComponent {
       ],
     ]);
 
-    return html`<div class="ai-panel-container">${mainTemplate}</div>`;
+    return html`<div
+      class="ai-panel-container"
+      data-testid="ai-panel-container"
+    >
+      ${mainTemplate}
+    </div>`;
   }
 
   protected override willUpdate(changed: PropertyValues): void {

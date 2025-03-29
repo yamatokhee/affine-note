@@ -87,6 +87,7 @@ export class AIItemList extends WithDisposable(LitElement) {
 
     createLitPortal({
       template: html`<ai-sub-item-list
+        data-testid=${item.testId ? item.testId + '-menu' : ''}
         .item=${item}
         .host=${this.host}
         .onClick=${this.onClick}
@@ -141,6 +142,9 @@ export class AIItemList extends WithDisposable(LitElement) {
 
   @property({ attribute: false })
   accessor onClick: (() => void) | undefined = undefined;
+
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'ai-item-list';
 }
 
 declare global {

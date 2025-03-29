@@ -86,7 +86,7 @@ export class AIPanelAnswer extends WithDisposable(LitElement) {
     return html`
       <div class="answer">
         <div class="answer-head">Answer</div>
-        <div class="answer-body">
+        <div class="answer-body" data-testid="answer-content">
           <slot></slot>
         </div>
       </div>
@@ -104,7 +104,10 @@ export class AIPanelAnswer extends WithDisposable(LitElement) {
                       ${index !== 0
                         ? html`<ai-panel-divider></ai-panel-divider>`
                         : nothing}
-                      <div class="response-list-container">
+                      <div
+                        class="response-list-container"
+                        data-testid=${group.testId}
+                      >
                         <ai-item-list
                           .host=${this.host}
                           .groups=${[group]}
@@ -143,6 +146,9 @@ export class AIPanelAnswer extends WithDisposable(LitElement) {
 
   @property({ attribute: false })
   accessor host!: EditorHost;
+
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'ai-penel-answer';
 }
 
 declare global {

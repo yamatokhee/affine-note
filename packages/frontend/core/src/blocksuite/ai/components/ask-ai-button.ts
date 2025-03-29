@@ -131,6 +131,7 @@ export class AskAIButton extends WithDisposable(LitElement) {
     });
     return html`<div
       class="ask-ai-button"
+      data-testid="ask-ai-button"
       style=${buttonStyles}
       ${toggleType === 'hover' ? ref(this._whenHover.setReference) : nothing}
       @click=${this._toggleAIPanel}

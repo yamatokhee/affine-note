@@ -99,6 +99,9 @@ export class ChatPanelChips extends SignalWatcher(
   @property({ attribute: false })
   accessor searchMenuConfig!: SearchMenuConfig;
 
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId = 'chat-panel-chips';
+
   @query('.add-button')
   accessor addButton!: HTMLDivElement;
 
@@ -137,7 +140,11 @@ export class ChatPanelChips extends SignalWatcher(
     const chips = isCollapsed ? allChips.slice(0, 1) : allChips;
 
     return html`<div class="chips-wrapper">
-      <div class="add-button" @click=${this._toggleAddDocMenu}>
+      <div
+        class="add-button"
+        data-testid="chat-panel-with-button"
+        @click=${this._toggleAddDocMenu}
+      >
         ${PlusIcon()}
       </div>
       ${repeat(

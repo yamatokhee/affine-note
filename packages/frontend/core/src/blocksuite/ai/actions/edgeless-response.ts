@@ -85,6 +85,7 @@ export function discard(
   return {
     name: 'Discard',
     icon: DeleteIcon(),
+    testId: 'answer-discard',
     showWhen: () => !!panel.answer,
     handler: () => {
       panel.discard();
@@ -96,6 +97,7 @@ export function retry(panel: AffineAIPanelWidget): AIItemConfig {
   return {
     name: 'Retry',
     icon: ResetIcon(),
+    testId: 'answer-retry',
     handler: () => {
       reportResponse('result:retry');
       panel.generate();
@@ -123,6 +125,7 @@ export function createInsertItems<T extends keyof BlockSuitePresets.AIActions>(
       icon: html`<div style=${styleMap({ height: '20px', width: '20px' })}>
         ${LightLoadingIcon}
       </div>`,
+      testId: 'answer-insert-below-loading',
       showWhen: () => {
         const panel = getAIPanelWidget(host);
         const data = ctx.get();
@@ -137,6 +140,8 @@ export function createInsertItems<T extends keyof BlockSuitePresets.AIActions>(
     {
       name: buttonText,
       icon: InsertBelowIcon(),
+      testId:
+        buttonText === 'Replace' ? 'answer-replace' : `answer-insert-below`,
       showWhen: () => {
         const panel = getAIPanelWidget(host);
         const data = ctx.get();
@@ -191,6 +196,7 @@ export function asCaption<T extends keyof BlockSuitePresets.AIActions>(
   return {
     name: 'Use as caption',
     icon: PenIcon(),
+    testId: 'answer-use-as-caption',
     showWhen: () => {
       const panel = getAIPanelWidget(host);
       return id === 'generateCaption' && !!panel.answer;
@@ -553,9 +559,11 @@ export function actionToResponse<T extends keyof BlockSuitePresets.AIActions>(
     responses: [
       {
         name: 'Response',
+        testId: 'answer-responses',
         items: [
           {
             name: 'Continue in chat',
+            testId: 'answer-continue-in-chat',
             icon: ChatWithAiIcon({}),
             handler: () => {
               reportResponse('result:continue-in-chat');
