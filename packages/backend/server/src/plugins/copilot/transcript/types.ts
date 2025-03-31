@@ -22,16 +22,24 @@ export type Transcription = z.infer<typeof TranscriptionSchema>;
 export type TranscriptionPayload = z.infer<typeof TranscriptPayloadSchema>;
 
 declare global {
+  interface Events {
+    'workspace.file.transcript.finished': {
+      jobId: string;
+    };
+    'workspace.file.transcript.failed': {
+      jobId: string;
+    };
+  }
   interface Jobs {
     'copilot.transcript.submit': {
       jobId: string;
       url: string;
       mimeType: string;
     };
-    'copilot.transcriptSummary.submit': {
+    'copilot.transcript.summary.submit': {
       jobId: string;
     };
-    'copilot.transcriptTitle.submit': {
+    'copilot.transcript.title.submit': {
       jobId: string;
     };
   }

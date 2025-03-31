@@ -21,6 +21,21 @@ declare global {
       error: string;
     };
   }
+  interface Jobs {
+    'doc.embedPendingDocs': {
+      workspaceId: string;
+      docId: string;
+    };
+
+    'doc.embedPendingFiles': {
+      contextId: string;
+      userId: string;
+      workspaceId: string;
+      blobId: string;
+      fileId: string;
+      fileName: string;
+    };
+  }
 }
 
 export const MAX_EMBEDDABLE_SIZE = 50 * OneMB;

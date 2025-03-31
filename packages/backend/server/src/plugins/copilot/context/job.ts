@@ -18,24 +18,6 @@ import { OpenAIEmbeddingClient } from './embedding';
 import { EmbeddingClient } from './types';
 import { readStream } from './utils';
 
-declare global {
-  interface Jobs {
-    'doc.embedPendingDocs': {
-      workspaceId: string;
-      docId: string;
-    };
-
-    'doc.embedPendingFiles': {
-      contextId: string;
-      userId: string;
-      workspaceId: string;
-      blobId: string;
-      fileId: string;
-      fileName: string;
-    };
-  }
-}
-
 @Injectable()
 export class CopilotContextDocJob {
   private supportEmbedding = false;

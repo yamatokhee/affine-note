@@ -4,9 +4,11 @@ import { AiJobStatus, AiJobType } from '@prisma/client';
 import {
   CopilotPromptNotFound,
   CopilotTranscriptionJobExists,
+  EventBus,
   type FileUpload,
   JobQueue,
   NoCopilotProviderAvailable,
+  OnEvent,
   OnJob,
 } from '../../../base';
 import { Models } from '../../../models';
@@ -34,6 +36,7 @@ export type TranscriptionJob = {
 @Injectable()
 export class CopilotTranscriptionService {
   constructor(
+    private readonly event: EventBus,
     private readonly models: Models,
     private readonly job: JobQueue,
     private readonly storage: CopilotStorage,
@@ -65,16 +68,11 @@ export class CopilotTranscriptionService {
       status: AiJobStatus.running,
     });
 
-    await this.job.add(
-      'copilot.transcript.submit',
-      {
-        jobId,
-        url,
-        mimeType: blob.mimetype,
-      },
-      // retry 3 times
-      { removeOnFail: 3 }
-    );
+    await this.job.add('copilot.transcript.submit', {
+      jobId,
+      url,
+      mimeType: blob.mimetype,
+    });
 
     return { id: jobId, status };
   }
@@ -114,9 +112,11 @@ export class CopilotTranscriptionService {
 
     const ret: TranscriptionJob = { id: job.id, status: job.status };
 
-    const payload = TranscriptPayloadSchema.safeParse(job.payload);
-    if (payload.success) {
-      ret.transcription = payload.data;
+    if (job.status === AiJobStatus.claimed) {
+      const payload = TranscriptPayloadSchema.safeParse(job.payload);
+      if (payload.success) {
+        ret.transcription = payload.data;
+      }
     }
 
     return ret;
@@ -164,81 +164,124 @@ export class CopilotTranscriptionService {
     url,
     mimeType,
   }: Jobs['copilot.transcript.submit']) {
-    const result = await this.chatWithPrompt('Transcript audio', {
-      attachments: [url],
-      params: { mimetype: mimeType },
-    });
-
-    const transcription = TranscriptionSchema.parse(
-      JSON.parse(this.cleanupResponse(result))
-    );
-    await this.models.copilotJob.update(jobId, {
-      payload: { transcription },
-    });
-
-    await this.job.add(
-      'copilot.transcriptSummary.submit',
-      {
-        jobId,
-      },
-      // retry 3 times
-      { removeOnFail: 3 }
-    );
-  }
-
-  @OnJob('copilot.transcriptSummary.submit')
-  async transcriptSummary({ jobId }: Jobs['copilot.transcriptSummary.submit']) {
-    const payload = await this.models.copilotJob.getPayload(
-      jobId,
-      TranscriptPayloadSchema
-    );
-    if (payload.transcription) {
-      const content = payload.transcription
-        .map(t => t.transcription)
-        .join('\n');
-
-      const result = await this.chatWithPrompt('Summary', { content });
-
-      payload.summary = this.cleanupResponse(result);
-      await this.models.copilotJob.update(jobId, {
-        payload,
+    try {
+      const result = await this.chatWithPrompt('Transcript audio', {
+        attachments: [url],
+        params: { mimetype: mimeType },
       });
 
-      await this.job.add(
-        'copilot.transcriptTitle.submit',
-        { jobId },
-        // retry 3 times
-        { removeOnFail: 3 }
+      const transcription = TranscriptionSchema.parse(
+        JSON.parse(this.cleanupResponse(result))
       );
-    } else {
       await this.models.copilotJob.update(jobId, {
-        status: AiJobStatus.failed,
+        payload: { transcription },
       });
+
+      await this.job.add('copilot.transcript.summary.submit', {
+        jobId,
+      });
+      return;
+    } catch (error: any) {
+      // record failed status and passthrough error
+      this.event.emit('workspace.file.transcript.failed', {
+        jobId,
+      });
+      throw error;
     }
   }
 
-  @OnJob('copilot.transcriptTitle.submit')
-  async transcriptTitle({ jobId }: Jobs['copilot.transcriptTitle.submit']) {
-    const payload = await this.models.copilotJob.getPayload(
-      jobId,
-      TranscriptPayloadSchema
-    );
-    if (payload.transcription && payload.summary) {
-      const content = payload.transcription
-        .map(t => t.transcription)
-        .join('\n');
+  @OnJob('copilot.transcript.summary.submit')
+  async transcriptSummary({
+    jobId,
+  }: Jobs['copilot.transcript.summary.submit']) {
+    try {
+      const payload = await this.models.copilotJob.getPayload(
+        jobId,
+        TranscriptPayloadSchema
+      );
+      if (payload.transcription) {
+        const content = payload.transcription
+          .map(t => t.transcription.trim())
+          .join('\n')
+          .trim();
 
-      const result = await this.chatWithPrompt('Summary as title', { content });
+        if (content.length) {
+          const result = await this.chatWithPrompt('Summary', {
+            content,
+          });
 
-      payload.title = this.cleanupResponse(result);
-      await this.models.copilotJob.update(jobId, {
-        payload,
-        status: AiJobStatus.finished,
+          payload.summary = this.cleanupResponse(result);
+          await this.models.copilotJob.update(jobId, {
+            payload,
+          });
+
+          await this.job.add('copilot.transcript.title.submit', {
+            jobId,
+          });
+          return;
+        }
+      }
+    } catch (error: any) {
+      // record failed status and passthrough error
+      this.event.emit('workspace.file.transcript.failed', {
+        jobId,
       });
-    } else {
-      await this.models.copilotJob.update(jobId, {
-        status: AiJobStatus.failed,
-      });
+      throw error;
     }
+  }
+
+  @OnJob('copilot.transcript.title.submit')
+  async transcriptTitle({ jobId }: Jobs['copilot.transcript.title.submit']) {
+    try {
+      const payload = await this.models.copilotJob.getPayload(
+        jobId,
+        TranscriptPayloadSchema
+      );
+      if (payload.transcription && payload.summary) {
+        const content = payload.transcription
+          .map(t => t.transcription.trim())
+          .join('\n')
+          .trim();
+
+        if (content.length) {
+          const result = await this.chatWithPrompt('Summary as title', {
+            content,
+          });
+
+          payload.title = this.cleanupResponse(result);
+          await this.models.copilotJob.update(jobId, {
+            payload,
+          });
+          this.event.emit('workspace.file.transcript.finished', {
+            jobId,
+          });
+          return;
+        }
+      }
+    } catch (error: any) {
+      // record failed status and passthrough error
+      this.event.emit('workspace.file.transcript.failed', {
+        jobId,
+      });
+      throw error;
+    }
+  }
+
+  @OnEvent('workspace.file.transcript.finished')
+  async onFileTranscriptFinish({
+    jobId,
+  }: Events['workspace.file.transcript.finished']) {
+    await this.models.copilotJob.update(jobId, {
+      status: AiJobStatus.finished,
+    });
+  }
+
+  @OnEvent('workspace.file.transcript.failed')
+  async onFileTranscriptFailed({
+    jobId,
+  }: Events['workspace.file.transcript.failed']) {
+    await this.models.copilotJob.update(jobId, {
+      status: AiJobStatus.failed,
+    });
   }
 }

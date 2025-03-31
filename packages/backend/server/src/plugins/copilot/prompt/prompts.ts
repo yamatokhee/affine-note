@@ -364,6 +364,7 @@ The output should be a JSON array, with each element containing:
 
 - Ensure the accurate differentiation of speakers even if multiple speakers overlap slightly or switch rapidly.
 - Maintain a consistent speaker labeling system throughout the transcription.
+- If the provided audio or data does not contain valid talk, you should return an empty JSON array.
 `,
       },
     ],
