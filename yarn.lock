@@ -64,7 +64,10 @@ __metadata:
   resolution: "@affine-test/affine-local@workspace:tests/affine-local"
   dependencies:
     "@affine-test/kit": "workspace:*"
+    "@affine-tools/cli": "workspace:*"
+    "@affine-tools/utils": "workspace:*"
     "@playwright/test": "npm:=1.51.1"
+    webpack: "npm:^5.98.0"
   languageName: unknown
   linkType: soft
 
@@ -34275,7 +34278,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.97.1":
+"webpack@npm:^5.97.1, webpack@npm:^5.98.0":
   version: 5.98.0
   resolution: "webpack@npm:5.98.0"
   dependencies:

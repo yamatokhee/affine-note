@@ -3,7 +3,6 @@ import type {
   PlaywrightTestConfig,
   PlaywrightWorkerOptions,
 } from '@playwright/test';
-// import { devices } from '@playwright/test';
 
 /**
  * Read environment variables from file.
@@ -19,6 +18,7 @@ const config: PlaywrightTestConfig = {
   fullyParallel: true,
   timeout: process.env.CI ? 50_000 : 30_000,
   outputDir: testResultDir,
+  globalSetup: './dev-server.ts',
   use: {
     baseURL: 'http://localhost:8080/',
     browserName:
@@ -42,19 +42,6 @@ const config: PlaywrightTestConfig = {
   // default 'list' when running locally
   // See https://playwright.dev/docs/test-reporters#github-actions-annotations
   reporter: process.env.CI ? 'github' : 'list',
-
-  webServer: [
-    // Intentionally not building the web, reminds you to run it by yourself.
-    {
-      command: 'yarn run -T affine dev -p @affine/web',
-      port: 8080,
-      timeout: 120 * 1000,
-      reuseExistingServer: !process.env.CI,
-      env: {
-        COVERAGE: process.env.COVERAGE || 'false',
-      },
-    },
-  ],
 };
 
 if (process.env.CI) {

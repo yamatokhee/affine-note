@@ -7,7 +7,7 @@ import { PerfseePlugin } from '@perfsee/webpack';
 import { sentryWebpackPlugin } from '@sentry/webpack-plugin';
 import { VanillaExtractPlugin } from '@vanilla-extract/webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
-import compact from 'lodash-es/compact';
+import { compact } from 'lodash-es';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import webpack from 'webpack';
@@ -227,7 +227,7 @@ export function createWebpackConfig(
             },
             {
               test: /\.(ttf|eot|woff|woff2)$/,
-              type: 'asset/resource',
+              type: IN_CI ? 'asset/inline' : 'asset/resource',
             },
             {
               test: /\.txt$/,
@@ -313,7 +313,7 @@ export function createWebpackConfig(
           {} as Record<string, string>
         ),
       }),
-      buildConfig.isAdmin
+      buildConfig.isAdmin && flags.mode !== 'production'
         ? null
         : new CopyPlugin({
             patterns: [
@@ -360,7 +360,11 @@ export function createWebpackConfig(
           directory: pkg.workspace.getPackage('@affine/core').join('public')
             .value,
           publicPath: '/',
-          watch: true,
+          watch: !IN_CI,
+          staticOptions: {
+            immutable: IN_CI,
+            maxAge: '1d',
+          },
         },
       ],
       proxy: [

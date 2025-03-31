@@ -1080,7 +1080,7 @@ export const PackageList = [
   {
     location: 'tests/affine-local',
     name: '@affine-test/affine-local',
-    workspaceDependencies: ['tests/kit'],
+    workspaceDependencies: ['tests/kit', 'tools/cli', 'tools/utils'],
   },
   {
     location: 'tests/affine-mobile',

@@ -7,7 +7,8 @@
     "r": "./bin/runner.js"
   },
   "exports": {
-    "./loader": "./loader.js"
+    "./loader": "./loader.js",
+    "./bundle": "./src/bundle.ts"
   },
   "scripts": {
     "affine": "r ./src/affine.ts"

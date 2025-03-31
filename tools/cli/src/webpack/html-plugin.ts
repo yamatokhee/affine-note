@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { Path, ProjectRoot } from '@affine-tools/utils/path';
 import { Repository } from '@napi-rs/simple-git';
 import HTMLPlugin from 'html-webpack-plugin';
-import once from 'lodash-es/once';
+import { once } from 'lodash-es';
 import type { Compiler, WebpackPluginInstance } from 'webpack';
 import webpack from 'webpack';
 
