@@ -1,13 +1,12 @@
 import { DummyConnection } from '../../connection';
-import type { DocClock } from '../doc';
-import { IndexerSyncStorageBase } from '../indexer-sync';
+import { type DocIndexedClock, IndexerSyncStorageBase } from '../indexer-sync';
 
 export class DummyIndexerSyncStorage extends IndexerSyncStorageBase {
   override connection = new DummyConnection();
-  override getDocIndexedClock(_docId: string): Promise<DocClock | null> {
+  override getDocIndexedClock(_docId: string): Promise<DocIndexedClock | null> {
     return Promise.resolve(null);
   }
-  override setDocIndexedClock(_docClock: DocClock): Promise<void> {
+  override setDocIndexedClock(_docClock: DocIndexedClock): Promise<void> {
     return Promise.resolve();
   }
   override clearDocIndexedClock(_docId: string): Promise<void> {

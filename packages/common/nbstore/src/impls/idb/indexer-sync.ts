@@ -1,6 +1,8 @@
 import { share } from '../../connection';
-import type { DocClock } from '../../storage/doc';
-import { IndexerSyncStorageBase } from '../../storage/indexer-sync';
+import {
+  type DocIndexedClock,
+  IndexerSyncStorageBase,
+} from '../../storage/indexer-sync';
 import { IDBConnection, type IDBConnectionOptions } from './db';
 
 export class IndexedDBIndexerSyncStorage extends IndexerSyncStorageBase {
@@ -12,21 +14,26 @@ export class IndexedDBIndexerSyncStorage extends IndexerSyncStorageBase {
     super();
   }
 
-  async getDocIndexedClock(docId: string): Promise<DocClock | null> {
+  async getDocIndexedClock(docId: string): Promise<DocIndexedClock | null> {
     const tx = this.connection.inner.db.transaction('indexerSync', 'readonly');
     const store = tx.store;
     const result = await store.get(docId);
     return result
-      ? { docId: result.docId, timestamp: result.indexedClock }
+      ? {
+          docId: result.docId,
+          timestamp: result.indexedClock,
+          indexerVersion: result.indexerVersion ?? 0,
+        }
       : null;
   }
 
-  async setDocIndexedClock(docClock: DocClock): Promise<void> {
+  async setDocIndexedClock(docClock: DocIndexedClock): Promise<void> {
     const tx = this.connection.inner.db.transaction('indexerSync', 'readwrite');
     const store = tx.store;
     await store.put({
       docId: docClock.docId,
       indexedClock: docClock.timestamp,
+      indexerVersion: docClock.indexerVersion,
     });
   }
 

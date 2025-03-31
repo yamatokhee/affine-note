@@ -38,9 +38,9 @@ Table(PeerClocks)
 | str  |  str  |   Date    |   Date    |
 
 Table(IndexerSync)
-| docId | clock |
-|-------|-------|
-| str   | Date  |
+| docId | indexedClock | indexerVersion |
+|-------|--------------|----------------|
+| str   |   Date       |    number      |
 
 Table(BlobSync)
 | peer | key | uploadedAt |
@@ -134,6 +134,7 @@ export interface DocStorageSchema extends DBSchema {
     value: {
       docId: string;
       indexedClock: Date;
+      indexerVersion?: number;
     };
   };
   indexerMetadata: {
