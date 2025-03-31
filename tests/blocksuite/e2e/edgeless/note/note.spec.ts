@@ -7,6 +7,9 @@ import {
   assertEdgelessTool,
   changeEdgelessNoteBackground,
   changeNoteDisplayMode,
+  dragBetweenViewCoords,
+  getSelectedBound,
+  getSelectedBoundCount,
   locatorComponentToolbar,
   locatorEdgelessZoomToolButton,
   selectNoteInEdgeless,
@@ -19,6 +22,7 @@ import {
 import {
   click,
   clickBlockById,
+  clickView,
   dragBetweenCoords,
   dragBetweenIndices,
   enterPlaygroundRoom,
@@ -31,6 +35,7 @@ import {
   pressBackspace,
   pressEnter,
   pressTab,
+  selectAllByKeyboard,
   type,
   undoByKeyboard,
   waitForInlineEditorStateUpdated,
@@ -540,4 +545,34 @@ test('select text cross blocks in edgeless note', async ({ page }) => {
   await dragBetweenIndices(page, [0, 1], [2, 2]);
   await pressBackspace(page);
   await assertRichTexts(page, ['ac']);
+});
+
+test('should not select doc only note', async ({ page }) => {
+  await enterPlaygroundRoom(page);
+  await initEmptyEdgelessState(page);
+  await switchEditorMode(page);
+  await clickView(page, [0, 0]);
+
+  await selectAllByKeyboard(page);
+  const noteBound = await getSelectedBound(page);
+
+  await triggerComponentToolbarAction(page, 'changeNoteDisplayMode');
+  await waitNextFrame(page);
+  await changeNoteDisplayMode(page, NoteDisplayMode.DocOnly);
+
+  await selectAllByKeyboard(page);
+  expect(await getSelectedBoundCount(page)).toBe(0);
+
+  await clickView(page, [
+    0.5 * (noteBound[0] + noteBound[2]),
+    0.5 * (noteBound[1] + noteBound[3]),
+  ]);
+  expect(await getSelectedBoundCount(page)).toBe(0);
+
+  await dragBetweenViewCoords(
+    page,
+    [noteBound[0] - 10, noteBound[1] - 10],
+    [noteBound[0] + noteBound[2] + 10, noteBound[1] + noteBound[3] + 10]
+  );
+  expect(await getSelectedBoundCount(page)).toBe(0);
 });

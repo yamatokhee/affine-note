@@ -320,9 +320,10 @@ test.describe('TOC and edgeless selection', () => {
     expect(await getEdgelessSelectedIds(page)).toHaveLength(0);
 
     await cards.nth(1).click();
-    expect(await getEdgelessSelectedIds(page)).toHaveLength(1);
-    await cards.nth(1).click();
-    expect(await getEdgelessSelectedIds(page)).toHaveLength(0);
+    expect(
+      await getEdgelessSelectedIds(page),
+      'should not select doc only note'
+    ).toHaveLength(0);
 
     await cards.nth(2).click();
     expect(await getEdgelessSelectedIds(page)).toHaveLength(1);
@@ -333,7 +334,7 @@ test.describe('TOC and edgeless selection', () => {
     await cards.nth(1).click({ modifiers: ['Shift'] });
     await cards.nth(2).click({ modifiers: ['Shift'] });
 
-    expect(await getEdgelessSelectedIds(page)).toHaveLength(3);
+    expect(await getEdgelessSelectedIds(page)).toHaveLength(2);
   });
 
   test('should select note cards when select note blocks in canvas', async ({

@@ -10,6 +10,8 @@ import {
   type ConnectorElementModel,
   GroupElementModel,
   MindmapElementModel,
+  NoteBlockModel,
+  NoteDisplayMode,
 } from '@blocksuite/affine-model';
 import { resetNativeSelection } from '@blocksuite/affine-shared/utils';
 import { DisposableGroup } from '@blocksuite/global/disposable';
@@ -140,6 +142,12 @@ export class DefaultTool extends BaseTool {
       }
       if (el instanceof MindmapElementModel) {
         return bound.contains(el.elementBound);
+      }
+      if (
+        el instanceof NoteBlockModel &&
+        el.props.displayMode === NoteDisplayMode.DocOnly
+      ) {
+        return false;
       }
       return true;
     });
