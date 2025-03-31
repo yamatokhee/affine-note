@@ -14,6 +14,7 @@ import { InformationFillDuotoneIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import {
+  type ChangeEvent,
   type Dispatch,
   forwardRef,
   type SetStateAction,
@@ -26,6 +27,7 @@ import {
 import { Virtuoso } from 'react-virtuoso';
 
 import * as styles from './import-dialog.css';
+import { readwiseTrack } from './track';
 
 export const ImportDialog = ({ onClose }: { onClose: () => void }) => {
   const t = useI18n();
@@ -54,6 +56,13 @@ export const ImportDialog = ({ onClose }: { onClose: () => void }) => {
   );
   const handleConfirmImport = useCallback(
     (ids: string[]) => {
+      readwiseTrack.confirmIntegrationImport({
+        control: 'Readwise import list',
+        method: readwise.setting$('lastImportedAt').value
+          ? 'withtimestamp'
+          : 'new',
+      });
+
       if (ids.length === 0) {
         onClose();
         return;
@@ -65,15 +74,26 @@ export const ImportDialog = ({ onClose }: { onClose: () => void }) => {
       abortControllerRef.current = abortController;
       const signal = abortController.signal;
 
+      const startTime = Date.now();
       readwise
         .highlightsToAffineDocs(selectedHighlights.reverse(), books, {
           signal,
           onProgress: setImportProgress,
           onComplete: () => {
+            readwiseTrack.completeIntegrationImport({
+              total: selectedHighlights.length,
+              done: selectedHighlights.length,
+              time: (Date.now() - startTime) / 1000,
+            });
             readwise.updateSetting('lastImportedAt', timestamp);
             onClose();
           },
           onAbort: finished => {
+            readwiseTrack.abortIntegrationImport({
+              total: selectedHighlights.length,
+              done: finished,
+              time: (Date.now() - startTime) / 1000,
+            });
             notify({
               icon: <InformationFillDuotoneIcon />,
               style: 'normal',
@@ -184,6 +204,10 @@ const SelectStage = ({
   const [selected, setSelected] = useState<ReadwiseHighlight['id'][]>([]);
 
   const handleResetLastImportedAt = useCallback(() => {
+    readwiseTrack.startIntegrationImport({
+      method: 'cleartimestamp',
+      control: 'Readwise import list',
+    });
     readwise.updateSetting('lastImportedAt', undefined);
     onResetLastImportedAt();
   }, [onResetLastImportedAt, readwise]);
@@ -315,11 +339,17 @@ const HighlightTable = ({
       .catch(console.error);
   }, [readwise]);
 
-  const handleToggleSelectAll = useCallback(() => {
-    setSelected(prev =>
-      prev.length === highlights.length ? [] : highlights.map(h => h.id)
-    );
-  }, [highlights, setSelected]);
+  const handleToggleSelectAll = useCallback(
+    (_: ChangeEvent, checked: boolean) => {
+      readwiseTrack.selectIntegrationImport({
+        method: 'all',
+        option: checked ? 'on' : 'off',
+        control: 'Readwise import list',
+      });
+      setSelected(checked ? highlights.map(h => h.id) : []);
+    },
+    [highlights, setSelected]
+  );
 
   return (
     <div className={styles.table}>
@@ -358,14 +388,17 @@ const HighlightTable = ({
               <div className={styles.tableCellSelect}>
                 <Checkbox
                   checked={selected.includes(highlight.id)}
-                  onChange={() => {
-                    setSelected(prev => {
-                      if (prev.includes(highlight.id)) {
-                        return prev.filter(id => id !== highlight.id);
-                      } else {
-                        return [...prev, highlight.id];
-                      }
+                  onChange={(_: ChangeEvent, checked: boolean) => {
+                    readwiseTrack.selectIntegrationImport({
+                      method: 'single',
+                      option: checked ? 'on' : 'off',
+                      control: 'Readwise import list',
                     });
+                    setSelected(
+                      checked
+                        ? [...selected, highlight.id]
+                        : selected.filter(id => id !== highlight.id)
+                    );
                   }}
                 />
               </div>

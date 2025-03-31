@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react';
 
 import * as styles from './connected.css';
 import { actionButton } from './index.css';
+import { readwiseTrack } from './track';
 
 export const DisconnectDialog = ({ onClose }: { onClose: () => void }) => {
   const t = useI18n();
@@ -21,11 +22,13 @@ export const DisconnectDialog = ({ onClose }: { onClose: () => void }) => {
   const handleCancel = useCallback(() => onClose(), [onClose]);
   const handleKeep = useCallback(() => {
     readwise.disconnect();
+    readwiseTrack.disconnectIntegration({ method: 'keep' });
     onClose();
   }, [onClose, readwise]);
   const handleDelete = useAsyncCallback(async () => {
     await readwise.deleteAll();
     readwise.disconnect();
+    readwiseTrack.disconnectIntegration({ method: 'delete' });
     onClose();
   }, [onClose, readwise]);
 

@@ -17,6 +17,7 @@ import {
   getTokenLink,
   inputErrorMsg,
 } from './index.css';
+import { readwiseTrack } from './track';
 
 const ConnectDialog = ({
   onClose,
@@ -48,6 +49,9 @@ const ConnectDialog = ({
 
   const handleResult = useCallback(
     (success: boolean, token: string) => {
+      readwiseTrack.connectIntegration({
+        result: success ? 'success' : 'failed',
+      });
       if (success) {
         onSuccess(token);
       } else {

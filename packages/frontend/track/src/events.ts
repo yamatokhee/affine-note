@@ -149,6 +149,18 @@ type TemplateEvents = 'openTemplateListMenu';
 type NotificationEvents = 'openInbox' | 'clickNotification';
 // END SECTION
 
+// SECTION: Integration
+type IntegrationEvents =
+  | 'connectIntegration'
+  | 'disconnectIntegration'
+  | 'modifyIntegrationSettings'
+  | 'startIntegrationImport'
+  | 'selectIntegrationImport'
+  | 'confirmIntegrationImport'
+  | 'abortIntegrationImport'
+  | 'completeIntegrationImport';
+// END SECTION
+
 type UserEvents =
   | GeneralEvents
   | AppEvents
@@ -167,8 +179,8 @@ type UserEvents =
   | DNDEvents
   | AttachmentEvents
   | TemplateEvents
-  | NotificationEvents;
-
+  | NotificationEvents
+  | IntegrationEvents;
 interface PageDivision {
   [page: string]: {
     [segment: string]: {
@@ -235,6 +247,16 @@ const PageEvents = {
       ],
       billing: ['viewPlans', 'bookDemo'],
       about: ['checkUpdates', 'downloadUpdate', 'changeAppSetting'],
+      integrationList: [
+        'connectIntegration',
+        'disconnectIntegration',
+        'modifyIntegrationSettings',
+        'startIntegrationImport',
+        'selectIntegrationImport',
+        'confirmIntegrationImport',
+        'abortIntegrationImport',
+        'completeIntegrationImport',
+      ],
     },
     cmdk: {
       recent: ['recentDocs'],
@@ -485,6 +507,10 @@ type ImportArgs = {
     docCount: number;
   };
 };
+type IntegrationArgs<T extends Record<string, any>> = {
+  type: string;
+  control: 'Readwise Card' | 'Readwise settings' | 'Readwise import list';
+} & T;
 
 export type EventArgs = {
   createWorkspace: { flavour: string };
@@ -556,6 +582,33 @@ export type EventArgs = {
     item: 'read' | 'button' | 'dismiss';
     button?: string;
   };
+  connectIntegration: IntegrationArgs<{ result: 'success' | 'failed' }>;
+  disconnectIntegration: IntegrationArgs<{ method: 'keep' | 'delete' }>;
+  modifyIntegrationSettings: IntegrationArgs<{
+    item: string;
+    option: any;
+    method: any;
+  }>;
+  startIntegrationImport: IntegrationArgs<{
+    method: 'new' | 'withtimestamp' | 'cleartimestamp';
+  }>;
+  selectIntegrationImport: IntegrationArgs<{
+    method: 'single' | 'all';
+    option: 'on' | 'off';
+  }>;
+  confirmIntegrationImport: IntegrationArgs<{
+    method: 'new' | 'withtimestamp';
+  }>;
+  abortIntegrationImport: IntegrationArgs<{
+    time: number;
+    done: number;
+    total: number;
+  }>;
+  completeIntegrationImport: IntegrationArgs<{
+    time: number;
+    done: number;
+    total: number;
+  }>;
 };
 
 // for type checking

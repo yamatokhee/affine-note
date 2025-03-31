@@ -18,6 +18,7 @@ import {
   IntegrationSettingToggle,
 } from '../setting';
 import * as styles from './setting-dialog.css';
+import { readwiseTrack } from './track';
 
 export const SettingDialog = ({
   onClose,
@@ -59,6 +60,18 @@ export const SettingDialog = ({
   );
 };
 
+const trackModifySetting = (
+  item: 'New' | 'Update' | 'Tag',
+  option: 'on' | 'off',
+  method?: 'append' | 'override'
+) => {
+  readwiseTrack.modifyIntegrationSettings({
+    item,
+    option,
+    method,
+  });
+};
+
 const Divider = () => {
   return <li className={styles.divider} />;
 };
@@ -72,6 +85,7 @@ const NewHighlightSetting = () => {
 
   const toggle = useCallback(
     (value: boolean) => {
+      trackModifySetting('New', value ? 'on' : 'off');
       readwise.updateSetting('syncNewHighlights', value);
     },
     [readwise]
@@ -98,6 +112,7 @@ const UpdateStrategySetting = () => {
 
   const toggle = useCallback(
     (value: boolean) => {
+      trackModifySetting('Update', value ? 'on' : 'off', 'append');
       if (!value) readwise.updateSetting('updateStrategy', undefined);
       else readwise.updateSetting('updateStrategy', 'append');
     },
@@ -106,6 +121,7 @@ const UpdateStrategySetting = () => {
 
   const handleUpdate = useCallback(
     (value: ReadwiseConfig['updateStrategy']) => {
+      trackModifySetting('Update', 'on', value);
       readwise.updateSetting('updateStrategy', value);
     },
     [readwise]
@@ -167,12 +183,23 @@ const UpdateStrategySetting = () => {
 
 const StartImport = ({ onImport }: { onImport: () => void }) => {
   const t = useI18n();
+  const readwise = useService(IntegrationService).readwise;
+
+  const handleImport = useCallback(() => {
+    const lastImportedAt = readwise.setting$('lastImportedAt').value;
+    readwiseTrack.startIntegrationImport({
+      method: lastImportedAt ? 'withtimestamp' : 'new',
+      control: 'Readwise settings',
+    });
+    onImport();
+  }, [onImport, readwise]);
+
   return (
     <IntegrationSettingItem
       name={t['com.affine.integration.readwise.setting.start-import-name']()}
       desc={t['com.affine.integration.readwise.setting.start-import-desc']()}
     >
-      <Button onClick={onImport}>
+      <Button onClick={handleImport}>
         {t['com.affine.integration.readwise.setting.start-import-button']()}
       </Button>
     </IntegrationSettingItem>
@@ -226,18 +253,23 @@ const TagsSetting = () => {
   );
   const onSelectTag = useCallback(
     (tagId: string) => {
+      trackModifySetting('Tag', 'on');
       updateReadwiseTags([...(tagIds ?? []), tagId]);
     },
     [tagIds, updateReadwiseTags]
   );
   const onDeselectTag = useCallback(
     (tagId: string) => {
+      trackModifySetting('Tag', 'off');
       updateReadwiseTags(tagIds?.filter(id => id !== tagId) ?? []);
     },
     [tagIds, updateReadwiseTags]
   );
   const onDeleteTag = useCallback(
     (tagId: string) => {
+      if (tagIds?.includes(tagId)) {
+        trackModifySetting('Tag', 'off');
+      }
       tagService.tagList.deleteTag(tagId);
       updateReadwiseTags(tagIds ?? []);
     },

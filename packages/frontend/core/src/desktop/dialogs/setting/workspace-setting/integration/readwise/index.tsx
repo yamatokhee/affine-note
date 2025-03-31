@@ -16,6 +16,7 @@ import { ConnectButton } from './connect';
 import { ConnectedActions } from './connected';
 import { ImportDialog } from './import-dialog';
 import { SettingDialog } from './setting-dialog';
+import { readwiseTrack } from './track';
 
 export const ReadwiseIntegration = () => {
   const t = useI18n();
@@ -42,6 +43,14 @@ export const ReadwiseIntegration = () => {
     setOpenImportDialog(true);
   }, []);
 
+  const onImportClick = useCallback(() => {
+    readwiseTrack.startIntegrationImport({
+      method: settings?.lastImportedAt ? 'withtimestamp' : 'new',
+      control: 'Readwise Card',
+    });
+    handleImport();
+  }, [handleImport, settings?.lastImportedAt]);
+
   return (
     <IntegrationCard>
       <IntegrationCardHeader
@@ -56,7 +65,7 @@ export const ReadwiseIntegration = () => {
       <IntegrationCardFooter>
         {token ? (
           <>
-            <ConnectedActions onImport={handleImport} />
+            <ConnectedActions onImport={onImportClick} />
             {openSetting && (
               <SettingDialog
                 onClose={handleCloseSetting}
