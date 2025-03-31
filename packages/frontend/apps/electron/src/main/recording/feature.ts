@@ -471,11 +471,11 @@ export function setupRecordingFeature() {
       shareableContent = new ShareableContent();
       setupMediaListeners();
     }
+    // reset all states
+    recordingStatus$.next(null);
     setupAppGroups();
     setupNewRunningAppGroup();
     setupRecordingListeners();
-    // reset all states
-    recordingStatus$.next(null);
     return true;
   } catch (error) {
     logger.error('failed to setup recording feature', error);
@@ -499,10 +499,6 @@ function normalizeAppGroupInfo(
 export function newRecording(
   appGroup?: AppGroupInfo | number
 ): RecordingStatus | null {
-  if (!shareableContent) {
-    return null; // likely called on unsupported platform
-  }
-
   return recordingStateMachine.dispatch({
     type: 'NEW_RECORDING',
     appGroup: normalizeAppGroupInfo(appGroup),

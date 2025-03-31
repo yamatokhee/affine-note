@@ -94,6 +94,7 @@ export function Recording() {
     let id: number | undefined;
     try {
       const result = await apis?.recording?.getCurrentRecording();
+
       if (!result) {
         return;
       }

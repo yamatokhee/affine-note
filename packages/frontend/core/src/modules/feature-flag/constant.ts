@@ -280,7 +280,7 @@ export const AFFINE_FLAGS = {
       'com.affine.settings.workspace.experimental-features.enable-meetings.name',
     description:
       'com.affine.settings.workspace.experimental-features.enable-meetings.description',
-    configurable: !isMobile && environment.isMacOs,
+    configurable: !isMobile && environment.isMacOs && BUILD_CONFIG.isElectron,
     defaultState: false,
   },
 } satisfies { [key in string]: FlagInfo };

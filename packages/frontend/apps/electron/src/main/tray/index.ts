@@ -64,6 +64,10 @@ function buildMenuConfig(config: TrayMenuConfig): MenuItemConstructorOptions[] {
       }
       if (nativeIcon) {
         nativeIcon = nativeIcon.resize({ width: 20, height: 20 });
+        // string icon should be template image
+        if (typeof icon === 'string') {
+          nativeIcon.setTemplateImage(true);
+        }
       }
       const submenuConfig = submenu ? buildMenuConfig(submenu) : undefined;
       menuConfig.push({
