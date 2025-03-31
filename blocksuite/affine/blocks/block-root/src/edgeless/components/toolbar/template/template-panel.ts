@@ -471,6 +471,7 @@ export class EdgelessTemplatePanel extends WithDisposable(LitElement) {
                           ${template.name
                             ? html`<affine-tooltip
                                 .offset=${12}
+                                .autoHide=${true}
                                 tip-position="top"
                               >
                                 ${template.name}
