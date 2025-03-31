@@ -21,6 +21,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import * as styles from './style.css';
 
 const clipperInput$ = new LiveData<ClipperInput | null>(null);
+const port$ = new LiveData<MessagePort | null>(null);
 
 window.addEventListener('message', event => {
   if (
@@ -28,6 +29,10 @@ window.addEventListener('message', event => {
     event.data.type === 'affine-clipper:import'
   ) {
     clipperInput$.value = event.data.payload;
+
+    if (event.ports.length > 0) {
+      port$.value = event.ports[0];
+    }
   }
 });
 
@@ -90,6 +95,17 @@ export const Component = () => {
     []
   );
 
+  const handleSuccess = useCallback(() => {
+    const arg = { type: 'affine-clipper:import:success' };
+    const port = port$.value;
+    if (port) {
+      port.postMessage(arg);
+    } else {
+      window.postMessage(arg);
+    }
+    window.close();
+  }, []);
+
   const handleImportToSelectedWorkspace = useAsyncCallback(async () => {
     if (clipperInputSnapshot && selectedWorkspace) {
       setImporting(true);
@@ -98,17 +114,19 @@ export const Component = () => {
           selectedWorkspace,
           clipperInputSnapshot
         );
-        window.postMessage({
-          type: 'affine-clipper:import:success',
-        });
-        window.close();
+        handleSuccess();
       } catch (err) {
         setImportingError(err);
       } finally {
         setImporting(false);
       }
     }
-  }, [clipperInputSnapshot, importClipperService, selectedWorkspace]);
+  }, [
+    clipperInputSnapshot,
+    handleSuccess,
+    importClipperService,
+    selectedWorkspace,
+  ]);
 
   const handleImportToNewWorkspace = useAsyncCallback(async () => {
     if (!clipperInputSnapshot) {
@@ -121,16 +139,13 @@ export const Component = () => {
         'Workspace',
         clipperInputSnapshot
       );
-      window.postMessage({
-        type: 'affine-clipper:import:success',
-      });
-      window.close();
+      handleSuccess();
     } catch (err) {
       setImportingError(err);
     } finally {
       setImporting(false);
     }
-  }, [clipperInputSnapshot, importClipperService]);
+  }, [clipperInputSnapshot, handleSuccess, importClipperService]);
 
   const handleClickSignIn = useCallback(() => {
     window.open(
