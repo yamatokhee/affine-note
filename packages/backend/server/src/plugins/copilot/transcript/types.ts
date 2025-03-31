@@ -2,6 +2,15 @@ import { z } from 'zod';
 
 import { OneMB } from '../../../base';
 
+export const TranscriptionResponseSchema = z
+  .object({
+    a: z.string().describe("speaker's name, for example A, B, C"),
+    s: z.number().describe('start time(second) of the transcription'),
+    e: z.number().describe('end time(second) of the transcription'),
+    t: z.string().describe('transcription text'),
+  })
+  .array();
+
 const TranscriptionItemSchema = z.object({
   speaker: z.string(),
   start: z.string(),

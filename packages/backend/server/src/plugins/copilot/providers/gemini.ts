@@ -7,6 +7,7 @@ import {
   type CoreAssistantMessage,
   type CoreUserMessage,
   FilePart,
+  generateObject,
   generateText,
   streamText,
   TextPart,
@@ -96,9 +97,10 @@ export class GeminiProvider
 
   protected async chatToGPTMessage(
     messages: PromptMessage[]
-  ): Promise<[string | undefined, ChatMessage[]]> {
-    let system =
-      messages[0]?.role === 'system' ? messages.shift()?.content : undefined;
+  ): Promise<[string | undefined, ChatMessage[], any]> {
+    const system =
+      messages[0]?.role === 'system' ? messages.shift() : undefined;
+    const schema = system?.params?.schema;
 
     // filter redundant fields
     const msgs: ChatMessage[] = [];
@@ -140,7 +142,7 @@ export class GeminiProvider
       }
     }
 
-    return [system, msgs];
+    return [system?.content, msgs, schema];
   }
 
   protected async checkParams({
@@ -229,17 +231,25 @@ export class GeminiProvider
     try {
       metrics.ai.counter('chat_text_calls').add(1, { model });
 
-      const [system, msgs] = await this.chatToGPTMessage(messages);
+      const [system, msgs, schema] = await this.chatToGPTMessage(messages);
 
-      const { text } = await generateText({
-        model: this.#instance(model, {
-          audioTimestamp: Boolean(options.audioTimestamp),
-          structuredOutputs: Boolean(options.jsonMode),
-        }),
-        system,
-        messages: msgs,
-        abortSignal: options.signal,
+      const modelInstance = this.#instance(model, {
+        structuredOutputs: Boolean(options.jsonMode),
       });
+      const { text } = schema
+        ? await generateObject({
+            model: modelInstance,
+            system,
+            messages: msgs,
+            schema,
+            abortSignal: options.signal,
+          }).then(r => ({ text: JSON.stringify(r.object) }))
+        : await generateText({
+            model: modelInstance,
+            system,
+            messages: msgs,
+            abortSignal: options.signal,
+          });
 
       if (!text) throw new Error('Failed to generate text');
       return text.trim();
@@ -251,7 +261,7 @@ export class GeminiProvider
 
   async *generateTextStream(
     messages: PromptMessage[],
-    model: string = 'gpt-4o-mini',
+    model: string = 'gemini-2.0-flash-001',
     options: CopilotChatOptions = {}
   ): AsyncIterable<string> {
     await this.checkParams({ messages, model, options });

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AiJobStatus, AiJobType } from '@prisma/client';
+import { ZodType } from 'zod';
 
 import {
   CopilotPromptNotFound,
@@ -22,7 +23,7 @@ import {
 import { CopilotStorage } from '../storage';
 import {
   TranscriptionPayload,
-  TranscriptionSchema,
+  TranscriptionResponseSchema,
   TranscriptPayloadSchema,
 } from './types';
 import { readStream } from './utils';
@@ -137,7 +138,8 @@ export class CopilotTranscriptionService {
 
   private async chatWithPrompt(
     promptName: string,
-    message: Partial<PromptMessage>
+    message: Partial<PromptMessage>,
+    schema?: ZodType<any>
   ): Promise<string> {
     const prompt = await this.prompt.get(promptName);
     if (!prompt) {
@@ -146,16 +148,20 @@ export class CopilotTranscriptionService {
 
     const provider = await this.getProvider(prompt.model);
     return provider.generateText(
-      [...prompt.finish({}), { role: 'user', content: '', ...message }],
-      prompt.model
+      [...prompt.finish({ schema }), { role: 'user', content: '', ...message }],
+      prompt.model,
+      Object.assign({}, prompt.config)
     );
   }
 
-  private cleanupResponse(response: string): string {
-    return response
-      .replace(/```[\w\s]+\n/g, '')
-      .replace(/\n```/g, '')
-      .trim();
+  private convertTime(time: number) {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    const hours = Math.floor(minutes / 60);
+    const minutesStr = String(minutes % 60).padStart(2, '0');
+    const secondsStr = String(seconds).padStart(2, '0');
+    const hoursStr = String(hours).padStart(2, '0');
+    return `${hoursStr}:${minutesStr}:${secondsStr}`;
   }
 
   @OnJob('copilot.transcript.submit')
@@ -165,14 +171,23 @@ export class CopilotTranscriptionService {
     mimeType,
   }: Jobs['copilot.transcript.submit']) {
     try {
-      const result = await this.chatWithPrompt('Transcript audio', {
-        attachments: [url],
-        params: { mimetype: mimeType },
-      });
-
-      const transcription = TranscriptionSchema.parse(
-        JSON.parse(this.cleanupResponse(result))
+      const result = await this.chatWithPrompt(
+        'Transcript audio',
+        {
+          attachments: [url],
+          params: { mimetype: mimeType },
+        },
+        TranscriptionResponseSchema
       );
+
+      const transcription = TranscriptionResponseSchema.parse(
+        JSON.parse(result)
+      ).map(t => ({
+        speaker: t.a,
+        start: this.convertTime(t.s),
+        end: this.convertTime(t.e),
+        transcription: t.t,
+      }));
       await this.models.copilotJob.update(jobId, {
         payload: { transcription },
       });
@@ -206,11 +221,9 @@ export class CopilotTranscriptionService {
           .trim();
 
         if (content.length) {
-          const result = await this.chatWithPrompt('Summary', {
+          payload.summary = await this.chatWithPrompt('Summary', {
             content,
           });
-
-          payload.summary = this.cleanupResponse(result);
           await this.models.copilotJob.update(jobId, {
             payload,
           });
@@ -244,11 +257,9 @@ export class CopilotTranscriptionService {
           .trim();
 
         if (content.length) {
-          const result = await this.chatWithPrompt('Summary as title', {
+          payload.title = await this.chatWithPrompt('Summary as title', {
             content,
           });
-
-          payload.title = this.cleanupResponse(result);
           await this.models.copilotJob.update(jobId, {
             payload,
           });

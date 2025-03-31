@@ -330,14 +330,6 @@ Convert a multi-speaker audio recording into a structured JSON format by transcr
 1. Analyze the audio to detect the presence of multiple speakers using distinct microphone inputs.
 2. Transcribe the audio content for each speaker and note the time intervals of speech.
 
-# Output Format
-
-The output should be a JSON array, with each element containing:
-- "speaker": A label identifying the speaker, such as "A", "B", etc.
-- "start": The start time of the transcribed segment in the format "HH:MM:SS".
-- "end": The end time of the transcribed segment in the format "HH:MM:SS".
-- "transcription": The transcribed text for the speaker's segment.
-
 # Examples
 
 **Example Input:**
@@ -345,20 +337,7 @@ The output should be a JSON array, with each element containing:
 
 **Example Output:**
 
-[
-  {
-    "speaker": "A",
-    "start": "00:00:30",
-    "end": "00:00:45",
-    "transcription": "Hello, everyone."
-  },
-  {
-    "speaker": "B",
-    "start": "00:00:46",
-    "end": "00:01:10",
-    "transcription": "Hi, thank you for joining the meeting today."
-  }
-]
+[{"a":"A","s":30,"e":45,"t":"Hello, everyone."},{"a":"B","s":46,"e":70,"t":"Hi, thank you for joining the meeting today."}]
 
 # Notes
 
@@ -369,7 +348,6 @@ The output should be a JSON array, with each element containing:
       },
     ],
     config: {
-      audioTimestamp: true,
       jsonMode: true,
     },
   },
