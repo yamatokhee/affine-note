@@ -33,12 +33,15 @@ export const ServerVersion = () => {
   }
   return (
     <div
-      className="flex items-center justify-between pt-2 border-t px-2 text-xs"
+      className="inline-flex items-center justify-between pt-2 border-t px-2 text-xs flex-nowrap gap-1"
       style={{
         color: cssVarV2('text/tertiary'),
       }}
     >
-      ServerVersion<span>v{version}</span>
+      <span>ServerVersion</span>
+      <span className="overflow-hidden text-ellipsis" title={version}>
+        v{version}
+      </span>
     </div>
   );
 };

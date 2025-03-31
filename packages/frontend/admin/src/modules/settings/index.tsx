@@ -106,6 +106,9 @@ export const AdminPanel = ({
                       key={field}
                       id={field}
                       description={desc}
+                      orientation={
+                        type === 'Boolean' ? 'horizontal' : 'vertical'
+                      }
                     >
                       <ConfigInput
                         module={module}

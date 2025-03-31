@@ -2,6 +2,7 @@ import { Input } from '@affine/admin/components/ui/input';
 import { Switch } from '@affine/admin/components/ui/switch';
 import { useCallback, useState } from 'react';
 
+import { Textarea } from '../../components/ui/textarea';
 import { isEqual } from './utils';
 
 interface ConfigInputProps {
@@ -59,7 +60,7 @@ const Inputs: Record<
     );
   },
   JSON: function ObjectInput({ defaultValue, onChange }) {
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       try {
         const value = JSON.parse(e.target.value);
         onChange(value);
@@ -67,10 +68,10 @@ const Inputs: Record<
     };
 
     return (
-      <Input
-        type="text"
+      <Textarea
         defaultValue={JSON.stringify(defaultValue)}
         onChange={handleInputChange}
+        className="w-full"
       />
     );
   },
@@ -98,9 +99,15 @@ export const ConfigInput = ({
   const isValueEqual = isEqual(value, defaultValue);
 
   return (
-    <div>
+    <div className="flex flex-col items-end gap-2 w-full">
       <Input defaultValue={defaultValue} onChange={onValueChange} />
-      <div style={{ opacity: isValueEqual ? 0 : 1 }}>
+      <div
+        className="w-full break-words"
+        style={{
+          opacity: isValueEqual ? 0 : 1,
+          height: isValueEqual ? 0 : 'auto',
+        }}
+      >
         <span
           className="line-through"
           style={{

@@ -3,15 +3,17 @@ import { type ReactNode } from 'react';
 export const RuntimeSettingRow = ({
   id,
   description,
+  orientation = 'horizontal',
   children,
 }: {
   id: string;
   description: string;
+  orientation?: 'horizontal' | 'vertical';
   children: ReactNode;
 }) => {
   return (
     <div
-      className="flex justify-between flex-grow overflow-y-auto space-y-[10px] gap-5 "
+      className={`flex justify-between flex-grow space-y-[10px] gap-5 ${orientation === 'vertical' ? 'flex-col' : 'flex-row'}`}
       id={id}
     >
       <div className="flex flex-col gap-1">

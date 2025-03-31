@@ -40,7 +40,7 @@ export const ConfirmChanges = ({
           </DialogDescription>
         </DialogHeader>
         {modifiedKeys.length > 0 ? (
-          <pre className="flex flex-col text-sm bg-zinc-100 gap-1 min-h-[64px] rounded-md p-[12px_16px_16px_12px] mt-2 overflow-hidden">
+          <pre className="flex flex-col text-sm bg-zinc-100 gap-1 min-h-[64px] rounded-md p-[12px_16px_16px_12px] mt-2 overflow-auto">
             <p>{'{'}</p>
             {modifiedKeys.map(key => (
               <p key={key}>
@@ -70,7 +70,7 @@ export const ConfirmChanges = ({
         ) : (
           'There is no change.'
         )}
-        <DialogFooter>
+        <DialogFooter className="mt-6">
           <div className="flex justify-end items-center w-full gap-2">
             <Button type="button" onClick={onClose} variant="outline">
               <span>Cancel</span>

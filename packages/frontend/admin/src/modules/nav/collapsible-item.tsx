@@ -7,6 +7,9 @@ import {
 import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 
+import { buttonVariants } from '../../components/ui/button';
+import { cn } from '../../utils';
+
 export const CollapsibleItem = ({
   title,
   changeModule,
@@ -14,22 +17,12 @@ export const CollapsibleItem = ({
   title: string;
   changeModule?: (module: string) => void;
 }) => {
-  const handleClick = useCallback(
-    (id: string) => {
-      const targetElement = document.getElementById(id);
-      if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
-      }
-      changeModule?.(title);
-    },
-    [changeModule, title]
-  );
+  const handleClick = useCallback(() => {
+    changeModule?.(title);
+  }, [changeModule, title]);
   return (
-    <Accordion type="multiple" className="w-full ">
-      <AccordionItem value="item-1" className="border-b-0 ml-7 ">
+    <Accordion type="multiple" className="w-full">
+      <AccordionItem value="item-1" className="border-b-0 ml-7">
         <NavLink
           to={`/admin/settings/${title}`}
           className={({ isActive }) => {
@@ -39,7 +32,7 @@ export const CollapsibleItem = ({
           }}
         >
           <AccordionTrigger
-            onClick={() => handleClick(title)}
+            onClick={handleClick}
             className="py-2 px-2 rounded [&[data-state=closed]>svg]:rotate-270 [&[data-state=open]>svg]:rotate-360"
           >
             {title}
@@ -47,6 +40,36 @@ export const CollapsibleItem = ({
         </NavLink>
       </AccordionItem>
     </Accordion>
+  );
+};
+
+export const NormalSubItem = ({
+  title,
+  changeModule,
+}: {
+  title: string;
+  changeModule?: (module: string) => void;
+}) => {
+  const handleClick = useCallback(() => {
+    changeModule?.(title);
+  }, [changeModule, title]);
+  return (
+    <div className="w-full flex">
+      <NavLink
+        to={`/admin/settings/${title}`}
+        onClick={handleClick}
+        className={({ isActive }) => {
+          return cn(
+            buttonVariants({
+              variant: 'ghost',
+              className: `ml-8 px-2 w-full justify-start ${isActive ? 'bg-zinc-100' : ''}`,
+            })
+          );
+        }}
+      >
+        {title}
+      </NavLink>
+    </div>
   );
 };
 
@@ -58,14 +81,14 @@ export const OtherModules = ({
   changeModule?: (module: string) => void;
 }) => {
   return (
-    <Accordion type="multiple" className="w-full ">
+    <Accordion type="multiple" className="w-full">
       <AccordionItem value="item-1" className="border-b-0">
-        <AccordionTrigger className="ml-7 py-2 px-2 rounded [&[data-state=closed]>svg]:rotate-270 [&[data-state=open]>svg]:rotate-360">
+        <AccordionTrigger className="ml-8 py-2 px-2 rounded [&[data-state=closed]>svg]:rotate-270 [&[data-state=open]>svg]:rotate-360">
           Other
         </AccordionTrigger>
-        <AccordionContent className="flex flex-col gap-2 py-1">
+        <AccordionContent className="flex flex-col gap-1 py-1">
           {moduleList.map(module => (
-            <CollapsibleItem
+            <NormalSubItem
               key={module}
               title={module}
               changeModule={changeModule}

@@ -24,6 +24,40 @@ interface UserDropdownProps {
   isCollapsed: boolean;
 }
 
+const UserInfo = ({
+  name,
+  email,
+  avatarUrl,
+}: {
+  email: string;
+  avatarUrl: string | null;
+  name?: string;
+}) => {
+  return (
+    <>
+      <Avatar className="w-8 h-8">
+        <AvatarImage src={avatarUrl ?? undefined} />
+        <AvatarFallback>
+          <CircleUser size={32} />
+        </AvatarFallback>
+      </Avatar>
+      <div className="flex flex-col font-medium gap-1">
+        {name ?? email.split('@')[0]}
+        <span
+          className="w-fit rounded px-2 py-0.5 text-xs h-5 border text-center inline-flex items-center font-normal"
+          style={{
+            borderRadius: '4px',
+            backgroundColor: cssVarV2('chip/label/blue'),
+            borderColor: cssVarV2('layer/insideBorder/border'),
+          }}
+        >
+          Admin
+        </span>
+      </div>
+    </>
+  );
+};
+
 export function UserDropdown({ isCollapsed }: UserDropdownProps) {
   const currentUser = useCurrentUser();
   const relative = useRevalidateCurrentUser();
@@ -53,7 +87,15 @@ export function UserDropdown({ isCollapsed }: UserDropdownProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="right">
-          <DropdownMenuLabel>{currentUser?.name}</DropdownMenuLabel>
+          <DropdownMenuLabel className="flex items-center gap-2">
+            {currentUser ? (
+              <UserInfo
+                email={currentUser.email}
+                name={currentUser.name}
+                avatarUrl={currentUser.avatarUrl}
+              />
+            ) : null}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
@@ -104,25 +146,13 @@ export function UserDropdown({ isCollapsed }: UserDropdownProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="right">
           <DropdownMenuLabel className="flex items-center gap-2">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={currentUser?.avatarUrl ?? undefined} />
-              <AvatarFallback>
-                <CircleUser size={32} />
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col font-medium gap-1">
-              {currentUser?.name ?? currentUser?.email.split('@')[0]}
-              <span
-                className="w-fit rounded px-2 py-0.5 text-xs h-5 border text-center inline-flex items-center font-normal"
-                style={{
-                  borderRadius: '4px',
-                  backgroundColor: cssVarV2('chip/label/blue'),
-                  borderColor: cssVarV2('layer/insideBorder/border'),
-                }}
-              >
-                Admin
-              </span>
-            </div>
+            {currentUser ? (
+              <UserInfo
+                email={currentUser.email}
+                name={currentUser.name}
+                avatarUrl={currentUser.avatarUrl}
+              />
+            ) : null}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>

@@ -31,7 +31,7 @@ export const ResetPasswordDialog = ({
             complete it.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <div className="flex justify-end gap-2 items-center w-full">
             <Input
               type="text"

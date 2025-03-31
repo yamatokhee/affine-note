@@ -99,13 +99,14 @@ function UserForm({
         handleConfirm={handleConfirm}
         canSave={canSave}
       />
-      <div className="p-4 flex-grow overflow-y-auto space-y-[10px]">
-        <div className="flex flex-col rounded-md border py-4 gap-4">
+      <div className="p-4 flex-grow overflow-y-auto space-y-[8px]">
+        <div className="flex flex-col rounded-md border">
           <InputItem
-            label="Name"
+            label="User name"
             field="name"
             value={changes.name}
             onChange={setField}
+            placeholder="Enter user name"
           />
           <Separator />
           <InputItem
@@ -113,6 +114,7 @@ function UserForm({
             field="email"
             value={changes.email}
             onChange={setField}
+            placeholder="Enter email address"
           />
         </div>
 
@@ -153,8 +155,10 @@ function ToggleItem({
   );
 
   return (
-    <Label className="flex items-center justify-between px-4 py-3">
-      <span>{name}</span>
+    <Label className="flex items-center justify-between p-3 text-[15px] gap-2 font-medium leading-6 overflow-hidden">
+      <span className="overflow-hidden text-ellipsis" title={name}>
+        {name}
+      </span>
       <Switch checked={checked} onCheckedChange={onToggle} />
     </Label>
   );
@@ -165,11 +169,13 @@ function InputItem({
   field,
   value,
   onChange,
+  placeholder,
 }: {
   label: string;
   field: keyof UserInput;
   value?: string;
   onChange: (field: keyof UserInput, value: string) => void;
+  placeholder?: string;
 }) {
   const onValueChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -179,13 +185,16 @@ function InputItem({
   );
 
   return (
-    <div className="px-5 space-y-3">
-      <Label className="text-sm font-medium">{label}</Label>
+    <div className="p-3">
+      <Label className="text-[15px] leading-6 font-medium mb-1.5">
+        {label}
+      </Label>
       <Input
         type="text"
-        className="py-2 px-3 text-base font-normal"
+        className="py-2 px-3 text-[15px] font-normal h-9"
         value={value}
         onChange={onValueChange}
+        placeholder={placeholder}
       />
     </div>
   );

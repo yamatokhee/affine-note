@@ -13,7 +13,7 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { NavLink } from 'react-router-dom';
 
 import { ALL_CONFIGURABLE_MODULES } from '../settings/config';
-import { CollapsibleItem, OtherModules } from './collapsible-item';
+import { NormalSubItem, OtherModules } from './collapsible-item';
 import { useNav } from './context';
 
 const authModule = ALL_CONFIGURABLE_MODULES.find(module => module === 'auth');
@@ -53,13 +53,35 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
             </NavigationMenuPrimitive.Trigger>
             <NavigationMenuPrimitive.Content>
               <ul
-                className="border rounded-lg w-full flex flex-col p-1"
+                className="border rounded-lg w-full flex flex-col p-1 min-w-[160px] max-h-[200px] overflow-y-auto"
                 style={{
                   backgroundColor: cssVarV2('layer/background/overlayPanel'),
                   borderColor: cssVarV2('layer/insideBorder/blackBorder'),
                 }}
               >
-                {ALL_CONFIGURABLE_MODULES.map(module => (
+                {authModule ? (
+                  <li key={authModule} className="flex">
+                    <NavLink
+                      to={`/admin/settings/${authModule}`}
+                      className={cn(
+                        buttonVariants({
+                          variant: 'ghost',
+                          className:
+                            'p-2 rounded-[6px] text-[14px] w-full justify-start font-normal',
+                        })
+                      )}
+                      style={({ isActive }) => ({
+                        backgroundColor: isActive
+                          ? cssVarV2('selfhost/button/sidebarButton/bg/select')
+                          : undefined,
+                      })}
+                      onClick={() => setCurrentModule?.(authModule)}
+                    >
+                      {authModule}
+                    </NavLink>
+                  </li>
+                ) : null}
+                {otherModules.map(module => (
                   <li key={module} className="flex">
                     <NavLink
                       to={`/admin/settings/${module}`}
@@ -67,7 +89,7 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
                         buttonVariants({
                           variant: 'ghost',
                           className:
-                            'p-1.5 rounded-[6px] text-[14px] w-full justify-start',
+                            'p-2 rounded-[6px] text-[14px] w-full justify-start font-normal',
                         })
                       )}
                       style={({ isActive }) => ({
@@ -91,7 +113,7 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
   }
 
   return (
-    <Accordion type="multiple" className="w-full h-full  overflow-hidden">
+    <Accordion type="multiple" className="w-full overflow-hidden">
       <AccordionItem
         value="item-1"
         className="border-b-0 h-full flex flex-col gap-1 w-full"
@@ -130,7 +152,7 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
           >
             <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit] [&>div]:!block">
               {authModule && (
-                <CollapsibleItem
+                <NormalSubItem
                   title={authModule}
                   changeModule={setCurrentModule}
                 />

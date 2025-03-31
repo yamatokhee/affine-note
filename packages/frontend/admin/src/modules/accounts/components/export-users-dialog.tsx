@@ -105,7 +105,7 @@ export function ExportUsersDialog({
           ))}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="mt-6">
           <Button
             type="button"
             onClick={handleExport}

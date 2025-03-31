@@ -53,9 +53,9 @@ export const DeleteAccountDialog = ({
           value={input}
           onChange={handleInput}
           placeholder="Please type email to confirm"
-          className="placeholder:opacity-50"
+          className="placeholder:opacity-50 mt-4 h-9"
         />
-        <DialogFooter>
+        <DialogFooter className="mt-6">
           <div className="flex justify-end gap-2 items-center w-full">
             <Button type="button" variant="outline" size="sm" onClick={onClose}>
               Cancel

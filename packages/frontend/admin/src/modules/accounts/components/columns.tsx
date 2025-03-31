@@ -4,10 +4,14 @@ import {
   AvatarImage,
 } from '@affine/admin/components/ui/avatar';
 import { FeatureType } from '@affine/graphql';
-import { AccountIcon, LockIcon, UnlockIcon } from '@blocksuite/icons/rc';
+import {
+  AccountIcon,
+  EmailIcon,
+  LockIcon,
+  UnlockIcon,
+} from '@blocksuite/icons/rc';
 import type { ColumnDef } from '@tanstack/react-table';
 import { cssVarV2 } from '@toeverything/theme/v2';
-import { MailIcon } from 'lucide-react';
 import {
   type Dispatch,
   type ReactNode,
@@ -201,19 +205,29 @@ export const useColumns = ({
                       color={cssVarV2('selfhost/icon/tertiary')}
                     />
                   }
-                  IconFalse={<UnlockIcon fontSize={16} />}
+                  IconFalse={
+                    <UnlockIcon
+                      fontSize={16}
+                      color={cssVarV2('toast/iconState/error')}
+                    />
+                  }
                   textTrue="Password Set"
                   textFalse="No Password"
                 />
                 <StatusItem
                   condition={user.emailVerified}
                   IconTrue={
-                    <MailIcon
-                      size={16}
+                    <EmailIcon
+                      fontSize={16}
                       color={cssVarV2('selfhost/icon/tertiary')}
                     />
                   }
-                  IconFalse={<MailIcon size={16} />}
+                  IconFalse={
+                    <EmailIcon
+                      fontSize={16}
+                      color={cssVarV2('toast/iconState/error')}
+                    />
+                  }
                   textTrue="Email Verified"
                   textFalse="Email Not Verified"
                 />
