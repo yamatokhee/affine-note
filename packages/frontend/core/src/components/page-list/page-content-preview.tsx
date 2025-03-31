@@ -1,6 +1,6 @@
 import { DocsSearchService } from '@affine/core/modules/docs-search';
 import { LiveData, useLiveData, useService } from '@toeverything/infra';
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, useEffect, useMemo } from 'react';
 
 interface PagePreviewProps {
   pageId: string;
@@ -20,6 +20,11 @@ const PagePreviewInner = ({
       [docSummary, pageId]
     )
   );
+
+  useEffect(() => {
+    const undo = docSummary.indexer.addPriority(pageId, 100);
+    return undo;
+  }, [docSummary, pageId]);
 
   const res =
     summary === null ? fallback : summary === '' ? emptyFallback : summary;

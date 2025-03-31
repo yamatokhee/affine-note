@@ -17,7 +17,7 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import Fuse, { type FuseResultMatch } from 'fuse.js';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { map, takeWhile } from 'rxjs';
+import { map } from 'rxjs';
 
 import type { CollectionService } from '../../collection';
 import type { DocDisplayMetaService } from '../../doc-display-meta';
@@ -119,15 +119,6 @@ export class SearchMenuService extends Service {
         []
       );
 
-    const { signal: isIndexerLoading, cleanup: cleanupIndexerLoading } =
-      createSignalFromObservable(
-        this.docsSearch.indexer.status$.pipe(
-          map(status => status.remaining !== undefined && status.remaining > 0),
-          takeWhile(isLoading => isLoading, true)
-        ),
-        false
-      );
-
     const overflowText = computed(() => {
       const overflowCount = docsSignal.value.length - MAX_DOCS;
       return I18n.t('com.affine.editor.at-menu.more-docs-hint', {
@@ -137,14 +128,12 @@ export class SearchMenuService extends Service {
 
     abortSignal.addEventListener('abort', () => {
       cleanupDocs();
-      cleanupIndexerLoading();
     });
 
     return {
       name: I18n.t('com.affine.editor.at-menu.link-to-doc', {
         query,
       }),
-      loading: isIndexerLoading,
       items: docsSignal,
       maxDisplay: MAX_DOCS,
       overflowText,
@@ -153,8 +142,9 @@ export class SearchMenuService extends Service {
 
   // only search docs by title, excluding blocks
   private searchDocs$(query: string) {
-    return this.docsSearch.indexer.docIndex
+    return this.docsSearch.indexer
       .aggregate$(
+        'doc',
         {
           type: 'boolean',
           occur: 'must',

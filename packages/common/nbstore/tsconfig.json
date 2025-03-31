@@ -9,6 +9,7 @@
   "references": [
     { "path": "../infra" },
     { "path": "../error" },
-    { "path": "../graphql" }
+    { "path": "../graphql" },
+    { "path": "../../../blocksuite/affine/all" }
   ]
 }

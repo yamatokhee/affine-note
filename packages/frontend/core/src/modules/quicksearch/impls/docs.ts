@@ -33,10 +33,11 @@ export class DocsQuickSearchSession
     super();
   }
 
-  private readonly isIndexerLoading$ =
-    this.docsSearchService.indexer.status$.map(({ remaining }) => {
-      return remaining === undefined || remaining > 0;
-    });
+  private readonly isIndexerLoading$ = this.docsSearchService.indexerState$.map(
+    ({ completed }) => {
+      return !completed;
+    }
+  );
 
   private readonly isQueryLoading$ = new LiveData(false);
 

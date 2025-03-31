@@ -5,5 +5,4 @@ export * from './livedata';
 export * from './media';
 export * from './orm';
 export * from './storage';
-export * from './sync';
 export * from './utils';

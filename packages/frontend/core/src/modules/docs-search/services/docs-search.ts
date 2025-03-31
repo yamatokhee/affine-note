@@ -1,30 +1,30 @@
 import { toURLSearchParams } from '@affine/core/modules/navigation';
+import type { IndexerSyncState } from '@affine/nbstore';
 import type { ReferenceParams } from '@blocksuite/affine/model';
-import { fromPromise, OnEvent, Service } from '@toeverything/infra';
+import { fromPromise, LiveData, Service } from '@toeverything/infra';
 import { isEmpty, omit } from 'lodash-es';
 import { map, type Observable, of, switchMap } from 'rxjs';
 import { z } from 'zod';
 
+import type { DocsService } from '../../doc/services/docs';
 import type { WorkspaceService } from '../../workspace';
-import { WorkspaceEngineBeforeStart } from '../../workspace';
-import { DocsIndexer } from '../entities/docs-indexer';
 
-@OnEvent(WorkspaceEngineBeforeStart, s => s.handleWorkspaceEngineBeforeStart)
 export class DocsSearchService extends Service {
-  readonly indexer = this.framework.createEntity(DocsIndexer);
-
-  constructor(private readonly workspaceService: WorkspaceService) {
+  constructor(
+    private readonly workspaceService: WorkspaceService,
+    private readonly docsService: DocsService
+  ) {
     super();
   }
 
-  handleWorkspaceEngineBeforeStart() {
-    // skip if in shared mode
-    if (this.workspaceService.workspace.openOptions.isSharedMode) {
-      return;
-    }
-    this.indexer.setupListener();
-    this.indexer.startCrawling();
+  get indexer() {
+    return this.workspaceService.workspace.engine.indexer;
   }
+
+  readonly indexerState$ = LiveData.from(this.indexer.state$, {
+    indexing: 0,
+    errorMessage: null,
+  } as IndexerSyncState);
 
   search$(query: string): Observable<
     {
@@ -35,8 +35,9 @@ export class DocsSearchService extends Service {
       blockContent?: string;
     }[]
   > {
-    return this.indexer.blockIndex
+    return this.indexer
       .aggregate$(
+        'block',
         {
           type: 'boolean',
           occur: 'must',
@@ -89,47 +90,40 @@ export class DocsSearchService extends Service {
         }
       )
       .pipe(
-        switchMap(({ buckets }) => {
-          return fromPromise(async () => {
-            const docData = await this.indexer.docIndex.getAll(
-              buckets.map(bucket => bucket.key)
-            );
+        map(({ buckets }) => {
+          const result = [];
 
-            const result = [];
-
-            for (const bucket of buckets) {
-              const firstMatchFlavour = bucket.hits.nodes[0]?.fields.flavour;
-              if (firstMatchFlavour === 'affine:page') {
-                // is title match
-                const blockContent =
-                  bucket.hits.nodes[1]?.highlights.content[0]; // try to get block content
-                result.push({
-                  docId: bucket.key,
-                  title: bucket.hits.nodes[0].highlights.content[0],
-                  score: bucket.score,
-                  blockContent,
-                });
-              } else {
-                const title =
-                  docData.find(doc => doc.id === bucket.key)?.get('title') ??
-                  '';
-                const matchedBlockId = bucket.hits.nodes[0]?.fields.blockId;
-                // is block match
-                result.push({
-                  docId: bucket.key,
-                  title: typeof title === 'string' ? title : title[0],
-                  blockId:
-                    typeof matchedBlockId === 'string'
-                      ? matchedBlockId
-                      : matchedBlockId[0],
-                  score: bucket.score,
-                  blockContent: bucket.hits.nodes[0]?.highlights.content[0],
-                });
-              }
+          for (const bucket of buckets) {
+            const firstMatchFlavour = bucket.hits.nodes[0]?.fields.flavour;
+            if (firstMatchFlavour === 'affine:page') {
+              // is title match
+              const blockContent = bucket.hits.nodes[1]?.highlights.content[0]; // try to get block content
+              result.push({
+                docId: bucket.key,
+                title: bucket.hits.nodes[0].highlights.content[0],
+                score: bucket.score,
+                blockContent,
+              });
+            } else {
+              const title =
+                this.docsService.list.doc$(bucket.key).value?.title$.value ??
+                '';
+              const matchedBlockId = bucket.hits.nodes[0]?.fields.blockId;
+              // is block match
+              result.push({
+                docId: bucket.key,
+                title: title,
+                blockId:
+                  typeof matchedBlockId === 'string'
+                    ? matchedBlockId
+                    : matchedBlockId[0],
+                score: bucket.score,
+                blockContent: bucket.hits.nodes[0]?.highlights.content[0],
+              });
             }
+          }
 
-            return result;
-          });
+          return result;
         })
       );
   }
@@ -140,8 +134,9 @@ export class DocsSearchService extends Service {
       return of([]);
     }
 
-    return this.indexer.blockIndex
+    return this.indexer
       .search$(
+        'block',
         {
           type: 'boolean',
           occur: 'must',
@@ -185,18 +180,12 @@ export class DocsSearchService extends Service {
               ).values()
             );
 
-            const docData = await this.indexer.docIndex.getAll(
-              Array.from(new Set(refs.map(ref => ref.docId)))
-            );
-
             return refs
               .flatMap(ref => {
-                const doc = docData.find(doc => doc.id === ref.docId);
+                const doc = this.docsService.list.doc$(ref.docId).value;
                 if (!doc) return null;
 
-                const titles = doc.get('title');
-                const title =
-                  (Array.isArray(titles) ? titles[0] : titles) ?? '';
+                const title = doc.title$.value;
                 const params = omit(ref, ['docId']);
 
                 return {
@@ -214,8 +203,9 @@ export class DocsSearchService extends Service {
   }
 
   watchRefsTo(docId: string) {
-    return this.indexer.blockIndex
+    return this.indexer
       .aggregate$(
+        'block',
         {
           type: 'boolean',
           occur: 'must',
@@ -262,13 +252,10 @@ export class DocsSearchService extends Service {
       .pipe(
         switchMap(({ buckets }) => {
           return fromPromise(async () => {
-            const docData = await this.indexer.docIndex.getAll(
-              buckets.map(bucket => bucket.key)
-            );
-
             return buckets.flatMap(bucket => {
               const title =
-                docData.find(doc => doc.id === bucket.key)?.get('title') ?? '';
+                this.docsService.list.doc$(bucket.key).value?.title$.value ??
+                '';
 
               return bucket.hits.nodes.map(node => {
                 const blockId = node.fields.blockId ?? '';
@@ -297,7 +284,7 @@ export class DocsSearchService extends Service {
                 return {
                   docId: bucket.key,
                   blockId: typeof blockId === 'string' ? blockId : blockId[0],
-                  title: typeof title === 'string' ? title : title[0],
+                  title: title,
                   markdownPreview:
                     typeof markdownPreview === 'string'
                       ? markdownPreview
@@ -330,8 +317,9 @@ export class DocsSearchService extends Service {
     const DatabaseAdditionalSchema = z.object({
       databaseName: z.string().optional(),
     });
-    return this.indexer.blockIndex
+    return this.indexer
       .search$(
+        'block',
         {
           type: 'boolean',
           occur: 'must',
@@ -397,8 +385,9 @@ export class DocsSearchService extends Service {
   }
 
   watchDocSummary(docId: string) {
-    return this.indexer.docIndex
+    return this.indexer
       .search$(
+        'doc',
         {
           type: 'match',
           field: 'docId',
@@ -421,9 +410,5 @@ export class DocsSearchService extends Service {
           );
         })
       );
-  }
-
-  override dispose(): void {
-    this.indexer.dispose();
   }
 }

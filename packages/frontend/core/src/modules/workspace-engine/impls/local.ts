@@ -349,6 +349,22 @@ class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
             id: workspaceId,
           },
         },
+        indexer: {
+          name: 'IndexedDBIndexerStorage',
+          opts: {
+            flavour: this.flavour,
+            type: 'workspace',
+            id: workspaceId,
+          },
+        },
+        indexerSync: {
+          name: 'IndexedDBIndexerSyncStorage',
+          opts: {
+            flavour: this.flavour,
+            type: 'workspace',
+            id: workspaceId,
+          },
+        },
       },
       remotes: {
         v1: {

@@ -52,6 +52,10 @@ export class PriorityQueue {
     return removed;
   }
 
+  has(id: string) {
+    return this.priorityMap.has(id);
+  }
+
   clear() {
     this.tree.clear();
     this.priorityMap.clear();
@@ -64,6 +68,6 @@ export class PriorityQueue {
   }
 
   get length() {
-    return this.tree.count;
+    return this.tree.count.bind(this.tree);
   }
 }

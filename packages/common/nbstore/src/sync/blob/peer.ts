@@ -420,7 +420,11 @@ class BlobSyncPeerStatus {
       return () => {
         dispose.unsubscribe();
       };
-    });
+    }).pipe(
+      share({
+        connector: () => new ReplaySubject(1),
+      })
+    );
   }
 
   private readonly statusUpdatedSubject$ = new Subject<string | true>();

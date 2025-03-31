@@ -1,11 +1,16 @@
-import type { Schema } from './schema';
+import type { IndexerSchema } from './schema';
 
-export class Document<S extends Schema = any> {
+export class IndexerDocument<
+  S extends keyof IndexerSchema = keyof IndexerSchema,
+> {
   constructor(public readonly id: string) {}
 
-  fields = new Map<keyof S, string[]>();
+  fields = new Map<keyof IndexerSchema[S], string[]>();
 
-  public insert<F extends keyof S>(field: F, value: string | string[]) {
+  public insert<F extends keyof IndexerSchema[S]>(
+    field: F,
+    value: string | string[]
+  ) {
     const values = this.fields.get(field) ?? [];
     if (Array.isArray(value)) {
       values.push(...value);
@@ -15,7 +20,9 @@ export class Document<S extends Schema = any> {
     this.fields.set(field, values);
   }
 
-  get<F extends keyof S>(field: F): string[] | string | undefined {
+  get<F extends keyof IndexerSchema[S]>(
+    field: F
+  ): string[] | string | undefined {
     const values = this.fields.get(field);
     if (values === undefined) {
       return undefined;
@@ -26,13 +33,13 @@ export class Document<S extends Schema = any> {
     }
   }
 
-  static from<S extends Schema>(
+  static from<S extends keyof IndexerSchema>(
     id: string,
     map:
-      | Partial<Record<keyof S, string | string[]>>
-      | Map<keyof S, string | string[]>
-  ): Document<S> {
-    const doc = new Document(id);
+      | Partial<Record<keyof IndexerSchema[S], string | string[]>>
+      | Map<keyof IndexerSchema[S], string | string[]>
+  ): IndexerDocument<S> {
+    const doc = new IndexerDocument<S>(id);
 
     if (map instanceof Map) {
       for (const [key, value] of map) {

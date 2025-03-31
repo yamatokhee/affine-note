@@ -1,5 +1,7 @@
 import type { AvailableStorageImplementations } from '../impls';
 import type {
+  AggregateOptions,
+  AggregateResult,
   BlobRecord,
   DocClock,
   DocClocks,
@@ -7,11 +9,15 @@ import type {
   DocRecord,
   DocUpdate,
   ListedBlobRecord,
+  Query,
+  SearchOptions,
+  SearchResult,
   StorageType,
 } from '../storage';
 import type { AwarenessRecord } from '../storage/awareness';
 import type { BlobSyncBlobState, BlobSyncState } from '../sync/blob';
 import type { DocSyncDocState, DocSyncState } from '../sync/doc';
+import type { IndexerDocSyncState, IndexerSyncState } from '../sync/indexer';
 
 type StorageInitOptions = Values<{
   [key in keyof AvailableStorageImplementations]: {
@@ -61,6 +67,35 @@ interface GroupedWorkerOps {
     collect: [{ collectId: string; awareness: AwarenessRecord }, void];
   };
 
+  indexerStorage: {
+    search: [
+      { table: string; query: Query<any>; options?: SearchOptions<any> },
+      SearchResult<any, any>,
+    ];
+    aggregate: [
+      {
+        table: string;
+        query: Query<any>;
+        field: string;
+        options?: AggregateOptions<any>;
+      },
+      AggregateResult<any, any>,
+    ];
+    subscribeSearch: [
+      { table: string; query: Query<any>; options?: SearchOptions<any> },
+      SearchResult<any, any>,
+    ];
+    subscribeAggregate: [
+      {
+        table: string;
+        query: Query<any>;
+        field: string;
+        options?: AggregateOptions<any>;
+      },
+      AggregateResult<any, any>,
+    ];
+  };
+
   docSync: {
     state: [void, DocSyncState];
     docState: [string, DocSyncDocState];
@@ -90,6 +125,14 @@ interface GroupedWorkerOps {
       ),
     ];
     collect: [{ collectId: string; awareness: AwarenessRecord }, void];
+  };
+
+  indexerSync: {
+    state: [void, IndexerSyncState];
+    docState: [string, IndexerDocSyncState];
+    addPriority: [{ docId: string; priority: number }, boolean];
+    waitForCompleted: [void, void];
+    waitForDocCompleted: [string, void];
   };
 }
 

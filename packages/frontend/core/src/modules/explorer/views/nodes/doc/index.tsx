@@ -19,6 +19,7 @@ import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
   LiveData,
+  MANUALLY_STOP,
   useLiveData,
   useService,
   useServices,
@@ -98,19 +99,23 @@ export const ExplorerDocNode = ({
   );
   const searching = children === null;
 
-  const indexerLoading = useLiveData(
-    docsSearchService.indexer.status$.map(
-      v => v.remaining === undefined || v.remaining > 0
-    )
-  );
   const [referencesLoading, setReferencesLoading] = useState(true);
   useLayoutEffect(() => {
-    setReferencesLoading(
-      prev =>
-        prev &&
-        indexerLoading /* after loading becomes false, it never becomes true */
-    );
-  }, [indexerLoading]);
+    const abortController = new AbortController();
+    docsSearchService.indexer
+      .waitForDocCompletedWithPriority(docId, 100, abortController.signal)
+      .then(() => {
+        setReferencesLoading(false);
+      })
+      .catch(err => {
+        if (err !== MANUALLY_STOP) {
+          console.error(err);
+        }
+      });
+    return () => {
+      abortController.abort(MANUALLY_STOP);
+    };
+  }, [docId, docsSearchService]);
 
   const dndData = useMemo(() => {
     return {

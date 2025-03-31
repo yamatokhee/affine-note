@@ -9,7 +9,6 @@ import {
 } from '@toeverything/infra';
 import { fileTypeFromBuffer } from 'file-type';
 import {
-  combineLatest,
   EMPTY,
   filter,
   firstValueFrom,
@@ -88,22 +87,17 @@ export class UnusedBlobs extends Entity {
 
   async getUnusedBlobs(abortSignal?: AbortSignal) {
     // Wait for both sync and indexing to complete
-    const ready$ = combineLatest([
-      this.workspaceService.workspace.engine.doc.state$.pipe(
-        filter(state => state.syncing === 0 && !state.syncRetrying)
-      ),
-      this.docsSearchService.indexer.status$.pipe(
-        filter(
-          status => status.remaining === undefined || status.remaining === 0
-        )
-      ),
-    ]).pipe(map(() => true));
+    const ready$ = this.workspaceService.workspace.engine.doc.state$
+      .pipe(filter(state => state.syncing === 0 && !state.syncRetrying))
+      .pipe(map(() => true));
 
     await firstValueFrom(
       abortSignal
         ? ready$.pipe(takeUntil(fromEvent(abortSignal, 'abort')))
         : ready$
     );
+
+    await this.docsSearchService.indexer.waitForCompleted(abortSignal);
 
     const [blobs, usedBlobs] = await Promise.all([
       this.listBlobs(),
@@ -121,7 +115,8 @@ export class UnusedBlobs extends Entity {
   }
 
   private async getUsedBlobs(): Promise<string[]> {
-    const result = await this.docsSearchService.indexer.blockIndex.aggregate(
+    const result = await this.docsSearchService.indexer.aggregate(
+      'block',
       {
         type: 'boolean',
         occur: 'must',

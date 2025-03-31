@@ -36,6 +36,13 @@ export class WorkspaceEngine extends Entity<{
     return this.client.blobFrontend;
   }
 
+  get indexer() {
+    if (!this.client) {
+      throw new Error('Engine is not initialized');
+    }
+    return this.client.indexerFrontend;
+  }
+
   get awareness() {
     if (!this.client) {
       throw new Error('Engine is not initialized');

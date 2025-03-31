@@ -22,16 +22,18 @@ export interface InvertedIndex {
 
 export class StringInvertedIndex implements InvertedIndex {
   constructor(
-    readonly fieldKey: string,
-    readonly index: boolean = true,
-    readonly store: boolean = true
+    readonly table: string,
+    readonly fieldKey: string
   ) {}
 
   async match(trx: DataStructROTransaction, term: string): Promise<Match> {
     const objs = await trx
       .objectStore('invertedIndex')
       .index('key')
-      .getAll(InvertedIndexKey.forString(this.fieldKey, term).buffer());
+      .getAll([
+        this.table,
+        InvertedIndexKey.forString(this.fieldKey, term).buffer(),
+      ]);
     const match = new Match();
     for (const obj of objs) {
       match.addScore(obj.nid, 1);
@@ -45,8 +47,11 @@ export class StringInvertedIndex implements InvertedIndex {
       .index('key')
       .getAll(
         IDBKeyRange.bound(
-          InvertedIndexKey.forPrefix(this.fieldKey).buffer(),
-          InvertedIndexKey.forPrefix(this.fieldKey).add1().buffer()
+          [this.table, InvertedIndexKey.forPrefix(this.fieldKey).buffer()],
+          [
+            this.table,
+            InvertedIndexKey.forPrefix(this.fieldKey).add1().buffer(),
+          ]
         )
       );
 
@@ -65,6 +70,7 @@ export class StringInvertedIndex implements InvertedIndex {
   async insert(trx: DataStructRWTransaction, id: number, terms: string[]) {
     for (const term of terms) {
       await trx.objectStore('invertedIndex').put({
+        table: this.table,
         key: InvertedIndexKey.forString(this.fieldKey, term).buffer(),
         nid: id,
       });
@@ -74,16 +80,18 @@ export class StringInvertedIndex implements InvertedIndex {
 
 export class IntegerInvertedIndex implements InvertedIndex {
   constructor(
-    readonly fieldKey: string,
-    readonly index: boolean = true,
-    readonly store: boolean = true
+    readonly table: string,
+    readonly fieldKey: string
   ) {}
 
   async match(trx: DataStructROTransaction, term: string): Promise<Match> {
     const objs = await trx
       .objectStore('invertedIndex')
       .index('key')
-      .getAll(InvertedIndexKey.forInt64(this.fieldKey, BigInt(term)).buffer());
+      .getAll([
+        this.table,
+        InvertedIndexKey.forInt64(this.fieldKey, BigInt(term)).buffer(),
+      ]);
     const match = new Match();
     for (const obj of objs) {
       match.addScore(obj.nid, 1);
@@ -98,8 +106,11 @@ export class IntegerInvertedIndex implements InvertedIndex {
       .index('key')
       .getAll(
         IDBKeyRange.bound(
-          InvertedIndexKey.forPrefix(this.fieldKey).buffer(),
-          InvertedIndexKey.forPrefix(this.fieldKey).add1().buffer()
+          [this.table, InvertedIndexKey.forPrefix(this.fieldKey).buffer()],
+          [
+            this.table,
+            InvertedIndexKey.forPrefix(this.fieldKey).add1().buffer(),
+          ]
         )
       );
 
@@ -118,6 +129,7 @@ export class IntegerInvertedIndex implements InvertedIndex {
   async insert(trx: DataStructRWTransaction, id: number, terms: string[]) {
     for (const term of terms) {
       await trx.objectStore('invertedIndex').put({
+        table: this.table,
         key: InvertedIndexKey.forInt64(this.fieldKey, BigInt(term)).buffer(),
         nid: id,
       });
@@ -127,9 +139,8 @@ export class IntegerInvertedIndex implements InvertedIndex {
 
 export class BooleanInvertedIndex implements InvertedIndex {
   constructor(
-    readonly fieldKey: string,
-    readonly index: boolean = true,
-    readonly store: boolean = true
+    readonly table: string,
+    readonly fieldKey: string
   ) {}
 
   // eslint-disable-next-line sonarjs/no-identical-functions
@@ -139,8 +150,11 @@ export class BooleanInvertedIndex implements InvertedIndex {
       .index('key')
       .getAll(
         IDBKeyRange.bound(
-          InvertedIndexKey.forPrefix(this.fieldKey).buffer(),
-          InvertedIndexKey.forPrefix(this.fieldKey).add1().buffer()
+          [this.table, InvertedIndexKey.forPrefix(this.fieldKey).buffer()],
+          [
+            this.table,
+            InvertedIndexKey.forPrefix(this.fieldKey).add1().buffer(),
+          ]
         )
       );
 
@@ -160,9 +174,10 @@ export class BooleanInvertedIndex implements InvertedIndex {
     const objs = await trx
       .objectStore('invertedIndex')
       .index('key')
-      .getAll(
-        InvertedIndexKey.forBoolean(this.fieldKey, term === 'true').buffer()
-      );
+      .getAll([
+        this.table,
+        InvertedIndexKey.forBoolean(this.fieldKey, term === 'true').buffer(),
+      ]);
     const match = new Match();
     for (const obj of objs) {
       match.addScore(obj.nid, 1);
@@ -173,6 +188,7 @@ export class BooleanInvertedIndex implements InvertedIndex {
   async insert(trx: DataStructRWTransaction, id: number, terms: string[]) {
     for (const term of terms) {
       await trx.objectStore('invertedIndex').put({
+        table: this.table,
         key: InvertedIndexKey.forBoolean(
           this.fieldKey,
           term === 'true'
@@ -185,9 +201,8 @@ export class BooleanInvertedIndex implements InvertedIndex {
 
 export class FullTextInvertedIndex implements InvertedIndex {
   constructor(
-    readonly fieldKey: string,
-    readonly index: boolean = true,
-    readonly store: boolean = true
+    readonly table: string,
+    readonly fieldKey: string
   ) {}
 
   async match(trx: DataStructROTransaction, term: string): Promise<Match> {
@@ -205,8 +220,8 @@ export class FullTextInvertedIndex implements InvertedIndex {
     const avgFieldLength =
       (
         await trx
-          .objectStore('kvMetadata')
-          .get(`full-text:avg-field-length:${this.fieldKey}`)
+          .objectStore('indexerMetadata')
+          .get(`full-text:avg-field-length:${this.table}:${this.fieldKey}`)
       )?.value ?? 0;
     for (const token of queryTokens) {
       const key = InvertedIndexKey.forString(this.fieldKey, token.term);
@@ -214,7 +229,12 @@ export class FullTextInvertedIndex implements InvertedIndex {
         .objectStore('invertedIndex')
         .index('key')
         .getAll(
-          IDBKeyRange.bound(key.buffer(), key.add1().buffer(), false, true)
+          IDBKeyRange.bound(
+            [this.table, key.buffer()],
+            [this.table, key.add1().buffer()],
+            false,
+            true
+          )
         );
       const submatched: {
         nid: number;
@@ -316,8 +336,11 @@ export class FullTextInvertedIndex implements InvertedIndex {
       .index('key')
       .getAll(
         IDBKeyRange.bound(
-          InvertedIndexKey.forPrefix(this.fieldKey).buffer(),
-          InvertedIndexKey.forPrefix(this.fieldKey).add1().buffer()
+          [this.table, InvertedIndexKey.forPrefix(this.fieldKey).buffer()],
+          [
+            this.table,
+            InvertedIndexKey.forPrefix(this.fieldKey).add1().buffer(),
+          ]
         )
       );
 
@@ -348,6 +371,7 @@ export class FullTextInvertedIndex implements InvertedIndex {
 
       for (const [term, tokens] of tokenMap) {
         await trx.objectStore('invertedIndex').put({
+          table: this.table,
           key: InvertedIndexKey.forString(this.fieldKey, term).buffer(),
           nid: id,
           pos: {
@@ -358,23 +382,26 @@ export class FullTextInvertedIndex implements InvertedIndex {
         });
       }
 
-      const kvMetadataStore = trx.objectStore('kvMetadata');
+      const indexerMetadataStore = trx.objectStore('indexerMetadata');
       // update avg-field-length
       const totalCount =
-        (await kvMetadataStore.get(`full-text:field-count:${this.fieldKey}`))
-          ?.value ?? 0;
-      const avgFieldLength =
         (
-          await kvMetadataStore.get(
-            `full-text:avg-field-length:${this.fieldKey}`
+          await indexerMetadataStore.get(
+            `full-text:field-count:${this.table}:${this.fieldKey}`
           )
         )?.value ?? 0;
-      await kvMetadataStore.put({
-        key: `full-text:field-count:${this.fieldKey}`,
+      const avgFieldLength =
+        (
+          await indexerMetadataStore.get(
+            `full-text:avg-field-length:${this.table}:${this.fieldKey}`
+          )
+        )?.value ?? 0;
+      await indexerMetadataStore.put({
+        key: `full-text:field-count:${this.table}:${this.fieldKey}`,
         value: totalCount + 1,
       });
-      await kvMetadataStore.put({
-        key: `full-text:avg-field-length:${this.fieldKey}`,
+      await indexerMetadataStore.put({
+        key: `full-text:avg-field-length:${this.table}:${this.fieldKey}`,
         value:
           avgFieldLength +
           (terms.reduce((acc, term) => acc + term.length, 0) - avgFieldLength) /

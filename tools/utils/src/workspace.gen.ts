@@ -903,6 +903,7 @@ export const PackageList = [
       'packages/common/infra',
       'packages/common/error',
       'packages/common/graphql',
+      'blocksuite/affine/all',
     ],
   },
   {

@@ -1,20 +1,35 @@
 import { OpClient, transfer } from '@toeverything/infra/op';
+import type { Observable } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 
 import { DummyConnection } from '../connection';
-import { AwarenessFrontend, BlobFrontend, DocFrontend } from '../frontend';
 import {
+  AwarenessFrontend,
+  BlobFrontend,
+  DocFrontend,
+  IndexerFrontend,
+} from '../frontend';
+import {
+  type AggregateOptions,
+  type AggregateResult,
   type AwarenessRecord,
   type BlobRecord,
   type BlobStorage,
   type DocRecord,
   type DocStorage,
   type DocUpdate,
+  type IndexerDocument,
+  type IndexerSchema,
+  type IndexerStorage,
   type ListedBlobRecord,
+  type Query,
+  type SearchOptions,
+  type SearchResult,
 } from '../storage';
 import type { AwarenessSync } from '../sync/awareness';
 import type { BlobSync } from '../sync/blob';
 import type { DocSync } from '../sync/doc';
+import type { IndexerSync } from '../sync/indexer';
 import type { StoreInitOptions, WorkerManagerOps, WorkerOps } from './ops';
 
 export type { StoreInitOptions as WorkerInitOptions } from './ops';
@@ -85,6 +100,12 @@ export class StoreClient {
     this.docFrontend = new DocFrontend(this.docStorage, this.docSync);
     this.blobFrontend = new BlobFrontend(this.blobStorage, this.blobSync);
     this.awarenessFrontend = new AwarenessFrontend(this.awarenessSync);
+    this.indexerStorage = new WorkerIndexerStorage(this.client);
+    this.indexerSync = new WorkerIndexerSync(this.client);
+    this.indexerFrontend = new IndexerFrontend(
+      this.indexerStorage,
+      this.indexerSync
+    );
   }
 
   private readonly docStorage: WorkerDocStorage;
@@ -92,14 +113,18 @@ export class StoreClient {
   private readonly docSync: WorkerDocSync;
   private readonly blobSync: WorkerBlobSync;
   private readonly awarenessSync: WorkerAwarenessSync;
+  private readonly indexerStorage: WorkerIndexerStorage;
+  private readonly indexerSync: WorkerIndexerSync;
 
   readonly docFrontend: DocFrontend;
   readonly blobFrontend: BlobFrontend;
   readonly awarenessFrontend: AwarenessFrontend;
+  readonly indexerFrontend: IndexerFrontend;
 }
 
 class WorkerDocStorage implements DocStorage {
   constructor(private readonly client: OpClient<WorkerOps>) {}
+  spaceId = '';
 
   readonly storageType = 'doc';
   readonly isReadonly = false;
@@ -311,6 +336,149 @@ class WorkerAwarenessSync implements AwarenessSync {
           }
         },
       });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }
+}
+
+class WorkerIndexerStorage implements IndexerStorage {
+  constructor(private readonly client: OpClient<WorkerOps>) {}
+  readonly storageType = 'indexer';
+  readonly isReadonly = true;
+  connection = new DummyConnection();
+
+  search<T extends keyof IndexerSchema, const O extends SearchOptions<T>>(
+    table: T,
+    query: Query<T>,
+    options?: O
+  ): Promise<SearchResult<T, O>> {
+    return this.client.call('indexerStorage.search', { table, query, options });
+  }
+  aggregate<T extends keyof IndexerSchema, const O extends AggregateOptions<T>>(
+    table: T,
+    query: Query<T>,
+    field: keyof IndexerSchema[T],
+    options?: O
+  ): Promise<AggregateResult<T, O>> {
+    return this.client.call('indexerStorage.aggregate', {
+      table,
+      query,
+      field: field as string,
+      options,
+    });
+  }
+  search$<T extends keyof IndexerSchema, const O extends SearchOptions<T>>(
+    table: T,
+    query: Query<T>,
+    options?: O
+  ): Observable<SearchResult<T, O>> {
+    return this.client.ob$('indexerStorage.subscribeSearch', {
+      table,
+      query,
+      options,
+    });
+  }
+  aggregate$<
+    T extends keyof IndexerSchema,
+    const O extends AggregateOptions<T>,
+  >(
+    table: T,
+    query: Query<T>,
+    field: keyof IndexerSchema[T],
+    options?: O
+  ): Observable<AggregateResult<T, O>> {
+    return this.client.ob$('indexerStorage.subscribeAggregate', {
+      table,
+      query,
+      field: field as string,
+      options,
+    });
+  }
+  deleteByQuery<T extends keyof IndexerSchema>(
+    _table: T,
+    _query: Query<T>
+  ): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  insert<T extends keyof IndexerSchema>(
+    _table: T,
+    _document: IndexerDocument<T>
+  ): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  delete<T extends keyof IndexerSchema>(_table: T, _id: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  update<T extends keyof IndexerSchema>(
+    _table: T,
+    _document: IndexerDocument<T>
+  ): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  refresh<T extends keyof IndexerSchema>(_table: T): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+}
+
+class WorkerIndexerSync implements IndexerSync {
+  constructor(private readonly client: OpClient<WorkerOps>) {}
+  waitForCompleted(signal?: AbortSignal): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const abortListener = () => {
+        reject(signal?.reason);
+        subscription.unsubscribe();
+      };
+
+      signal?.addEventListener('abort', abortListener);
+
+      const subscription = this.client
+        .ob$('indexerSync.waitForCompleted')
+        .subscribe({
+          complete() {
+            signal?.removeEventListener('abort', abortListener);
+            resolve();
+          },
+          error(err) {
+            signal?.removeEventListener('abort', abortListener);
+            reject(err);
+          },
+        });
+    });
+  }
+  waitForDocCompleted(docId: string, signal?: AbortSignal): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const abortListener = () => {
+        reject(signal?.reason);
+        subscription.unsubscribe();
+      };
+
+      signal?.addEventListener('abort', abortListener);
+
+      const subscription = this.client
+        .ob$('indexerSync.waitForDocCompleted', docId)
+        .subscribe({
+          complete() {
+            signal?.removeEventListener('abort', abortListener);
+            resolve();
+          },
+          error(err) {
+            signal?.removeEventListener('abort', abortListener);
+            reject(err);
+          },
+        });
+    });
+  }
+  get state$() {
+    return this.client.ob$('indexerSync.state');
+  }
+  docState$(docId: string) {
+    return this.client.ob$('indexerSync.docState', docId);
+  }
+  addPriority(docId: string, priority: number) {
+    const subscription = this.client
+      .ob$('indexerSync.addPriority', { docId, priority })
+      .subscribe();
     return () => {
       subscription.unsubscribe();
     };

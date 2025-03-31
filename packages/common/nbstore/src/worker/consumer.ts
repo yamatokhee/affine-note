@@ -1,4 +1,3 @@
-import { MANUALLY_STOP } from '@toeverything/infra';
 import { OpConsumer } from '@toeverything/infra/op';
 import { Observable } from 'rxjs';
 
@@ -7,6 +6,7 @@ import { SpaceStorage } from '../storage';
 import type { AwarenessRecord } from '../storage/awareness';
 import { Sync } from '../sync';
 import type { PeerStorageOptions } from '../sync/types';
+import { MANUALLY_STOP } from '../utils/throw-if-aborted';
 import type { StoreInitOptions, WorkerManagerOps, WorkerOps } from './ops';
 
 export type { WorkerManagerOps };
@@ -55,6 +55,14 @@ class StoreConsumer {
 
   get awarenessSync() {
     return this.ensureSync.awareness;
+  }
+
+  get indexerStorage() {
+    return this.ensureLocal.get('indexer');
+  }
+
+  get indexerSync() {
+    return this.ensureSync.indexer;
   }
 
   constructor(
@@ -262,6 +270,48 @@ class StoreConsumer {
         }),
       'awarenessSync.collect': ({ collectId, awareness }) =>
         collectJobs.get(collectId)?.(awareness),
+      'indexerStorage.aggregate': ({ table, query, field, options }) =>
+        this.indexerStorage.aggregate(table, query, field, options),
+      'indexerStorage.search': ({ table, query, options }) =>
+        this.indexerStorage.search(table, query, options),
+      'indexerStorage.subscribeSearch': ({ table, query, options }) =>
+        this.indexerStorage.search$(table, query, options),
+      'indexerStorage.subscribeAggregate': ({ table, query, field, options }) =>
+        this.indexerStorage.aggregate$(table, query, field, options),
+      'indexerSync.state': () => this.indexerSync.state$,
+      'indexerSync.docState': (docId: string) =>
+        this.indexerSync.docState$(docId),
+      'indexerSync.addPriority': ({ docId, priority }) =>
+        new Observable(() => {
+          const undo = this.indexerSync.addPriority(docId, priority);
+          return () => undo();
+        }),
+      'indexerSync.waitForCompleted': () =>
+        new Observable(subscriber => {
+          this.indexerSync
+            .waitForCompleted()
+            .then(() => {
+              subscriber.next();
+              subscriber.complete();
+            })
+            .catch(error => {
+              subscriber.error(error);
+            });
+        }),
+      'indexerSync.waitForDocCompleted': (docId: string) =>
+        new Observable(subscriber => {
+          const abortController = new AbortController();
+          this.indexerSync
+            .waitForDocCompleted(docId, abortController.signal)
+            .then(() => {
+              subscriber.next();
+              subscriber.complete();
+            })
+            .catch(error => {
+              subscriber.error(error);
+            });
+          return () => abortController.abort(MANUALLY_STOP);
+        }),
     });
   }
 }
