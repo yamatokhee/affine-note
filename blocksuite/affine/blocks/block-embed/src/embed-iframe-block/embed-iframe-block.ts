@@ -34,7 +34,10 @@ import {
   DEFAULT_IFRAME_HEIGHT,
   DEFAULT_IFRAME_WIDTH,
   EMBED_IFRAME_DEFAULT_CONTAINER_BORDER_RADIUS,
+  ERROR_CARD_DEFAULT_HEIGHT,
+  IDLE_CARD_DEFAULT_HEIGHT,
   LINK_CREATE_POPUP_OFFSET,
+  LOADING_CARD_DEFAULT_HEIGHT,
 } from './consts.js';
 import { embedIframeBlockStyles } from './style.js';
 import type { EmbedIframeStatusCardOptions } from './types.js';
@@ -109,10 +112,23 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
     return flag ?? false;
   }
 
+  get _horizontalCardHeight(): number {
+    switch (this.status$.value) {
+      case 'idle':
+        return IDLE_CARD_DEFAULT_HEIGHT;
+      case 'loading':
+        return LOADING_CARD_DEFAULT_HEIGHT;
+      case 'error':
+        return ERROR_CARD_DEFAULT_HEIGHT;
+      default:
+        return LOADING_CARD_DEFAULT_HEIGHT;
+    }
+  }
+
   get _statusCardOptions(): EmbedIframeStatusCardOptions {
     return this.inSurface
       ? { layout: 'vertical' }
-      : { layout: 'horizontal', height: 114 };
+      : { layout: 'horizontal', height: this._horizontalCardHeight };
   }
 
   open = () => {
@@ -257,16 +273,18 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
   };
 
   protected _handleClick = () => {
-    // We don't need to select the block when the block is in the surface
-    if (this.inSurface) {
-      return;
-    }
-
     // when the block is in idle status and the url is not set, clear the selection
     // and show the link input popup
     if (this.isIdle$.value && !this.model.props.url) {
-      this.selectionManager.clear(['block']);
+      // when the block is in the surface, clear the surface selection
+      // otherwise, clear the block selection
+      this.selectionManager.clear([this.inSurface ? 'surface' : 'block']);
       this.toggleLinkInputPopup();
+      return;
+    }
+
+    // We don't need to select the block when the block is in the surface
+    if (this.inSurface) {
       return;
     }
 
@@ -311,7 +329,9 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
 
   private readonly _renderContent = () => {
     if (this.isIdle$.value) {
-      return html`<embed-iframe-idle-card></embed-iframe-idle-card>`;
+      return html`<embed-iframe-idle-card
+        .options=${this._statusCardOptions}
+      ></embed-iframe-idle-card>`;
     }
 
     if (this.isLoading$.value) {
@@ -356,6 +376,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
       })
     );
 
+    // if the iframe url is not set, refresh the data to get the iframe url
     if (!this.model.props.iframeUrl) {
       this.doc.withoutTransact(() => {
         this.refreshData().catch(console.error);

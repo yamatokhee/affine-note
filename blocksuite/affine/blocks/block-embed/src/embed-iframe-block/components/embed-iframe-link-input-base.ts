@@ -104,6 +104,7 @@ export class EmbedIframeLinkInputBase extends WithDisposable(LitElement) {
     this.disposables.addFromEvent(this, 'cut', stopPropagation);
     this.disposables.addFromEvent(this, 'copy', stopPropagation);
     this.disposables.addFromEvent(this, 'paste', stopPropagation);
+    this.disposables.addFromEvent(this, 'pointerdown', stopPropagation);
   }
 
   get store() {

@@ -695,6 +695,7 @@ export const PackageList = [
     name: '@blocksuite/affine-widget-drag-handle',
     workspaceDependencies: [
       'blocksuite/affine/blocks/block-callout',
+      'blocksuite/affine/blocks/block-embed',
       'blocksuite/affine/blocks/block-list',
       'blocksuite/affine/blocks/block-note',
       'blocksuite/affine/blocks/block-paragraph',

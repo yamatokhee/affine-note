@@ -3470,6 +3470,7 @@ __metadata:
   resolution: "@blocksuite/affine-widget-drag-handle@workspace:blocksuite/affine/widgets/widget-drag-handle"
   dependencies:
     "@blocksuite/affine-block-callout": "workspace:*"
+    "@blocksuite/affine-block-embed": "workspace:*"
     "@blocksuite/affine-block-list": "workspace:*"
     "@blocksuite/affine-block-note": "workspace:*"
     "@blocksuite/affine-block-paragraph": "workspace:*"

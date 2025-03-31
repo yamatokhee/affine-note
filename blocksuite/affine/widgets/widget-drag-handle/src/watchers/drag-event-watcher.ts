@@ -1,3 +1,7 @@
+import {
+  EMBED_IFRAME_DEFAULT_HEIGHT_IN_SURFACE,
+  EMBED_IFRAME_DEFAULT_WIDTH_IN_SURFACE,
+} from '@blocksuite/affine-block-embed';
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
 import { DropIndicator } from '@blocksuite/affine-components/drop-indicator';
 import {
@@ -511,6 +515,7 @@ export class DragEventWatcher {
         this._mergeSnapshotToCurDoc(snapshot, point).catch(console.error);
       } else {
         this._dropAsGfxBlock(snapshot, point);
+        this.widget.selectionHelper.selection.clear(['block']);
       }
     } else {
       this._onPageDrop(dropBlock, dragPayload, dropPayload, point);
@@ -1052,7 +1057,10 @@ export class DragEventWatcher {
           Bound.deserialize(block.props.xywh as SerializedXYWH) ??
           new Bound(0, 0, 0, 0);
 
-        if (
+        if (block.flavour === 'affine:embed-iframe') {
+          blockBound.w = EMBED_IFRAME_DEFAULT_WIDTH_IN_SURFACE;
+          blockBound.h = EMBED_IFRAME_DEFAULT_HEIGHT_IN_SURFACE;
+        } else if (
           block.flavour === 'affine:attachment' ||
           block.flavour === 'affine:bookmark' ||
           block.flavour.startsWith('affine:embed-')
@@ -1132,17 +1140,22 @@ export class DragEventWatcher {
         this._dropToModel(surfaceSnapshot, this.gfx.surface!.id)
           .then(slices => {
             slices?.content.forEach((block, idx) => {
-              if (
-                block.id === content[idx].id &&
-                (block.flavour === 'affine:image' ||
+              if (block.id === content[idx].id) {
+                if (block.flavour === 'affine:embed-iframe') {
+                  store.updateBlock(block.id, {
+                    xywh: content[idx].props.xywh,
+                  });
+                } else if (
+                  block.flavour === 'affine:image' ||
                   block.flavour === 'affine:attachment' ||
                   block.flavour === 'affine:bookmark' ||
-                  block.flavour.startsWith('affine:embed-'))
-              ) {
-                store.updateBlock(block.id, {
-                  xywh: content[idx].props.xywh,
-                  style: content[idx].props.style,
-                });
+                  block.flavour.startsWith('affine:embed-')
+                ) {
+                  store.updateBlock(block.id, {
+                    xywh: content[idx].props.xywh,
+                    style: content[idx].props.style,
+                  });
+                }
               }
             });
           })
@@ -1160,7 +1173,11 @@ export class DragEventWatcher {
         this._dropToModel(pageSnapshot, this.widget.doc.root!.id)
           .then(slices => {
             slices?.content.forEach((block, idx) => {
-              if (
+              if (block.flavour === 'affine:embed-iframe') {
+                store.updateBlock(block.id, {
+                  xywh: content[idx].props.xywh,
+                });
+              } else if (
                 block.flavour === 'affine:attachment' ||
                 block.flavour.startsWith('affine:embed-')
               ) {
