@@ -87,6 +87,15 @@ export class EdgelessPenToolButton extends EdgelessToolbarToolMixin(
 
   override type: Pen[] = ['brush', 'highlighter'];
 
+  override firstUpdated() {
+    this.disposables.add(
+      this.gfx.tool.currentToolName$.subscribe(tool => {
+        if (this.type.map(String).includes(tool)) return;
+        this.tryDisposePopper();
+      })
+    );
+  }
+
   private _togglePenMenu() {
     if (this.tryDisposePopper()) return;
     !this.active && this.setEdgelessTool(this.pen$.peek());

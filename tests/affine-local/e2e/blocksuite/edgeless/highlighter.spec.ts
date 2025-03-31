@@ -43,3 +43,17 @@ test('should add highlighter', async ({ page }) => {
 
   expect(defaultLineWidth).toBe('22');
 });
+
+test('should exit drawing tools menu when Escape is pressed', async ({
+  page,
+}) => {
+  await setEdgelessTool(page, 'highlighter');
+
+  const drawingToolsMenu = page.locator('edgeless-pen-menu');
+
+  await expect(drawingToolsMenu).toBeVisible();
+
+  await page.keyboard.press('Escape');
+
+  await expect(drawingToolsMenu).toBeHidden();
+});
