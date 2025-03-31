@@ -145,6 +145,10 @@ type AttachmentEvents =
 type TemplateEvents = 'openTemplateListMenu';
 // END SECTION
 
+// SECTION: notification
+type NotificationEvents = 'openInbox' | 'clickNotification';
+// END SECTION
+
 type UserEvents =
   | GeneralEvents
   | AppEvents
@@ -162,7 +166,9 @@ type UserEvents =
   | PaymentEvents
   | DNDEvents
   | AttachmentEvents
-  | TemplateEvents;
+  | TemplateEvents
+  | NotificationEvents;
+
 interface PageDivision {
   [page: string]: {
     [segment: string]: {
@@ -346,6 +352,7 @@ const PageEvents = {
     sidebar: {
       newDoc: ['quickStart'],
       template: ['openTemplateListMenu', 'quickStart'],
+      notifications: ['openInbox', 'clickNotification'],
     },
     splitViewIndicator: {
       $: ['splitViewAction', 'openInSplitView', 'openInPeekView'],
@@ -542,6 +549,12 @@ export type EventArgs = {
   modifyDocDefaultRole: { role: string };
   inviteUserDocRole: {
     control: 'member list';
+  };
+  openInbox: { unreadCount: number };
+  clickNotification: {
+    type: string;
+    item: 'read' | 'button' | 'dismiss';
+    button?: string;
   };
 };
 

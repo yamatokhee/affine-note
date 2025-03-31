@@ -25,6 +25,7 @@ import type {
   MentionNotificationBodyType,
 } from '@affine/graphql';
 import { i18nTime, Trans, useI18n } from '@affine/i18n';
+import track from '@affine/track';
 import {
   CollaborationIcon,
   DeleteIcon,
@@ -176,6 +177,10 @@ const MentionNotificationItem = ({
   const memberInactived = !body.createdByUser;
 
   const handleClick = useCallback(() => {
+    track.$.sidebar.notifications.clickNotification({
+      type: notification.type,
+      item: 'read',
+    });
     if (!body.workspace?.id) {
       return;
     }
@@ -189,7 +194,7 @@ const MentionNotificationItem = ({
       body.doc.blockId ? [body.doc.blockId] : undefined,
       body.doc.elementId ? [body.doc.elementId] : undefined
     );
-  }, [body, jumpToPageBlock, notificationListService, notification.id]);
+  }, [body, jumpToPageBlock, notificationListService, notification]);
 
   return (
     <div className={styles.itemContainer} onClick={handleClick}>
@@ -241,6 +246,10 @@ const InvitationReviewRequestNotificationItem = ({
   const memberInactived = !body.createdByUser;
   const workspaceInactived = !body.workspace;
   const handleClick = useCallback(() => {
+    track.$.sidebar.notifications.clickNotification({
+      type: notification.type,
+      item: 'read',
+    });
     notificationListService.readNotification(notification.id).catch(err => {
       console.error(err);
     });
@@ -353,6 +362,11 @@ const InvitationReviewApprovedNotificationItem = ({
   const workspaceInactived = !body.workspace;
 
   const handleClick = useCallback(() => {
+    track.$.sidebar.notifications.clickNotification({
+      type: notification.type,
+      item: 'button',
+      button: 'open',
+    });
     notificationListService.readNotification(notification.id).catch(err => {
       console.error(err);
     });
@@ -424,6 +438,10 @@ const InvitationAcceptedNotificationItem = ({
   const memberInactived = !body.createdByUser;
 
   const handleClick = useCallback(() => {
+    track.$.sidebar.notifications.clickNotification({
+      type: notification.type,
+      item: 'read',
+    });
     notificationListService.readNotification(notification.id).catch(err => {
       console.error(err);
     });
@@ -476,6 +494,10 @@ const InvitationBlockedNotificationItem = ({
   const workspaceInactived = !body.workspace;
 
   const handleClick = useCallback(() => {
+    track.$.sidebar.notifications.clickNotification({
+      type: notification.type,
+      item: 'read',
+    });
     notificationListService.readNotification(notification.id).catch(err => {
       console.error(err);
     });
@@ -544,6 +566,11 @@ const InvitationNotificationItem = ({
   }, [body, jumpToPage, notification.id, notificationListService]);
 
   const handleAcceptInvite = useCallback(() => {
+    track.$.sidebar.notifications.clickNotification({
+      type: notification.type,
+      item: 'button',
+      button: 'accept',
+    });
     setIsAccepting(true);
     invitationService
       .acceptInvite(inviteId)
@@ -654,12 +681,17 @@ const DeleteButton = ({
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation(); // prevent trigger the click event of the parent element
 
+      track.$.sidebar.notifications.clickNotification({
+        type: notification.type,
+        item: 'dismiss',
+      });
+
       notificationListService.readNotification(notification.id).catch(err => {
         console.error(err);
       });
       onClick?.();
     },
-    [notificationListService, notification.id, onClick]
+    [notificationListService, notification, onClick]
   );
 
   return (
