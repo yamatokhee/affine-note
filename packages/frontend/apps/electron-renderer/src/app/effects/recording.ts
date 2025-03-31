@@ -12,7 +12,7 @@ import { Text } from '@blocksuite/affine/store';
 import type { BlobEngine } from '@blocksuite/affine/sync';
 import type { FrameworkProvider } from '@toeverything/infra';
 
-import { getCurrentWorkspace } from './utils';
+import { getCurrentWorkspace, isAiEnabled } from './utils';
 
 const logger = new DebugLogger('electron-renderer:recording');
 
@@ -44,6 +44,7 @@ export function setupRecordingEvents(frameworkProvider: FrameworkProvider) {
           frameworkProvider.get(EditorSettingService);
         const docsService = workspace.scope.get(DocsService);
         const editorSetting = editorSettingService.editorSetting;
+        const aiEnabled = isAiEnabled(frameworkProvider);
 
         const timestamp = i18nTime(status.startTime, {
           absolute: {
@@ -96,7 +97,10 @@ export function setupRecordingEvents(frameworkProvider: FrameworkProvider) {
                   MeetingSettingsService
                 );
 
-                if (!meetingSettingsService.settings.autoTranscription) {
+                if (
+                  !meetingSettingsService.settings.autoTranscription ||
+                  !aiEnabled
+                ) {
                   // auto transcription is disabled,
                   // so we don't need to transcribe the recording by default
                   return;

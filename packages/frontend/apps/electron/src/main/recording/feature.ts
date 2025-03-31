@@ -517,14 +517,17 @@ export function startRecording(
     appGroup: normalizeAppGroupInfo(appGroup),
   });
 
-  if (state?.status === 'recording') {
-    // set a timeout to stop the recording after MAX_DURATION_FOR_TRANSCRIPTION
-    setTimeout(() => {
+  // set a timeout to stop the recording after MAX_DURATION_FOR_TRANSCRIPTION
+  setTimeout(() => {
+    if (
+      state?.status === 'recording' &&
+      state.id === recordingStatus$.value?.id
+    ) {
       stopRecording(state.id).catch(err => {
         logger.error('failed to stop recording', err);
       });
-    }, MAX_DURATION_FOR_TRANSCRIPTION);
-  }
+    }
+  }, MAX_DURATION_FOR_TRANSCRIPTION);
 
   return state;
 }
@@ -549,30 +552,48 @@ export async function stopRecording(id: number) {
     return;
   }
 
-  const recordingStatus = recordingStateMachine.dispatch({
-    type: 'STOP_RECORDING',
-    id,
-    filepath: String(recording.file.path),
-    sampleRate: recording.stream.sampleRate,
-    numberOfChannels: recording.stream.channels,
-  });
-
-  if (!recordingStatus) {
-    logger.error('No recording status to stop');
-    return;
-  }
-
   const { file } = recording;
   file.end();
 
   // Wait for file to finish writing
-  await new Promise<void>(resolve => {
-    file.on('finish', () => {
-      resolve();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      file.on('finish', () => {
+        // check if the file is empty
+        const stats = fs.statSync(file.path);
+        if (stats.size === 0) {
+          logger.error(`Recording ${id} is empty`);
+          reject(new Error('Recording is empty'));
+        }
+        resolve();
+      });
     });
-  });
+    const recordingStatus = recordingStateMachine.dispatch({
+      type: 'STOP_RECORDING',
+      id,
+      filepath: String(recording.file.path),
+      sampleRate: recording.stream.sampleRate,
+      numberOfChannels: recording.stream.channels,
+    });
 
-  return serializeRecordingStatus(recordingStatus);
+    if (!recordingStatus) {
+      logger.error('No recording status to stop');
+      return;
+    }
+    return serializeRecordingStatus(recordingStatus);
+  } catch (error: unknown) {
+    logger.error('Failed to stop recording', error);
+    const recordingStatus = recordingStateMachine.dispatch({
+      type: 'CREATE_BLOCK_FAILED',
+      id,
+      error: error instanceof Error ? error : undefined,
+    });
+    if (!recordingStatus) {
+      logger.error('No recording status to stop');
+      return;
+    }
+    return serializeRecordingStatus(recordingStatus);
+  }
 }
 
 export async function readyRecording(id: number, buffer: Buffer) {
