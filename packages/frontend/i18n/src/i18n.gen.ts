@@ -4664,6 +4664,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.setting.notifications.header.title"](): string;
     /**
+      * `Choose the types of updates you want to receive and where to get them.`
+      */
+    ["com.affine.setting.notifications.header.description"](): string;
+    /**
       * `Email notifications`
       */
     ["com.affine.setting.notifications.email.title"](): string;
@@ -7203,6 +7207,10 @@ export function useAFFiNEI18N(): {
       * `No new notifications`
       */
     ["com.affine.notification.empty"](): string;
+    /**
+      * `You'll be notified here for @mentions and workspace invites.`
+      */
+    ["com.affine.notification.empty.description"](): string;
     /**
       * `Open workspace`
       */

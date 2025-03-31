@@ -60,6 +60,7 @@ export const NotificationSettings = () => {
     <>
       <SettingHeader
         title={t['com.affine.setting.notifications.header.title']()}
+        subtitle={t['com.affine.setting.notifications.header.description']()}
       />
       <SettingWrapper
         title={t['com.affine.setting.notifications.email.title']()}

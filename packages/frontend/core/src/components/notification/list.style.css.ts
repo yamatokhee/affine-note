@@ -1,6 +1,6 @@
 import { cssVar } from '@toeverything/theme';
 import { cssVarV2 } from '@toeverything/theme/v2';
-import { style } from '@vanilla-extract/css';
+import { keyframes, style } from '@vanilla-extract/css';
 
 export const containerScrollViewport = style({
   maxHeight: '272px',
@@ -14,10 +14,39 @@ export const itemList = style({
 });
 
 export const listEmpty = style({
-  color: cssVarV2('text/placeholder'),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '2px',
+  height: '184px',
+  padding: '16px 45px',
+});
+
+export const listEmptyIconContainer = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '40px',
+  height: '40px',
+  marginBottom: '14px',
+  borderRadius: '50%',
+  backgroundColor: cssVarV2('layer/background/secondary'),
+  color: cssVarV2('icon/primary'),
+});
+
+export const listEmptyTitle = style({
+  color: cssVarV2('text/primary'),
   fontSize: '14px',
   lineHeight: '22px',
-  padding: '4px 2px',
+  textAlign: 'center',
+});
+
+export const listEmptyDescription = style({
+  color: cssVarV2('text/secondary'),
+  fontSize: '14px',
+  lineHeight: '20px',
+  textAlign: 'center',
 });
 
 export const error = style({
@@ -36,8 +65,33 @@ export const itemContainer = style({
   gap: '8px',
   cursor: 'pointer',
   selectors: {
-    [`&:hover:not([data-disabled="true"])`]: {
+    [`&:hover:not([data-disabled="true"],:has(button:hover))`]: {
       backgroundColor: cssVarV2('layer/background/hoverOverlay'),
+    },
+  },
+});
+
+export const itemSkeletonContainer = style({
+  opacity: 0,
+  animation: `${keyframes({
+    '0%': { opacity: 0 },
+    '100%': { opacity: 1 },
+  })} 500ms ease forwards 1s`,
+});
+
+export const itemDeleteButton = style({
+  position: 'absolute',
+  right: '10px',
+  bottom: '8px',
+  width: '20px',
+  height: '20px',
+  backgroundColor: cssVarV2('button/iconButtonSolid'),
+  border: `0.5px solid ${cssVarV2('layer/insideBorder/border')}`,
+  boxShadow: cssVar('buttonShadow'),
+  opacity: 0,
+  selectors: {
+    [`${itemContainer}:hover &`]: {
+      opacity: 1,
     },
   },
 });
@@ -62,29 +116,10 @@ export const itemNotSupported = style({
   lineHeight: '22px',
 });
 
-export const itemDeleteButton = style({
-  position: 'absolute',
-  right: '10px',
-  bottom: '8px',
-  width: '20px',
-  height: '20px',
-  backgroundColor: cssVarV2('button/iconButtonSolid'),
-  border: `0.5px solid ${cssVarV2('layer/insideBorder/border')}`,
-  boxShadow: cssVar('buttonShadow'),
-  opacity: 0,
-  selectors: {
-    [`${itemContainer}:hover &`]: {
-      opacity: 1,
-    },
-  },
-});
-
 export const itemNameLabel = style({
-  fontWeight: 'bold',
+  fontWeight: '500',
   color: cssVarV2('text/primary'),
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '4px',
+  display: 'inline',
   verticalAlign: 'top',
   selectors: {
     [`&[data-inactived="true"]`]: {
@@ -95,4 +130,11 @@ export const itemNameLabel = style({
 
 export const itemActionButton = style({
   width: 'fit-content',
+  borderRadius: '4px',
+});
+
+export const itemNameLabelIcon = style({
+  verticalAlign: 'top',
+  marginRight: '4px',
+  color: cssVarV2('icon/primary'),
 });

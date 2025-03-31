@@ -13,6 +13,7 @@ import {
   NotificationType,
 } from '@affine/core/modules/notification';
 import { WorkspacesService } from '@affine/core/modules/workspace';
+import { extractEmojiIcon } from '@affine/core/utils';
 import { UserFriendlyError } from '@affine/error';
 import type {
   InvitationAcceptedNotificationBodyType,
@@ -24,15 +25,21 @@ import type {
   MentionNotificationBodyType,
 } from '@affine/graphql';
 import { i18nTime, Trans, useI18n } from '@affine/i18n';
-import { CollaborationIcon, DeleteIcon } from '@blocksuite/icons/rc';
+import {
+  CollaborationIcon,
+  DeleteIcon,
+  EdgelessIcon,
+  NotificationIcon,
+  PageIcon,
+} from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
+import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useNavigateHelper } from '../hooks/use-navigate-helper';
 import * as styles from './list.style.css';
 
 export const NotificationList = () => {
-  const t = useI18n();
   const notificationListService = useService(NotificationListService);
   const notifications = useLiveData(notificationListService.notifications$);
   const isLoading = useLiveData(notificationListService.isLoading$);
@@ -84,9 +91,7 @@ export const NotificationList = () => {
         ) : userFriendlyError ? (
           <div className={styles.error}>{userFriendlyError.message}</div>
         ) : (
-          <div className={styles.listEmpty}>
-            {t['com.affine.notification.empty']()}
-          </div>
+          <NotificationListEmpty />
         )}
       </Scrollable.Viewport>
       <Scrollable.Scrollbar />
@@ -94,10 +99,31 @@ export const NotificationList = () => {
   );
 };
 
+const NotificationListEmpty = () => {
+  const t = useI18n();
+  return (
+    <div className={styles.listEmpty}>
+      <div className={styles.listEmptyIconContainer}>
+        <NotificationIcon width={24} height={24} />
+      </div>
+      <div className={styles.listEmptyTitle}>
+        {t['com.affine.notification.empty']()}
+      </div>
+      <div className={styles.listEmptyDescription}>
+        {t['com.affine.notification.empty.description']()}
+      </div>
+    </div>
+  );
+};
+
 const NotificationItemSkeleton = () => {
   return Array.from({ length: 3 }).map((_, i) => (
-    // oxlint-disable-next-line no-array-index-key
-    <div key={i} className={styles.itemContainer} data-disabled="true">
+    <div
+      // oxlint-disable-next-line no-array-index-key
+      key={i}
+      className={clsx(styles.itemContainer, styles.itemSkeletonContainer)}
+      data-disabled="true"
+    >
       <Skeleton variant="circular" width={22} height={22} />
       <div className={styles.itemMain}>
         <Skeleton variant="text" width={150} />
@@ -183,7 +209,7 @@ const MentionNotificationItem = ({
                   data-inactived={memberInactived}
                 />
               ),
-              2: <b className={styles.itemNameLabel} />,
+              2: <DocNameWithIcon mode={body.doc.mode} />,
             }}
             values={{
               username:
@@ -419,12 +445,7 @@ const InvitationAcceptedNotificationItem = ({
           <Trans
             i18nKey={'com.affine.notification.invitation-accepted'}
             components={{
-              1: (
-                <b
-                  className={styles.itemNameLabel}
-                  data-inactived={memberInactived}
-                />
-              ),
+              1: <WorkspaceNameWithIcon data-inactived={memberInactived} />,
             }}
             values={{
               username:
@@ -657,8 +678,50 @@ const WorkspaceNameWithIcon = ({
 }: React.PropsWithChildren<React.HTMLAttributes<HTMLSpanElement>>) => {
   return (
     <b className={styles.itemNameLabel} {...props}>
-      <CollaborationIcon width={20} height={20} />
+      <CollaborationIcon
+        className={styles.itemNameLabelIcon}
+        width={20}
+        height={20}
+      />
       {children}
+    </b>
+  );
+};
+
+const DocNameWithIcon = ({
+  children,
+  mode,
+  ...props
+}: React.PropsWithChildren<
+  React.HTMLAttributes<HTMLSpanElement> & { mode: 'page' | 'edgeless' }
+>) => {
+  const { emoji, rest: titleWithoutEmoji } = useMemo(() => {
+    if (typeof children === 'string') {
+      return extractEmojiIcon(children);
+    }
+    if (
+      children instanceof Array &&
+      children.length === 1 &&
+      typeof children[0] === 'string'
+    ) {
+      return extractEmojiIcon(children[0]);
+    }
+    return { rest: children, emoji: null };
+  }, [children]);
+  return (
+    <b className={styles.itemNameLabel} {...props}>
+      {emoji ? (
+        <span className={styles.itemNameLabelIcon}>{emoji}</span>
+      ) : mode === 'page' ? (
+        <PageIcon className={styles.itemNameLabelIcon} width={20} height={20} />
+      ) : (
+        <EdgelessIcon
+          className={styles.itemNameLabelIcon}
+          width={20}
+          height={20}
+        />
+      )}
+      {titleWithoutEmoji}
     </b>
   );
 };
