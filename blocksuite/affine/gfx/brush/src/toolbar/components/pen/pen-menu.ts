@@ -73,7 +73,7 @@ export class EdgelessPenMenu extends EdgelessToolbarToolMixin(
   private readonly _onPickColor = (e: ColorEvent) => {
     let color = e.detail.value;
     if (this.pen$.peek() === 'highlighter') {
-      color = adjustColorAlpha(color, 0.5);
+      color = adjustColorAlpha(color, 0.3);
     }
     this.onChange({ color });
   };

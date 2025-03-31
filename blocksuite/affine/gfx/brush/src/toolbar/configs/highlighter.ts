@@ -90,7 +90,7 @@ export const highlighterToolbarConfig = {
         );
         const onPick = (e: PickColorEvent) => {
           if (e.type === 'pick') {
-            const color = adjustColorAlpha(e.detail.value, 0.5);
+            const color = adjustColorAlpha(e.detail.value, 0.3);
             for (const model of models) {
               const props = packColor(field, color);
               ctx.std
