@@ -396,7 +396,7 @@ export function createWebpackConfig(
     );
   }
 
-  if (flags.mode === 'development') {
+  if (flags.mode === 'development' && !IN_CI) {
     config.optimization = {
       ...config.optimization,
       minimize: false,

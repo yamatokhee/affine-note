@@ -37,9 +37,9 @@ export async function waitForAllPagesLoad(page: Page) {
 }
 
 export async function clickNewPageButton(page: Page, title?: string) {
-  // fixme(himself65): if too fast, the page will crash
   await page.getByTestId('sidebar-new-page-button').click({
-    delay: 100,
+    // default timeout is 5000ms, but it's not enough for the CI first page load
+    timeout: 8000,
   });
   await waitForEmptyEditor(page);
   if (title) {
