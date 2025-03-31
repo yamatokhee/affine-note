@@ -47,8 +47,10 @@ export const IntegrationCardHeader = ({
   className,
   icon,
   onSettingClick,
+  showSetting = true,
   ...props
 }: HTMLAttributes<HTMLHeadElement> & {
+  showSetting?: boolean;
   onSettingClick?: () => void;
   icon?: ReactNode;
 }) => {
@@ -56,7 +58,7 @@ export const IntegrationCardHeader = ({
     <header className={clsx(cardHeader, className)} {...props}>
       <IntegrationCardIcon>{icon}</IntegrationCardIcon>
       <div className={spaceX} />
-      <IntegrationSettingIcon onClick={onSettingClick} />
+      {showSetting ? <IntegrationSettingIcon onClick={onSettingClick} /> : null}
     </header>
   );
 };

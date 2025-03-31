@@ -47,6 +47,7 @@ export const ReadwiseIntegration = () => {
       <IntegrationCardHeader
         icon={<IntegrationTypeIcon type="readwise" />}
         onSettingClick={handleOpenSetting}
+        showSetting={!!token}
       />
       <IntegrationCardContent
         title={t['com.affine.integration.readwise.name']()}
