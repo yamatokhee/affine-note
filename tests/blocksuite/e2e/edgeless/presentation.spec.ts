@@ -9,8 +9,11 @@ import {
   edgelessCommonSetup,
   enterPresentationMode,
   locatorPresentationToolbarButton,
+  resizeElementByHandle,
+  selectNoteInEdgeless,
   setEdgelessTool,
   Shape,
+  switchEditorMode,
   toggleFramePanel,
 } from '../utils/actions/edgeless.js';
 import {
@@ -19,7 +22,11 @@ import {
   pressEscape,
   selectAllBlocksByKeyboard,
 } from '../utils/actions/keyboard.js';
-import { waitNextFrame } from '../utils/actions/misc.js';
+import {
+  enterPlaygroundRoom,
+  initEmptyEdgelessState,
+  waitNextFrame,
+} from '../utils/actions/misc.js';
 import { test } from '../utils/playwright.js';
 
 test.describe('presentation', () => {
@@ -245,5 +252,23 @@ test.describe('presentation', () => {
     await expect(frameItems.nth(5)).toHaveText('Frame 2');
     await expect(frameItems.nth(6)).toHaveText('Frame 3');
     await expect(frameItems.nth(7)).toHaveText('Frame 4');
+  });
+
+  test('note should hide the collapse button when enter presentation mode', async ({
+    page,
+  }) => {
+    await enterPlaygroundRoom(page);
+    const { noteId } = await initEmptyEdgelessState(page);
+    await switchEditorMode(page);
+
+    await selectNoteInEdgeless(page, noteId);
+    await resizeElementByHandle(page, { x: 0, y: 70 }, 'bottom-right');
+
+    await createFrame(page, [100, 100], [100, 200]);
+
+    await enterPresentationMode(page);
+
+    const collapseButton = page.getByTestId('edgeless-note-collapse-button');
+    await expect(collapseButton).not.toBeVisible();
   });
 });

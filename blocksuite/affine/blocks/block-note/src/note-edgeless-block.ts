@@ -216,6 +216,8 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
     const { borderRadius } = edgeless.style;
     const { collapse = false, collapsedHeight, scale = 1 } = edgeless;
 
+    const { tool } = this.gfx;
+
     const bound = Bound.deserialize(xywh);
     const height = bound.h / scale;
 
@@ -280,7 +282,9 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
           .editing=${this._editing}
         ></edgeless-note-mask>
 
-        ${isCollapsable && (!this.model.isPageBlock() || !hasHeader)
+        ${isCollapsable &&
+        tool.currentToolName$.value !== 'frameNavigator' &&
+        (!this.model.isPageBlock() || !hasHeader)
           ? html`<div
               class="${classMap({
                 [styles.collapseButton]: true,
