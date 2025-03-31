@@ -132,6 +132,10 @@ type PaymentEvents =
   | 'confirmResumingSubscription';
 // END SECTION
 
+// SECTION: ai
+type AIEvents = 'addEmbeddingDoc';
+// END SECTION
+
 // SECTION: attachment
 type AttachmentEvents =
   | 'openAttachmentInFullscreen'
@@ -177,6 +181,7 @@ type UserEvents =
   | AccountEvents
   | PaymentEvents
   | DNDEvents
+  | AIEvents
   | AttachmentEvents
   | TemplateEvents
   | NotificationEvents
@@ -361,6 +366,9 @@ const PageEvents = {
       pageInfo: ['open'],
       importModal: ['open'],
       snapshot: ['import', 'export'],
+    },
+    chatPanel: {
+      chatPanelInput: ['addEmbeddingDoc'],
     },
     attachment: {
       $: [
@@ -567,6 +575,11 @@ export type EventArgs = {
   linkDoc: { type: string; journal: boolean };
   drop: { type: string };
   dragStart: { type: string };
+  addEmbeddingDoc: {
+    type?: 'page' | 'edgeless';
+    control: 'addButton' | 'atMenu';
+    method: 'doc' | 'file' | 'tags' | 'collections' | 'suggestion';
+  };
   openAttachmentInFullscreen: AttachmentEventArgs;
   openAttachmentInNewTab: AttachmentEventArgs;
   openAttachmentInPeekView: AttachmentEventArgs;

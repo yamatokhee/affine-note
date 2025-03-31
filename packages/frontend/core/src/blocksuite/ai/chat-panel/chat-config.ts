@@ -34,6 +34,7 @@ export interface DocDisplayConfig {
     cleanup: () => void;
   };
   getDocMeta: (docId: string) => Partial<DocMeta> | null;
+  getDocPrimaryMode: (docId: string) => 'page' | 'edgeless';
   getDoc: (docId: string) => Store | null;
   getReferenceDocs: (docIds: string[]) => {
     signal: Signal<

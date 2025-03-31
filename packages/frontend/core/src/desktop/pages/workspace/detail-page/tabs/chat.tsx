@@ -101,6 +101,10 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
           const docRecord = docsService.list.doc$(docId).value;
           return docRecord?.meta$.value ?? null;
         },
+        getDocPrimaryMode: (docId: string) => {
+          const docRecord = docsService.list.doc$(docId).value;
+          return docRecord?.primaryMode$.value ?? 'page';
+        },
         getDoc: (docId: string) => {
           const doc = workspaceService.workspace.docCollection.getDoc(docId);
           return doc?.getStore() ?? null;

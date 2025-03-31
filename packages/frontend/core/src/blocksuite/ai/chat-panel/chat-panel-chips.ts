@@ -263,6 +263,7 @@ export class ChatPanelChips extends SignalWatcher(
         <chat-panel-add-popover
           .addChip=${this._addChip}
           .searchMenuConfig=${this.searchMenuConfig}
+          .docDisplayConfig=${this.docDisplayConfig}
           .abortController=${this._abortController}
         ></chat-panel-add-popover>
       `,

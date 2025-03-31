@@ -3,11 +3,13 @@ import type {
   CollectionMeta,
   TagMeta,
 } from '@affine/core/components/page-list';
+import track from '@affine/track';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
 import { scrollbarStyle } from '@blocksuite/affine/shared/styles';
 import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine/shared/theme';
 import { openFileOrFiles } from '@blocksuite/affine/shared/utils';
 import { ShadowlessElement } from '@blocksuite/affine/std';
+import type { DocMeta } from '@blocksuite/affine/store';
 import {
   CollectionsIcon,
   MoreHorizontalIcon,
@@ -15,13 +17,12 @@ import {
   TagsIcon,
   UploadIcon,
 } from '@blocksuite/icons/lit';
-import type { DocMeta } from '@blocksuite/store';
 import { Signal } from '@preact/signals-core';
 import { css, html, type TemplateResult } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { SearchMenuConfig } from '../chat-config';
+import type { DocDisplayConfig, SearchMenuConfig } from '../chat-config';
 import type { ChatChip } from '../chat-context';
 
 enum AddPopoverMode {
@@ -171,6 +172,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
       file,
       state: 'processing',
     });
+    this._track('file');
     this.abortController.abort();
   };
 
@@ -243,6 +245,9 @@ export class ChatPanelAddPopover extends SignalWatcher(
 
   @property({ attribute: false })
   accessor searchMenuConfig!: SearchMenuConfig;
+
+  @property({ attribute: false })
+  accessor docDisplayConfig!: DocDisplayConfig;
 
   @property({ attribute: false })
   accessor addChip!: (chip: ChatChip) => void;
@@ -450,6 +455,8 @@ export class ChatPanelAddPopover extends SignalWatcher(
       docId: meta.id,
       state: 'processing',
     });
+    const mode = this.docDisplayConfig.getDocPrimaryMode(meta.id);
+    this._track('doc', mode);
     this.abortController.abort();
   };
 
@@ -458,6 +465,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
       tagId: tag.id,
       state: 'processing',
     });
+    this._track('tags');
     this.abortController.abort();
   };
 
@@ -466,6 +474,7 @@ export class ChatPanelAddPopover extends SignalWatcher(
       collectionId: collection.id,
       state: 'processing',
     });
+    this._track('collections');
     this.abortController.abort();
   };
 
@@ -508,6 +517,17 @@ export class ChatPanelAddPopover extends SignalWatcher(
           block: 'nearest',
         });
       }
+    });
+  }
+
+  private _track(
+    method: 'doc' | 'file' | 'tags' | 'collections',
+    type?: 'page' | 'edgeless'
+  ) {
+    track.$.chatPanel.chatPanelInput.addEmbeddingDoc({
+      control: 'addButton',
+      method,
+      type,
     });
   }
 }
