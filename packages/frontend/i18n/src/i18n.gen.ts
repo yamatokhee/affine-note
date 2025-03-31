@@ -192,29 +192,25 @@ export function useAFFiNEI18N(): {
       */
     ["Enable cloud hint"](): string;
     /**
-      * `Export`
+      * `Full Backup`
       */
-    Export(): string;
+    ["Full Backup"](): string;
     /**
-      * `Export (Offline)`
+      * `Export a complete workspace backup`
       */
-    ["Export(Offline)"](): string;
+    ["Full Backup Description"](): string;
     /**
-      * `Full Sync`
+      * `Sync all cloud data and export a complete workspace backup`
       */
-    ["Full Sync"](): string;
+    ["Full Backup Hint"](): string;
     /**
-      * `You can export the entire Workspace data for backup, and the exported data can be re-imported.`
+      * `Quick Export`
       */
-    ["Export Description"](): string;
+    ["Quick Export"](): string;
     /**
-      * `You can export the entire Workspace data for backup, and the exported data can be re-imported. But you are offline now which will cause the exported data not up to date.`
+      * `Skip cloud synchronization and quickly export current data(some attachments or docs may be missing)`
       */
-    ["Export Description(Offline)"](): string;
-    /**
-      * `You can export the entire Workspace data for backup, and the exported data can be re-imported. But you must sync all cloud data first to keep your exported data up to date.`
-      */
-    ["Full Sync Description"](): string;
+    ["Quick Export Description"](): string;
     /**
       * `Export failed`
       */
