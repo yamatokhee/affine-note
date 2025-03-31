@@ -8,8 +8,10 @@ import {
   dragBetweenViewCoords,
   edgelessCommonSetup,
   enterPresentationMode,
+  getSelectedBound,
   locatorPresentationToolbarButton,
   resizeElementByHandle,
+  selectElementInEdgeless,
   selectNoteInEdgeless,
   setEdgelessTool,
   Shape,
@@ -270,5 +272,45 @@ test.describe('presentation', () => {
 
     const collapseButton = page.getByTestId('edgeless-note-collapse-button');
     await expect(collapseButton).not.toBeVisible();
+  });
+
+  test('note should be visible when enter presentation mode', async ({
+    page,
+  }) => {
+    await enterPlaygroundRoom(page);
+    const { noteId } = await initEmptyEdgelessState(page);
+    await switchEditorMode(page);
+
+    await selectNoteInEdgeless(page, noteId);
+    const noteBound = await getSelectedBound(page);
+    await pressEscape(page, 3);
+
+    const frame1 = await createFrame(
+      page,
+      [noteBound[0] - 10, noteBound[1] - 10],
+      [noteBound[0] + noteBound[2] + 10, noteBound[1] + noteBound[3] + 10]
+    );
+    await selectElementInEdgeless(page, [frame1]);
+    const frame1Bound = await getSelectedBound(page);
+    await pressEscape(page);
+
+    await createFrame(
+      page,
+      [frame1Bound[0] + frame1Bound[2] + 10, frame1Bound[1]],
+      [frame1Bound[0] + 2 * frame1Bound[2], frame1Bound[1] + frame1Bound[3]]
+    );
+
+    await enterPresentationMode(page);
+    const nextButton = locatorPresentationToolbarButton(page, 'next');
+    const prevButton = locatorPresentationToolbarButton(page, 'previous');
+
+    const note = page.locator('affine-edgeless-note');
+    await expect(note).toBeVisible();
+
+    await nextButton.click();
+    await expect(note).toBeHidden();
+
+    await prevButton.click();
+    await expect(note).toBeVisible();
   });
 });

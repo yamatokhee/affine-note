@@ -1,15 +1,17 @@
 import { WithDisposable } from '@blocksuite/global/lit';
+import { batch } from '@preact/signals-core';
 import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { PropTypes, requiredProperties } from '../view/decorators/required.js';
 import {
-  type BlockComponent,
   type EditorHost,
+  isGfxBlockComponent,
   ShadowlessElement,
-} from '../view/index.js';
-import type { GfxBlockElementModel } from './model/gfx-block-model.js';
-import { Viewport } from './viewport.js';
+} from '../view';
+import { PropTypes, requiredProperties } from '../view/decorators/required';
+import { GfxControllerIdentifier } from './identifiers';
+import type { GfxBlockElementModel } from './model/gfx-block-model';
+import { Viewport } from './viewport';
 
 /**
  * A wrapper around `requestConnectedFrame` that only calls at most once in one frame
@@ -33,24 +35,6 @@ export function requestThrottledConnectedFrame<
       });
     }
   }) as T;
-}
-
-function setBlockState(view: BlockComponent | null, state: 'active' | 'idle') {
-  if (!view) return;
-
-  if (state === 'active') {
-    view.style.visibility = 'visible';
-    view.style.pointerEvents = 'auto';
-    view.classList.remove('block-idle');
-    view.classList.add('block-active');
-    view.dataset.blockState = 'active';
-  } else {
-    view.style.visibility = 'hidden';
-    view.style.pointerEvents = 'none';
-    view.classList.remove('block-active');
-    view.classList.add('block-idle');
-    view.dataset.blockState = 'idle';
-  }
 }
 
 @requiredProperties({
@@ -85,21 +69,27 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
   private readonly _hideOutsideBlock = () => {
     if (!this.host) return;
 
-    const { host } = this;
+    const gfx = this.host.std.get(GfxControllerIdentifier);
     const modelsInViewport = this.getModelsInViewport();
 
-    modelsInViewport.forEach(model => {
-      const view = host.std.view.getBlock(model.id);
-      setBlockState(view, 'active');
+    batch(() => {
+      modelsInViewport.forEach(model => {
+        const view = gfx.view.get(model);
+        if (isGfxBlockComponent(view)) {
+          view.transformState$.value = 'active';
+        }
 
-      if (this._lastVisibleModels?.has(model)) {
-        this._lastVisibleModels!.delete(model);
-      }
-    });
+        if (this._lastVisibleModels?.has(model)) {
+          this._lastVisibleModels!.delete(model);
+        }
+      });
 
-    this._lastVisibleModels?.forEach(model => {
-      const view = host.std.view.getBlock(model.id);
-      setBlockState(view, 'idle');
+      this._lastVisibleModels?.forEach(model => {
+        const view = gfx.view.get(model);
+        if (isGfxBlockComponent(view)) {
+          view.transformState$.value = 'idle';
+        }
+      });
     });
 
     this._lastVisibleModels = modelsInViewport;
@@ -194,23 +184,29 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
 
   setBlocksActive(blockIds: string[]): void {
     if (!this.host) return;
+    const gfx = this.host.std.get(GfxControllerIdentifier);
 
-    blockIds.forEach(id => {
-      const view = this.host?.std.view.getBlock(id);
-      if (view) {
-        setBlockState(view, 'active');
-      }
+    batch(() => {
+      blockIds.forEach(id => {
+        const view = gfx.view.get(id);
+        if (isGfxBlockComponent(view)) {
+          view.transformState$.value = 'active';
+        }
+      });
     });
   }
 
   setBlocksIdle(blockIds: string[]): void {
     if (!this.host) return;
+    const gfx = this.host.std.get(GfxControllerIdentifier);
 
-    blockIds.forEach(id => {
-      const view = this.host?.std.view.getBlock(id);
-      if (view) {
-        setBlockState(view, 'idle');
-      }
+    batch(() => {
+      blockIds.forEach(id => {
+        const view = gfx.view.get(id);
+        if (isGfxBlockComponent(view)) {
+          view.transformState$.value = 'idle';
+        }
+      });
     });
   }
 }

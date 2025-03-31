@@ -1,6 +1,6 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { Bound } from '@blocksuite/global/gfx';
-import { computed } from '@preact/signals-core';
+import { computed, effect, signal } from '@preact/signals-core';
 import { nothing } from 'lit';
 
 import type { BlockService } from '../../extension/index.js';
@@ -23,12 +23,26 @@ export function isGfxBlockComponent(
 export const GfxElementSymbol = Symbol('GfxElement');
 
 function updateTransform(element: GfxBlockComponent) {
-  if (element.dataset.blockState === 'idle') return;
+  if (element.transformState$.value === 'idle') return;
 
   const { viewport } = element.gfx;
   element.dataset.viewportState = viewport.serializeRecord();
   element.style.transformOrigin = '0 0';
   element.style.transform = element.getCSSTransform();
+}
+
+function updateBlockVisibility(view: GfxBlockComponent) {
+  if (view.transformState$.value === 'active') {
+    view.style.visibility = 'visible';
+    view.style.pointerEvents = 'auto';
+    view.classList.remove('block-idle');
+    view.classList.add('block-active');
+  } else {
+    view.style.visibility = 'hidden';
+    view.style.pointerEvents = 'none';
+    view.classList.remove('block-active');
+    view.classList.add('block-idle');
+  }
 }
 
 function handleGfxConnection(instance: GfxBlockComponent) {
@@ -48,7 +62,12 @@ function handleGfxConnection(instance: GfxBlockComponent) {
     })
   );
 
-  updateTransform(instance);
+  instance.disposables.add(
+    effect(() => {
+      updateBlockVisibility(instance);
+      updateTransform(instance);
+    })
+  );
 }
 
 export abstract class GfxBlockComponent<
@@ -60,6 +79,8 @@ export abstract class GfxBlockComponent<
   implements GfxViewTransformInterface
 {
   [GfxElementSymbol] = true;
+
+  readonly transformState$ = signal<'idle' | 'active'>('active');
 
   get gfx() {
     return this.std.get(GfxControllerIdentifier);
@@ -174,6 +195,8 @@ export function toGfxBlockComponent<
   // @ts-expect-error ignore
   return class extends CustomBlock {
     [GfxElementSymbol] = true;
+
+    readonly transformState$ = signal<'idle' | 'active'>('active');
 
     override selected$ = computed(() => {
       const selection = this.std.selection.value.find(
