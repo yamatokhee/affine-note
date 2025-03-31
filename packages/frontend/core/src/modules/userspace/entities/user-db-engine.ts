@@ -43,17 +43,17 @@ export class UserDBEngine extends Entity<{
           doc: {
             name: this.DocStorageType.identifier,
             opts: {
-              id: `${serverService.server.id}:` + this.userId,
-              flavour: serverService.server.id,
               type: 'userspace',
+              flavour: serverService.server.id,
+              id: this.userId,
             },
           },
           docSync: {
             name: this.DocSyncStorageType.identifier,
             opts: {
-              id: `${serverService.server.id}:` + this.userId,
               type: 'userspace',
               flavour: serverService.server.id,
+              id: this.userId,
             },
           },
         },
