@@ -209,13 +209,22 @@ export class RangeBinding {
       return;
     }
 
-    const el =
-      range.commonAncestorContainer instanceof Element
-        ? range.commonAncestorContainer
-        : range.commonAncestorContainer.parentElement;
+    const el = getElement(range.commonAncestorContainer);
     if (!el) return;
     const block = el.closest<BlockComponent>(`[${BLOCK_ID_ATTR}]`);
     if (block?.getAttribute(RANGE_SYNC_EXCLUDE_ATTR) === 'true') return;
+
+    const startElement = getElement(range.startContainer);
+    const endElement = getElement(range.endContainer);
+
+    // if neither start nor end is in a v-text, the range is invalid
+    if (!startElement?.closest('v-text') && !endElement?.closest('v-text')) {
+      this._prevTextSelection = null;
+      this.selectionManager.clear(['text']);
+
+      selection.removeRange(range);
+      return;
+    }
 
     const inlineEditor = this.rangeManager?.getClosestInlineEditor(
       range.commonAncestorContainer
@@ -350,4 +359,11 @@ export class RangeBinding {
       }
     );
   }
+}
+
+function getElement(node: Node): Element | null {
+  if (node instanceof Element) {
+    return node;
+  }
+  return node.parentElement;
 }
