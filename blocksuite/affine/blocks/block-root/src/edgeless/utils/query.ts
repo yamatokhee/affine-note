@@ -31,6 +31,8 @@ import type {
 } from '@blocksuite/std/gfx';
 import type { BlockModel } from '@blocksuite/store';
 
+import { drawingCursor } from './cursors';
+
 export function isEdgelessTextBlock(
   element: BlockModel | GfxModel | null
 ): element is EdgelessTextBlockModel {
@@ -214,6 +216,8 @@ export function getCursorMode(edgelessTool: GfxToolsFullOptionValue | null) {
     case 'pan':
       return edgelessTool.panning ? 'grabbing' : 'grab';
     case 'brush':
+    case 'highlighter':
+      return drawingCursor;
     case 'eraser':
     case 'shape':
     case 'connector':
