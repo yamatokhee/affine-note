@@ -16,8 +16,9 @@ use core_foundation::{
 use coreaudio::sys::{
   kAudioHardwarePropertyProcessObjectList, kAudioObjectPropertyElementMain,
   kAudioObjectPropertyScopeGlobal, kAudioObjectSystemObject, kAudioProcessPropertyBundleID,
-  kAudioProcessPropertyIsRunning, kAudioProcessPropertyPID, AudioObjectAddPropertyListenerBlock,
-  AudioObjectID, AudioObjectPropertyAddress, AudioObjectRemovePropertyListenerBlock,
+  kAudioProcessPropertyIsRunning, kAudioProcessPropertyIsRunningInput, kAudioProcessPropertyPID,
+  AudioObjectAddPropertyListenerBlock, AudioObjectID, AudioObjectPropertyAddress,
+  AudioObjectRemovePropertyListenerBlock,
 };
 use libc;
 use napi::{
@@ -422,7 +423,7 @@ impl TappableApplication {
   pub fn get_is_running(&self) -> Result<bool> {
     // Use catch_unwind to prevent any panics
     let result = std::panic::catch_unwind(|| {
-      match get_process_property(&self.object_id, kAudioProcessPropertyIsRunning) {
+      match get_process_property(&self.object_id, kAudioProcessPropertyIsRunningInput) {
         Ok(is_running) => Ok(is_running),
         Err(_) => Ok(false),
       }
