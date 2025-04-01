@@ -101,7 +101,7 @@ __metadata:
     "@blocksuite/affine": "workspace:*"
     "@node-rs/argon2": "npm:^2.0.2"
     "@playwright/test": "npm:=1.51.1"
-    express: "npm:^4.21.2"
+    express: "npm:^5.0.0"
     http-proxy-middleware: "npm:^3.0.3"
   peerDependencies:
     "@playwright/test": "*"
@@ -690,7 +690,7 @@ __metadata:
     "@affine/native": "workspace:*"
     "@google/generative-ai": "npm:^0.24.0"
     "@tailwindcss/vite": "npm:^4.0.6"
-    "@types/express": "npm:^4"
+    "@types/express": "npm:^5.0.0"
     "@types/fs-extra": "npm:^11"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/multer": "npm:^1"
@@ -698,7 +698,7 @@ __metadata:
     "@types/react-dom": "npm:^19.0.2"
     "@vitejs/plugin-react": "npm:^4.3.4"
     chokidar: "npm:^4.0.3"
-    express: "npm:^4.21.2"
+    express: "npm:^5.0.0"
     express-rate-limit: "npm:^7.1.5"
     fs-extra: "npm:^11.3.0"
     lodash-es: "npm:^4.17.21"
@@ -14498,7 +14498,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^5.0.1":
+"@types/express@npm:*, @types/express@npm:^5.0.0, @types/express@npm:^5.0.1":
   version: 5.0.1
   resolution: "@types/express@npm:5.0.1"
   dependencies:
@@ -14509,7 +14509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^4, @types/express@npm:^4.17.13, @types/express@npm:^4.17.21":
+"@types/express@npm:^4.17.13, @types/express@npm:^4.17.21":
   version: 4.17.21
   resolution: "@types/express@npm:4.17.21"
   dependencies:
@@ -21140,7 +21140,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^5.0.1":
+"express@npm:^5.0.0, express@npm:^5.0.1":
   version: 5.1.0
   resolution: "express@npm:5.1.0"
   dependencies:
