@@ -15,6 +15,7 @@ import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hoo
 import { MeetingSettingsService } from '@affine/core/modules/media/services/meeting-settings';
 import type { MeetingSettingsSchema } from '@affine/electron/main/shared-state-schema';
 import { useI18n } from '@affine/i18n';
+import track from '@affine/track';
 import {
   ArrowRightSmallIcon,
   DoneIcon,
@@ -106,6 +107,10 @@ export const MeetingsSettings = () => {
   const handleEnabledChange = useAsyncCallback(
     async (checked: boolean) => {
       try {
+        track.$.settingsPanel.meetings.toggleMeetingFeatureFlag({
+          option: checked ? 'on' : 'off',
+          type: 'Meeting record',
+        });
         await meetingSettingsService.setEnabled(checked);
       } catch {
         confirmModal.openConfirmModal({

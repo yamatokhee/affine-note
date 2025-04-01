@@ -14,6 +14,7 @@
     "@affine/electron-api": "workspace:*",
     "@affine/i18n": "workspace:*",
     "@affine/nbstore": "workspace:*",
+    "@affine/track": "workspace:*",
     "@blocksuite/affine": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@sentry/react": "^9.2.0",

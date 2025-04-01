@@ -1,6 +1,7 @@
 import { encodeAudioBlobToOpus } from '@affine/core/utils/webm-encoding';
 import { DebugLogger } from '@affine/debug';
 import { AiJobStatus } from '@affine/graphql';
+import track from '@affine/track';
 import {
   type AttachmentBlockModel,
   TranscriptionBlockFlavour,
@@ -142,6 +143,10 @@ export class AudioAttachmentBlock extends Entity<AttachmentBlockModel> {
         this.fillTranscriptionResult(status.result);
       }
     } catch (error) {
+      track.doc.editor.audioBlock.transcribeRecording({
+        type: 'Meeting record',
+        method: 'fail',
+      });
       logger.error('Error transcribing audio:', error);
       throw error;
     }

@@ -165,6 +165,18 @@ type IntegrationEvents =
   | 'completeIntegrationImport';
 // END SECTION
 
+// SECTION: journal
+type MeetingEvents =
+  | 'toggleRecordingBar'
+  | 'startRecording'
+  | 'dismissRecording'
+  | 'finishRecording'
+  | 'transcribeRecording'
+  | 'openTranscribeNotes'
+  | 'toggleMeetingFeatureFlag'
+  | 'activeMenubarAppItem';
+// END SECTION
+
 type UserEvents =
   | GeneralEvents
   | AppEvents
@@ -185,7 +197,8 @@ type UserEvents =
   | AttachmentEvents
   | TemplateEvents
   | NotificationEvents
-  | IntegrationEvents;
+  | IntegrationEvents
+  | MeetingEvents;
 interface PageDivision {
   [page: string]: {
     [segment: string]: {
@@ -262,6 +275,7 @@ const PageEvents = {
         'abortIntegrationImport',
         'completeIntegrationImport',
       ],
+      meetings: ['toggleMeetingFeatureFlag'],
     },
     cmdk: {
       recent: ['recentDocs'],
@@ -403,6 +417,7 @@ const PageEvents = {
       ],
       aiActions: ['requestSignIn'],
       starterBar: ['quickStart', 'openTemplateListMenu'],
+      audioBlock: ['transcribeRecording', 'openTranscribeNotes'],
     },
     inlineDocInfo: {
       $: ['toggle'],
@@ -457,6 +472,21 @@ const PageEvents = {
   subscriptionLanding: {
     $: {
       $: ['checkout'],
+    },
+  },
+  menubarApp: {
+    menubarActionsMenu: {
+      menubarActionsList: ['activeMenubarAppItem', 'startRecording'],
+    },
+  },
+  popup: {
+    $: {
+      recordingBar: [
+        'toggleRecordingBar',
+        'startRecording',
+        'dismissRecording',
+        'finishRecording',
+      ],
     },
   },
 } as const satisfies PageDivision;
@@ -519,6 +549,12 @@ type IntegrationArgs<T extends Record<string, any>> = {
   type: string;
   control: 'Readwise Card' | 'Readwise settings' | 'Readwise import list';
 } & T;
+
+type RecordingEventArgs = {
+  type: 'Meeting record';
+  method?: string;
+  option?: 'Auto transcribing' | 'handle transcribing' | 'on' | 'off';
+};
 
 export type EventArgs = {
   createWorkspace: { flavour: string };
@@ -622,6 +658,45 @@ export type EventArgs = {
     done: number;
     total: number;
   }>;
+  toggleRecordingBar: RecordingEventArgs & {
+    method: string;
+    appName: string;
+  };
+  startRecording: RecordingEventArgs & {
+    method: string;
+    appName: string;
+  };
+  dismissRecording: RecordingEventArgs & {
+    method: string;
+    appName: string;
+  };
+  finishRecording: RecordingEventArgs & {
+    method: 'fail' | 'success';
+    appName: string;
+  };
+  transcribeRecording: RecordingEventArgs & {
+    method: 'fail' | 'success';
+    option: 'Auto transcribing' | 'handle transcribing';
+  };
+  openTranscribeNotes: RecordingEventArgs & {
+    method: 'success' | 'reach limit' | 'not signed in' | 'not owner';
+    option: 'on' | 'off';
+  };
+  toggleMeetingFeatureFlag: RecordingEventArgs & {
+    option: 'on' | 'off';
+  };
+  activeMenubarAppItem: RecordingEventArgs & {
+    control:
+      | 'Open Journal'
+      | 'New Page'
+      | 'New Edgeless'
+      | 'Start recording meeting'
+      | 'Stop recording'
+      | 'Open AFFiNE'
+      | 'About AFFiNE'
+      | 'Meeting Settings'
+      | 'Quit AFFiNE Completely';
+  };
 };
 
 // for type checking

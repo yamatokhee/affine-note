@@ -7,6 +7,7 @@ import { WorkbenchService } from '@affine/core/modules/workbench';
 import { DebugLogger } from '@affine/debug';
 import { apis, events } from '@affine/electron-api';
 import { i18nTime } from '@affine/i18n';
+import track from '@affine/track';
 import type { AttachmentBlockModel } from '@blocksuite/affine/model';
 import { Text } from '@blocksuite/affine/store';
 import type { BlobEngine } from '@blocksuite/affine/sync';
@@ -114,9 +115,18 @@ export function setupRecordingEvents(frameworkProvider: FrameworkProvider) {
                 using audioAttachment = workspace.scope
                   .get(AudioAttachmentService)
                   .get(model);
-                audioAttachment?.obj.transcribe().catch(err => {
-                  logger.error('Failed to transcribe recording', err);
-                });
+                audioAttachment?.obj
+                  .transcribe()
+                  .then(() => {
+                    track.doc.editor.audioBlock.transcribeRecording({
+                      type: 'Meeting record',
+                      method: 'success',
+                      option: 'Auto transcribing',
+                    });
+                  })
+                  .catch(err => {
+                    logger.error('Failed to transcribe recording', err);
+                  });
               } else {
                 throw new Error('No attachment model found');
               }

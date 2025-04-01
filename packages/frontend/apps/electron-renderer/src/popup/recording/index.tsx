@@ -4,6 +4,7 @@ import { appIconMap } from '@affine/core/utils';
 import { encodeRawBufferToOpus } from '@affine/core/utils/webm-encoding';
 import { apis, events } from '@affine/electron-api';
 import { useI18n } from '@affine/i18n';
+import track from '@affine/track';
 import { useEffect, useMemo, useState } from 'react';
 
 import * as styles from './styles.css';
@@ -81,12 +82,20 @@ export function Recording() {
 
   const handleDismiss = useAsyncCallback(async () => {
     await apis?.popup?.dismissCurrentRecording();
-  }, []);
+    track.popup.$.recordingBar.dismissRecording({
+      type: 'Meeting record',
+      appName: status?.appName || 'System Audio',
+    });
+  }, [status]);
 
   const handleStopRecording = useAsyncCallback(async () => {
     if (!status) {
       return;
     }
+    track.popup.$.recordingBar.finishRecording({
+      type: 'Meeting record',
+      appName: status.appName || 'System Audio',
+    });
     await apis?.recording?.stopRecording(status.id);
   }, [status]);
 
@@ -130,6 +139,12 @@ export function Recording() {
   useEffect(() => {
     // allow processing stopped event in tray menu as well:
     return events?.recording.onRecordingStatusChanged(status => {
+      if (status?.status === 'new') {
+        track.popup.$.recordingBar.toggleRecordingBar({
+          type: 'Meeting record',
+          appName: status.appName || 'System Audio',
+        });
+      }
       if (status?.status === 'stopped') {
         handleProcessStoppedRecording();
       }
@@ -140,6 +155,10 @@ export function Recording() {
     if (!status) {
       return;
     }
+    track.popup.$.recordingBar.startRecording({
+      type: 'Meeting record',
+      appName: status.appName || 'System Audio',
+    });
     await apis?.recording?.startRecording(status.appGroupId);
   }, [status]);
 
