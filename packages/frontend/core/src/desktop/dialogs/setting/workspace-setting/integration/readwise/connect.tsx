@@ -106,6 +106,7 @@ const ConnectDialog = ({
                 className={getTokenLink}
               />
             ),
+            br: <br />,
           }}
         />
       </div>

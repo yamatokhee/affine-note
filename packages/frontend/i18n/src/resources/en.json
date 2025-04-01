@@ -1842,7 +1842,7 @@
   "com.affine.integration.readwise.desc": "Manually import your content to AFFiNE from Readwise",
   "com.affine.integration.readwise.connect": "Connect",
   "com.affine.integration.readwise.connect.title": "Connect to Readwise",
-  "com.affine.integration.readwise.connect.desc": "Import your Readwise highlights to AFFiNE. Please visit Readwise, click <a>\"Get Access Token\"</a>, and paste the token below.",
+  "com.affine.integration.readwise.connect.desc": "Import your Readwise highlights to AFFiNE. Please visit Readwise, <br />click <a>\"Get Access Token\"</a>, and paste the token below.",
   "com.affine.integration.readwise.connect.placeholder": "Paste your access token here",
   "com.affine.integration.readwise.connect.input-error": "Please enter a valid access token.",
   "com.affine.integration.readwise.connect.error-notify-title": "Access Token failed validation",
