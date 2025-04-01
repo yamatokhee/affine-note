@@ -64,9 +64,9 @@
     "@types/node": "^22.0.0",
     "@typescript-eslint/parser": "^8.18.0",
     "@vanilla-extract/vite-plugin": "^5.0.0",
-    "@vitest/browser": "3.0.9",
-    "@vitest/coverage-istanbul": "3.0.9",
-    "@vitest/ui": "3.0.9",
+    "@vitest/browser": "3.1.1",
+    "@vitest/coverage-istanbul": "3.1.1",
+    "@vitest/ui": "3.1.1",
     "cross-env": "^7.0.3",
     "electron": "^35.0.0",
     "eslint": "^9.16.0",
@@ -90,9 +90,9 @@
     "typescript-eslint": "^8.18.0",
     "unplugin-swc": "^1.5.1",
     "vite": "^6.0.3",
-    "vitest": "3.0.9"
+    "vitest": "3.1.1"
   },
-  "packageManager": "yarn@4.8.0",
+  "packageManager": "yarn@4.8.1",
   "resolutions": {
     "array-buffer-byte-length": "npm:@nolyfill/array-buffer-byte-length@^1",
     "array-includes": "npm:@nolyfill/array-includes@^1",
