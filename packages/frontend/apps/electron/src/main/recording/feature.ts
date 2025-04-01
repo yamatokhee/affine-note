@@ -16,7 +16,7 @@ import {
   Subject,
   throttleTime,
 } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { filter, map, shareReplay } from 'rxjs/operators';
 
 import { isMacOS, shallowEqual } from '../../shared/utils';
 import { beforeAppQuit } from '../cleanup';
@@ -157,7 +157,8 @@ function setupNewRunningAppGroup() {
       groupStream$.pipe(
         distinctUntilChanged((prev, curr) => prev.isRunning === curr.isRunning)
       )
-    )
+    ),
+    filter(group => isAppNameAllowed(group.name))
   );
 
   appGroups$.value.forEach(group => {
@@ -391,8 +392,7 @@ function getAllApps(): TappableAppInfo[] {
       v !== null &&
       !v.bundleIdentifier.startsWith('com.apple') &&
       !v.bundleIdentifier.startsWith('pro.affine') &&
-      v.processId !== process.pid &&
-      isAppNameAllowed(v.name)
+      v.processId !== process.pid
   );
   return filteredApps;
 }
@@ -604,7 +604,7 @@ export async function readyRecording(id: number, buffer: Buffer) {
 
   const filepath = path.join(
     SAVED_RECORDINGS_DIR,
-    `${recordingStatus.appGroup?.bundleIdentifier ?? 'unknown'}-${recordingStatus.id}-${recordingStatus.startTime}.webm`
+    `${recordingStatus.appGroup?.bundleIdentifier ?? 'unknown'}-${recordingStatus.id}-${recordingStatus.startTime}.opus`
   );
 
   await fs.writeFile(filepath, buffer);

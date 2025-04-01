@@ -68,14 +68,14 @@ export function setupRecordingEvents(frameworkProvider: FrameworkProvider) {
             (async () => {
               // name + timestamp(readable) + extension
               const attachmentName =
-                (status.appName ?? 'System Audio') + ' ' + timestamp + '.webm';
+                (status.appName ?? 'System Audio') + ' ' + timestamp + '.opus';
 
               // add size and sourceId to the attachment later
               const attachmentId = doc.addBlock(
                 'affine:attachment',
                 {
                   name: attachmentName,
-                  type: 'audio/webm',
+                  type: 'audio/opus',
                 },
                 noteId
               );
