@@ -53,7 +53,7 @@
     "@types/set-cookie-parser": "^2.4.10",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react-swc": "^3.7.2",
-    "app-builder-lib": "^26.0.0",
+    "app-builder-lib": "^25.1.8",
     "builder-util-runtime": "^9.2.10",
     "cross-env": "^7.0.3",
     "debug": "^4.4.0",
