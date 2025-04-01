@@ -28,6 +28,7 @@ import {
 import { globalStateStorage } from '../shared-storage/storage';
 import { getMainWindow } from '../windows-manager';
 import { popupManager } from '../windows-manager/popup';
+import { isAppNameAllowed } from './allow-list';
 import { recordingStateMachine } from './state-machine';
 import type {
   AppGroupInfo,
@@ -390,7 +391,8 @@ function getAllApps(): TappableAppInfo[] {
       v !== null &&
       !v.bundleIdentifier.startsWith('com.apple') &&
       !v.bundleIdentifier.startsWith('pro.affine') &&
-      v.processId !== process.pid
+      v.processId !== process.pid &&
+      isAppNameAllowed(v.name)
   );
   return filteredApps;
 }
