@@ -2,8 +2,6 @@ import type { BaseSelection, BlockModel } from '@blocksuite/store';
 import throttle from 'lodash-es/throttle';
 
 import { TextSelection } from '../../selection/index.js';
-import type { BlockComponent } from '../../view/element/block-component.js';
-import { BLOCK_ID_ATTR } from '../../view/index.js';
 import { isActiveInEditor } from './active.js';
 import { RANGE_SYNC_EXCLUDE_ATTR } from './consts.js';
 import type { RangeManager } from './range-manager.js';
@@ -211,8 +209,13 @@ export class RangeBinding {
 
     const el = getElement(range.commonAncestorContainer);
     if (!el) return;
-    const block = el.closest<BlockComponent>(`[${BLOCK_ID_ATTR}]`);
-    if (block?.getAttribute(RANGE_SYNC_EXCLUDE_ATTR) === 'true') return;
+
+    const closestExclude = el.closest(`[${RANGE_SYNC_EXCLUDE_ATTR}]`);
+    if (closestExclude?.getAttribute(RANGE_SYNC_EXCLUDE_ATTR) === 'true')
+      return;
+
+    const closestEditable = el.closest('[contenteditable]');
+    if (closestEditable?.getAttribute('contenteditable') === 'false') return;
 
     const startElement = getElement(range.startContainer);
     const endElement = getElement(range.endContainer);

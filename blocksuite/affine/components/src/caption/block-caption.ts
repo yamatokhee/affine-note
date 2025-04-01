@@ -9,6 +9,7 @@ import {
   stdContext,
   TextSelection,
 } from '@blocksuite/std';
+import { RANGE_SYNC_EXCLUDE_ATTR } from '@blocksuite/std/inline';
 import type { BlockModel, Store } from '@blocksuite/store';
 import { Text } from '@blocksuite/store';
 import { consume } from '@lit/context';
@@ -120,6 +121,8 @@ export class BlockCaptionEditor<
 
   override connectedCallback(): void {
     super.connectedCallback();
+
+    this.setAttribute(RANGE_SYNC_EXCLUDE_ATTR, 'true');
 
     this.caption = this.model.props.caption;
 
