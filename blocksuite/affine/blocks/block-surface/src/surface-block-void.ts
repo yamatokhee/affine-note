@@ -2,12 +2,8 @@ import { BlockComponent } from '@blocksuite/std';
 import { nothing } from 'lit';
 
 import type { SurfaceBlockModel } from './surface-model.js';
-import type { SurfaceBlockService } from './surface-service.js';
 
-export class SurfaceBlockVoidComponent extends BlockComponent<
-  SurfaceBlockModel,
-  SurfaceBlockService
-> {
+export class SurfaceBlockVoidComponent extends BlockComponent<SurfaceBlockModel> {
   override render() {
     return nothing;
   }

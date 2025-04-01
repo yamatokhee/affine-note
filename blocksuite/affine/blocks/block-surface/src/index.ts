@@ -56,7 +56,6 @@ export {
   SurfaceBlockSchema,
   SurfaceBlockSchemaExtension,
 } from './surface-model.js';
-export type { SurfaceBlockService } from './surface-service.js';
 export {
   EdgelessSurfaceBlockSpec,
   PageSurfaceBlockSpec,

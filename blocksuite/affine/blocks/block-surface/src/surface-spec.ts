@@ -11,11 +11,9 @@ import {
   EdgelessLegacySlotExtension,
 } from './extensions';
 import { ExportManagerExtension } from './extensions/export-manager/export-manager';
-import { SurfaceBlockService } from './surface-service';
 
 const CommonSurfaceBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:surface'),
-  SurfaceBlockService,
   EdgelessCRUDExtension,
   EdgelessLegacySlotExtension,
   ExportManagerExtension,

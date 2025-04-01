@@ -17,7 +17,6 @@ import {
 } from './renderer/elements/index.js';
 import { OverlayIdentifier } from './renderer/overlay.js';
 import type { SurfaceBlockModel } from './surface-model.js';
-import type { SurfaceBlockService } from './surface-service.js';
 
 export interface SurfaceContext {
   viewport: Viewport;
@@ -31,10 +30,7 @@ export interface SurfaceContext {
   };
 }
 
-export class SurfaceBlockComponent extends BlockComponent<
-  SurfaceBlockModel,
-  SurfaceBlockService
-> {
+export class SurfaceBlockComponent extends BlockComponent<SurfaceBlockModel> {
   static isConnector = (element: unknown): element is ConnectorElementModel => {
     return element instanceof ConnectorElementModel;
   };
