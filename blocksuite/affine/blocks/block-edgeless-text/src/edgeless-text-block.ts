@@ -339,6 +339,8 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
       minWidth: !hasMaxWidth ? '220px' : undefined,
     };
 
+    this.contentEditable = String(editing && !this.doc.readonly$.value);
+
     return html`
       <div
         class="edgeless-text-block-container"
@@ -350,7 +352,6 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
             pointerEvents: editing ? 'auto' : 'none',
             userSelect: editing ? 'auto' : 'none',
           })}
-          contenteditable=${editing}
         >
           ${this.renderPageContent()}
         </div>

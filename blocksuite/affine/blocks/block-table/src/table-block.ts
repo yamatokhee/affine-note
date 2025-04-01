@@ -1,6 +1,6 @@
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import type { TableBlockModel } from '@blocksuite/affine-model';
-import { NOTE_SELECTOR } from '@blocksuite/affine-shared/consts';
+import { EDGELESS_TOP_CONTENTEDITABLE_SELECTOR } from '@blocksuite/affine-shared/consts';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import { VirtualPaddingController } from '@blocksuite/affine-shared/utils';
 import { IS_MOBILE } from '@blocksuite/global/env';
@@ -42,7 +42,9 @@ export class TableBlockComponent extends CaptionedBlockComponent<TableBlockModel
 
   override get topContenteditableElement() {
     if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
-      return this.closest<BlockComponent>(NOTE_SELECTOR);
+      return this.closest<BlockComponent>(
+        EDGELESS_TOP_CONTENTEDITABLE_SELECTOR
+      );
     }
     return this.rootComponent;
   }

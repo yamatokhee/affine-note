@@ -1,7 +1,10 @@
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import type { CodeBlockModel } from '@blocksuite/affine-model';
 import { focusTextModel, type RichText } from '@blocksuite/affine-rich-text';
-import { BRACKET_PAIRS, NOTE_SELECTOR } from '@blocksuite/affine-shared/consts';
+import {
+  BRACKET_PAIRS,
+  EDGELESS_TOP_CONTENTEDITABLE_SELECTOR,
+} from '@blocksuite/affine-shared/consts';
 import {
   DocModeProvider,
   NotificationProvider,
@@ -79,7 +82,9 @@ export class CodeBlockComponent extends CaptionedBlockComponent<CodeBlockModel> 
 
   override get topContenteditableElement() {
     if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
-      return this.closest<BlockComponent>(NOTE_SELECTOR);
+      return this.closest<BlockComponent>(
+        EDGELESS_TOP_CONTENTEDITABLE_SELECTOR
+      );
     }
     return this.rootComponent;
   }

@@ -268,7 +268,10 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
             <edgeless-page-block-title
               .note=${this.model}
             ></edgeless-page-block-title>
-            <div class="edgeless-note-page-content">
+            <div
+              contenteditable=${String(!this.doc.readonly$.value)}
+              class="edgeless-note-page-content"
+            >
               ${this.renderPageContent()}
             </div>
           </div>

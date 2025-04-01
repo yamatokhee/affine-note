@@ -415,6 +415,8 @@ export class PageRootBlockComponent extends BlockComponent<
       return !(isNote && displayOnEdgeless);
     });
 
+    this.contentEditable = String(!this.doc.readonly$.value);
+
     return html`
       <div class="affine-page-root-block-container">${children} ${widgets}</div>
     `;
