@@ -302,6 +302,7 @@ export const MultiMemberSelect: React.FC<MemberManagerOptions> = props => {
 
   return (
     <div
+      data-peek-view-wrapper="true"
       className={styles.multiMemberSelectContainer}
       onClick={() => inputRef.current?.focus()}
     >

@@ -352,7 +352,10 @@ const FileCellComponent: ForwardRefRenderFunction<
   const renderPopoverContent = () => {
     if (fileList.length === 0) {
       return (
-        <div className={styles.uploadPopoverContainer}>
+        <div
+          data-peek-view-wrapper="true"
+          className={styles.uploadPopoverContainer}
+        >
           <Button
             onClick={() => {
               openFileOrFiles({ multiple: true })
@@ -383,7 +386,10 @@ const FileCellComponent: ForwardRefRenderFunction<
       );
     }
     return (
-      <div className={styles.filePopoverContainer}>
+      <div
+        data-peek-view-wrapper="true"
+        className={styles.filePopoverContainer}
+      >
         <div className={styles.fileListContainer}>
           {fileList.map(file => (
             <FileListItem
