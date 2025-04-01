@@ -33,8 +33,13 @@ export interface StorageProvider {
   ): Promise<void>;
   head(key: string): Promise<GetObjectMetadata | undefined>;
   get(
-    key: string
-  ): Promise<{ body?: BlobOutputType; metadata?: GetObjectMetadata }>;
+    key: string,
+    signedUrl?: boolean
+  ): Promise<{
+    redirectUrl?: string;
+    body?: BlobOutputType;
+    metadata?: GetObjectMetadata;
+  }>;
   list(prefix?: string): Promise<ListObjectsMetadata[]>;
   delete(key: string): Promise<void>;
 }

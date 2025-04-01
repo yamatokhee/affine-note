@@ -868,7 +868,8 @@ __metadata:
     "@affine/server-native": "workspace:*"
     "@ai-sdk/google": "npm:^1.1.19"
     "@apollo/server": "npm:^4.11.3"
-    "@aws-sdk/client-s3": "npm:^3.709.0"
+    "@aws-sdk/client-s3": "npm:^3.779.0"
+    "@aws-sdk/s3-request-presigner": "npm:^3.779.0"
     "@faker-js/faker": "npm:^9.6.0"
     "@fal-ai/serverless-client": "npm:^0.15.0"
     "@google-cloud/opentelemetry-cloud-monitoring-exporter": "npm:^0.20.0"
@@ -1475,7 +1476,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.709.0":
+"@aws-sdk/client-s3@npm:^3.709.0, @aws-sdk/client-s3@npm:^3.779.0":
   version: 3.779.0
   resolution: "@aws-sdk/client-s3@npm:3.779.0"
   dependencies:
@@ -1922,6 +1923,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/s3-request-presigner@npm:^3.779.0":
+  version: 3.779.0
+  resolution: "@aws-sdk/s3-request-presigner@npm:3.779.0"
+  dependencies:
+    "@aws-sdk/signature-v4-multi-region": "npm:3.775.0"
+    "@aws-sdk/types": "npm:3.775.0"
+    "@aws-sdk/util-format-url": "npm:3.775.0"
+    "@smithy/middleware-endpoint": "npm:^4.1.0"
+    "@smithy/protocol-http": "npm:^5.1.0"
+    "@smithy/smithy-client": "npm:^4.2.0"
+    "@smithy/types": "npm:^4.2.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/7a0b4d4b42fe0fbd603675a53ca831ce3ccf989c0d54be2e77aa4fea49c3c9873526fdf4f58103c856fa44d2b9fd29bec0f821f54bc5f2e37c5eaa340aa3b5fa
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/signature-v4-multi-region@npm:3.775.0":
   version: 3.775.0
   resolution: "@aws-sdk/signature-v4-multi-region@npm:3.775.0"
@@ -1978,6 +1995,18 @@ __metadata:
     "@smithy/util-endpoints": "npm:^3.0.2"
     tslib: "npm:^2.6.2"
   checksum: 10/0056f5cc938d51ff4f3c6f805e153ad5318c01e28d166fa2bec696dc0559c63801fc68d773be11f1de99b3c1f6a5cc1294727a723f4c63cf9b1aaef18f9290d1
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/util-format-url@npm:3.775.0":
+  version: 3.775.0
+  resolution: "@aws-sdk/util-format-url@npm:3.775.0"
+  dependencies:
+    "@aws-sdk/types": "npm:3.775.0"
+    "@smithy/querystring-builder": "npm:^4.0.2"
+    "@smithy/types": "npm:^4.2.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/67bd40d7b9683af754dcbfa06cb08e482be541b453cb86f42465263742d6fd2882f3531ba5bf08a2f159f5eb0960f754f62be20e000722b49c2b4dcee9d36e3f
   languageName: node
   linkType: hard
 

@@ -105,6 +105,16 @@ export const StorageJSONSchema: JSONSchema = {
               description:
                 'The account id for the cloudflare r2 storage provider.',
             },
+            signDomain: {
+              type: 'string' as const,
+              description:
+                'The presigned domain for the cloudflare r2 storage provider.',
+            },
+            signKey: {
+              type: 'string' as const,
+              description:
+                'The presigned key for the cloudflare r2 storage provider.',
+            },
           },
         },
       },

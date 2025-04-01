@@ -602,7 +602,17 @@ export class CopilotController implements BeforeApplicationShutdown {
     @Param('workspaceId') workspaceId: string,
     @Param('key') key: string
   ) {
-    const { body, metadata } = await this.storage.get(userId, workspaceId, key);
+    const { body, metadata, redirectUrl } = await this.storage.get(
+      userId,
+      workspaceId,
+      key,
+      true
+    );
+
+    if (redirectUrl) {
+      // redirect to signed url
+      return res.redirect(redirectUrl);
+    }
 
     if (!body) {
       throw new BlobNotFound({

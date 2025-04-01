@@ -67,8 +67,8 @@ export class WorkspaceBlobStorage {
     });
   }
 
-  async get(workspaceId: string, key: string) {
-    return this.provider.get(`${workspaceId}/${key}`);
+  async get(workspaceId: string, key: string, signedUrl?: boolean) {
+    return this.provider.get(`${workspaceId}/${key}`, signedUrl);
   }
 
   async list(workspaceId: string, syncBlobMeta = true) {

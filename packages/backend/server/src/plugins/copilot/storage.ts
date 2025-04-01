@@ -56,8 +56,13 @@ export class CopilotStorage {
   }
 
   @CallMetric('ai', 'blob_get')
-  async get(userId: string, workspaceId: string, key: string) {
-    return this.provider.get(`${userId}/${workspaceId}/${key}`);
+  async get(
+    userId: string,
+    workspaceId: string,
+    key: string,
+    signedUrl?: boolean
+  ) {
+    return this.provider.get(`${userId}/${workspaceId}/${key}`, signedUrl);
   }
 
   @CallMetric('ai', 'blob_delete')

@@ -9,27 +9,27 @@
       "properties": {
         "db": {
           "type": "number",
-          "description": "The database index of redis server to be used(Must be less than 10).\n@default 0\n@environment `REDIS_DATABASE`",
+          "description": "The database index of redis server to be used(Must be less than 10).\n@default 0\n@environment `REDIS_SERVER_DATABASE`",
           "default": 0
         },
         "host": {
           "type": "string",
-          "description": "The host of the redis server.\n@default \"localhost\"\n@environment `REDIS_HOST`",
+          "description": "The host of the redis server.\n@default \"localhost\"\n@environment `REDIS_SERVER_HOST`",
           "default": "localhost"
         },
         "port": {
           "type": "number",
-          "description": "The port of the redis server.\n@default 6379\n@environment `REDIS_PORT`",
+          "description": "The port of the redis server.\n@default 6379\n@environment `REDIS_SERVER_PORT`",
           "default": 6379
         },
         "username": {
           "type": "string",
-          "description": "The username of the redis server.\n@default \"\"\n@environment `REDIS_USERNAME`",
+          "description": "The username of the redis server.\n@default \"\"\n@environment `REDIS_SERVER_USERNAME`",
           "default": ""
         },
         "password": {
           "type": "string",
-          "description": "The password of the redis server.\n@default \"\"\n@environment `REDIS_PASSWORD`",
+          "description": "The password of the redis server.\n@default \"\"\n@environment `REDIS_SERVER_PASSWORD`",
           "default": ""
         },
         "ioredis": {
@@ -427,6 +427,14 @@
                     "accountId": {
                       "type": "string",
                       "description": "The account id for the cloudflare r2 storage provider."
+                    },
+                    "signDomain": {
+                      "type": "string",
+                      "description": "The presigned domain for the cloudflare r2 storage provider."
+                    },
+                    "signKey": {
+                      "type": "string",
+                      "description": "The presigned key for the cloudflare r2 storage provider."
                     }
                   }
                 }
@@ -530,6 +538,14 @@
                     "accountId": {
                       "type": "string",
                       "description": "The account id for the cloudflare r2 storage provider."
+                    },
+                    "signDomain": {
+                      "type": "string",
+                      "description": "The presigned domain for the cloudflare r2 storage provider."
+                    },
+                    "signKey": {
+                      "type": "string",
+                      "description": "The presigned key for the cloudflare r2 storage provider."
                     }
                   }
                 }
@@ -557,8 +573,8 @@
         },
         "externalUrl": {
           "type": "string",
-          "description": "Base url of AFFiNE server, used for generating external urls.\nDefault to be `[server.protocol]://[server.host][:server.port]` if not specified.\n    \n@default \"http://localhost:3010\"\n@environment `AFFINE_SERVER_EXTERNAL_URL`",
-          "default": "http://localhost:3010"
+          "description": "Base url of AFFiNE server, used for generating external urls.\nDefault to be `[server.protocol]://[server.host][:server.port]` if not specified.\n    \n@default \"\"\n@environment `AFFINE_SERVER_EXTERNAL_URL`",
+          "default": ""
         },
         "https": {
           "type": "boolean",
@@ -590,6 +606,17 @@
           "type": "boolean",
           "description": "Only allow users with early access features to access the app\n@default false",
           "default": false
+        }
+      }
+    },
+    "docService": {
+      "type": "object",
+      "description": "Configuration for docService module",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "The endpoint of the doc service.\n@default \"\"\n@environment `DOC_SERVICE_ENDPOINT`",
+          "default": ""
         }
       }
     },
@@ -765,6 +792,14 @@
                     "accountId": {
                       "type": "string",
                       "description": "The account id for the cloudflare r2 storage provider."
+                    },
+                    "signDomain": {
+                      "type": "string",
+                      "description": "The presigned domain for the cloudflare r2 storage provider."
+                    },
+                    "signKey": {
+                      "type": "string",
+                      "description": "The presigned key for the cloudflare r2 storage provider."
                     }
                   }
                 }

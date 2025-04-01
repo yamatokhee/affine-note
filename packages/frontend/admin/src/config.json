@@ -3,27 +3,27 @@
     "db": {
       "type": "Number",
       "desc": "The database index of redis server to be used(Must be less than 10).",
-      "env": "REDIS_DATABASE"
+      "env": "REDIS_SERVER_DATABASE"
     },
     "host": {
       "type": "String",
       "desc": "The host of the redis server.",
-      "env": "REDIS_HOST"
+      "env": "REDIS_SERVER_HOST"
     },
     "port": {
       "type": "Number",
       "desc": "The port of the redis server.",
-      "env": "REDIS_PORT"
+      "env": "REDIS_SERVER_PORT"
     },
     "username": {
       "type": "String",
       "desc": "The username of the redis server.",
-      "env": "REDIS_USERNAME"
+      "env": "REDIS_SERVER_USERNAME"
     },
     "password": {
       "type": "String",
       "desc": "The password of the redis server.",
-      "env": "REDIS_PASSWORD"
+      "env": "REDIS_SERVER_PASSWORD"
     },
     "ioredis": {
       "type": "Object",
@@ -237,6 +237,13 @@
     "earlyAccessControl": {
       "type": "Boolean",
       "desc": "Only allow users with early access features to access the app"
+    }
+  },
+  "docService": {
+    "endpoint": {
+      "type": "String",
+      "desc": "The endpoint of the doc service.",
+      "env": "DOC_SERVICE_ENDPOINT"
     }
   },
   "client": {

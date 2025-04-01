@@ -43,7 +43,16 @@ export class WorkspacesController {
       .user(user?.id ?? 'anonymous')
       .workspace(workspaceId)
       .assert('Workspace.Read');
-    const { body, metadata } = await this.storage.get(workspaceId, name);
+    const { body, metadata, redirectUrl } = await this.storage.get(
+      workspaceId,
+      name,
+      true
+    );
+
+    if (redirectUrl) {
+      // redirect to signed url
+      return res.redirect(redirectUrl);
+    }
 
     if (!body) {
       throw new BlobNotFound({

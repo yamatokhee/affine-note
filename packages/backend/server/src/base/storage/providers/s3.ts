@@ -11,6 +11,7 @@ import {
   S3Client,
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Logger } from '@nestjs/common';
 
 import {
@@ -20,7 +21,7 @@ import {
   PutObjectMetadata,
   StorageProvider,
 } from './provider';
-import { autoMetadata, toBuffer } from './utils';
+import { autoMetadata, SIGNED_URL_EXPIRED, toBuffer } from './utils';
 
 export type S3StorageConfig = S3ClientConfig;
 
@@ -106,17 +107,43 @@ export class S3StorageProvider implements StorageProvider {
     }
   }
 
-  async get(key: string): Promise<{
+  async get(
+    key: string,
+    signedUrl?: boolean
+  ): Promise<{
     body?: Readable;
     metadata?: GetObjectMetadata;
+    redirectUrl?: string;
   }> {
     try {
-      const obj = await this.client.send(
-        new GetObjectCommand({
-          Bucket: this.bucket,
-          Key: key,
-        })
-      );
+      const command = new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+      });
+
+      if (signedUrl) {
+        const metadata = await this.head(key);
+        if (metadata) {
+          const url = await getSignedUrl(
+            this.client,
+            new GetObjectCommand({
+              Bucket: this.bucket,
+              Key: key,
+            }),
+            { expiresIn: SIGNED_URL_EXPIRED }
+          );
+
+          return {
+            redirectUrl: url,
+            metadata,
+          };
+        }
+
+        // object not found
+        return {};
+      }
+
+      const obj = await this.client.send(command);
 
       if (!obj.Body) {
         this.logger.verbose(`Object \`${key}\` not found`);

@@ -42,3 +42,5 @@ export function autoMetadata(
 
   return metadata;
 }
+
+export const SIGNED_URL_EXPIRED = 60 * 60; // 1 hour
