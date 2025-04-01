@@ -7032,6 +7032,24 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.editor.at-menu.mention-members"](): string;
     /**
+      * `Member not notified`
+      */
+    ["com.affine.editor.at-menu.member-not-notified"](): string;
+    /**
+      * `This member does not have access to this doc, they are not notified.`
+      */
+    ["com.affine.editor.at-menu.member-not-notified-message"](): string;
+    /**
+      * `Access needed`
+      */
+    ["com.affine.editor.at-menu.access-needed"](): string;
+    /**
+      * `{{username}} does not have access to this doc, do you want to invite and notify them?`
+      */
+    ["com.affine.editor.at-menu.access-needed-message"](options: {
+        readonly username: string;
+    }): string;
+    /**
       * `Show`
       */
     ["com.affine.editor.bi-directional-link-panel.show"](): string;

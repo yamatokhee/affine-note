@@ -1,6 +1,6 @@
 import { notify } from '@affine/component';
 import { UserFriendlyError } from '@affine/error';
-import { type DocMode as GraphqlDocMode } from '@affine/graphql';
+import { type DocMode as GraphqlDocMode, ErrorNames } from '@affine/graphql';
 import { I18n, i18nTime } from '@affine/i18n';
 import track from '@affine/track';
 import {
@@ -432,6 +432,45 @@ export class AtMenuConfigService extends Service {
             })
             .catch(error => {
               const err = UserFriendlyError.fromAny(error);
+
+              const canUserManage = this.guardService.can$(
+                'Workspace_Users_Manage'
+              ).signal.value;
+
+              if (err.is(ErrorNames.MENTION_USER_DOC_ACCESS_DENIED)) {
+                if (canUserManage) {
+                  const username = name ?? 'Unknown';
+                  notify.error({
+                    title: I18n.t('com.affine.editor.at-menu.access-needed'),
+                    message: I18n[
+                      'com.affine.editor.at-menu.access-needed-message'
+                    ]({
+                      username,
+                    }),
+                    action: {
+                      label: 'Invite',
+                      onClick: () => {
+                        this.dialogService.open('setting', {
+                          activeTab: 'workspace:members',
+                        });
+                      },
+                    },
+                  });
+                } else {
+                  notify.error({
+                    title: I18n.t(
+                      'com.affine.editor.at-menu.member-not-notified'
+                    ),
+                    message:
+                      I18n[
+                        'com.affine.editor.at-menu.member-not-notified-message'
+                      ](),
+                  });
+                }
+
+                return;
+              }
+
               notify.error({
                 title: I18n[`error.${err.name}`](err.data),
               });
