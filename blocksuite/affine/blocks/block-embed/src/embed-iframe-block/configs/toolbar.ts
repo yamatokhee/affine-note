@@ -67,6 +67,11 @@ const openLinkAction = (id: string): ToolbarAction => {
     run(ctx) {
       const component = ctx.getCurrentBlockByType(EmbedIframeBlockComponent);
       component?.open();
+
+      ctx.track('OpenLink', {
+        ...trackBaseProps,
+        control: 'open original link',
+      });
     },
   };
 };
@@ -263,6 +268,11 @@ export const builtinToolbarConfig = {
               .copySlice(slice)
               .then(() => toast(ctx.host, 'Copied to clipboard'))
               .catch(console.error);
+
+            ctx.track('CopiedLink', {
+              ...trackBaseProps,
+              control: 'copy link',
+            });
           },
         },
         {
@@ -290,6 +300,11 @@ export const builtinToolbarConfig = {
       run(ctx) {
         const component = ctx.getCurrentBlockByType(EmbedIframeBlockComponent);
         component?.refreshData().catch(console.error);
+
+        ctx.track('ReloadLink', {
+          ...trackBaseProps,
+          control: 'reload link',
+        });
       },
     },
     {

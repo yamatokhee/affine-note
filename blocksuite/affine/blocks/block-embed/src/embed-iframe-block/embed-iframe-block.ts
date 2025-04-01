@@ -225,6 +225,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
         .model=${this.model}
         .abortController=${this._linkInputAbortController}
         .std=${this.std}
+        .inSurface=${this.inSurface}
         .options=${options}
       ></embed-iframe-link-input-popup>`,
       portalStyles: {
@@ -347,6 +348,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
         .model=${this.model}
         .onRetry=${this._handleRetry}
         .std=${this.std}
+        .inSurface=${this.inSurface}
         .options=${this._statusCardOptions}
       ></embed-iframe-error-card>`;
     }

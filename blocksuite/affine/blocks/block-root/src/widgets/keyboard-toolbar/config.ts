@@ -493,6 +493,7 @@ const embedToolGroup: KeyboardToolPanelGroup = {
             linkInputPopupOptions: {
               showCloseButton: true,
               variant: 'mobile',
+              telemetrySegment: 'keyboard toolbar',
             },
           })
           .run();

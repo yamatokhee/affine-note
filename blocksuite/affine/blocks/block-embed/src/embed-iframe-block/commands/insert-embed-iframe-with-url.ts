@@ -90,15 +90,15 @@ export const insertEmbedIframeWithUrlCommand: Command<
       surfaceBlock.model
     );
 
-    gfx.selection.set({
-      elements: [newBlockId],
-      editing: false,
-    });
-
     gfx.tool.setTool(
       // @ts-expect-error FIXME: resolve after gfx tool refactor
       'default'
     );
+
+    gfx.selection.set({
+      elements: [newBlockId],
+      editing: false,
+    });
   }
 
   if (!newBlockId) {

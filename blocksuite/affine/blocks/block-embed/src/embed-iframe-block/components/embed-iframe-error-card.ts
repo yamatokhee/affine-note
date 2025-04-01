@@ -1,5 +1,9 @@
 import { createLitPortal } from '@blocksuite/affine-components/portal';
 import type { EmbedIframeBlockModel } from '@blocksuite/affine-model';
+import {
+  DocModeProvider,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { WithDisposable } from '@blocksuite/global/lit';
 import { EditIcon, InformationIcon, ResetIcon } from '@blocksuite/icons/lit';
@@ -191,6 +195,7 @@ export class EmbedIframeErrorCard extends WithDisposable(LitElement) {
         .model=${this.model}
         .abortController=${this._editAbortController}
         .std=${this.std}
+        .inSurface=${this.inSurface}
       ></embed-iframe-link-edit-popup>`,
       portalStyles: {
         zIndex: 'var(--affine-z-index-popover)',
@@ -210,6 +215,15 @@ export class EmbedIframeErrorCard extends WithDisposable(LitElement) {
   private readonly _handleRetry = (e: MouseEvent) => {
     e.stopPropagation();
     this.onRetry();
+
+    // track retry event
+    this.telemetryService?.track('ReloadLink', {
+      type: 'embed iframe block',
+      page: this.editorMode === 'page' ? 'doc editor' : 'whiteboard editor',
+      segment: 'editor',
+      module: 'embed block',
+      control: 'reload button',
+    });
   };
 
   override render() {
@@ -273,6 +287,16 @@ export class EmbedIframeErrorCard extends WithDisposable(LitElement) {
     return this.model.doc.readonly;
   }
 
+  get telemetryService() {
+    return this.std.getOptional(TelemetryProvider);
+  }
+
+  get editorMode() {
+    const docModeService = this.std.get(DocModeProvider);
+    const mode = docModeService.getEditorMode();
+    return mode ?? 'page';
+  }
+
   @query('.button.edit')
   accessor _editButton: HTMLElement | null = null;
 
@@ -287,6 +311,9 @@ export class EmbedIframeErrorCard extends WithDisposable(LitElement) {
 
   @property({ attribute: false })
   accessor std!: BlockStdScope;
+
+  @property({ attribute: false })
+  accessor inSurface = false;
 
   @property({ attribute: false })
   accessor options: EmbedIframeStatusCardOptions = {

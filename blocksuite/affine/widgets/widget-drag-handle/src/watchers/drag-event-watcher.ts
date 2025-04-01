@@ -24,6 +24,7 @@ import {
 import {
   DndApiExtensionIdentifier,
   DocModeProvider,
+  EmbedIframeService,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
 import {
@@ -1058,8 +1059,20 @@ export class DragEventWatcher {
           new Bound(0, 0, 0, 0);
 
         if (block.flavour === 'affine:embed-iframe') {
-          blockBound.w = EMBED_IFRAME_DEFAULT_WIDTH_IN_SURFACE;
-          blockBound.h = EMBED_IFRAME_DEFAULT_HEIGHT_IN_SURFACE;
+          let width = EMBED_IFRAME_DEFAULT_WIDTH_IN_SURFACE;
+          let height = EMBED_IFRAME_DEFAULT_HEIGHT_IN_SURFACE;
+          if (block.props.url && typeof block.props.url === 'string') {
+            const embedIframeService = this.std.get(EmbedIframeService);
+            const options = embedIframeService.getConfig(
+              block.props.url
+            )?.options;
+            if (options) {
+              width = options.widthInSurface;
+              height = options.heightInSurface;
+            }
+          }
+          blockBound.w = width;
+          blockBound.h = height;
         } else if (
           block.flavour === 'affine:attachment' ||
           block.flavour === 'affine:bookmark' ||

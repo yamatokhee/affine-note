@@ -31,6 +31,9 @@ export const embedIframeSlashMenuConfig: SlashMenuConfig = {
           .pipe(insertEmptyEmbedIframeCommand, {
             place: 'after',
             removeEmptyLine: true,
+            linkInputPopupOptions: {
+              telemetrySegment: 'slash menu',
+            },
           })
           .run();
       },

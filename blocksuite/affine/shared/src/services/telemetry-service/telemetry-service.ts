@@ -30,6 +30,7 @@ export type TelemetryEventMap = OutDatabaseAllEvents &
     AttachmentUploadedEvent: AttachmentUploadedEvent;
     BlockCreated: BlockCreationEvent;
     EdgelessToolPicked: EdgelessToolPickedEvent;
+    CreateEmbedBlock: TelemetryEvent;
   };
 
 export interface TelemetryService {

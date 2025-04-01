@@ -5,11 +5,22 @@ import {
 } from '@blocksuite/affine-shared/services';
 import { isValidUrl, stopPropagation } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/lit';
-import { BlockSelection, type BlockStdScope } from '@blocksuite/std';
+import { noop } from '@blocksuite/global/utils';
+import {
+  BlockSelection,
+  type BlockStdScope,
+  SurfaceSelection,
+} from '@blocksuite/std';
 import { LitElement } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
 export class EmbedIframeLinkInputBase extends WithDisposable(LitElement) {
+  // this method is used to track the event when the user inputs the link
+  // it should be overridden by the subclass
+  protected track(status: 'success' | 'failure') {
+    noop(status);
+  }
+
   protected isInputEmpty() {
     return this._linkInputValue.trim() === '';
   }
@@ -33,9 +44,20 @@ export class EmbedIframeLinkInputBase extends WithDisposable(LitElement) {
     this.store.transact(() => {
       const blockId = this.store.addBlock(flavour, { url }, parent, index);
       this.store.deleteBlock(model);
-      this.std.selection.setGroup('note', [
-        this.std.selection.create(BlockSelection, { blockId }),
-      ]);
+      if (this.inSurface) {
+        this.std.selection.setGroup('gfx', [
+          this.std.selection.create(
+            SurfaceSelection,
+            blockId,
+            [blockId],
+            false
+          ),
+        ]);
+      } else {
+        this.std.selection.setGroup('note', [
+          this.std.selection.create(BlockSelection, { blockId }),
+        ]);
+      }
     });
 
     this.abortController?.abort();
@@ -50,6 +72,7 @@ export class EmbedIframeLinkInputBase extends WithDisposable(LitElement) {
       const embedIframeService = this.std.get(EmbedIframeService);
       if (!embedIframeService) {
         console.error('iframe EmbedIframeService not found');
+        this.track('failure');
         return;
       }
 
@@ -68,7 +91,9 @@ export class EmbedIframeLinkInputBase extends WithDisposable(LitElement) {
         title: '',
         description: '',
       });
+      this.track('success');
     } catch (error) {
+      this.track('failure');
       this.notificationService?.notify({
         title: 'Error in embed iframe creation',
         message: error instanceof Error ? error.message : 'Please try again',
@@ -129,4 +154,7 @@ export class EmbedIframeLinkInputBase extends WithDisposable(LitElement) {
 
   @property({ attribute: false })
   accessor abortController: AbortController | undefined = undefined;
+
+  @property({ attribute: false })
+  accessor inSurface = false;
 }

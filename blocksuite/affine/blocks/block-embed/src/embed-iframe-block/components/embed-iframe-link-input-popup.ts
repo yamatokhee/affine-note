@@ -1,3 +1,7 @@
+import {
+  DocModeProvider,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { CloseIcon } from '@blocksuite/icons/lit';
 import { baseTheme } from '@toeverything/theme';
@@ -16,6 +20,7 @@ export type EmbedLinkInputPopupOptions = {
   title?: string;
   description?: string;
   placeholder?: string;
+  telemetrySegment?: string;
 };
 
 const DEFAULT_OPTIONS: EmbedLinkInputPopupOptions = {
@@ -24,6 +29,7 @@ const DEFAULT_OPTIONS: EmbedLinkInputPopupOptions = {
   title: 'Embed Link',
   description: 'Works with links of Google Drive, Spotify…',
   placeholder: 'Paste the Embed link...',
+  telemetrySegment: 'editor',
 };
 
 export class EmbedIframeLinkInputPopup extends EmbedIframeLinkInputBase {
@@ -216,6 +222,17 @@ export class EmbedIframeLinkInputPopup extends EmbedIframeLinkInputBase {
     this.abortController?.abort();
   };
 
+  protected override track(status: 'success' | 'failure') {
+    this.telemetryService?.track('CreateEmbedBlock', {
+      type: 'embed iframe block',
+      page: this.editorMode === 'page' ? 'doc editor' : 'whiteboard editor',
+      segment: this.options?.telemetrySegment ?? 'editor',
+      module: 'embed block',
+      control: 'confirm embed link',
+      other: status,
+    });
+  }
+
   override render() {
     const options = { ...DEFAULT_OPTIONS, ...this.options };
     const { showCloseButton, variant, title, description, placeholder } =
@@ -259,6 +276,16 @@ export class EmbedIframeLinkInputPopup extends EmbedIframeLinkInputBase {
         </div>
       </div>
     `;
+  }
+
+  get telemetryService() {
+    return this.std.getOptional(TelemetryProvider);
+  }
+
+  get editorMode() {
+    const docModeService = this.std.get(DocModeProvider);
+    const mode = docModeService.getEditorMode();
+    return mode ?? 'page';
   }
 
   @property({ attribute: false })
