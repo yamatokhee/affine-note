@@ -304,6 +304,11 @@ export class LinkedDocPopover extends SignalWatcher(
                   data-id=${key}
                   .text=${name}
                   hover=${this._activatedItemKey === key}
+                  @pointerdown=${(e: PointerEvent) => {
+                    // Prevent event listeners being registered on the root document
+                    // eg., radix-ui dialogs usePointerDownOutside hooks
+                    e.stopPropagation();
+                  }}
                   @click=${() => {
                     action()?.catch(console.error);
                   }}
