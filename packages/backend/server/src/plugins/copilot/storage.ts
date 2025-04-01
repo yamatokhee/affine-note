@@ -8,6 +8,7 @@ import {
   CallMetric,
   Config,
   type FileUpload,
+  OnEvent,
   readBuffer,
   type StorageProvider,
   StorageProviderFactory,
@@ -17,15 +18,25 @@ import { QuotaService } from '../../core/quota';
 
 @Injectable()
 export class CopilotStorage {
-  public readonly provider: StorageProvider;
+  public provider!: StorageProvider;
 
   constructor(
     private readonly config: Config,
     private readonly url: URLHelper,
     private readonly storageFactory: StorageProviderFactory,
     private readonly quota: QuotaService
-  ) {
+  ) {}
+
+  @OnEvent('config.init')
+  async onConfigInit() {
     this.provider = this.storageFactory.create(this.config.copilot.storage);
+  }
+
+  @OnEvent('config.changed')
+  async onConfigChanged(event: Events['config.changed']) {
+    if (event.updates?.copilot?.storage) {
+      this.provider = this.storageFactory.create(this.config.copilot.storage);
+    }
   }
 
   @CallMetric('ai', 'blob_put')

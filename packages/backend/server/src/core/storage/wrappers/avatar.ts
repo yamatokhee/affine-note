@@ -14,7 +14,7 @@ import {
 
 @Injectable()
 export class AvatarStorage {
-  private provider: StorageProvider;
+  private provider!: StorageProvider;
 
   get config() {
     return this.AFFiNEConfig.storages.avatar;
@@ -24,8 +24,18 @@ export class AvatarStorage {
     private readonly AFFiNEConfig: Config,
     private readonly url: URLHelper,
     private readonly storageFactory: StorageProviderFactory
-  ) {
+  ) {}
+
+  @OnEvent('config.init')
+  async onConfigInit() {
     this.provider = this.storageFactory.create(this.config.storage);
+  }
+
+  @OnEvent('config.changed')
+  async onConfigChanged(event: Events['config.changed']) {
+    if (event.updates.storages?.avatar?.storage) {
+      this.provider = this.storageFactory.create(this.config.storage);
+    }
   }
 
   async put(key: string, blob: BlobInputType, metadata?: PutObjectMetadata) {
@@ -51,13 +61,6 @@ export class AvatarStorage {
   async onUserDeleted(user: Events['user.deleted']) {
     if (user.avatarUrl) {
       await this.delete(user.avatarUrl);
-    }
-  }
-
-  @OnEvent('config.changed')
-  async onConfigChanged(event: Events['config.changed']) {
-    if (event.updates.storages?.avatar?.storage) {
-      this.provider = this.storageFactory.create(this.config.storage);
     }
   }
 }
