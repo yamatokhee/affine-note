@@ -1,8 +1,14 @@
 import type { Tag, Tag as TagSchema } from '@affine/env/filter';
 import type { DocsPropertiesMeta } from '@blocksuite/affine/store';
-import { LiveData, Store } from '@toeverything/infra';
+import {
+  LiveData,
+  Store,
+  yjsObserveByPath,
+  yjsObserveDeep,
+} from '@toeverything/infra';
 import { nanoid } from 'nanoid';
-import { Observable } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
+import { Array as YArray } from 'yjs';
 
 import type { WorkspaceService } from '../../workspace';
 
@@ -118,5 +124,33 @@ export class TagStore extends Store {
       updateDate: Date.now(),
       ...tagInfo,
     });
+  }
+
+  watchTagPageIds(id: string) {
+    return yjsObserveByPath(
+      this.workspaceService.workspace.rootYDoc.getMap('meta'),
+      'pages'
+    ).pipe(
+      switchMap(yjsObserveDeep),
+      map(meta => {
+        if (meta instanceof YArray) {
+          return meta
+            .map(v => {
+              const tags = v.get('tags') as YArray<string> | undefined;
+              if (tags instanceof YArray) {
+                for (const tagId of tags.toArray()) {
+                  if (tagId === id) {
+                    return v.get('id') as string;
+                  }
+                }
+              }
+              return null;
+            })
+            .filter(Boolean) as string[];
+        } else {
+          return [];
+        }
+      })
+    );
   }
 }

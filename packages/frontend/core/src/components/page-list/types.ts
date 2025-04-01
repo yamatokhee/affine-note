@@ -59,7 +59,6 @@ export type TagListItemProps = {
   tagId: string;
   color: string;
   title: ReactNode; // using ReactNode to allow for rich content rendering
-  pageCount?: number;
   createDate?: Date | number;
   updatedDate?: Date | number;
   to?: To; // whether or not to render this item as a Link

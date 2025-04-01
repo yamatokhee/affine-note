@@ -407,7 +407,6 @@ function tagMetaToListItemProp(
     to: props.rowAsLink && !props.selectable ? `/tag/${item.id}` : undefined,
     onClick: toggleSelection,
     color: item.color,
-    pageCount: item.pageCount,
     operations: props.operationsRenderer?.(item),
     selectable: props.selectable,
     selected: props.selectedIds?.includes(item.id),

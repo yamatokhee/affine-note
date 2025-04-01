@@ -60,7 +60,6 @@ export class TagList extends Entity {
         id: tag.id,
         title: get(tag.value$),
         color: get(tag.color$),
-        pageCount: get(tag.pageIds$).length,
         createDate: get(tag.createDate$),
         updatedDate: get(tag.updateDate$),
       };
