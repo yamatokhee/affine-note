@@ -2,6 +2,7 @@ import type { SettingTab } from '@affine/core/modules/dialogs/constant';
 import { toURLSearchParams } from '@affine/core/modules/navigation';
 import { getOpenUrlInDesktopAppLink } from '@affine/core/modules/open-in-app';
 import type { DocMode } from '@blocksuite/affine/model';
+import { nanoid } from 'nanoid';
 import { createContext, useCallback, useContext, useMemo } from 'react';
 import type { NavigateFunction, NavigateOptions } from 'react-router-dom';
 
@@ -48,7 +49,12 @@ export function useNavigateHelper() {
       elementIds?: string[],
       logic: RouteLogic = RouteLogic.PUSH
     ) => {
-      const search = toURLSearchParams({ mode, blockIds, elementIds });
+      const search = toURLSearchParams({
+        mode,
+        blockIds,
+        elementIds,
+        refreshKey: nanoid(),
+      });
       const query = search?.size ? `?${search.toString()}` : '';
       return navigate(`/workspace/${workspaceId}/${pageId}${query}`, {
         replace: logic === RouteLogic.REPLACE,

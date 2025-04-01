@@ -34,6 +34,7 @@ import {
   useServices,
 } from '@toeverything/infra';
 import clsx from 'clsx';
+import { nanoid } from 'nanoid';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { Subscription } from 'rxjs';
@@ -207,6 +208,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
                       mode: params?.mode,
                       blockIds: params?.blockIds,
                       elementIds: params?.elementIds,
+                      refreshKey: nanoid(),
                     },
                     {
                       at: at,

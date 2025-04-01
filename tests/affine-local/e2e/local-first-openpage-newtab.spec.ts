@@ -142,5 +142,9 @@ test('ctrl click embedded doc link and open in new tab', async ({ page }) => {
     }),
   ]);
 
-  await expect(newTabPage).toHaveURL(newPageUrl, { timeout: 15000 });
+  const newTabPageUrl = new URL(newTabPage.url());
+  // ignores `search params`
+  newTabPageUrl.search = '';
+
+  expect(newTabPageUrl.toString()).toBe(newPageUrl);
 });

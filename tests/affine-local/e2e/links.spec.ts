@@ -3,6 +3,7 @@ import { test } from '@affine-test/kit/playwright';
 import { clickEdgelessModeButton } from '@affine-test/kit/utils/editor';
 import {
   pasteByKeyboard,
+  selectAllByKeyboard,
   writeTextToClipboard,
 } from '@affine-test/kit/utils/keyboard';
 import { coreUrl, openHomePage } from '@affine-test/kit/utils/load-page';
@@ -1163,4 +1164,62 @@ test('should not show view toggle button when protocol of link is not http(s)', 
   await expect(switchViewBtn).toBeHidden();
 
   await expect(toolbar.locator('affine-link-preview')).toHaveText('affine.pro');
+});
+
+test('should reach target block when clicking affine-link multiple times', async ({
+  page,
+}) => {
+  await page.keyboard.press('Enter');
+  await page.keyboard.type('a');
+
+  await page.keyboard.press('Enter');
+  await page.keyboard.type('b');
+
+  await page.keyboard.press('Enter');
+  await page.keyboard.type('c');
+
+  await selectAllByKeyboard(page);
+
+  const { toolbar } = toolbarButtons(page);
+
+  await toolbar.getByLabel('More menu').click();
+  await toolbar.getByLabel('Copy link to block').click();
+
+  const paragraph = page.locator('affine-paragraph').nth(0);
+  await paragraph.click();
+
+  await selectAllByKeyboard(page);
+
+  await toolbar.getByLabel(/^Link$/).click();
+
+  await page.waitForSelector('.affine-link-popover');
+
+  await pasteByKeyboard(page);
+
+  await page.locator('.affine-confirm-button').click();
+
+  const scrollAnchoringWidget = page.locator('affine-scroll-anchoring-widget');
+  const highlight = scrollAnchoringWidget.locator('.highlight');
+
+  const inlineLink = page.locator('affine-link');
+
+  await inlineLink.click();
+  await expect(highlight).toBeVisible();
+  const url0 = new URL(page.url());
+  const refreshKey0 = url0.searchParams.get('refreshKey');
+  expect(refreshKey0).not.toBeNull();
+
+  await paragraph.click();
+  await expect(highlight).toBeHidden();
+
+  await inlineLink.click();
+  await expect(highlight).toBeVisible();
+  const url1 = new URL(page.url());
+  const refreshKey1 = url1.searchParams.get('refreshKey');
+  expect(refreshKey1).not.toBeNull();
+
+  await paragraph.click();
+  await expect(highlight).toBeHidden();
+
+  expect(refreshKey0).not.toEqual(refreshKey1);
 });
