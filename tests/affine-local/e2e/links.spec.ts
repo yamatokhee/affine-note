@@ -1057,16 +1057,11 @@ test('should save open doc mode of internal links', async ({ page }) => {
   const inlineLink = page.locator('affine-reference');
   await inlineLink.hover();
 
-  const recentOpenModeBtn = toolbar.getByLabel(/^Open/).nth(0);
-  await expect(recentOpenModeBtn).toHaveAttribute(
-    'aria-label',
+  const openDocBtn = toolbar.getByLabel(/^Open doc$/);
+  await expect(openDocBtn).toHaveAttribute(
+    'data-open-doc-mode',
     'Open this doc'
   );
-  await expect(
-    recentOpenModeBtn.locator('span.label:has-text("Open")')
-  ).toBeVisible();
-
-  const openDocBtn = toolbar.getByLabel(/^Open doc$/);
   await openDocBtn.click();
 
   const openDocMenu = toolbar.getByLabel('Open doc menu');
@@ -1089,8 +1084,8 @@ test('should save open doc mode of internal links', async ({ page }) => {
   await inlineLink.hover();
 
   await expect(toolbar).toBeVisible();
-  await expect(recentOpenModeBtn).toHaveAttribute(
-    'aria-label',
+  await expect(openDocBtn).toHaveAttribute(
+    'data-open-doc-mode',
     'Open in center peek'
   );
 
@@ -1098,8 +1093,8 @@ test('should save open doc mode of internal links', async ({ page }) => {
   await cardViewBtn.click();
 
   await expect(toolbar).toBeVisible();
-  await expect(recentOpenModeBtn).toHaveAttribute(
-    'aria-label',
+  await expect(openDocBtn).toHaveAttribute(
+    'data-open-doc-mode',
     'Open in center peek'
   );
 
@@ -1107,8 +1102,8 @@ test('should save open doc mode of internal links', async ({ page }) => {
   await embedViewBtn.click();
 
   await expect(toolbar).toBeVisible();
-  await expect(recentOpenModeBtn).toHaveAttribute(
-    'aria-label',
+  await expect(openDocBtn).toHaveAttribute(
+    'data-open-doc-mode',
     'Open in center peek'
   );
 
@@ -1120,8 +1115,8 @@ test('should save open doc mode of internal links', async ({ page }) => {
   await page.waitForTimeout(250);
 
   await expect(toolbar).toBeVisible();
-  await expect(recentOpenModeBtn).toHaveAttribute(
-    'aria-label',
+  await expect(openDocBtn).toHaveAttribute(
+    'data-open-doc-mode',
     'Open in center peek'
   );
 });

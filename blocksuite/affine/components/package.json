@@ -68,7 +68,8 @@
     "./size-dropdown-menu": "./src/size-dropdown-menu/index.ts",
     "./edgeless-line-width-panel": "./src/edgeless-line-width-panel/index.ts",
     "./edgeless-line-styles-panel": "./src/edgeless-line-styles-panel/index.ts",
-    "./edgeless-shape-color-picker": "./src/edgeless-shape-color-picker/index.ts"
+    "./edgeless-shape-color-picker": "./src/edgeless-shape-color-picker/index.ts",
+    "./open-doc-dropdown-menu": "./src/open-doc-dropdown-menu/index.ts"
   },
   "files": [
     "src",

@@ -29,7 +29,6 @@ import {
 import { isPeekable, peek } from '@blocksuite/affine/components/peek';
 import { toast } from '@blocksuite/affine/components/toast';
 import {
-  EditorChevronDown,
   type MenuContext,
   type MenuItemGroup,
 } from '@blocksuite/affine/components/toolbar';
@@ -52,6 +51,7 @@ import {
   GenerateDocUrlProvider,
   isRemovedUserInfo,
   OpenDocExtensionIdentifier,
+  type OpenDocMode,
   type ToolbarAction,
   type ToolbarActionGenerator,
   type ToolbarActionGroupGenerator,
@@ -488,39 +488,42 @@ function createOpenDocActions(
     | SurfaceRefBlockComponent,
   isSameDoc: boolean,
   actions = openDocActions.map(
-    ({ type: mode, label, icon, enabled: when }, i) => ({
+    ({ type: mode, label, icon, enabled: when, shortcut }, i) => ({
       mode,
       id: `${i}.${mode}`,
       label,
       icon,
       when,
+      shortcut,
     })
   )
 ) {
   return actions
     .filter(action => action.when)
-    .map<ToolbarActionGenerator>(action => {
-      const openMode = action.mode;
-      const shouldOpenInCenterPeek = openMode === 'open-in-center-peek';
-      const shouldOpenInActiveView = openMode === 'open-in-active-view';
+    .map<ToolbarActionGenerator & { mode: OpenDocMode; shortcut?: string }>(
+      action => {
+        const openMode = action.mode;
+        const shouldOpenInCenterPeek = openMode === 'open-in-center-peek';
+        const shouldOpenInActiveView = openMode === 'open-in-active-view';
 
-      return {
-        ...action,
-        generate(ctx) {
-          const disabled = shouldOpenInActiveView ? isSameDoc : false;
+        return {
+          ...action,
+          generate(ctx) {
+            const disabled = shouldOpenInActiveView ? isSameDoc : false;
 
-          const when =
-            ctx.std.get(OpenDocExtensionIdentifier).isAllowed(openMode) &&
-            (shouldOpenInCenterPeek ? isPeekable(target) : true);
+            const when =
+              ctx.std.get(OpenDocExtensionIdentifier).isAllowed(openMode) &&
+              (shouldOpenInCenterPeek ? isPeekable(target) : true);
 
-          const run = shouldOpenInCenterPeek
-            ? (_ctx: ToolbarContext) => peek(target)
-            : (_ctx: ToolbarContext) => target.open({ openMode });
+            const run = shouldOpenInCenterPeek
+              ? (_ctx: ToolbarContext) => peek(target)
+              : (_ctx: ToolbarContext) => target.open({ openMode });
 
-          return { disabled, when, run };
-        },
-      };
-    })
+            return { disabled, when, run };
+          },
+        };
+      }
+    )
     .filter(action => {
       if (typeof action.when === 'function') return action.when(ctx);
       return action.when ?? true;
@@ -713,58 +716,20 @@ function renderOpenDocMenu(
   }));
   if (!actions.length) return null;
 
-  const currentOpenMode =
-    settings.settingSignal.value.openDocMode ?? 'open-in-active-view';
-  const currentIcon =
-    openDocActions.find(a => a.type === currentOpenMode)?.icon ??
-    OpenInNewIcon();
-  const currentAction = actions.find(a => a.icon === currentIcon) ?? actions[0];
-
   return html`${keyed(
     target,
     html`
-      <editor-icon-button
-        aria-label="${currentAction.label}"
-        .tooltip="${currentAction.label}"
-        @click=${() => currentAction.run?.(ctx)}
+      <affine-open-doc-dropdown-menu
+        .actions=${actions}
+        .context=${ctx}
+        .openDocMode$=${computed(
+          () =>
+            settings.settingSignal.value.openDocMode ?? 'open-in-active-view'
+        )}
+        .updateOpenDocMode=${(mode: OpenDocMode) =>
+          settings.openDocMode.set(mode)}
       >
-        ${currentAction.icon} <span class="label">Open</span>
-      </editor-icon-button>
-      <editor-menu-button
-        aria-label="Open doc menu"
-        .contentPadding="${'8px'}"
-        .button=${html`
-          <editor-icon-button
-            aria-label="Open doc"
-            .tooltip="${'Open doc'}"
-            .iconContainerPadding="${'4'}"
-          >
-            ${EditorChevronDown}
-          </editor-icon-button>
-        `}
-      >
-        <div data-size="small" data-orientation="vertical">
-          ${repeat(
-            actions,
-            action => action.id,
-            ({ label, icon, run, disabled }) => html`
-              <editor-menu-action
-                aria-label=${ifDefined(label)}
-                ?disabled=${ifDefined(disabled)}
-                @click=${() => {
-                  run?.(ctx);
-                  settings.openDocMode.set(
-                    openDocActions.find(a => a.icon === icon)?.type ??
-                      'open-in-active-view'
-                  );
-                }}
-              >
-                ${icon}<span class="label">${label}</span>
-              </editor-menu-action>
-            `
-          )}
-        </div>
-      </editor-menu-button>
+      </affine-open-doc-dropdown-menu>
     `
   )}`;
 }
