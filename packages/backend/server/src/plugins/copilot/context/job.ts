@@ -73,11 +73,18 @@ export class CopilotContextDocJob {
   }
 
   @OnEvent('workspace.doc.embedding')
-  async addDocEmbeddingQueue(docs: Events['workspace.doc.embedding']) {
+  async addDocEmbeddingQueue(
+    docs: Events['workspace.doc.embedding'],
+    contextId?: string
+  ) {
     if (!this.supportEmbedding) return;
 
     for (const { workspaceId, docId } of docs) {
-      await this.queue.add('doc.embedPendingDocs', { workspaceId, docId });
+      await this.queue.add('doc.embedPendingDocs', {
+        contextId,
+        workspaceId,
+        docId,
+      });
     }
   }
 
@@ -130,23 +137,24 @@ export class CopilotContextDocJob {
         fileId,
         chunkSize: total,
       });
-    } catch (e: any) {
-      const error = mapAnyError(e);
-      error.log('CopilotJob', {
-        workspaceId,
-        fileId,
-      });
-
+    } catch (error: any) {
       this.event.emit('workspace.file.embed.failed', {
         contextId,
         fileId,
-        error: e.toString(),
+        error: mapAnyError(error).message,
       });
+
+      // passthrough error to job queue
+      throw error;
     }
   }
 
   @OnJob('doc.embedPendingDocs')
-  async embedPendingDocs({ workspaceId, docId }: Jobs['doc.embedPendingDocs']) {
+  async embedPendingDocs({
+    contextId,
+    workspaceId,
+    docId,
+  }: Jobs['doc.embedPendingDocs']) {
     if (!this.supportEmbedding) return;
 
     try {
@@ -165,11 +173,16 @@ export class CopilotContextDocJob {
           );
         }
       }
-    } catch (e: any) {
-      this.logger.error(
-        `Failed to embed pending doc: ${workspaceId}::${docId}`,
-        e
-      );
+    } catch (error: any) {
+      if (contextId) {
+        this.event.emit('workspace.doc.embed.failed', {
+          contextId,
+          docId,
+        });
+      }
+
+      // passthrough error to job queue
+      throw error;
     }
   }
 }

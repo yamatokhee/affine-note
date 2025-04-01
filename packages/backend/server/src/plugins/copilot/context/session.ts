@@ -217,6 +217,23 @@ export class ContextSession implements AsyncDisposable {
     );
   }
 
+  async saveDocRecord(
+    docId: string,
+    cb: (
+      record: Pick<ContextDoc, 'id' | 'status'> &
+        Partial<Omit<ContextDoc, 'id' | 'status'>>
+    ) => ContextDoc
+  ) {
+    const docs = [this.config.docs, ...this.config.categories.map(c => c.docs)]
+      .flat()
+      .filter(d => d.id === docId);
+    for (const doc of docs) {
+      Object.assign(doc, cb({ ...doc }));
+    }
+
+    await this.save();
+  }
+
   async saveFileRecord(
     fileId: string,
     cb: (

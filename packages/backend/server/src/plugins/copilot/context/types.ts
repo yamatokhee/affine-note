@@ -10,11 +10,18 @@ declare global {
       workspaceId: string;
       docId: string;
     }>;
+
+    'workspace.doc.embed.failed': {
+      contextId: string;
+      docId: string;
+    };
+
     'workspace.file.embed.finished': {
       contextId: string;
       fileId: string;
       chunkSize: number;
     };
+
     'workspace.file.embed.failed': {
       contextId: string;
       fileId: string;
@@ -23,6 +30,7 @@ declare global {
   }
   interface Jobs {
     'doc.embedPendingDocs': {
+      contextId?: string;
       workspaceId: string;
       docId: string;
     };

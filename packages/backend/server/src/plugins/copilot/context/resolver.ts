@@ -464,7 +464,8 @@ export class CopilotContextResolver {
           options.docs.map(docId => ({
             workspaceId: session.workspaceId,
             docId,
-          }))
+          })),
+          session.id
         );
       }
 
@@ -523,12 +524,10 @@ export class CopilotContextResolver {
     try {
       const record = await session.addDocRecord(options.docId);
 
-      await this.jobs.addDocEmbeddingQueue([
-        {
-          workspaceId: session.workspaceId,
-          docId: options.docId,
-        },
-      ]);
+      await this.jobs.addDocEmbeddingQueue(
+        [{ workspaceId: session.workspaceId, docId: options.docId }],
+        session.id
+      );
 
       return { ...record, status: record.status || null };
     } catch (e: any) {

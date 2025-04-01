@@ -11,6 +11,7 @@ import {
 import {
   ContextConfig,
   ContextConfigSchema,
+  ContextDoc,
   ContextEmbedStatus,
   ContextFile,
   Models,
@@ -146,6 +147,18 @@ export class CopilotContextService implements OnApplicationBootstrap {
       await this.models.copilotContext.getBySessionId(sessionId);
     if (existsContext) return this.get(existsContext.id);
     return null;
+  }
+
+  @OnEvent('workspace.doc.embed.failed')
+  async onDocEmbedFailed({
+    contextId,
+    docId,
+  }: Events['workspace.doc.embed.failed']) {
+    const context = await this.get(contextId);
+    await context.saveDocRecord(docId, doc => ({
+      ...(doc as ContextDoc),
+      status: ContextEmbedStatus.failed,
+    }));
   }
 
   @OnEvent('workspace.file.embed.finished')
