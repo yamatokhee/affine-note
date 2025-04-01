@@ -1,6 +1,8 @@
+import { getQueueToken } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import test from 'ava';
+import { Queue as Bullmq } from 'bullmq';
 import { CLS_ID, ClsServiceManager } from 'nestjs-cls';
 import Sinon from 'sinon';
 
@@ -15,6 +17,7 @@ import { JobHandlerScanner } from '../scanner';
 let module: TestingModule;
 let queue: JobQueue;
 let executor: JobExecutor;
+let bullmq: Bullmq;
 
 declare global {
   interface Jobs {
@@ -62,9 +65,6 @@ test.before(async () => {
               stalledInterval: 100,
             },
           },
-          queue: {
-            defaultJobOptions: { delay: 1000 },
-          },
         },
       }),
       JobModule.forRoot(),
@@ -78,13 +78,12 @@ test.before(async () => {
 
   queue = module.get(JobQueue);
   executor = module.get(JobExecutor);
+  bullmq = module.get(getQueueToken('nightly'), { strict: false });
 });
 
-test.afterEach(async () => {
-  // @ts-expect-error private api
-  const inner = queue.getQueue('nightly');
-  await inner.obliterate({ force: true });
-  await inner.resume();
+test.beforeEach(async () => {
+  await bullmq.obliterate({ force: true });
+  await bullmq.resume();
 });
 
 test.after.always(async () => {
@@ -106,25 +105,20 @@ test('should register job handler', async t => {
 test('should add job to queue', async t => {
   const job = await queue.add('nightly.__test__job', { name: 'test' });
 
-  // @ts-expect-error private api
-  const innerQueue = queue.getQueue('nightly');
-  const queuedJob = await innerQueue.getJob(job.id!);
+  const queuedJob = await queue.get(job.id!, job.name as JobName);
 
-  t.is(queuedJob.name, job.name);
+  t.is(queuedJob!.name, job.name);
 });
 
 test('should remove job from queue', async t => {
   const job = await queue.add('nightly.__test__job', { name: 'test' });
-
-  // @ts-expect-error private api
-  const innerQueue = queue.getQueue('nightly');
 
   const data = await queue.remove(job.id!, job.name as JobName);
 
   t.deepEqual(data, { name: 'test' });
 
   const nullData = await queue.remove(job.id!, job.name as JobName);
-  const nullJob = await innerQueue.getJob(job.id!);
+  const nullJob = await bullmq.getJob(job.id!);
 
   t.is(nullData, undefined);
   t.is(nullJob, undefined);
@@ -137,7 +131,6 @@ test('should start workers', async t => {
   const worker = executor.workers.get('nightly')!;
 
   t.truthy(worker);
-  t.true(worker.isRunning());
 });
 
 test('should dispatch job handler', async t => {

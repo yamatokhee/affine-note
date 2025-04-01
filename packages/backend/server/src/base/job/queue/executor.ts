@@ -1,5 +1,7 @@
+import { getQueueToken } from '@nestjs/bullmq';
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-import { Worker } from 'bullmq';
+import { ModuleRef } from '@nestjs/core';
+import { Job, Queue as Bullmq, Worker } from 'bullmq';
 import { difference, merge } from 'lodash-es';
 import { CLS_ID, ClsServiceManager } from 'nestjs-cls';
 
@@ -19,7 +21,8 @@ export class JobExecutor implements OnModuleDestroy {
   constructor(
     private readonly config: Config,
     private readonly redis: QueueRedis,
-    private readonly scanner: JobHandlerScanner
+    private readonly scanner: JobHandlerScanner,
+    private readonly ref: ModuleRef
   ) {}
 
   @OnEvent('config.init')
@@ -49,7 +52,7 @@ export class JobExecutor implements OnModuleDestroy {
     await this.stopWorkers();
   }
 
-  async run(name: JobName, payload: any) {
+  async run(name: JobName, payload: any): Promise<JOB_SIGNAL | undefined> {
     const ns = namespace(name);
     const handler = this.scanner.getHandler(name);
 
@@ -70,13 +73,9 @@ export class JobExecutor implements OnModuleDestroy {
           const signature = `[${name}] (${handler.name})`;
           try {
             this.logger.debug(`Job started: ${signature}`);
-            const result = await handler.fn(payload);
-
-            if (result === JOB_SIGNAL.RETRY) {
-              throw new Error(`Manually job retry`);
-            }
-
+            const ret = await handler.fn(payload);
             this.logger.debug(`Job finished: ${signature}`);
+            return ret;
           } catch (e) {
             this.logger.error(`Job failed: ${signature}`, e);
             throw e;
@@ -94,7 +93,7 @@ export class JobExecutor implements OnModuleDestroy {
     const activeJobs = metrics.queue.counter('active_jobs');
     activeJobs.add(1, { queue: ns });
     try {
-      await fn();
+      return await fn();
     } finally {
       activeJobs.add(-1, { queue: ns });
     }
@@ -117,7 +116,7 @@ export class JobExecutor implements OnModuleDestroy {
       const worker = new Worker(
         queue,
         async job => {
-          await this.run(job.name as JobName, job.data);
+          return await this.run(job.name as JobName, job.data);
         },
         merge(
           {},
@@ -135,11 +134,27 @@ export class JobExecutor implements OnModuleDestroy {
         this.logger.error(`Queue Worker [${queue}] error`, error);
       });
 
+      worker.on('completed', (job, result) => {
+        this.handleJobReturn(job, result).catch(() => {
+          /* noop */
+        });
+      });
+
       this.logger.log(
         `Queue Worker [${queue}] started; concurrency=${concurrency};`
       );
 
       this.workers.set(queue, worker);
+    }
+  }
+
+  async handleJobReturn(job: Job, result: JOB_SIGNAL) {
+    if (result === JOB_SIGNAL.Repeat || result === JOB_SIGNAL.Retry) {
+      try {
+        await this.getQueue(job.name).add(job.name, job.data, job.opts);
+      } catch (e) {
+        this.logger.error(`Failed to add job [${job.name}]`, e);
+      }
     }
   }
 
@@ -149,5 +164,9 @@ export class JobExecutor implements OnModuleDestroy {
         await worker.close(true);
       })
     );
+  }
+
+  private getQueue(ns: string): Bullmq {
+    return this.ref.get(getQueueToken(ns), { strict: false });
   }
 }

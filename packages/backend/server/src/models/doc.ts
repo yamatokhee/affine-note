@@ -88,6 +88,13 @@ export class DocModel extends BaseModel {
     return await this.db.update.count();
   }
 
+  async groupedUpdatesCount() {
+    return await this.db.update.groupBy({
+      by: ['workspaceId', 'id'],
+      _count: true,
+    });
+  }
+
   /**
    * Delete updates by workspaceId, docId, and createdAts.
    */

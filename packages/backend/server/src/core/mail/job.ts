@@ -101,7 +101,7 @@ export class MailJob {
       ...options,
     });
 
-    return result === false ? JOB_SIGNAL.RETRY : undefined;
+    return result === false ? JOB_SIGNAL.Retry : undefined;
   }
 
   private async fetchWorkspaceProps(workspaceId: string) {

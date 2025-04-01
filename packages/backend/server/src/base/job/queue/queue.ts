@@ -37,6 +37,12 @@ export class JobQueue {
     return undefined;
   }
 
+  async get<T extends JobName>(jobId: string, jobName: T) {
+    const ns = namespace(jobName);
+    const queue = this.getQueue(ns);
+    return (await queue.getJob(jobId)) as Job<Jobs[T]> | undefined;
+  }
+
   private getQueue(ns: string): Queue {
     return this.moduleRef.get(getQueueToken(ns), { strict: false });
   }

@@ -65,5 +65,7 @@ export function getJobHandlerMetadata(target: any): JobName[] {
 }
 
 export enum JOB_SIGNAL {
-  RETRY = 'retry',
+  Retry = 'retry',
+  Repeat = 'repeat',
+  Done = 'done',
 }
