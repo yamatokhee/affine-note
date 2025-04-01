@@ -6,7 +6,7 @@ import {
   type TelemetryEvent,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
-import { FONT_XS, PANEL_BASE } from '@blocksuite/affine-shared/styles';
+import { fontXSStyle, panelBaseStyle } from '@blocksuite/affine-shared/styles';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
@@ -36,8 +36,8 @@ export class ReferencePopup extends SignalWatcher(
       height: 100vh;
     }
 
+    ${panelBaseStyle('.popover-container')}
     .popover-container {
-      ${PANEL_BASE};
       position: absolute;
       display: flex;
       width: 321px;
@@ -68,8 +68,8 @@ export class ReferencePopup extends SignalWatcher(
       border: none;
       background: transparent;
       color: var(--affine-text-primary-color);
-      ${FONT_XS};
     }
+    ${fontXSStyle('input')}
     input::placeholder {
       color: var(--affine-placeholder-color);
     }
@@ -77,8 +77,8 @@ export class ReferencePopup extends SignalWatcher(
       outline: none;
     }
 
+    ${fontXSStyle('editor-icon-button.save .label')}
     editor-icon-button.save .label {
-      ${FONT_XS};
       color: inherit;
       text-transform: none;
     }

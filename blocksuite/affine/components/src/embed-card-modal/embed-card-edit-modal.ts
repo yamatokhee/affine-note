@@ -9,7 +9,7 @@ import {
   type TelemetryEvent,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
-import { FONT_SM, FONT_XS } from '@blocksuite/affine-shared/styles';
+import { fontSMStyle, fontXSStyle } from '@blocksuite/affine-shared/styles';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import {
   listenClickAway,
@@ -90,8 +90,8 @@ export class EmbedCardEditModal extends SignalWatcher(
       background: transparent;
       border: 1px solid ${unsafeCSSVarV2('input/border/default')};
       color: var(--affine-text-primary-color);
-      ${FONT_SM};
     }
+    ${fontSMStyle('.row .input')}
     .input::placeholder {
       color: var(--affine-placeholder-color);
     }
@@ -117,9 +117,9 @@ export class EmbedCardEditModal extends SignalWatcher(
       border-radius: 4px;
       border: 1px solid ${unsafeCSSVarV2('button/innerBlackBorder')};
       background: ${unsafeCSSVarV2('button/secondary')};
-      ${FONT_XS};
       color: ${unsafeCSSVarV2('text/primary')};
     }
+    ${fontXSStyle('.row.actions .button')}
     .row.actions .button[disabled],
     .row.actions .button:disabled {
       pointer-events: none;

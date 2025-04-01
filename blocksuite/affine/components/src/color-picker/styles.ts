@@ -1,4 +1,4 @@
-import { FONT_SM, FONT_XS } from '@blocksuite/affine-shared/styles';
+import { fontSMStyle, fontXSStyle } from '@blocksuite/affine-shared/styles';
 import { css } from 'lit';
 
 export const COLOR_PICKER_STYLE = css`
@@ -21,6 +21,7 @@ export const COLOR_PICKER_STYLE = css`
     background: var(--affine-hover-color);
   }
 
+  ${fontXSStyle('nav button')}
   nav button {
     display: flex;
     padding: 4px 8px;
@@ -29,7 +30,6 @@ export const COLOR_PICKER_STYLE = css`
     align-items: center;
     flex: 1 0 0;
 
-    ${FONT_XS};
     color: var(--affine-text-secondary-color);
     font-weight: 600;
 
@@ -61,6 +61,7 @@ export const COLOR_PICKER_STYLE = css`
     flex: 1 0 0;
   }
 
+  ${fontXSStyle('.modes .mode button')}
   .modes .mode button {
     position: relative;
     display: flex;
@@ -75,7 +76,6 @@ export const COLOR_PICKER_STYLE = css`
     border: 1px solid var(--affine-border-color);
     box-sizing: border-box;
 
-    ${FONT_XS};
     font-weight: 400;
     color: #8e8d91;
   }
@@ -268,6 +268,7 @@ export const COLOR_PICKER_STYLE = css`
     gap: 0;
   }
 
+  ${fontSMStyle('input')}
   input {
     display: flex;
     width: 100%;
@@ -275,7 +276,6 @@ export const COLOR_PICKER_STYLE = css`
     background: transparent;
     border: none;
     outline: none;
-    ${FONT_SM};
     font-weight: 400;
     color: var(--affine-text-primary-color);
   }

@@ -1,4 +1,4 @@
-import { PANEL_BASE } from '@blocksuite/affine-shared/styles';
+import { panelBaseStyle } from '@blocksuite/affine-shared/styles';
 import {
   type ButtonPopperOptions,
   createButtonPopper,
@@ -117,8 +117,8 @@ export class EditorMenuContent extends LitElement {
       overflow-y: auto;
     }
 
+    ${panelBaseStyle(':host([data-show])')}
     :host([data-show]) {
-      ${PANEL_BASE};
       justify-content: center;
       padding: var(--content-padding, 0 6px);
     }

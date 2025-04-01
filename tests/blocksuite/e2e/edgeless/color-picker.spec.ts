@@ -128,7 +128,7 @@ test.describe('basic functions', () => {
 
     await expect(colorPickerPanel).toBeVisible();
 
-    await colorPickerPanel.click({ position: { x: 0, y: 0 } });
+    await colorPickerPanel.click({ position: { x: 10, y: 10 } });
     await expect(colorPickerPanel).toBeVisible();
 
     await page.mouse.click(0, 0);

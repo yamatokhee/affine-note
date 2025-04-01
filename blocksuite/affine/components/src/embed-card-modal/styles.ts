@@ -1,4 +1,4 @@
-import { FONT_XS, PANEL_BASE } from '@blocksuite/affine-shared/styles';
+import { fontXSStyle, panelBaseStyle } from '@blocksuite/affine-shared/styles';
 import { css } from 'lit';
 
 export const embedCardModalStyles = css`
@@ -12,8 +12,8 @@ export const embedCardModalStyles = css`
     z-index: 1;
   }
 
+  ${panelBaseStyle('.embed-card-modal-wrapper')}
   .embed-card-modal-wrapper {
-    ${PANEL_BASE};
     flex-direction: column;
     position: absolute;
     left: 0;
@@ -50,8 +50,8 @@ export const embedCardModalStyles = css`
     border: 1px solid var(--affine-border-color);
     background: var(--affine-white-10);
     color: var(--affine-text-primary-color);
-    ${FONT_XS};
   }
+  ${fontXSStyle('.embed-card-modal-input')}
   input.embed-card-modal-input {
     padding-top: 4px;
     padding-bottom: 4px;
