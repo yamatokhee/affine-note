@@ -251,7 +251,7 @@ export class CopilotController implements BeforeApplicationShutdown {
       }
 
       const finalMessage = session.finish(params);
-      info.finalMessage = finalMessage;
+      info.finalMessage = finalMessage.filter(m => m.role !== 'system');
 
       const content = await provider.generateText(finalMessage, session.model, {
         ...session.config.promptConfig,
@@ -315,7 +315,8 @@ export class CopilotController implements BeforeApplicationShutdown {
 
       this.ongoingStreamCount$.next(this.ongoingStreamCount$.value + 1);
       const finalMessage = session.finish(params);
-      info.finalMessage = finalMessage;
+      info.finalMessage = finalMessage.filter(m => m.role !== 'system');
+
       const source$ = from(
         provider.generateTextStream(finalMessage, session.model, {
           ...session.config.promptConfig,
