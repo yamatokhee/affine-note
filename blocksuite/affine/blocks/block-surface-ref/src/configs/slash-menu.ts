@@ -13,7 +13,7 @@ import { BlockSelection } from '@blocksuite/std';
 import { GfxControllerIdentifier } from '@blocksuite/std/gfx';
 
 import { insertSurfaceRefBlockCommand } from '../commands';
-import { EdgelessTooltip } from './tooltips';
+import { EdgelessTooltip, FrameTooltip, MindMapTooltip } from './tooltips';
 
 const surfaceRefSlashMenuConfig: SlashMenuConfig = {
   items: ({ std, model }) => {
@@ -56,7 +56,7 @@ const surfaceRefSlashMenuConfig: SlashMenuConfig = {
       description: 'Insert a blank frame',
       icon: FrameIcon(),
       tooltip: {
-        figure: EdgelessTooltip,
+        figure: FrameTooltip,
         caption: 'Frame',
       },
       group: `5_Edgeless Element@${index++}`,
@@ -72,7 +72,7 @@ const surfaceRefSlashMenuConfig: SlashMenuConfig = {
       description: 'Insert a mind map',
       icon: MindmapIcon(),
       tooltip: {
-        figure: EdgelessTooltip,
+        figure: MindMapTooltip,
         caption: 'Edgeless',
       },
       group: `5_Edgeless Element@${index++}`,
