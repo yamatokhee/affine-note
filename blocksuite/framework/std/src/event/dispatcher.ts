@@ -170,7 +170,7 @@ export class UIEventDispatcher extends LifeCycleWatcher {
     this.disposables.addFromEvent(this.host, 'focusin', () => {
       this._setActive(true);
     });
-    this.disposables.addFromEvent(this.host, 'focusout', e => {
+    this.disposables.addFromEvent(document, 'focusout', e => {
       if (e.relatedTarget && !this.host.contains(e.relatedTarget as Node)) {
         this._setActive(false);
       }
