@@ -51,7 +51,7 @@ export class IntegrationWriter extends Entity {
     } = options;
 
     const workspace = this.workspaceService.workspace;
-    let markdown = comment ? `${content}\n---\n${comment}` : content;
+    let markdown = comment ? `${content}\n\n---\n\n${comment}` : content;
 
     let finalDocId: string;
     if (!docId) {
