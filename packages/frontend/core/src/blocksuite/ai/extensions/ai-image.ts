@@ -1,29 +1,14 @@
 import { ImageBlockSpec } from '@blocksuite/affine/blocks/image';
-import { AffineImageToolbarWidget } from '@blocksuite/affine/blocks/root';
-import { LifeCycleWatcher } from '@blocksuite/affine/std';
+import { ToolbarModuleExtension } from '@blocksuite/affine/shared/services';
+import { BlockFlavourIdentifier } from '@blocksuite/affine/std';
 import type { ExtensionType } from '@blocksuite/affine/store';
 
-import { setupImageToolbarAIEntry } from '../entries/image-toolbar/setup-image-toolbar';
-
-class AIImageBlockWatcher extends LifeCycleWatcher {
-  static override key = 'ai-image-block-watcher';
-
-  override mounted() {
-    super.mounted();
-    const { view } = this.std;
-    view.viewUpdated.subscribe(payload => {
-      if (payload.type !== 'widget' || payload.method !== 'add') {
-        return;
-      }
-      const component = payload.view;
-      if (component instanceof AffineImageToolbarWidget) {
-        setupImageToolbarAIEntry(component);
-      }
-    });
-  }
-}
+import { imageToolbarAIEntryConfig } from '../entries/image-toolbar/setup-image-toolbar';
 
 export const AIImageBlockSpec: ExtensionType[] = [
   ...ImageBlockSpec,
-  AIImageBlockWatcher,
+  ToolbarModuleExtension({
+    id: BlockFlavourIdentifier('custom:affine:image'),
+    config: imageToolbarAIEntryConfig(),
+  }),
 ];

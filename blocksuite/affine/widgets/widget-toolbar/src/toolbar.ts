@@ -88,6 +88,7 @@ export class AffineToolbarWidget extends WidgetComponent {
       box-sizing: border-box;
       gap: 4px;
 
+      .inner-button,
       editor-icon-button,
       editor-menu-button {
         background: ${unsafeCSSVarV2('button/iconButtonSolid')};

@@ -1,6 +1,8 @@
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
+import { whenHover } from '@blocksuite/affine-components/hover';
 import { Peekable } from '@blocksuite/affine-components/peek';
 import type { ImageBlockModel } from '@blocksuite/affine-model';
+import { ToolbarRegistryIdentifier } from '@blocksuite/affine-shared/services';
 import { IS_MOBILE } from '@blocksuite/global/env';
 import { BlockSelection } from '@blocksuite/std';
 import { html } from 'lit';
@@ -54,9 +56,33 @@ export class ImageBlockComponent extends CaptionedBlockComponent<ImageBlockModel
     selectionManager.setGroup('note', [blockSelection]);
   }
 
+  private _initHover() {
+    const { setReference, setFloating, dispose } = whenHover(
+      hovered => {
+        const message$ = this.std.get(ToolbarRegistryIdentifier).message$;
+        if (hovered) {
+          message$.value = {
+            flavour: this.model.flavour,
+            element: this,
+            setFloating,
+          };
+          return;
+        }
+
+        // Clears previous bindings
+        message$.value = null;
+        setFloating();
+      },
+      { enterDelay: 500 }
+    );
+    setReference(this);
+    this._disposables.add(dispose);
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
+    this._initHover();
     this.refreshData();
     this.contentEditable = 'false';
     this._disposables.add(

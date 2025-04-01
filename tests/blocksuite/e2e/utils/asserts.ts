@@ -217,13 +217,6 @@ export async function assertImageSize(
   });
 }
 
-export async function assertImageOption(page: Page) {
-  // const actual = await page.locator('.embed-editing-state').count();
-  // expect(actual).toEqual(1);
-  const locator = page.locator('.affine-image-toolbar-container');
-  await expect(locator).toBeVisible();
-}
-
 export async function assertDocTitleFocus(page: Page) {
   const locator = page.locator('doc-title .inline-editor').nth(0);
   await expect(locator).toBeFocused();

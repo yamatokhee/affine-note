@@ -3,7 +3,6 @@ import {
   CodeBlockConfigExtension,
   codeToolbarWidget,
 } from '@blocksuite/affine/blocks/code';
-import { imageToolbarWidget } from '@blocksuite/affine/blocks/image';
 import { ParagraphBlockConfigExtension } from '@blocksuite/affine/blocks/paragraph';
 import type {
   Container,
@@ -134,7 +133,6 @@ export function enableMobileExtension(
   framework: FrameworkProvider
 ): void {
   specBuilder.omit(codeToolbarWidget);
-  specBuilder.omit(imageToolbarWidget);
   specBuilder.omit(toolbarWidget);
   specBuilder.omit(SlashMenuExtension);
   specBuilder.extend([

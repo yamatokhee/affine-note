@@ -31,7 +31,6 @@ import { AffineTemplateLoading } from './edgeless/components/toolbar/template/te
 import { EdgelessTemplatePanel } from './edgeless/components/toolbar/template/template-panel.js';
 import { EdgelessTemplateButton } from './edgeless/components/toolbar/template/template-tool-button.js';
 import {
-  AffineImageToolbarWidget,
   AffineModalWidget,
   EdgelessRootBlockComponent,
   EdgelessRootPreviewBlockComponent,
@@ -48,8 +47,6 @@ import {
 } from './widgets/edgeless-zoom-toolbar/index.js';
 import { ZoomBarToggleButton } from './widgets/edgeless-zoom-toolbar/zoom-bar-toggle-button.js';
 import { EdgelessZoomToolbar } from './widgets/edgeless-zoom-toolbar/zoom-toolbar.js';
-import { AffineImageToolbar } from './widgets/image-toolbar/components/image-toolbar.js';
-import { AFFINE_IMAGE_TOOLBAR_WIDGET } from './widgets/image-toolbar/index.js';
 import {
   AFFINE_INNER_MODAL_WIDGET,
   AffineInnerModalWidget,
@@ -109,7 +106,6 @@ function registerWidgets() {
     AFFINE_PAGE_DRAGGING_AREA_WIDGET,
     AffinePageDraggingAreaWidget
   );
-  customElements.define(AFFINE_IMAGE_TOOLBAR_WIDGET, AffineImageToolbarWidget);
   customElements.define(
     AFFINE_VIEWPORT_OVERLAY_WIDGET,
     AffineViewportOverlayWidget
@@ -146,7 +142,6 @@ function registerMiscComponents() {
   customElements.define('affine-template-loading', AffineTemplateLoading);
 
   // Toolbar and UI components
-  customElements.define('affine-image-toolbar', AffineImageToolbar);
   customElements.define('edgeless-zoom-toolbar', EdgelessZoomToolbar);
   customElements.define('zoom-bar-toggle-button', ZoomBarToggleButton);
   customElements.define('overlay-scrollbar', OverlayScrollbar);
@@ -200,10 +195,8 @@ declare global {
     'affine-page-root': PageRootBlockComponent;
     'zoom-bar-toggle-button': ZoomBarToggleButton;
     'edgeless-zoom-toolbar': EdgelessZoomToolbar;
-    'affine-image-toolbar': AffineImageToolbar;
 
     [AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET]: AffineEdgelessZoomToolbarWidget;
-    [AFFINE_IMAGE_TOOLBAR_WIDGET]: AffineImageToolbarWidget;
     [AFFINE_INNER_MODAL_WIDGET]: AffineInnerModalWidget;
   }
 }

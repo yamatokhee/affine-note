@@ -192,11 +192,8 @@ abstract class ToolbarContextBase {
     };
 
     const getFromMessage = () => {
-      const msgEle = this.message$.peek()?.element;
-      if (msgEle instanceof BlockComponent) {
-        return msgEle;
-      }
-      return null;
+      const block = this.message$.peek()?.element;
+      return block instanceof BlockComponent ? block : null;
     };
 
     return getFromSelection() ?? getFromMessage();
@@ -234,11 +231,8 @@ abstract class ToolbarContextBase {
     };
 
     const getFromMessage = () => {
-      const msgEle = this.message$.peek()?.element;
-      if (msgEle instanceof BlockComponent) {
-        return msgEle.model;
-      }
-      return null;
+      const block = this.message$.peek()?.element;
+      return block instanceof BlockComponent ? block.model : null;
     };
 
     return getFromSelection() ?? getFromMessage();

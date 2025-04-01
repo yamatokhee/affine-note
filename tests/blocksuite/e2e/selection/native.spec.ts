@@ -1338,14 +1338,16 @@ test('should keep native range selection when scrolling forward with the scroll 
   assertClipItems(page, 'text/plain', '123456789');
 });
 
-test('should not show option menu of image on native selection', async ({
+test('should not show toolbar of image on native selection', async ({
   page,
 }) => {
   await enterPlaygroundRoom(page);
   await initImageState(page);
   await activeEmbed(page);
 
-  await expect(page.locator('.affine-image-toolbar-container')).toHaveCount(1);
+  const toolbar = page.locator('affine-toolbar-widget editor-toolbar');
+
+  await expect(toolbar).toBeVisible();
 
   await pressEscape(page);
   await pressEnter(page);
@@ -1381,7 +1383,7 @@ test('should not show option menu of image on native selection', async ({
   await copyByKeyboard(page);
   assertClipItems(page, 'text/plain', '123');
 
-  await expect(page.locator('.affine-image-toolbar-container')).toHaveCount(0);
+  await expect(toolbar).toBeHidden();
 });
 
 test('should select with shift-click', async ({ page }) => {

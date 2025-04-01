@@ -92,7 +92,7 @@ export class AskAIButton extends WithDisposable(LitElement) {
       return;
     }
 
-    if (this._abortController) {
+    if (this._abortController && !this._abortController.signal.aborted) {
       this._clearAbortController();
       return;
     }
