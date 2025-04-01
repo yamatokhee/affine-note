@@ -1,4 +1,4 @@
-use std::{ffi::c_void, sync::Arc};
+use std::{ffi::c_void, ptr, sync::Arc};
 
 use block2::{Block, RcBlock};
 use core_foundation::{
@@ -60,6 +60,8 @@ pub struct AggregateDevice {
   pub audio_stats: Option<AudioStats>,
   pub input_device_id: AudioObjectID,
   pub output_device_id: AudioObjectID,
+  pub input_proc_id: Option<AudioDeviceIOProcID>,
+  pub output_proc_id: Option<AudioDeviceIOProcID>,
 }
 
 impl AggregateDevice {
@@ -107,6 +109,8 @@ impl AggregateDevice {
       audio_stats: None,
       input_device_id,
       output_device_id,
+      input_proc_id: None,
+      output_proc_id: None,
     })
   }
 
@@ -149,13 +153,29 @@ impl AggregateDevice {
       return Err(CoreAudioError::CreateAggregateDeviceFailed(status).into());
     }
 
-    Ok(Self {
+    // Create a device with stored device IDs
+    let mut device = Self {
       tap_id,
       id: aggregate_device_id,
       audio_stats: None,
       input_device_id,
       output_device_id,
-    })
+      input_proc_id: None,
+      output_proc_id: None,
+    };
+
+    // Configure the aggregate device to ensure proper handling of both input and
+    // output
+    device.get_aggregate_device_stats()?;
+
+    // Activate both the input and output devices and store their proc IDs
+    let input_proc_id = device.activate_audio_device(input_device_id)?;
+    let output_proc_id = device.activate_audio_device(output_device_id)?;
+
+    device.input_proc_id = Some(input_proc_id);
+    device.output_proc_id = Some(output_proc_id);
+
+    Ok(device)
   }
 
   fn get_aggregate_device_stats(&self) -> Result<AudioStats> {
@@ -172,6 +192,44 @@ impl AggregateDevice {
     };
 
     Ok(audio_stats)
+  }
+
+  // Activates an audio device by creating a dummy IO proc
+  fn activate_audio_device(&self, device_id: AudioObjectID) -> Result<AudioDeviceIOProcID> {
+    // Create a simple no-op dummy proc
+    let dummy_block = RcBlock::new(
+      |_: *mut c_void, _: *mut c_void, _: *mut c_void, _: *mut c_void, _: *mut c_void| {
+        // No-op function that just returns success
+        kAudioHardwareNoError as i32
+      },
+    );
+
+    let mut dummy_proc_id: AudioDeviceIOProcID = None;
+
+    // Create the IO proc with our dummy block
+    let status = unsafe {
+      AudioDeviceCreateIOProcIDWithBlock(
+        &mut dummy_proc_id,
+        device_id,
+        ptr::null_mut(),
+        (&*dummy_block.copy() as *const Block<dyn Fn(_, _, _, _, _) -> i32>)
+          .cast_mut()
+          .cast(),
+      )
+    };
+
+    if status != 0 {
+      return Err(CoreAudioError::CreateIOProcIDWithBlockFailed(status).into());
+    }
+
+    // Start the device to activate it
+    let status = unsafe { AudioDeviceStart(device_id, dummy_proc_id) };
+    if status != 0 {
+      return Err(CoreAudioError::AudioDeviceStartFailed(status).into());
+    }
+
+    // Return the proc ID for later cleanup
+    Ok(dummy_proc_id)
   }
 
   pub fn start(
@@ -260,6 +318,10 @@ impl AggregateDevice {
       in_proc_id,
       stop_called: false,
       audio_stats: audio_stats_clone, // Use the updated audio_stats with the actual sample rate
+      input_device_id: self.input_device_id,
+      output_device_id: self.output_device_id,
+      input_proc_id: self.input_proc_id,
+      output_proc_id: self.output_proc_id,
     })
   }
 
@@ -328,6 +390,10 @@ pub struct AudioTapStream {
   in_proc_id: AudioDeviceIOProcID,
   stop_called: bool,
   audio_stats: AudioStats,
+  input_device_id: AudioObjectID,
+  output_device_id: AudioObjectID,
+  input_proc_id: Option<AudioDeviceIOProcID>,
+  output_proc_id: Option<AudioDeviceIOProcID>,
 }
 
 #[napi]
@@ -343,6 +409,18 @@ impl AudioTapStream {
     let status = unsafe { AudioDeviceStop(self.device_id, self.in_proc_id) };
     if status != 0 {
       return Err(CoreAudioError::AudioDeviceStopFailed(status).into());
+    }
+
+    // Stop the input device if it was activated
+    if let Some(proc_id) = self.input_proc_id {
+      let _ = unsafe { AudioDeviceStop(self.input_device_id, proc_id) };
+      let _ = unsafe { AudioDeviceDestroyIOProcID(self.input_device_id, proc_id) };
+    }
+
+    // Stop the output device if it was activated
+    if let Some(proc_id) = self.output_proc_id {
+      let _ = unsafe { AudioDeviceStop(self.output_device_id, proc_id) };
+      let _ = unsafe { AudioDeviceDestroyIOProcID(self.output_device_id, proc_id) };
     }
 
     // Destroy the main IO proc
