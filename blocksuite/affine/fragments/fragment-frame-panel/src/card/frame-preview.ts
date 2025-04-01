@@ -1,5 +1,9 @@
 import type { FrameBlockModel } from '@blocksuite/affine-model';
-import { ViewportElementExtension } from '@blocksuite/affine-shared/services';
+import {
+  DocModeExtension,
+  DocModeProvider,
+  ViewportElementExtension,
+} from '@blocksuite/affine-shared/services';
 import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import { DisposableGroup } from '@blocksuite/global/disposable';
 import { Bound, deserializeXYWH } from '@blocksuite/global/gfx';
@@ -47,11 +51,14 @@ const styles = css`
     overflow: hidden;
     pointer-events: none;
     user-select: none;
+  }
 
-    .edgeless-background {
-      background-color: transparent;
-      background-image: none;
-    }
+  .frame-preview-viewport
+    > editor-host
+    > affine-edgeless-root-preview
+    > .edgeless-background {
+    background-color: transparent;
+    background-image: none;
   }
 `;
 
@@ -134,9 +141,12 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
         });
       }
     }
+
+    const docModeService = this.std.get(DocModeProvider);
     this._previewSpec.extend([
       ViewportElementExtension('.frame-preview-viewport'),
       FramePreviewWatcher,
+      DocModeExtension(docModeService),
     ]);
   }
 
@@ -219,6 +229,9 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
       this._refreshViewport();
     }
   }
+
+  @property({ attribute: false })
+  accessor std!: BlockStdScope;
 
   @state()
   accessor fillScreen = false;

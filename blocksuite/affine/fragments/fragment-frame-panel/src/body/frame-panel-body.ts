@@ -265,6 +265,7 @@ export class FramePanelBody extends SignalWatcher(
         html`<affine-frame-card
           data-frame-id=${frame.id}
           .frame=${frame}
+          .std=${this.editorHost.std}
           .cardIndex=${cardIndex}
           .frameIndex=${frameIndex}
           .status=${selectedFrames.has(frame.id)

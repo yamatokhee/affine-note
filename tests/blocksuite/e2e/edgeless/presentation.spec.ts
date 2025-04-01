@@ -148,7 +148,7 @@ test.describe('presentation', () => {
   }) => {
     await edgelessCommonSetup(page);
 
-    await createFrame(page, [100, 100], [100, 200]);
+    await createFrame(page, [100, 100], [200, 200]);
     await createFrame(page, [200, 100], [300, 200]);
     await createFrame(page, [300, 100], [400, 200]);
     await createFrame(page, [400, 100], [500, 200]);
