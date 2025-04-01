@@ -381,6 +381,10 @@ export class IndexerSyncImpl implements IndexerSync {
               spaceId: this.status.rootDocId,
               docId,
             });
+            if (!result) {
+              // doc is empty without root block, just skip
+              continue;
+            }
             blocks = result.blocks;
             preview = result.preview;
           } catch (error) {

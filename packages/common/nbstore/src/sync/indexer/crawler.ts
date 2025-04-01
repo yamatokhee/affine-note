@@ -452,10 +452,13 @@ export async function crawlingDocData({
   rootYDoc: YDoc;
   spaceId: string;
   docId: string;
-}): Promise<{
-  blocks: IndexerDocument<'block'>[];
-  preview?: string;
-}> {
+}): Promise<
+  | {
+      blocks: IndexerDocument<'block'>[];
+      preview?: string;
+    }
+  | undefined
+> {
   let docTitle = '';
   let summaryLenNeeded = 1000;
   let summary = '';
@@ -482,7 +485,7 @@ export async function crawlingDocData({
   }
 
   if (blocks.size === 0) {
-    return { blocks: [] };
+    return undefined;
   }
 
   // find the nearest block that satisfies the predicate
@@ -514,7 +517,7 @@ export async function crawlingDocData({
   }
 
   if (!rootBlockId) {
-    return { blocks: [] };
+    return undefined;
   }
 
   const queue: { parent?: string; id: string }[] = [{ id: rootBlockId }];
