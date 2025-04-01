@@ -22,8 +22,7 @@ import { css, html, type TemplateResult } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { DocDisplayConfig, SearchMenuConfig } from '../chat-config';
-import type { ChatChip } from '../chat-context';
+import type { ChatChip, DocDisplayConfig, SearchMenuConfig } from './type';
 
 enum AddPopoverMode {
   Default = 'default',

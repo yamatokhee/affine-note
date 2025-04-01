@@ -21,40 +21,38 @@ import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { throttle } from 'lodash-es';
 
+import type {
+  ChatChip,
+  CollectionChip,
+  DocChip,
+  DocDisplayConfig,
+  FileChip,
+  SearchMenuConfig,
+  TagChip,
+} from '../components/ai-chat-chips';
+import {
+  isCollectionChip,
+  isDocChip,
+  isTagChip,
+} from '../components/ai-chat-chips';
 import { AIProvider } from '../provider';
 import { extractSelectedContent } from '../utils/extract';
 import {
   getSelectedImagesAsBlobs,
   getSelectedTextContent,
 } from '../utils/selection-utils';
-import type {
-  AINetworkSearchConfig,
-  AppSidebarConfig,
-  DocDisplayConfig,
-  SearchMenuConfig,
-} from './chat-config';
-import type {
-  ChatChip,
-  ChatContextValue,
-  ChatItem,
-  CollectionChip,
-  DocChip,
-  FileChip,
-  TagChip,
-} from './chat-context';
+import type { AINetworkSearchConfig, AppSidebarConfig } from './chat-config';
+import type { ChatContextValue, ChatItem } from './chat-context';
 import type { ChatPanelMessages } from './chat-panel-messages';
-import { isCollectionChip, isDocChip, isTagChip } from './components/utils';
 
 const DEFAULT_CHAT_CONTEXT_VALUE: ChatContextValue = {
   quote: '',
   images: [],
   abortController: null,
   items: [],
-  chips: [],
   status: 'idle',
   error: null,
   markdown: '',
-  embeddingProgress: [0, 0],
 };
 
 export class ChatPanel extends SignalWatcher(
@@ -245,10 +243,7 @@ export class ChatPanel extends SignalWatcher(
       return aTime - bTime;
     });
 
-    this.chatContextValue = {
-      ...this.chatContextValue,
-      chips,
-    };
+    this.updateChips(chips);
   };
 
   private readonly _initEmbeddingProgress = async () => {
@@ -306,6 +301,12 @@ export class ChatPanel extends SignalWatcher(
 
   @state()
   accessor chatContextValue: ChatContextValue = DEFAULT_CHAT_CONTEXT_VALUE;
+
+  @state()
+  accessor chips: ChatChip[] = [];
+
+  @state()
+  accessor embeddingProgress: [number, number] = [0, 0];
 
   private _chatSessionId: string | null | undefined = null;
 
@@ -391,6 +392,16 @@ export class ChatPanel extends SignalWatcher(
     }
   };
 
+  private readonly _resetPanel = () => {
+    this._abortPoll();
+    this._chatSessionId = null;
+    this._chatContextId = null;
+    this.chatContextValue = DEFAULT_CHAT_CONTEXT_VALUE;
+    this.isLoading = true;
+    this.chips = [];
+    this.embeddingProgress = [0, 0];
+  };
+
   private readonly _pollContextDocsAndFiles = async () => {
     if (!this._chatSessionId || !this._chatContextId || !AIProvider.context) {
       return;
@@ -444,7 +455,7 @@ export class ChatPanel extends SignalWatcher(
       hashMap.set(file.id, file);
       file.status && count[file.status]++;
     });
-    const nextChips = this.chatContextValue.chips.map(chip => {
+    const nextChips = this.chips.map(chip => {
       if (isTagChip(chip) || isCollectionChip(chip)) {
         return chip;
       }
@@ -460,10 +471,8 @@ export class ChatPanel extends SignalWatcher(
       return chip;
     });
     const total = count.finished + count.processing + count.failed;
-    this.updateContext({
-      chips: nextChips,
-      embeddingProgress: [count.finished, total],
-    });
+    this.embeddingProgress = [count.finished, total];
+    this.updateChips(nextChips);
     if (count.processing === 0) {
       this._abortPoll();
     }
@@ -476,12 +485,7 @@ export class ChatPanel extends SignalWatcher(
 
   protected override updated(_changedProperties: PropertyValues) {
     if (_changedProperties.has('doc')) {
-      this._abortPoll();
-      this._chatSessionId = null;
-      this._chatContextId = null;
-      this.chatContextValue = DEFAULT_CHAT_CONTEXT_VALUE;
-      this.isLoading = true;
-
+      this._resetPanel();
       requestAnimationFrame(async () => {
         await this._initPanel();
       });
@@ -576,6 +580,10 @@ export class ChatPanel extends SignalWatcher(
     this.chatContextValue = { ...this.chatContextValue, ...context };
   };
 
+  updateChips = (chips: ChatChip[]) => {
+    this.chips = chips;
+  };
+
   continueInChat = async () => {
     const text = await getSelectedTextContent(this.host, 'plain-text');
     const markdown = await getSelectedTextContent(this.host, 'markdown');
@@ -592,7 +600,7 @@ export class ChatPanel extends SignalWatcher(
     const style = styleMap({
       padding: width > 540 ? '8px 24px 0 24px' : '8px 12px 0 12px',
     });
-    const [done, total] = this.chatContextValue.embeddingProgress;
+    const [done, total] = this.embeddingProgress;
     const isEmbedding = total > 0 && done < total;
 
     return html`<div class="chat-panel-container" style=${style}>
@@ -617,14 +625,15 @@ export class ChatPanel extends SignalWatcher(
       ></chat-panel-messages>
       <chat-panel-chips
         .host=${this.host}
-        .chatContextValue=${this.chatContextValue}
+        .chips=${this.chips}
         .getContextId=${this._getContextId}
-        .updateContext=${this.updateContext}
+        .updateChips=${this.updateChips}
         .pollContextDocsAndFiles=${this._pollContextDocsAndFiles}
         .docDisplayConfig=${this.docDisplayConfig}
         .searchMenuConfig=${this.searchMenuConfig}
       ></chat-panel-chips>
       <chat-panel-input
+        .chips=${this.chips}
         .chatContextValue=${this.chatContextValue}
         .getSessionId=${this._getSessionId}
         .getContextId=${this._getContextId}

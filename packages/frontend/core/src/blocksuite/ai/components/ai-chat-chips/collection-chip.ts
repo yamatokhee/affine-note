@@ -5,7 +5,7 @@ import { CollectionsIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { CollectionChip } from '../chat-context';
+import type { CollectionChip } from './type';
 import { getChipIcon, getChipTooltip } from './utils';
 
 export class ChatPanelCollectionChip extends SignalWatcher(

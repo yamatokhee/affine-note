@@ -7,8 +7,7 @@ import { property } from 'lit/decorators.js';
 import throttle from 'lodash-es/throttle';
 
 import { extractMarkdownFromDoc } from '../../utils/extract';
-import type { DocDisplayConfig } from '../chat-config';
-import type { DocChip } from '../chat-context';
+import type { DocChip, DocDisplayConfig } from './type';
 import { estimateTokenCount, getChipIcon, getChipTooltip } from './utils';
 
 const EXTRACT_DOC_THROTTLE = 1000;

@@ -5,7 +5,7 @@ import { ShadowlessElement } from '@blocksuite/affine/std';
 import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { TagChip } from '../chat-context';
+import type { TagChip } from './type';
 import { getChipIcon, getChipTooltip } from './utils';
 
 export class ChatPanelTagChip extends SignalWatcher(

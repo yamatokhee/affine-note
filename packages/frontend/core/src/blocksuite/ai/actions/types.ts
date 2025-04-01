@@ -13,8 +13,6 @@ import type { EditorHost } from '@blocksuite/affine/std';
 import type { GfxModel } from '@blocksuite/affine/std/gfx';
 import type { BlockModel } from '@blocksuite/affine/store';
 
-import type { DocContext, FileContext } from '../chat-panel/chat-context';
-
 export const translateLangs = [
   'English',
   'Spanish',
@@ -114,12 +112,28 @@ declare global {
     type AIActionTextResponse<T extends AITextActionOptions> =
       T['stream'] extends true ? TextStream : Promise<string>;
 
+    interface AIDocContextOption {
+      docId: string;
+      docTitle: string;
+      docContent: string;
+      tags: string;
+      createDate: string;
+      updatedDate: string;
+    }
+
+    interface AIFileContextOption {
+      blobId: string;
+      fileName: string;
+      fileType: string;
+      fileContent: string;
+    }
+
     interface ChatOptions extends AITextActionOptions {
       sessionId?: string;
       isRootSession?: boolean;
       contexts?: {
-        docs: DocContext[];
-        files: FileContext[];
+        docs: AIDocContextOption[];
+        files: AIFileContextOption[];
       };
     }
 

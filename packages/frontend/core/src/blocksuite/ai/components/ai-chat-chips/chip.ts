@@ -5,7 +5,7 @@ import { CloseIcon, PlusIcon } from '@blocksuite/icons/lit';
 import { css, html, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { ChipState } from '../chat-context';
+import type { ChipState } from './type';
 
 export class ChatPanelChip extends SignalWatcher(
   WithDisposable(ShadowlessElement)

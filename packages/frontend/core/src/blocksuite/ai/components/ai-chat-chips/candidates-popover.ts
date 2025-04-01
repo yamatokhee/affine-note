@@ -8,8 +8,7 @@ import { css, html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { DocDisplayConfig } from '../chat-config';
-import type { DocChip } from '../chat-context';
+import type { DocChip, DocDisplayConfig } from './type';
 
 export class ChatPanelCandidatesPopover extends SignalWatcher(
   WithDisposable(ShadowlessElement)

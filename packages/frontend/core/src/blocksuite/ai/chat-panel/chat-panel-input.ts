@@ -14,18 +14,17 @@ import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import { ChatAbortIcon, ChatSendIcon } from '../_common/icons';
+import type {
+  ChatChip,
+  DocDisplayConfig,
+  FileChip,
+} from '../components/ai-chat-chips';
+import { isDocChip, isFileChip } from '../components/ai-chat-chips';
 import { type AIError, AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { readBlobAsURL } from '../utils/image';
-import type { AINetworkSearchConfig, DocDisplayConfig } from './chat-config';
-import type {
-  ChatContextValue,
-  ChatMessage,
-  DocContext,
-  FileChip,
-  FileContext,
-} from './chat-context';
-import { isDocChip, isFileChip } from './components/utils';
+import type { AINetworkSearchConfig } from './chat-config';
+import type { ChatContextValue, ChatMessage } from './chat-context';
 import { PROMPT_NAME_AFFINE_AI, PROMPT_NAME_NETWORK_SEARCH } from './const';
 
 const MaximumImageCount = 32;
@@ -202,6 +201,9 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
   accessor chatContextValue!: ChatContextValue;
 
   @property({ attribute: false })
+  accessor chips: ChatChip[] = [];
+
+  @property({ attribute: false })
   accessor getSessionId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
@@ -232,8 +234,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
   private get _isNetworkDisabled() {
     return (
       !!this.chatContextValue.images.length ||
-      !!this.chatContextValue.chips.filter(chip => chip.state === 'finished')
-        .length
+      !!this.chips.filter(chip => chip.state === 'finished').length
     );
   }
 
@@ -575,7 +576,10 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       string,
       { docId: string; docContent: string }
     >();
-    const fileContexts = new Map<string, FileContext>();
+    const fileContexts = new Map<
+      string,
+      BlockSuitePresets.AIFileContextOption
+    >();
 
     const { files: matchedFiles = [], docs: matchedDocs = [] } =
       (await AIProvider.context?.matchContext(contextId, userInput)) ?? {};
@@ -592,7 +596,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       if (context) {
         context.fileContent += `\n${file.content}`;
       } else {
-        const fileChip = this.chatContextValue.chips.find(
+        const fileChip = this.chips.find(
           chip => isFileChip(chip) && chip.fileId === file.fileId
         ) as FileChip | undefined;
         if (fileChip && fileChip.blobId) {
@@ -606,7 +610,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       }
     });
 
-    this.chatContextValue.chips.forEach(chip => {
+    this.chips.forEach(chip => {
       if (isDocChip(chip) && !!chip.markdown?.value) {
         docContexts.set(chip.docId, {
           docId: chip.docId,
@@ -615,7 +619,9 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       }
     });
 
-    const docs: DocContext[] = Array.from(docContexts.values()).map(doc => {
+    const docs: BlockSuitePresets.AIDocContextOption[] = Array.from(
+      docContexts.values()
+    ).map(doc => {
       const docMeta = this.docDisplayConfig.getDocMeta(doc.docId);
       const docTitle = this.docDisplayConfig.getTitle(doc.docId);
       const tags = docMeta?.tags

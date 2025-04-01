@@ -12,16 +12,16 @@ import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { isEqual } from 'lodash-es';
 
-import { AIProvider } from '../provider';
-import type { DocDisplayConfig, SearchMenuConfig } from './chat-config';
+import { AIProvider } from '../../provider';
 import type {
   ChatChip,
-  ChatContextValue,
   CollectionChip,
   DocChip,
+  DocDisplayConfig,
   FileChip,
+  SearchMenuConfig,
   TagChip,
-} from './chat-context';
+} from './type';
 import {
   estimateTokenCount,
   getChipKey,
@@ -29,7 +29,7 @@ import {
   isDocChip,
   isFileChip,
   isTagChip,
-} from './components/utils';
+} from './utils';
 
 // 100k tokens limit for the docs context
 const MAX_TOKEN_COUNT = 100000;
@@ -83,13 +83,13 @@ export class ChatPanelChips extends SignalWatcher(
   accessor host!: EditorHost;
 
   @property({ attribute: false })
-  accessor chatContextValue!: ChatContextValue;
+  accessor chips!: ChatChip[];
 
   @property({ attribute: false })
   accessor getContextId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
-  accessor updateContext!: (context: Partial<ChatContextValue>) => void;
+  accessor updateChips!: (chips: ChatChip[]) => void;
 
   @property({ attribute: false })
   accessor pollContextDocsAndFiles!: () => void;
@@ -134,9 +134,7 @@ export class ChatPanelChips extends SignalWatcher(
       state: 'candidate',
     }));
     const moreCandidates = candidates.length > MAX_CANDIDATES;
-    const allChips = this.chatContextValue.chips.concat(
-      candidates.slice(0, MAX_CANDIDATES)
-    );
+    const allChips = this.chips.concat(candidates.slice(0, MAX_CANDIDATES));
     const isCollapsed = this.isCollapsed && allChips.length > 1;
     const chips = isCollapsed ? allChips.slice(0, 1) : allChips;
 
@@ -232,8 +230,7 @@ export class ChatPanelChips extends SignalWatcher(
       this.isCollapsed = true;
     }
 
-    // TODO only update when the chips are changed
-    if (_changedProperties.has('chatContextValue')) {
+    if (_changedProperties.has('chips')) {
       this._updateReferenceDocs();
     }
   }
@@ -324,11 +321,9 @@ export class ChatPanelChips extends SignalWatcher(
   private readonly _addChip = async (chip: ChatChip) => {
     this.isCollapsed = false;
     // remove the chip if it already exists
-    const chips = this._omitChip(this.chatContextValue.chips, chip);
-    this.updateContext({
-      chips: [...chips, chip],
-    });
-    if (chips.length < this.chatContextValue.chips.length) {
+    const chips = this._omitChip(this.chips, chip);
+    this.updateChips([...chips, chip]);
+    if (chips.length < this.chips.length) {
       await this._removeFromContext(chip);
     }
     await this._addToContext(chip);
@@ -339,7 +334,7 @@ export class ChatPanelChips extends SignalWatcher(
     chip: ChatChip,
     options: Partial<DocChip | FileChip>
   ) => {
-    const index = this._findChipIndex(this.chatContextValue.chips, chip);
+    const index = this._findChipIndex(this.chips, chip);
     if (index === -1) {
       return;
     }
@@ -347,21 +342,17 @@ export class ChatPanelChips extends SignalWatcher(
       ...chip,
       ...options,
     };
-    this.updateContext({
-      chips: [
-        ...this.chatContextValue.chips.slice(0, index),
-        nextChip,
-        ...this.chatContextValue.chips.slice(index + 1),
-      ],
-    });
+    this.updateChips([
+      ...this.chips.slice(0, index),
+      nextChip,
+      ...this.chips.slice(index + 1),
+    ]);
   };
 
   private readonly _removeChip = async (chip: ChatChip) => {
-    const chips = this._omitChip(this.chatContextValue.chips, chip);
-    this.updateContext({
-      chips,
-    });
-    if (chips.length < this.chatContextValue.chips.length) {
+    const chips = this._omitChip(this.chips, chip);
+    this.updateChips(chips);
+    if (chips.length < this.chips.length) {
       await this._removeFromContext(chip);
     }
   };
@@ -518,7 +509,7 @@ export class ChatPanelChips extends SignalWatcher(
     newChip: DocChip,
     newTokenCount: number
   ) => {
-    const estimatedTokens = this.chatContextValue.chips.reduce((acc, chip) => {
+    const estimatedTokens = this.chips.reduce((acc, chip) => {
       if (isFileChip(chip) || isTagChip(chip) || isCollectionChip(chip)) {
         return acc;
       }
@@ -536,7 +527,7 @@ export class ChatPanelChips extends SignalWatcher(
   };
 
   private readonly _updateReferenceDocs = () => {
-    const docIds = this.chatContextValue.chips
+    const docIds = this.chips
       .filter(isDocChip)
       .filter(chip => chip.state !== 'candidate')
       .map(chip => chip.docId);

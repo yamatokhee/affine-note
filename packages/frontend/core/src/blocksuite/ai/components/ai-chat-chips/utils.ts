@@ -9,7 +9,7 @@ import type {
   DocChip,
   FileChip,
   TagChip,
-} from '../chat-context';
+} from './type';
 
 export function getChipTooltip(
   state: ChipState,
