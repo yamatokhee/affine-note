@@ -80,7 +80,7 @@ export const PageHeaderMenuButton = ({
 
   const openHistoryModal = useCallback(() => {
     track.$.header.history.open();
-    if (workspace.flavour === 'affine-cloud') {
+    if (workspace.flavour !== 'local') {
       return setHistoryModalOpen(true);
     }
     return setOpenHistoryTipsModal(true);
@@ -443,7 +443,7 @@ const PageHeaderMenuItem = ({
         onSelect={handleOpenTrashModal}
         disabled={!canMoveToTrash}
       />
-      {BUILD_CONFIG.isWeb && workspace.flavour === 'affine-cloud' ? (
+      {BUILD_CONFIG.isWeb && workspace.flavour !== 'local' ? (
         <MenuItem
           prefixIcon={<LocalWorkspaceIcon />}
           data-testid="editor-option-menu-link"
