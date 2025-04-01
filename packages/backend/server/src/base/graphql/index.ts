@@ -26,6 +26,12 @@ export type GraphqlContext = {
       useFactory: (config: Config) => {
         return {
           ...config.graphql.apolloDriverConfig,
+          buildSchemaOptions: {
+            numberScalarMode: 'integer',
+          },
+          useGlobalPrefix: true,
+          playground: true,
+          sortSchema: true,
           autoSchemaFile: join(
             env.projectRoot,
             env.testing

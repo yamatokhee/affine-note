@@ -220,6 +220,16 @@ export const listUsersQuery = {
 }`,
 };
 
+export const sendTestEmailMutation = {
+  id: 'sendTestEmailMutation' as const,
+  op: 'sendTestEmail',
+  query: `mutation sendTestEmail($host: String!, $port: Int!, $sender: String!, $username: String!, $password: String!, $ignoreTLS: Boolean!) {
+  sendTestEmail(
+    config: {host: $host, port: $port, sender: $sender, username: $username, password: $password, ignoreTLS: $ignoreTLS}
+  )
+}`,
+};
+
 export const updateAccountFeaturesMutation = {
   id: 'updateAccountFeaturesMutation' as const,
   op: 'updateAccountFeatures',

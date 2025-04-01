@@ -1111,6 +1111,7 @@ export interface Mutation {
   sendChangeEmail: Scalars['Boolean']['output'];
   sendChangePasswordEmail: Scalars['Boolean']['output'];
   sendSetPasswordEmail: Scalars['Boolean']['output'];
+  sendTestEmail: Scalars['Boolean']['output'];
   sendVerifyChangeEmail: Scalars['Boolean']['output'];
   sendVerifyEmail: Scalars['Boolean']['output'];
   setBlob: Scalars['String']['output'];
@@ -1402,6 +1403,10 @@ export interface MutationSendChangePasswordEmailArgs {
 export interface MutationSendSetPasswordEmailArgs {
   callbackUrl: Scalars['String']['input'];
   email?: InputMaybe<Scalars['String']['input']>;
+}
+
+export interface MutationSendTestEmailArgs {
+  config: Scalars['JSONObject']['input'];
 }
 
 export interface MutationSendVerifyChangeEmailArgs {
@@ -2507,6 +2512,20 @@ export type ListUsersQuery = {
     emailVerified: boolean;
     avatarUrl: string | null;
   }>;
+};
+
+export type SendTestEmailMutationVariables = Exact<{
+  host: Scalars['String']['input'];
+  port: Scalars['Int']['input'];
+  sender: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  ignoreTLS: Scalars['Boolean']['input'];
+}>;
+
+export type SendTestEmailMutation = {
+  __typename?: 'Mutation';
+  sendTestEmail: boolean;
 };
 
 export type UpdateAccountFeaturesMutationVariables = Exact<{
@@ -4586,6 +4605,11 @@ export type Mutations =
       name: 'importUsersMutation';
       variables: ImportUsersMutationVariables;
       response: ImportUsersMutation;
+    }
+  | {
+      name: 'sendTestEmailMutation';
+      variables: SendTestEmailMutationVariables;
+      response: SendTestEmailMutation;
     }
   | {
       name: 'updateAccountFeaturesMutation';

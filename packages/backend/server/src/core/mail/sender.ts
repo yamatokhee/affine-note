@@ -16,12 +16,32 @@ export type SendOptions = Omit<SendMailOptions, 'to' | 'subject' | 'html'> & {
   html: string;
 };
 
+function configToSMTPOptions(
+  config: AppConfig['mailer']['SMTP']
+): SMTPTransport.Options {
+  return {
+    host: config.host,
+    port: config.port,
+    tls: {
+      rejectUnauthorized: !config.ignoreTLS,
+    },
+    auth: {
+      user: config.username,
+      pass: config.password,
+    },
+  };
+}
+
 @Injectable()
 export class MailSender {
   private readonly logger = new Logger(MailSender.name);
   private smtp: Transporter<SMTPTransport.SentMessageInfo> | null = null;
   private usingTestAccount = false;
   constructor(private readonly config: Config) {}
+
+  static create(config: Config['mailer']['SMTP']) {
+    return createTransport(configToSMTPOptions(config));
+  }
 
   @OnEvent('config.init')
   onConfigInit() {
@@ -43,17 +63,7 @@ export class MailSender {
       return;
     }
 
-    const opts: SMTPTransport.Options = {
-      host: SMTP.host,
-      port: SMTP.port,
-      tls: {
-        rejectUnauthorized: !SMTP.ignoreTLS,
-      },
-      auth: {
-        user: SMTP.username,
-        pass: SMTP.password,
-      },
-    };
+    const opts = configToSMTPOptions(SMTP);
 
     if (SMTP.host) {
       this.smtp = createTransport(opts);

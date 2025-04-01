@@ -39,8 +39,8 @@ export function Layout({ children }: PropsWithChildren) {
   const leftPanelRef = useRef<ImperativePanelHandle>(null);
 
   const [activeTab, setActiveTab] = useState('');
-  const [activeSubTab, setActiveSubTab] = useState('auth');
-  const [currentModule, setCurrentModule] = useState('auth');
+  const [activeSubTab, setActiveSubTab] = useState('server');
+  const [currentModule, setCurrentModule] = useState('server');
 
   const handleLeftExpand = useCallback(() => {
     if (leftPanelRef.current?.getSize() === 0) {

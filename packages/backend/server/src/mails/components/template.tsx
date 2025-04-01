@@ -195,7 +195,7 @@ export function Template(props: PropsWithChildren) {
     </>
   );
 
-  if (env.testing) {
+  if (globalThis.env?.testing) {
     return content;
   }
 

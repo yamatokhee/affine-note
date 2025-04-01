@@ -1,23 +1,43 @@
-import CONFIG from '../../config.json';
+import { upperFirst } from 'lodash-es';
+import type { ComponentType } from 'react';
 
-export type ConfigDescriptor = {
+import CONFIG_DESCRIPTORS from '../../config.json';
+import type { ConfigInputProps } from './config-input-row';
+import { SendTestEmail } from './operations/send-test-email';
+export type ConfigType = 'String' | 'Number' | 'Boolean' | 'JSON' | 'Enum';
+
+type ConfigDescriptor = {
   desc: string;
-  type: 'String' | 'Number' | 'Boolean' | 'Array' | 'Object';
+  type: ConfigType;
   env?: string;
   link?: string;
 };
 
-export type AppConfig = typeof CONFIG;
-export type AvailableConfig = {
-  [K in keyof AppConfig]: {
-    module: K;
-    fields: Array<keyof AppConfig[K]>;
-  };
-}[keyof AppConfig];
+export type AppConfig = Record<string, Record<string, any>>;
 
+type AppConfigDescriptors = typeof CONFIG_DESCRIPTORS;
+type AppConfigModule = keyof AppConfigDescriptors;
+type ModuleConfigDescriptors<M extends AppConfigModule> =
+  AppConfigDescriptors[M];
+type ConfigGroup<T extends AppConfigModule> = {
+  name: string;
+  module: T;
+  fields: Array<
+    | keyof ModuleConfigDescriptors<T>
+    | ({
+        key: keyof ModuleConfigDescriptors<T>;
+        sub?: string;
+        desc?: string;
+      } & Partial<ConfigInputProps>)
+  >;
+  operations?: ComponentType<{
+    appConfig: AppConfig;
+  }>[];
+};
 const IGNORED_MODULES: (keyof AppConfig)[] = [
   'db',
   'redis',
+  'graphql',
   'copilot', // not ready
 ];
 
@@ -25,7 +45,117 @@ if (!environment.isSelfHosted) {
   IGNORED_MODULES.push('payment');
 }
 
-export { CONFIG as ALL_CONFIG };
-export const ALL_CONFIGURABLE_MODULES = Object.keys(CONFIG).filter(
+const ALL_CONFIGURABLE_MODULES = Object.keys(CONFIG_DESCRIPTORS).filter(
   key => !IGNORED_MODULES.includes(key as keyof AppConfig)
-) as (keyof AppConfig)[];
+);
+
+export const KNOWN_CONFIG_GROUPS = [
+  {
+    name: 'Server',
+    module: 'server',
+    fields: ['externalUrl', 'name'],
+  } as ConfigGroup<'server'>,
+  {
+    name: 'Auth',
+    module: 'auth',
+    fields: [
+      'allowSignup',
+      // nested json object
+      {
+        key: 'passwordRequirements',
+        sub: 'min',
+        type: 'Number',
+        desc: 'Minimum length requirement of password',
+      },
+      {
+        key: 'passwordRequirements',
+        sub: 'max',
+        type: 'Number',
+        desc: 'Maximum length requirement of password',
+      },
+    ],
+  } as ConfigGroup<'auth'>,
+  {
+    name: 'Notification',
+    module: 'mailer',
+    fields: [
+      'enabled',
+      'SMTP.host',
+      'SMTP.port',
+      'SMTP.username',
+      'SMTP.password',
+      'SMTP.ignoreTLS',
+      'SMTP.sender',
+    ],
+    operations: [SendTestEmail],
+  } as ConfigGroup<'mailer'>,
+  {
+    name: 'Storage',
+    module: 'storages',
+    fields: [
+      {
+        key: 'blob.storage',
+        desc: 'The storage provider for user uploaded blobs',
+        sub: 'provider',
+        type: 'Enum',
+        options: ['fs', 'aws-s3', 'cloudflare-r2'],
+      },
+      {
+        key: 'blob.storage',
+        sub: 'bucket',
+        type: 'String',
+        desc: 'The bucket name for user uploaded blobs storage',
+      },
+      {
+        key: 'blob.storage',
+        sub: 'config',
+        type: 'JSON',
+        desc: 'The config passed directly to the storage provider(e.g. aws-sdk)',
+      },
+      {
+        key: 'avatar.storage',
+        desc: 'The storage provider for user avatars',
+        sub: 'provider',
+        type: 'Enum',
+        options: ['fs', 'aws-s3', 'cloudflare-r2'],
+      },
+      {
+        key: 'avatar.storage',
+        sub: 'bucket',
+        type: 'String',
+        desc: 'The bucket name for user avatars storage',
+      },
+      {
+        key: 'avatar.storage',
+        sub: 'config',
+        type: 'JSON',
+        desc: 'The config passed directly to the storage provider(e.g. aws-sdk)',
+      },
+    ],
+  } as ConfigGroup<'storages'>,
+  {
+    name: 'OAuth',
+    module: 'oauth',
+    fields: ['providers.google', 'providers.github', 'providers.oidc'],
+  } as ConfigGroup<'oauth'>,
+];
+
+export const UNKNOWN_CONFIG_GROUPS = ALL_CONFIGURABLE_MODULES.filter(
+  module => !KNOWN_CONFIG_GROUPS.some(group => group.module === module)
+).map(module => ({
+  name: upperFirst(module),
+  module,
+  // @ts-expect-error allow
+  fields: Object.keys(CONFIG_DESCRIPTORS[module]),
+  operations: undefined,
+}));
+
+export const ALL_SETTING_GROUPS = [
+  ...KNOWN_CONFIG_GROUPS,
+  ...UNKNOWN_CONFIG_GROUPS,
+];
+
+export const ALL_CONFIG_DESCRIPTORS = CONFIG_DESCRIPTORS as Record<
+  string,
+  Record<string, ConfigDescriptor>
+>;

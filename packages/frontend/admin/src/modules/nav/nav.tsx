@@ -98,9 +98,9 @@ export function Nav({ isCollapsed = false }: NavProps) {
         />
         <SettingsItem isCollapsed={isCollapsed} />
         <NavItem
-          to="/admin/config"
+          to="/admin/about"
           icon={<SelfhostIcon fontSize={20} />}
-          label="Server"
+          label="About"
           isCollapsed={isCollapsed}
         />
       </nav>

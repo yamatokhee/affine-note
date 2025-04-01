@@ -9,13 +9,15 @@ import {
 } from '@affine/admin/components/ui/dialog';
 import { useCallback } from 'react';
 
+import type { AppConfig } from './config';
+
 export const ConfirmChanges = ({
   updates,
   open,
   onOpenChange,
   onConfirm,
 }: {
-  updates: Record<string, { from: any; to: any }>;
+  updates: AppConfig;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;

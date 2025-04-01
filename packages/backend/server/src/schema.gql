@@ -998,6 +998,7 @@ type Mutation {
   sendChangeEmail(callbackUrl: String!, email: String): Boolean!
   sendChangePasswordEmail(callbackUrl: String!, email: String @deprecated(reason: "fetched from signed in user")): Boolean!
   sendSetPasswordEmail(callbackUrl: String!, email: String @deprecated(reason: "fetched from signed in user")): Boolean!
+  sendTestEmail(config: JSONObject!): Boolean!
   sendVerifyChangeEmail(callbackUrl: String!, email: String!, token: String!): Boolean!
   sendVerifyEmail(callbackUrl: String!): Boolean!
   setBlob(blob: Upload!, workspaceId: String!): String!

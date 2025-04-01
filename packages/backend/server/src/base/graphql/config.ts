@@ -14,13 +14,8 @@ defineModuleConfig('graphql', {
   apolloDriverConfig: {
     desc: 'The config for underlying nestjs GraphQL and apollo driver engine.',
     default: {
-      buildSchemaOptions: {
-        numberScalarMode: 'integer',
-      },
-      useGlobalPrefix: true,
-      playground: true,
+      // @TODO(@forehalo): need a flag to tell user `Restart Required` configs
       introspection: true,
-      sortSchema: true,
     },
     link: 'https://docs.nestjs.com/graphql/quick-start',
   },

@@ -12,6 +12,7 @@ import {
   TeamWorkspaceDeleted,
   TeamWorkspaceUpgraded,
 } from './teams';
+import TestMail from './test-mail';
 import {
   ChangeEmail,
   ChangeEmailNotification,
@@ -45,7 +46,7 @@ function render(component: React.ReactElement) {
   });
 }
 
-type Props<T> = T extends React.FC<infer P> ? P : never;
+type Props<T> = T extends React.ComponentType<infer P> ? P : never;
 export type EmailRenderer<Props> = (props: Props) => Promise<EmailContent>;
 
 function make<T extends React.ComponentType<any>>(
@@ -65,6 +66,10 @@ function make<T extends React.ComponentType<any>>(
 }
 
 export const Renderers = {
+  //#region Test
+  TestMail: make(TestMail, 'Test Email from AFFiNE'),
+  //#endregion
+
   //#region User
   SignIn: make(SignIn, 'Sign in to AFFiNE'),
   SignUp: make(SignUp, 'Your AFFiNE account is waiting for you!'),

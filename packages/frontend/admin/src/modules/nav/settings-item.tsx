@@ -12,14 +12,9 @@ import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { NavLink } from 'react-router-dom';
 
-import { ALL_CONFIGURABLE_MODULES } from '../settings/config';
-import { NormalSubItem, OtherModules } from './collapsible-item';
+import { KNOWN_CONFIG_GROUPS, UNKNOWN_CONFIG_GROUPS } from '../settings/config';
+import { NormalSubItem } from './collapsible-item';
 import { useNav } from './context';
-
-const authModule = ALL_CONFIGURABLE_MODULES.find(module => module === 'auth');
-const otherModules = ALL_CONFIGURABLE_MODULES.filter(
-  module => module !== 'auth'
-);
 
 export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
   const { setCurrentModule } = useNav();
@@ -59,10 +54,10 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
                   borderColor: cssVarV2('layer/insideBorder/blackBorder'),
                 }}
               >
-                {authModule ? (
-                  <li key={authModule} className="flex">
+                {KNOWN_CONFIG_GROUPS.map(group => (
+                  <li key={group.module} className="flex">
                     <NavLink
-                      to={`/admin/settings/${authModule}`}
+                      to={`/admin/settings/${group.module}`}
                       className={cn(
                         buttonVariants({
                           variant: 'ghost',
@@ -75,16 +70,16 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
                           ? cssVarV2('selfhost/button/sidebarButton/bg/select')
                           : undefined,
                       })}
-                      onClick={() => setCurrentModule?.(authModule)}
+                      onClick={() => setCurrentModule?.(group.module)}
                     >
-                      {authModule}
+                      {group.name}
                     </NavLink>
                   </li>
-                ) : null}
-                {otherModules.map(module => (
-                  <li key={module} className="flex">
+                ))}
+                {UNKNOWN_CONFIG_GROUPS.map(group => (
+                  <li key={group.module} className="flex">
                     <NavLink
-                      to={`/admin/settings/${module}`}
+                      to={`/admin/settings/${group.module}`}
                       className={cn(
                         buttonVariants({
                           variant: 'ghost',
@@ -97,9 +92,9 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
                           ? cssVarV2('selfhost/button/sidebarButton/bg/select')
                           : undefined,
                       })}
-                      onClick={() => setCurrentModule?.(module)}
+                      onClick={() => setCurrentModule?.(group.module)}
                     >
-                      {module}
+                      {group.name}
                     </NavLink>
                   </li>
                 ))}
@@ -151,18 +146,31 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
             className={cn('relative overflow-hidden w-full h-full')}
           >
             <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit] [&>div]:!block">
-              {authModule && (
+              {KNOWN_CONFIG_GROUPS.map(group => (
                 <NormalSubItem
-                  title={authModule}
+                  key={group.module}
+                  module={group.module}
+                  title={group.name}
                   changeModule={setCurrentModule}
                 />
-              )}
-              {otherModules.length > 0 && (
-                <OtherModules
-                  moduleList={otherModules}
-                  changeModule={setCurrentModule}
-                />
-              )}
+              ))}
+              <Accordion type="multiple" className="w-full">
+                <AccordionItem value="item-1" className="border-b-0">
+                  <AccordionTrigger className="ml-8 py-2 px-2 rounded [&[data-state=closed]>svg]:rotate-270 [&[data-state=open]>svg]:rotate-360">
+                    Experimental
+                  </AccordionTrigger>
+                  <AccordionContent className="flex flex-col gap-1 py-1">
+                    {UNKNOWN_CONFIG_GROUPS.map(group => (
+                      <NormalSubItem
+                        key={group.module}
+                        module={group.module}
+                        title={group.name}
+                        changeModule={setCurrentModule}
+                      />
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </ScrollAreaPrimitive.Viewport>
             <ScrollAreaPrimitive.ScrollAreaScrollbar
               className={cn(

@@ -8,10 +8,14 @@ import {
   type UpdateAppConfigInput,
   updateAppConfigMutation,
 } from '@affine/graphql';
-import { get, merge } from 'lodash-es';
+import { cloneDeep, get, merge, set } from 'lodash-es';
 import { useCallback, useState } from 'react';
 
+import type { AppConfig } from './config';
+
 export { type UpdateAppConfigInput };
+
+export type AppConfigUpdates = Record<string, { from: any; to: any }>;
 
 export const useAppConfig = () => {
   const {
@@ -25,49 +29,81 @@ export const useAppConfig = () => {
     mutation: updateAppConfigMutation,
   });
 
-  const [updates, setUpdates] = useState<
-    Record<string, { from: any; to: any }>
-  >({});
-
-  const save = useAsyncCallback(
-    async (updates: UpdateAppConfigInput[]) => {
-      try {
-        const savedUpdates = await trigger({
-          updates,
-        });
-        await mutate({ appConfig: merge({}, appConfig, savedUpdates) });
-        setUpdates({});
-        notify.success({
-          title: 'Saved successfully',
-          message: 'Runtime configurations have been saved successfully.',
-        });
-      } catch (e) {
-        const error = UserFriendlyError.fromAny(e);
-        notify.error({
-          title: 'Failed to save',
-          message: error.message,
-        });
-        console.error(e);
-      }
-    },
-    [appConfig, mutate, trigger]
+  const [updates, setUpdates] = useState<AppConfigUpdates>({});
+  const [patchedAppConfig, setPatchedAppConfig] = useState<AppConfig>(() =>
+    cloneDeep(appConfig)
   );
 
+  const save = useAsyncCallback(async () => {
+    const updateInputs: UpdateAppConfigInput[] = Object.entries(updates).map(
+      ([key, value]) => {
+        const splitIndex = key.indexOf('.');
+        const module = key.slice(0, splitIndex);
+        const field = key.slice(splitIndex + 1);
+
+        return {
+          module,
+          key: field,
+          value: value.to,
+        };
+      }
+    );
+
+    try {
+      const savedUpdates = await trigger({
+        updates: updateInputs,
+      });
+      await mutate(prev => {
+        return { appConfig: merge({}, prev, savedUpdates) };
+      });
+      setUpdates({});
+      notify.success({
+        title: 'Saved',
+        message: 'Settings have been saved successfully.',
+      });
+    } catch (e) {
+      const error = UserFriendlyError.fromAny(e);
+      notify.error({
+        title: 'Failed to save',
+        message: error.message,
+      });
+      console.error(e);
+    }
+  }, [updates, mutate, trigger]);
+
   const update = useCallback(
-    (module: string, field: string, value: any) => {
-      setUpdates(prev => ({
-        ...prev,
-        [`${module}.${field}`]: {
-          from: get(appConfig, `${module}.${field}`),
-          to: value,
-        },
-      }));
+    (path: string, value: any) => {
+      const [module, field, subField] = path.split('/');
+      const key = `${module}.${field}`;
+      const from = get(appConfig, key);
+      setUpdates(prev => {
+        const to = subField
+          ? set(prev[key]?.to ?? { ...from }, subField, value)
+          : value;
+
+        return {
+          ...prev,
+          [key]: {
+            from,
+            to,
+          },
+        };
+      });
+
+      setPatchedAppConfig(prev => {
+        return set(
+          prev,
+          `${module}.${field}${subField ? `.${subField}` : ''}`,
+          value
+        );
+      });
     },
     [appConfig]
   );
 
   return {
-    appConfig,
+    appConfig: appConfig as AppConfig,
+    patchedAppConfig,
     update,
     save,
     updates,
