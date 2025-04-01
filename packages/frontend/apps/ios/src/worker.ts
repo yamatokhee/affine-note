@@ -1,4 +1,4 @@
-import './setup';
+import './setup-worker';
 
 import { broadcastChannelStorages } from '@affine/nbstore/broadcast-channel';
 import {
