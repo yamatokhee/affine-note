@@ -38,9 +38,7 @@ export class FrameTool extends BaseTool {
   override dragEnd(): void {
     if (this._frame) {
       const frame = this._frame;
-      this.doc.transact(() => {
-        frame.pop('xywh');
-      });
+      frame.pop('xywh');
       // @ts-expect-error TODO: refactor gfx tool
       this.gfx.tool.setTool('default');
       this.gfx.selection.set({
@@ -52,8 +50,6 @@ export class FrameTool extends BaseTool {
         frame,
         getTopElements(this.frameManager.getElementsInFrameBound(frame))
       );
-
-      this.doc.captureSync();
     }
 
     this._frame = null;

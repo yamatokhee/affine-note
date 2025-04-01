@@ -25,6 +25,7 @@ import {
   pressBackspace,
   pressEscape,
   SHORT_KEY,
+  undoByKeyboard,
 } from '../../utils/actions/keyboard.js';
 import {
   assertCanvasElementsCount,
@@ -411,4 +412,11 @@ test('outline should keep updated during a new frame created by frame-tool dragg
   expect(
     await pickColorAtPoints(page, [start, [end[0] - 1, end[1] - 1]])
   ).toEqual(['#1e96eb', '#1e96eb']);
+});
+
+test('undo should work when create a frame by dragging', async ({ page }) => {
+  await page.keyboard.press('f');
+  await dragBetweenViewCoords(page, [0, 0], [100, 100], { steps: 50 });
+  await undoByKeyboard(page);
+  await expect(page.locator('affine-frame')).toHaveCount(0);
 });
