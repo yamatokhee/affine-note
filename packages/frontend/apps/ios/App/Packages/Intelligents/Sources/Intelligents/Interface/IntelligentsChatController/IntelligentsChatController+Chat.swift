@@ -15,7 +15,11 @@ extension IntelligentsChatController {
     beginProgress()
     chat_createSession { session in
       self.sessionID = session ?? ""
-      self.endProgress()
+      self.chat_retrieveHistories {
+        self.dispatchToMain {
+          self.endProgress()
+        }
+      }
     } onFailure: { error in
       self.presentError(error) {
         if let nav = self.navigationController {
@@ -38,6 +42,85 @@ extension IntelligentsChatController {
       self.endProgress()
     }
   }
+
+  func chat_clearHistory() {
+    beginProgress()
+    Intelligents.qlClient.perform(mutation: CleanupCopilotSessionMutation(input: .init(
+      docId: metadata[.documentID] ?? "",
+      sessionIds: [sessionID],
+      workspaceId: metadata[.workspaceID] ?? ""
+    ))) { result in
+      self.dispatchToMain {
+        self.endProgress()
+        if case let .success(value) = result,
+           let sessions = value.data?.cleanupCopilotSession,
+           sessions.contains(self.sessionID)
+        {
+          self.simpleChatContents.removeAll()
+          return
+        }
+        self.presentError(UnableTo.clearHistory)
+      }
+    }
+  }
+
+  func chat_retrieveHistories(_ completion: @escaping () -> Void) {
+    Intelligents.qlClient.fetch(query: GetCopilotHistoriesQuery(
+      workspaceId: metadata[.workspaceID] ?? "",
+      docId: .init(stringLiteral: metadata[.documentID] ?? ""),
+      options: .some(.init(
+        action: false,
+        fork: false,
+        limit: .init(nilLiteral: ()),
+        messageOrder: .some(.case(.asc)),
+        sessionId: .init(stringLiteral: sessionID),
+        sessionOrder: .some(.case(.desc)),
+        skip: .init(nilLiteral: ()),
+        withPrompt: .init(booleanLiteral: false)
+      ))
+    )) { [weak self] result in
+      if let self,
+         case let .success(value) = result,
+         let object = value.data,
+         let currentUser = object.__data._data["currentUser"] as? DataDict,
+         let copilot = currentUser._data["copilot"] as? DataDict,
+         let histories = copilot._data["histories"] as? [DataDict],
+         let mostRecent = histories.first,
+         let messages = mostRecent._data["messages"] as? [DataDict],
+         !messages.isEmpty
+      {
+        print("[*] retrieved \(messages.count) messages")
+        tableView.scrollToBottomOnNextUpdate = true
+        tableView.alpha = 0
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.8) {
+            self.tableView.alpha = 1
+          }
+        }
+        for message in messages {
+          guard let role = message._data["role"] as? String,
+                let content = message._data["content"] as? String
+          // TODO: ATTACHMENTS
+          else { continue }
+          switch role {
+          case "assistant":
+            simpleChatContents.updateValue(
+              .assistant(document: content),
+              forKey: UUID()
+            )
+          case "user":
+            simpleChatContents.updateValue(
+              .user(document: content),
+              forKey: UUID()
+            )
+          default:
+            assertionFailure()
+          }
+        }
+      }
+      completion()
+    }
+  }
 }
 
 private extension IntelligentsChatController {
@@ -51,6 +134,7 @@ private extension IntelligentsChatController {
 
   func beginProgress() {
     dispatchToMain { [self] in
+      header.isUserInteractionEnabled = false
       inputBox.isUserInteractionEnabled = false
       progressView.isHidden = false
       progressView.alpha = 0
@@ -67,6 +151,7 @@ private extension IntelligentsChatController {
       UIView.animate(withDuration: 0.3) {
         self.inputBox.editor.alpha = 1
         self.progressView.alpha = 0
+        self.header.isUserInteractionEnabled = true
       } completion: { _ in
         self.inputBox.isUserInteractionEnabled = true
         self.progressView.stopAnimating()
@@ -86,9 +171,44 @@ private extension IntelligentsChatController {
   }
 
   func chat_createSession(
+    forceCreateNewSession: Bool = false,
     onSuccess: @escaping (String?) -> Void,
     onFailure: @escaping (Error) -> Void
   ) {
+    if !forceCreateNewSession,
+       let doc = metadata[.documentID],
+       !doc.isEmpty
+    {
+      Intelligents.qlClient.fetch(query: GetCopilotSessionsQuery(
+        workspaceId: .init(stringLiteral: metadata[.workspaceID] ?? ""),
+        docId: .init(stringLiteral: doc),
+        options: .some(QueryChatSessionsInput(InputDict([
+          "action": false,
+        ])))
+      )) { result in
+        switch result {
+        case let .success(value):
+          if let result = value.data,
+             let currentUser = result.__data._data["currentUser"] as? DataDict,
+             let copilot = currentUser._data["copilot"] as? DataDict,
+             let sessions = copilot._data["sessions"] as? [DataDict],
+             let mostRecent = sessions.last,
+             let sessionID = mostRecent._data["id"] as? String
+          {
+            print("[*] using existing session", sessionID)
+            self.dispatchToMain { onSuccess(sessionID) }
+            return
+          }
+          self.chat_createSession(
+            forceCreateNewSession: true,
+            onSuccess: onSuccess,
+            onFailure: onFailure
+          )
+        case let .failure(error):
+          self.dispatchToMain { onFailure(error) }
+        }
+      }
+    }
     Intelligents.qlClient.perform(
       mutation: CreateCopilotSessionMutation(options: .init(
         docId: metadata[.documentID] ?? "",
@@ -103,13 +223,7 @@ private extension IntelligentsChatController {
           self.dispatchToMain { onSuccess(session) }
         } else {
           self.dispatchToMain {
-            onFailure(
-              NSError(
-                domain: "Intelligents",
-                code: 0,
-                userInfo: [NSLocalizedDescriptionKey: "No session created"]
-              )
-            )
+            onFailure(UnableTo.createSession)
           }
         }
       case let .failure(error):
@@ -122,11 +236,15 @@ private extension IntelligentsChatController {
     let text = viewModel.text
     //    let images = viewModel.attachments
 
+    let assistantContentID = UUID()
     dispatchToMain {
       let content = ChatContent.user(document: text)
-      let key = UUID()
-      self.simpleChatContents.updateValue(content, forKey: key)
-      self.tableView.scrollLastCellToTop()
+      self.simpleChatContents.updateValue(content, forKey: .init())
+      self.simpleChatContents.updateValue(
+        .assistant(document: "..."),
+        forKey: assistantContentID
+      )
+      self.tableView.scrollToBottomOnNextUpdate = true
     }
 
     let sem = DispatchSemaphore(value: 0)
@@ -134,6 +252,12 @@ private extension IntelligentsChatController {
     Intelligents.qlClient.perform(
       mutation: CreateCopilotMessageMutation(options: .init(
         content: .init(stringLiteral: text),
+        params: .some(.dictionary([
+          "docs": [
+            "docId": metadata[.documentID] ?? "",
+            "docContent": metadata[.content] ?? "",
+          ],
+        ])),
         sessionId: sessionID
       )),
       queue: .global()
@@ -143,13 +267,13 @@ private extension IntelligentsChatController {
       case let .success(value):
         if let messageID = value.data?.createCopilotMessage {
           print("[*] messageID", messageID)
-          self.chat_processWithMessageID(sessionID: sessionID, messageID: messageID)
+          self.chat_processWithMessageID(
+            sessionID: sessionID,
+            messageID: messageID,
+            cellID: assistantContentID
+          )
         } else {
-          self.chat_onError(NSError(
-            domain: "Intelligents",
-            code: 0,
-            userInfo: [NSLocalizedDescriptionKey: "No message created"]
-          ))
+          self.chat_onError(UnableTo.createMessage)
         }
       case let .failure(error):
         self.chat_onError(error)
@@ -159,7 +283,7 @@ private extension IntelligentsChatController {
     sem.wait()
   }
 
-  func chat_processWithMessageID(sessionID: String, messageID: String) {
+  func chat_processWithMessageID(sessionID: String, messageID: String, cellID: UUID) {
     let url = Constant.affineUpstreamURL
       .appendingPathComponent("api")
       .appendingPathComponent("copilot")
@@ -171,19 +295,14 @@ private extension IntelligentsChatController {
 
     guard let url = comps?.url else {
       assertionFailure()
-      chat_onError(NSError(
-        domain: "Intelligents",
-        code: 0,
-        userInfo: [NSLocalizedDescriptionKey: "No message created"]
-      ))
+      chat_onError(UnableTo.createMessage)
       return
     }
 
-    let contentIdentifier = UUID()
     dispatchToMain {
       self.simpleChatContents.updateValue(
         .assistant(document: "..."),
-        forKey: contentIdentifier
+        forKey: cellID
       )
     }
 
@@ -207,7 +326,7 @@ private extension IntelligentsChatController {
       self.dispatchToMain {
         document += message.data
         let content = ChatContent.assistant(document: document)
-        self.simpleChatContents.updateValue(content, forKey: contentIdentifier)
+        self.simpleChatContents.updateValue(content, forKey: cellID)
       }
     }
     let eventSource = EventSource(config: .init(handler: eventHandler, url: url))

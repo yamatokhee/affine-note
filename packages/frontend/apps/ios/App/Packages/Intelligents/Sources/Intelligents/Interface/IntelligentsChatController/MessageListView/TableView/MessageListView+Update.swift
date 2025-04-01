@@ -28,7 +28,7 @@ extension MessageListView {
       .eraseToAnyPublisher()
 
     // after so, limit the refresh rate so we can handle them better
-    let updateQueue = DispatchQueue(label: "flowdown.message-list-update-queue", qos: .userInteractive)
+    let updateQueue = DispatchQueue(label: "affine.message-list-update-queue", qos: .userInteractive)
     let inQueuePublisher = publisher
       .throttle(for: .seconds(1 / 5), scheduler: updateQueue, latest: true)
       .eraseToAnyPublisher()
@@ -49,7 +49,7 @@ extension MessageListView {
 
   private func pickupElementsPair() -> (oldValue: Elements, newValue: Elements)? {
     #if DEBUG // just make sure assert is not called in release mode
-      assert(!elementUpdateProcessLock.try(), "Should not call this method without lock")
+      assert(!elementUpdateProcessLock.try(), "should not call this method without lock")
     #endif
     guard let distributedPendingUpdateElements else { return nil }
 
@@ -78,6 +78,11 @@ extension MessageListView {
       self.tableView.layoutIfNeeded()
     }
     tableView.contentOffset = contentOffset
+
+    if scrollToBottomOnNextUpdate {
+      scrollToBottomOnNextUpdate = false
+      scrollToBottom(useTableViewAnimation: false)
+    }
   }
 
   func reconfigure(enforceReload: Bool) {
@@ -122,20 +127,20 @@ extension MessageListView {
     perform(#selector(finishAutomaticScroll), with: nil, afterDelay: 0.5)
   }
 
-  func scrollLastCellToTop(useTableViewAnimation: Bool = false) {
-    guard elements.count > 1 else { return }
-    guard tableView.contentSize.height > tableView.frame.height else { return }
-    UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.8) {
-      self.tableView.scrollToRow(
-        at: IndexPath(row: self.elements.count - 1, section: 0),
-        at: .top,
-        animated: useTableViewAnimation
-      )
-    }
-    NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(finishAutomaticScroll), object: nil)
-    isAutomaticScrollAnimating = true
-    perform(#selector(finishAutomaticScroll), with: nil, afterDelay: 0.5)
-  }
+//  func scrollLastCellToTop(useTableViewAnimation: Bool = false) {
+//    guard elements.count > 1 else { return }
+//    guard tableView.contentSize.height > tableView.frame.height else { return }
+//    UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 0.8) {
+//      self.tableView.scrollToRow(
+//        at: IndexPath(row: self.elements.count - 1, section: 0),
+//        at: .top,
+//        animated: useTableViewAnimation
+//      )
+//    }
+//    NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(finishAutomaticScroll), object: nil)
+//    isAutomaticScrollAnimating = true
+//    perform(#selector(finishAutomaticScroll), with: nil, afterDelay: 0.5)
+//  }
 
   @objc private func finishAutomaticScroll() {
     isAutomaticScrollAnimating = false

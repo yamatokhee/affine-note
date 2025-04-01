@@ -30,9 +30,7 @@ public class IntelligentsChatController: UIViewController {
     didSet { updateContentToPublisher() }
   }
 
-  var sessionID: String = "" {
-    didSet { print("[*] new sessionID: \(sessionID)") }
-  }
+  var sessionID: String = ""
 
   public enum MetadataKey: String {
     case documentID
@@ -84,10 +82,19 @@ public class IntelligentsChatController: UIViewController {
     view.addSubview(progressView)
     setupLayout()
 
+    header.moreMenu.showsMenuAsPrimaryAction = true
+    header.moreMenu.menu = .init(children: [
+      UIAction(title: "Clear History".localized(), image: UIImage(systemName: "eraser")) { [weak self] _ in
+        self?.chat_clearHistory()
+      },
+    ])
+
     // TODO: IMPL
+    header.dropMenu.isHidden = true
     inputBox.editor.controlBanner.cameraButton.isHidden = true
     inputBox.editor.controlBanner.photoButton.isHidden = true
 
+    updateContentToPublisher()
     chat_onLoad()
   }
 
@@ -126,6 +133,10 @@ public class IntelligentsChatController: UIViewController {
       action: #selector(chat_onSend),
       for: .touchUpInside
     )
+    inputBox.editor.submitAction = { [weak self] in
+      guard let self else { return }
+      chat_onSend()
+    }
 
     progressView.hidesWhenStopped = true
     progressView.stopAnimating()
