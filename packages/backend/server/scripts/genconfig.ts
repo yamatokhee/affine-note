@@ -5,8 +5,18 @@ import '../src/app.module';
 import fs from 'node:fs';
 import { ProjectRoot } from '@affine-tools/utils/path';
 import { Package } from '@affine-tools/utils/workspace';
-import { getDescriptors, ConfigDescriptor } from '../src/base/config/register';
-import { pick } from 'lodash-es';
+import {
+  getDescriptors as getAllDescriptors,
+  ConfigDescriptor,
+} from '../src/base/config/register';
+
+const IGNORED_MODULES = new Set(['db', 'redis', 'graphql']);
+
+function getDescriptors() {
+  return getAllDescriptors().filter(
+    ({ module }) => !IGNORED_MODULES.has(module)
+  );
+}
 
 interface PropertySchema {
   description: string;

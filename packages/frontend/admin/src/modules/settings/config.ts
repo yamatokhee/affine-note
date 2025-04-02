@@ -35,13 +35,10 @@ type ConfigGroup<T extends AppConfigModule> = {
   }>[];
 };
 const IGNORED_MODULES: (keyof AppConfig)[] = [
-  'db',
-  'redis',
-  'graphql',
   'copilot', // not ready
 ];
 
-if (!environment.isSelfHosted) {
+if (environment.isSelfHosted) {
   IGNORED_MODULES.push('payment');
 }
 

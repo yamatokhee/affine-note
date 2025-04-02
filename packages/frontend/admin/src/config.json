@@ -1,47 +1,8 @@
 {
-  "redis": {
-    "db": {
-      "type": "Number",
-      "desc": "The database index of redis server to be used(Must be less than 10).",
-      "env": "REDIS_SERVER_DATABASE"
-    },
-    "host": {
-      "type": "String",
-      "desc": "The host of the redis server.",
-      "env": "REDIS_SERVER_HOST"
-    },
-    "port": {
-      "type": "Number",
-      "desc": "The port of the redis server.",
-      "env": "REDIS_SERVER_PORT"
-    },
-    "username": {
-      "type": "String",
-      "desc": "The username of the redis server.",
-      "env": "REDIS_SERVER_USERNAME"
-    },
-    "password": {
-      "type": "String",
-      "desc": "The password of the redis server.",
-      "env": "REDIS_SERVER_PASSWORD"
-    },
-    "ioredis": {
-      "type": "Object",
-      "desc": "The config for the ioredis client.",
-      "link": "https://github.com/luin/ioredis"
-    }
-  },
   "metrics": {
     "enabled": {
       "type": "Boolean",
       "desc": "Enable metric and tracing collection"
-    }
-  },
-  "graphql": {
-    "apolloDriverConfig": {
-      "type": "Object",
-      "desc": "The config for underlying nestjs GraphQL and apollo driver engine.",
-      "link": "https://docs.nestjs.com/graphql/quick-start"
     }
   },
   "crypto": {
@@ -102,18 +63,6 @@
     "maxHttpBufferSize": {
       "type": "Number",
       "desc": "How many bytes or characters a message can be, before closing the session (to avoid DoS)."
-    }
-  },
-  "db": {
-    "datasourceUrl": {
-      "type": "String",
-      "desc": "The datasource url for the prisma client.",
-      "env": "DATABASE_URL"
-    },
-    "prisma": {
-      "type": "Object",
-      "desc": "The config for the prisma client.",
-      "link": "https://www.prisma.io/docs/reference/api-reference/prisma-client-reference"
     }
   },
   "auth": {

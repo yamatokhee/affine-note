@@ -3,42 +3,6 @@
   "title": "AFFiNE Application Configuration",
   "type": "object",
   "properties": {
-    "redis": {
-      "type": "object",
-      "description": "Configuration for redis module",
-      "properties": {
-        "db": {
-          "type": "number",
-          "description": "The database index of redis server to be used(Must be less than 10).\n@default 0\n@environment `REDIS_SERVER_DATABASE`",
-          "default": 0
-        },
-        "host": {
-          "type": "string",
-          "description": "The host of the redis server.\n@default \"localhost\"\n@environment `REDIS_SERVER_HOST`",
-          "default": "localhost"
-        },
-        "port": {
-          "type": "number",
-          "description": "The port of the redis server.\n@default 6379\n@environment `REDIS_SERVER_PORT`",
-          "default": 6379
-        },
-        "username": {
-          "type": "string",
-          "description": "The username of the redis server.\n@default \"\"\n@environment `REDIS_SERVER_USERNAME`",
-          "default": ""
-        },
-        "password": {
-          "type": "string",
-          "description": "The password of the redis server.\n@default \"\"\n@environment `REDIS_SERVER_PASSWORD`",
-          "default": ""
-        },
-        "ioredis": {
-          "type": "object",
-          "description": "The config for the ioredis client.\n@default {}\n@link https://github.com/luin/ioredis",
-          "default": {}
-        }
-      }
-    },
     "metrics": {
       "type": "object",
       "description": "Configuration for metrics module",
@@ -47,19 +11,6 @@
           "type": "boolean",
           "description": "Enable metric and tracing collection\n@default false",
           "default": false
-        }
-      }
-    },
-    "graphql": {
-      "type": "object",
-      "description": "Configuration for graphql module",
-      "properties": {
-        "apolloDriverConfig": {
-          "type": "object",
-          "description": "The config for underlying nestjs GraphQL and apollo driver engine.\n@default {\"introspection\":true}\n@link https://docs.nestjs.com/graphql/quick-start",
-          "default": {
-            "introspection": true
-          }
         }
       }
     },
@@ -92,10 +43,8 @@
         },
         "worker": {
           "type": "object",
-          "description": "The config for job workers\n@default {\"defaultWorkerOptions\":{}}\n@link https://api.docs.bullmq.io/interfaces/v5.WorkerOptions.html",
-          "default": {
-            "defaultWorkerOptions": {}
-          }
+          "description": "The config for job workers\n@default {}\n@link https://api.docs.bullmq.io/interfaces/v5.WorkerOptions.html",
+          "default": {}
         },
         "queues.copilot": {
           "type": "object",
@@ -197,22 +146,6 @@
           "type": "number",
           "description": "How many bytes or characters a message can be, before closing the session (to avoid DoS).\n@default 100000000",
           "default": 100000000
-        }
-      }
-    },
-    "db": {
-      "type": "object",
-      "description": "Configuration for db module",
-      "properties": {
-        "datasourceUrl": {
-          "type": "string",
-          "description": "The datasource url for the prisma client.\n@default \"postgresql://localhost:5432/affine\"\n@environment `DATABASE_URL`",
-          "default": "postgresql://localhost:5432/affine"
-        },
-        "prisma": {
-          "type": "object",
-          "description": "The config for the prisma client.\n@default {}\n@link https://www.prisma.io/docs/reference/api-reference/prisma-client-reference",
-          "default": {}
         }
       }
     },
