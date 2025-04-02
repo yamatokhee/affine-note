@@ -71,6 +71,7 @@ const createHelmCommand = ({ isDryRun }) => {
     isProduction || isBeta || isInternal
       ? [
           `--set        cloud-sql-proxy.enabled=true`,
+          `--set-string cloud-sql-proxy.database.connectionName="${GCLOUD_CONNECTION_NAME}"`,
           `--set-string global.database.host=${DATABASE_URL}`,
           `--set-string global.database.user=${DATABASE_USERNAME}`,
           `--set-string global.database.password=${DATABASE_PASSWORD}`,
