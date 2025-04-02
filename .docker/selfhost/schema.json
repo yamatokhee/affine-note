@@ -56,15 +56,9 @@
       "properties": {
         "apolloDriverConfig": {
           "type": "object",
-          "description": "The config for underlying nestjs GraphQL and apollo driver engine.\n@default {\"buildSchemaOptions\":{\"numberScalarMode\":\"integer\"},\"useGlobalPrefix\":true,\"playground\":true,\"introspection\":true,\"sortSchema\":true}\n@link https://docs.nestjs.com/graphql/quick-start",
+          "description": "The config for underlying nestjs GraphQL and apollo driver engine.\n@default {\"introspection\":true}\n@link https://docs.nestjs.com/graphql/quick-start",
           "default": {
-            "buildSchemaOptions": {
-              "numberScalarMode": "integer"
-            },
-            "useGlobalPrefix": true,
-            "playground": true,
-            "introspection": true,
-            "sortSchema": true
+            "introspection": true
           }
         }
       }
@@ -86,16 +80,13 @@
       "properties": {
         "queue": {
           "type": "object",
-          "description": "The config for job queues\n@default {\"prefix\":\"affine_job\",\"defaultJobOptions\":{\"attempts\":5,\"removeOnComplete\":true,\"removeOnFail\":{\"age\":86400,\"count\":500}}}\n@link https://api.docs.bullmq.io/interfaces/v5.QueueOptions.html",
+          "description": "The config for job queues\n@default {\"attempts\":5,\"removeOnComplete\":true,\"removeOnFail\":{\"age\":86400,\"count\":500}}\n@link https://api.docs.bullmq.io/interfaces/v5.QueueOptions.html",
           "default": {
-            "prefix": "affine_job",
-            "defaultJobOptions": {
-              "attempts": 5,
-              "removeOnComplete": true,
-              "removeOnFail": {
-                "age": 86400,
-                "count": 500
-              }
+            "attempts": 5,
+            "removeOnComplete": true,
+            "removeOnFail": {
+              "age": 86400,
+              "count": 500
             }
           }
         },

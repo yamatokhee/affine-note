@@ -58,12 +58,10 @@ test.before(async () => {
       ConfigModule.override({
         job: {
           worker: {
-            defaultWorkerOptions: {
-              // NOTE(@forehalo):
-              //   bullmq will hold the connection to check stalled jobs,
-              //   which will keep the test process alive to timeout.
-              stalledInterval: 100,
-            },
+            // NOTE(@forehalo):
+            //   bullmq will hold the connection to check stalled jobs,
+            //   which will keep the test process alive to timeout.
+            stalledInterval: 100,
           },
         },
       }),

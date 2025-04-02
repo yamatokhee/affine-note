@@ -2,6 +2,7 @@ import './config';
 
 import { BullModule } from '@nestjs/bullmq';
 import { DynamicModule } from '@nestjs/common';
+import { type QueueOptions } from 'bullmq';
 
 import { Config } from '../../config';
 import { QueueRedis } from '../../redis';
@@ -17,9 +18,19 @@ export class JobModule {
       module: JobModule,
       imports: [
         BullModule.forRootAsync({
-          useFactory: (config: Config, redis: QueueRedis) => {
+          useFactory: (config: Config, redis: QueueRedis): QueueOptions => {
+            let prefix = 'affine_job';
+            if (env.testing) {
+              prefix += '_test';
+            } else if (!env.namespaces.production) {
+              prefix += '_' + env.NAMESPACE;
+            }
             return {
-              ...config.job.queue,
+              // NOTE(@forehalo):
+              //   we distinguish jobs by namespace,
+              //   to avoid new jobs been dropped by old deployments
+              prefix,
+              defaultJobOptions: config.job.queue,
               connection: redis,
             };
           },

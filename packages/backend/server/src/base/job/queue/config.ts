@@ -1,4 +1,4 @@
-import { QueueOptions, WorkerOptions } from 'bullmq';
+import { DefaultJobOptions, WorkerOptions } from 'bullmq';
 
 import { defineModuleConfig, JSONSchema } from '../../config';
 import { Queue } from './def';
@@ -6,10 +6,8 @@ import { Queue } from './def';
 declare global {
   interface AppConfigSchema {
     job: {
-      queue: ConfigItem<Omit<QueueOptions, 'connection' | 'telemetry'>>;
-      worker: ConfigItem<{
-        defaultWorkerOptions: Omit<WorkerOptions, 'connection' | 'telemetry'>;
-      }>;
+      queue: ConfigItem<Omit<DefaultJobOptions, 'connection' | 'telemetry'>>;
+      worker: ConfigItem<Omit<WorkerOptions, 'connection' | 'telemetry'>>;
       queues: {
         [key in Queue]: ConfigItem<{
           concurrency: number;
@@ -30,15 +28,12 @@ defineModuleConfig('job', {
   queue: {
     desc: 'The config for job queues',
     default: {
-      prefix: env.testing ? 'affine_job_test' : 'affine_job',
-      defaultJobOptions: {
-        attempts: 5,
-        // should remove job after it's completed, because we will add a new job with the same job id
-        removeOnComplete: true,
-        removeOnFail: {
-          age: 24 * 3600 /* 1 day */,
-          count: 500,
-        },
+      attempts: 5,
+      // should remove job after it's completed, because we will add a new job with the same job id
+      removeOnComplete: true,
+      removeOnFail: {
+        age: 24 * 3600 /* 1 day */,
+        count: 500,
       },
     },
     link: 'https://api.docs.bullmq.io/interfaces/v5.QueueOptions.html',
@@ -46,9 +41,7 @@ defineModuleConfig('job', {
 
   worker: {
     desc: 'The config for job workers',
-    default: {
-      defaultWorkerOptions: {},
-    },
+    default: {},
     link: 'https://api.docs.bullmq.io/interfaces/v5.WorkerOptions.html',
   },
 

@@ -1,7 +1,7 @@
-import { getQueueToken } from '@nestjs/bullmq';
+import { getQueueToken, getSharedConfigToken } from '@nestjs/bullmq';
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { Job, Queue as Bullmq, Worker } from 'bullmq';
+import { Job, Queue as Bullmq, Worker, WorkerOptions } from 'bullmq';
 import { difference, merge } from 'lodash-es';
 import { CLS_ID, ClsServiceManager } from 'nestjs-cls';
 
@@ -118,16 +118,12 @@ export class JobExecutor implements OnModuleDestroy {
         async job => {
           return await this.run(job.name as JobName, job.data);
         },
-        merge(
-          {},
-          this.config.job.queue,
-          this.config.job.worker.defaultWorkerOptions,
-          queueOptions,
-          {
-            concurrency,
-            connection: this.redis,
-          }
-        )
+        merge({}, this.config.job.queue, this.config.job.worker, queueOptions, {
+          prefix: this.ref.get(getSharedConfigToken(), { strict: false })
+            .prefix,
+          concurrency,
+          connection: this.redis,
+        } as WorkerOptions)
       );
 
       worker.on('error', error => {
