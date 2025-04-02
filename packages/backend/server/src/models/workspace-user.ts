@@ -322,11 +322,13 @@ export class WorkspaceUserModel extends BaseModel {
             {
               email: {
                 contains: query,
+                mode: 'insensitive',
               },
             },
             {
               name: {
                 contains: query,
+                mode: 'insensitive',
               },
             },
           ],
