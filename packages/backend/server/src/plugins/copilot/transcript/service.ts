@@ -234,6 +234,9 @@ export class CopilotTranscriptionService {
           return;
         }
       }
+      this.event.emit('workspace.file.transcript.failed', {
+        jobId,
+      });
     } catch (error: any) {
       // record failed status and passthrough error
       this.event.emit('workspace.file.transcript.failed', {
@@ -269,6 +272,9 @@ export class CopilotTranscriptionService {
           return;
         }
       }
+      this.event.emit('workspace.file.transcript.failed', {
+        jobId,
+      });
     } catch (error: any) {
       // record failed status and passthrough error
       this.event.emit('workspace.file.transcript.failed', {
