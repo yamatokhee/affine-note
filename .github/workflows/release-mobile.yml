@@ -118,7 +118,7 @@ jobs:
           path: packages/frontend/apps/android/dist
 
   ios:
-    runs-on: namespace-profile-macos
+    runs-on: ${{ github.ref_name == 'canary' && 'blaze/macos-14' || 'namespace-profile-macos' }}
     needs:
       - build-ios-web
     steps:
