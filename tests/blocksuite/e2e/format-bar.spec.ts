@@ -19,6 +19,7 @@ import {
   initThreeParagraphs,
   pasteByKeyboard,
   pressArrowDown,
+  pressArrowLeft,
   pressArrowUp,
   pressEnter,
   pressEscape,
@@ -1050,4 +1051,19 @@ test.describe('more menu button', () => {
 
     await assertRichTexts(page, ['123', '789']);
   });
+});
+
+test('should not display format bar when just select embed node', async ({
+  page,
+}) => {
+  await enterPlaygroundRoom(page);
+  await initEmptyParagraphState(page);
+  await focusRichText(page, 0);
+  await type(page, '@\n');
+  await assertRichTextInlineRange(page, 0, 1, 0);
+  await pressArrowLeft(page);
+  await assertRichTextInlineRange(page, 0, 0, 1);
+
+  const { boldBtn } = getFormatBar(page);
+  await expect(boldBtn).toBeHidden();
 });
