@@ -105,15 +105,27 @@ export const StorageJSONSchema: JSONSchema = {
               description:
                 'The account id for the cloudflare r2 storage provider.',
             },
-            signDomain: {
-              type: 'string' as const,
+            usePresignedURL: {
+              type: 'object' as const,
               description:
-                'The presigned domain for the cloudflare r2 storage provider.',
-            },
-            signKey: {
-              type: 'string' as const,
-              description:
-                'The presigned key for the cloudflare r2 storage provider.',
+                'The presigned url config for the cloudflare r2 storage provider.',
+              properties: {
+                enabled: {
+                  type: 'boolean' as const,
+                  description:
+                    'Whether to use presigned url for the cloudflare r2 storage provider.',
+                },
+                urlPrefix: {
+                  type: 'string' as const,
+                  description:
+                    'The presigned url prefix for the cloudflare r2 storage provider.\nsee https://developers.cloudflare.com/waf/custom-rules/use-cases/configure-token-authentication/ to configure it.\nExample value: "https://storage.example.com"\nExample rule: is_timed_hmac_valid_v0("your_secret", http.request.uri, 10800, http.request.timestamp.sec, 6)',
+                },
+                signKey: {
+                  type: 'string' as const,
+                  description:
+                    'The presigned key for the cloudflare r2 storage provider.',
+                },
+              },
             },
           },
         },

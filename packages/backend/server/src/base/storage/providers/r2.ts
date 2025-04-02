@@ -8,11 +8,11 @@ import { S3StorageConfig, S3StorageProvider } from './s3';
 
 export interface R2StorageConfig extends S3StorageConfig {
   accountId: string;
-  // r2 public domain with verification
-  // see https://developers.cloudflare.com/waf/custom-rules/use-cases/configure-token-authentication/ to configure it
-  // example rule: is_timed_hmac_valid_v0("your_secret", http.request.uri, 10800, http.request.timestamp.sec, 6)
-  signDomain?: string;
-  signKey?: string;
+  usePresignedURL?: {
+    enabled: boolean;
+    urlPrefix?: string;
+    signKey?: string;
+  };
 }
 
 export class R2StorageProvider extends S3StorageProvider {
@@ -36,7 +36,7 @@ export class R2StorageProvider extends S3StorageProvider {
       bucket
     );
     this.logger = new Logger(`${R2StorageProvider.name}:${bucket}`);
-    this.key = this.encoder.encode(config.signKey);
+    this.key = this.encoder.encode(config.usePresignedURL?.signKey ?? '');
   }
 
   private async signUrl(url: URL): Promise<string> {
@@ -67,10 +67,10 @@ export class R2StorageProvider extends S3StorageProvider {
     metadata?: GetObjectMetadata;
     redirectUrl?: string;
   }> {
-    const { signDomain } = this.config;
-    if (signedUrl && signDomain) {
+    const { usePresignedURL: { enabled, urlPrefix } = {} } = this.config;
+    if (signedUrl && enabled && urlPrefix) {
       const metadata = await this.head(key);
-      const url = await this.signUrl(new URL(`/${key}`, signDomain));
+      const url = await this.signUrl(new URL(`/${key}`, urlPrefix));
       if (metadata) {
         return {
           redirectUrl: url.toString(),
@@ -82,7 +82,7 @@ export class R2StorageProvider extends S3StorageProvider {
       return {};
     }
 
-    // fallback to s3 presigned url if signDomain is not configured
-    return super.get(key, signDomain ? false : signedUrl);
+    // fallback to s3 get
+    return super.get(key, signedUrl);
   }
 }

@@ -24,24 +24,31 @@ import {
 } from './provider';
 import { autoMetadata, SIGNED_URL_EXPIRED, toBuffer } from './utils';
 
-export type S3StorageConfig = S3ClientConfig;
+export interface S3StorageConfig extends S3ClientConfig {
+  usePresignedURL?: {
+    enabled: boolean;
+  };
+}
 
 export class S3StorageProvider implements StorageProvider {
   protected logger: Logger;
   protected client: S3Client;
+  private readonly usePresignedURL: boolean;
 
   constructor(
     config: S3StorageConfig,
     public readonly bucket: string
   ) {
+    const { usePresignedURL, ...clientConfig } = config;
     this.client = new S3Client({
       region: 'auto',
       // s3 client uses keep-alive by default to accelerate requests, and max requests queue is 50.
       // If some of them are long holding or dead without response, the whole queue will block.
       // By default no timeout is set for requests or connections, so we set them here.
       requestHandler: { requestTimeout: 60_000, connectionTimeout: 10_000 },
-      ...config,
+      ...clientConfig,
     });
+    this.usePresignedURL = usePresignedURL?.enabled ?? false;
     this.logger = new Logger(`${S3StorageProvider.name}:${bucket}`);
   }
 
@@ -122,7 +129,7 @@ export class S3StorageProvider implements StorageProvider {
         Key: key,
       });
 
-      if (signedUrl) {
+      if (this.usePresignedURL && signedUrl) {
         const metadata = await this.head(key);
         if (metadata) {
           const url = await getSignedUrl(
