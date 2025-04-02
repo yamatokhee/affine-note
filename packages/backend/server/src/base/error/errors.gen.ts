@@ -765,6 +765,12 @@ export class CopilotTranscriptionJobExists extends UserFriendlyError {
   }
 }
 
+export class CopilotTranscriptionJobNotFound extends UserFriendlyError {
+  constructor(message?: string) {
+    super('bad_request', 'copilot_transcription_job_not_found', message);
+  }
+}
+
 export class BlobQuotaExceeded extends UserFriendlyError {
   constructor(message?: string) {
     super('quota_exceeded', 'blob_quota_exceeded', message);
@@ -1020,6 +1026,7 @@ export enum ErrorNames {
   COPILOT_FAILED_TO_MATCH_CONTEXT,
   COPILOT_EMBEDDING_UNAVAILABLE,
   COPILOT_TRANSCRIPTION_JOB_EXISTS,
+  COPILOT_TRANSCRIPTION_JOB_NOT_FOUND,
   BLOB_QUOTA_EXCEEDED,
   STORAGE_QUOTA_EXCEEDED,
   MEMBER_QUOTA_EXCEEDED,

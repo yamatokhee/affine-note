@@ -705,6 +705,10 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'bad_request',
     message: () => 'Transcription job already exists',
   },
+  copilot_transcription_job_not_found: {
+    type: 'bad_request',
+    message: () => `Transcription job not found.`,
+  },
 
   // Quota & Limit errors
   blob_quota_exceeded: {

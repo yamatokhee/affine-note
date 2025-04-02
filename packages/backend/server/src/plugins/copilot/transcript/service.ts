@@ -5,6 +5,7 @@ import { ZodType } from 'zod';
 import {
   CopilotPromptNotFound,
   CopilotTranscriptionJobExists,
+  CopilotTranscriptionJobNotFound,
   EventBus,
   type FileUpload,
   JobQueue,
@@ -31,6 +32,8 @@ import { readStream } from './utils';
 export type TranscriptionJob = {
   id: string;
   status: AiJobStatus;
+  url?: string;
+  mimeType?: string;
   transcription?: TranscriptionPayload;
 };
 
@@ -55,7 +58,7 @@ export class CopilotTranscriptionService {
       throw new CopilotTranscriptionJobExists();
     }
 
-    const { id: jobId, status } = await this.models.copilotJob.create({
+    const { id: jobId } = await this.models.copilotJob.create({
       workspaceId,
       blobId,
       createdBy: userId,
@@ -65,14 +68,28 @@ export class CopilotTranscriptionService {
     const buffer = await readStream(blob.createReadStream());
     const url = await this.storage.put(userId, workspaceId, blobId, buffer);
 
-    await this.models.copilotJob.update(jobId, {
-      status: AiJobStatus.running,
+    return await this.executeTranscriptionJob(jobId, url, blob.mimetype);
+  }
+
+  async executeTranscriptionJob(
+    jobId: string,
+    url: string,
+    mimeType: string
+  ): Promise<TranscriptionJob> {
+    const status = AiJobStatus.running;
+    const success = await this.models.copilotJob.update(jobId, {
+      status,
+      payload: { url, mimeType },
     });
+
+    if (!success) {
+      throw new CopilotTranscriptionJobNotFound();
+    }
 
     await this.job.add('copilot.transcript.submit', {
       jobId,
       url,
-      mimeType: blob.mimetype,
+      mimeType,
     });
 
     return { id: jobId, status };
@@ -113,9 +130,11 @@ export class CopilotTranscriptionService {
 
     const ret: TranscriptionJob = { id: job.id, status: job.status };
 
-    if (job.status === AiJobStatus.claimed) {
-      const payload = TranscriptPayloadSchema.safeParse(job.payload);
-      if (payload.success) {
+    const payload = TranscriptPayloadSchema.safeParse(job.payload);
+    if (payload.success) {
+      ret.url = payload.data.url || undefined;
+      ret.mimeType = payload.data.mimeType || undefined;
+      if (job.status === AiJobStatus.claimed) {
         ret.transcription = payload.data;
       }
     }

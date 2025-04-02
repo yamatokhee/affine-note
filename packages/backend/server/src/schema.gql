@@ -436,6 +436,7 @@ enum ErrorNames {
   COPILOT_SESSION_DELETED
   COPILOT_SESSION_NOT_FOUND
   COPILOT_TRANSCRIPTION_JOB_EXISTS
+  COPILOT_TRANSCRIPTION_JOB_NOT_FOUND
   CUSTOMER_PORTAL_CREATE_FAILED
   DOC_ACTION_DENIED
   DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER
@@ -990,6 +991,7 @@ type Mutation {
   removeContextFile(options: RemoveContextFileInput!): Boolean!
   removeWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Boolean!
   resumeSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
+  retryAudioTranscription(jobId: String!, workspaceId: String!): TranscriptionResultType
   revoke(userId: String!, workspaceId: String!): Boolean!
   revokeDocUserRoles(input: RevokeDocUserRoleInput!): Boolean!
   revokeInviteLink(workspaceId: String!): Boolean!

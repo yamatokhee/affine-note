@@ -21,6 +21,8 @@ const TranscriptionItemSchema = z.object({
 export const TranscriptionSchema = z.array(TranscriptionItemSchema);
 
 export const TranscriptPayloadSchema = z.object({
+  url: z.string().nullable().optional(),
+  mimeType: z.string().nullable().optional(),
   title: z.string().nullable().optional(),
   summary: z.string().nullable().optional(),
   transcription: TranscriptionSchema.nullable().optional(),

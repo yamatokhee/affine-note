@@ -8088,6 +8088,10 @@ export function useAFFiNEI18N(): {
       */
     ["error.COPILOT_TRANSCRIPTION_JOB_EXISTS"](): string;
     /**
+      * `Transcription job not found.`
+      */
+    ["error.COPILOT_TRANSCRIPTION_JOB_NOT_FOUND"](): string;
+    /**
       * `You have exceeded your blob size quota.`
       */
     ["error.BLOB_QUOTA_EXCEEDED"](): string;

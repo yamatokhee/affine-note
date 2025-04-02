@@ -656,6 +656,17 @@ export const getAudioTranscriptionQuery = {
 }`,
 };
 
+export const retryAudioTranscriptionMutation = {
+  id: 'retryAudioTranscriptionMutation' as const,
+  op: 'retryAudioTranscription',
+  query: `mutation retryAudioTranscription($workspaceId: String!, $jobId: String!) {
+  retryAudioTranscription(workspaceId: $workspaceId, jobId: $jobId) {
+    id
+    status
+  }
+}`,
+};
+
 export const createCopilotMessageMutation = {
   id: 'createCopilotMessageMutation' as const,
   op: 'createCopilotMessage',

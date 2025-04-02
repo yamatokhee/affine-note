@@ -581,6 +581,7 @@ export enum ErrorNames {
   COPILOT_SESSION_DELETED = 'COPILOT_SESSION_DELETED',
   COPILOT_SESSION_NOT_FOUND = 'COPILOT_SESSION_NOT_FOUND',
   COPILOT_TRANSCRIPTION_JOB_EXISTS = 'COPILOT_TRANSCRIPTION_JOB_EXISTS',
+  COPILOT_TRANSCRIPTION_JOB_NOT_FOUND = 'COPILOT_TRANSCRIPTION_JOB_NOT_FOUND',
   CUSTOMER_PORTAL_CREATE_FAILED = 'CUSTOMER_PORTAL_CREATE_FAILED',
   DOC_ACTION_DENIED = 'DOC_ACTION_DENIED',
   DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER = 'DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER',
@@ -1102,6 +1103,7 @@ export interface Mutation {
   removeContextFile: Scalars['Boolean']['output'];
   removeWorkspaceFeature: Scalars['Boolean']['output'];
   resumeSubscription: SubscriptionType;
+  retryAudioTranscription: Maybe<TranscriptionResultType>;
   revoke: Scalars['Boolean']['output'];
   revokeDocUserRoles: Scalars['Boolean']['output'];
   revokeInviteLink: Scalars['Boolean']['output'];
@@ -1365,6 +1367,11 @@ export interface MutationResumeSubscriptionArgs {
   idempotencyKey?: InputMaybe<Scalars['String']['input']>;
   plan?: InputMaybe<SubscriptionPlan>;
   workspaceId?: InputMaybe<Scalars['String']['input']>;
+}
+
+export interface MutationRetryAudioTranscriptionArgs {
+  jobId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
 }
 
 export interface MutationRevokeArgs {
@@ -3048,6 +3055,20 @@ export type GetAudioTranscriptionQuery = {
   } | null;
 };
 
+export type RetryAudioTranscriptionMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  jobId: Scalars['String']['input'];
+}>;
+
+export type RetryAudioTranscriptionMutation = {
+  __typename?: 'Mutation';
+  retryAudioTranscription: {
+    __typename?: 'TranscriptionResultType';
+    id: string;
+    status: AiJobStatus;
+  } | null;
+};
+
 export type CreateCopilotMessageMutationVariables = Exact<{
   options: CreateChatMessageInput;
 }>;
@@ -4705,6 +4726,11 @@ export type Mutations =
       name: 'claimAudioTranscriptionMutation';
       variables: ClaimAudioTranscriptionMutationVariables;
       response: ClaimAudioTranscriptionMutation;
+    }
+  | {
+      name: 'retryAudioTranscriptionMutation';
+      variables: RetryAudioTranscriptionMutationVariables;
+      response: RetryAudioTranscriptionMutation;
     }
   | {
       name: 'createCopilotMessageMutation';
