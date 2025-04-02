@@ -7,6 +7,7 @@ import {
   HeadObjectCommand,
   ListObjectsV2Command,
   NoSuchKey,
+  NotFound,
   PutObjectCommand,
   S3Client,
   S3ClientConfig,
@@ -98,7 +99,7 @@ export class S3StorageProvider implements StorageProvider {
       };
     } catch (e) {
       // 404
-      if (e instanceof NoSuchKey) {
+      if (e instanceof NoSuchKey || e instanceof NotFound) {
         this.logger.verbose(`Object \`${key}\` not found`);
         return undefined;
       }
