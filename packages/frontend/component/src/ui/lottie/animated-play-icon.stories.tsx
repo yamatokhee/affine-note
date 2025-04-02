@@ -30,13 +30,8 @@ Pause.args = {
   state: 'pause',
 };
 
-export const Loading = Template.bind({});
-Loading.args = {
-  state: 'loading',
-};
-
 export const WithStateToggle: StoryFn<typeof AnimatedPlayIcon> = () => {
-  const [state, setState] = useState<'play' | 'pause' | 'loading'>('play');
+  const [state, setState] = useState<'play' | 'pause'>('play');
 
   const cycleState = () => {
     setState(current => {
@@ -44,8 +39,6 @@ export const WithStateToggle: StoryFn<typeof AnimatedPlayIcon> = () => {
         case 'play':
           return 'pause';
         case 'pause':
-          return 'play';
-        case 'loading':
           return 'play';
         default:
           return 'play';

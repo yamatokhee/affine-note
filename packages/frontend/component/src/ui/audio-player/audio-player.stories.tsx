@@ -253,6 +253,7 @@ const AudioWrapper = () => {
     <div
       style={{
         width: '100%',
+        minWidth: '600px',
         minHeight: '200px',
         border: '2px dashed #ccc',
         borderRadius: '8px',
@@ -305,7 +306,7 @@ const AudioWrapper = () => {
             playbackState={playbackState}
             seekTime={seekTime}
             duration={duration}
-            loading={loading}
+            loading={loading || waveform === null}
             onPlay={handlePlay}
             onPause={handlePause}
             onStop={handleStop}

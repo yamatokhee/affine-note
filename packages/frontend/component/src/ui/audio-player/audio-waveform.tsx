@@ -2,6 +2,7 @@ import { type AffineThemeKeyV2, cssVarV2 } from '@toeverything/theme/v2';
 import { clamp } from 'lodash-es';
 import { useCallback, useEffect, useRef } from 'react';
 
+import { Skeleton } from '../skeleton';
 import * as styles from './audio-waveform.css';
 
 // Helper function to get computed CSS variable value
@@ -113,11 +114,13 @@ export const AudioWaveform = ({
   progress,
   onManualSeek,
   mini = false, // the bar will be 0.5px instead. by default, the bar is 1px
+  loading = false,
 }: {
   waveform: number[];
   progress: number;
   onManualSeek: (progress: number) => void;
   mini?: boolean;
+  loading?: boolean;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -176,7 +179,11 @@ export const AudioWaveform = ({
       aria-valuemax={100}
       aria-valuenow={progress * 100}
     >
-      <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+      {loading ? (
+        <Skeleton />
+      ) : (
+        <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+      )}
     </div>
   );
 };

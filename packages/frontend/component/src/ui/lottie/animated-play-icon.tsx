@@ -4,12 +4,11 @@ import type { LottieRef } from 'lottie-react';
 import Lottie from 'lottie-react';
 import { useEffect, useRef } from 'react';
 
-import { Loading } from '../loading';
 import playandpause from './playandpause.json';
 import * as styles from './styles.css';
 
 export interface AnimatedPlayIconProps {
-  state: 'play' | 'pause' | 'loading';
+  state: 'play' | 'pause';
   className?: string;
   onClick?: (e: React.MouseEvent) => void;
 }
@@ -62,9 +61,6 @@ export const AnimatedPlayIcon = ({
   onClick,
 }: AnimatedPlayIconProps) => {
   const state = useDebouncedValue(_state, 25);
-  if (state === 'loading') {
-    return <Loading size={40} />;
-  }
   return (
     <PlayAndPauseIcon state={state} onClick={onClick} className={className} />
   );

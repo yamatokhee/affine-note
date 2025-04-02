@@ -82,12 +82,6 @@ export const AudioPlayer = ({
 
   // Calculate progress percentage
   const progressPercentage = duration > 0 ? seekTime / duration : 0;
-  const iconState = loading
-    ? 'loading'
-    : playbackState === 'playing'
-      ? 'pause'
-      : 'play';
-
   return (
     <div className={styles.root} onClick={onClick}>
       <div className={styles.upper}>
@@ -107,7 +101,7 @@ export const AudioPlayer = ({
           <AnimatedPlayIcon
             onClick={handlePlayToggle}
             className={styles.controlButton}
-            state={iconState}
+            state={playbackState === 'playing' ? 'pause' : 'play'}
           />
         </div>
       </div>
@@ -117,6 +111,7 @@ export const AudioPlayer = ({
           waveform={waveform || []}
           progress={progressPercentage}
           onManualSeek={handleProgressClick}
+          loading={loading}
         />
         <div className={styles.timeDisplay}>{formatTime(duration)}</div>
       </div>
@@ -183,12 +178,6 @@ export const MiniAudioPlayer = ({
 
   // Calculate progress percentage
   const progressPercentage = duration > 0 ? seekTime / duration : 0;
-  const iconState =
-    playbackState === 'playing'
-      ? 'pause'
-      : playbackState === 'paused'
-        ? 'play'
-        : 'loading';
 
   return (
     <div className={styles.miniRoot} onClick={onClick}>
@@ -203,7 +192,7 @@ export const MiniAudioPlayer = ({
         <AnimatedPlayIcon
           onClick={handlePlayToggle}
           className={styles.controlButton}
-          state={iconState}
+          state={playbackState === 'playing' ? 'pause' : 'play'}
         />
 
         <IconButton
