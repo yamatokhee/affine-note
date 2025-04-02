@@ -1,7 +1,6 @@
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
 import { ServerService } from '@affine/core/modules/cloud';
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { ServerDeploymentType } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
@@ -63,11 +62,6 @@ export const useWorkspaceSettingList = (): SettingSidebarItem[] => {
   const workspaceService = useService(WorkspaceService);
   const information = useWorkspaceInfo(workspaceService.workspace);
   const serverService = useService(ServerService);
-  const featureFlagService = useService(FeatureFlagService);
-
-  const enableIntegration = useLiveData(
-    featureFlagService.flags.enable_integration.$
-  );
 
   const isSelfhosted = useLiveData(
     serverService.server.config$.selector(
@@ -100,7 +94,7 @@ export const useWorkspaceSettingList = (): SettingSidebarItem[] => {
         icon: <CollaborationIcon />,
         testId: 'workspace-setting:members',
       },
-      enableIntegration && {
+      {
         key: 'workspace:integrations',
         title: t['com.affine.integration.integrations'](),
         icon: <IntegrationsIcon />,
@@ -125,7 +119,7 @@ export const useWorkspaceSettingList = (): SettingSidebarItem[] => {
         testId: 'workspace-setting:license',
       },
     ].filter((item): item is SettingSidebarItem => !!item);
-  }, [enableIntegration, showBilling, showLicense, t]);
+  }, [showBilling, showLicense, t]);
 
   return items;
 };

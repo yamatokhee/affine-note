@@ -248,13 +248,6 @@ export const AFFINE_FLAGS = {
     configurable: isCanaryBuild,
     defaultState: false,
   },
-  enable_integration: {
-    category: 'affine',
-    displayName: 'Enable Integration',
-    description: 'Enable Integration',
-    configurable: isCanaryBuild,
-    defaultState: false,
-  },
   enable_edgeless_scribbled_style: {
     category: 'blocksuite',
     bsFlag: 'enable_edgeless_scribbled_style',
