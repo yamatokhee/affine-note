@@ -460,6 +460,7 @@ jobs:
         run: |
           cp ./.docker/selfhost/compose.yml ./release/docker-compose.yml
           cp ./.docker/selfhost/.env.example ./release/.env.example
+          cp ./.docker/selfhost/schema.json ./release/config.schema.json
       - name: Generate Release yml
         run: |
           node ./scripts/generate-release-yml.mjs
