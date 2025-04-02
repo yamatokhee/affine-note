@@ -2,7 +2,7 @@ import type { ExecutionContext, TestFn } from 'ava';
 import ava from 'ava';
 import { z } from 'zod';
 
-import { ConfigModule } from '../base/config';
+import { ServerFeature, ServerService } from '../core';
 import { AuthService } from '../core/auth';
 import { QuotaModule } from '../core/quota';
 import { CopilotModule } from '../plugins/copilot';
@@ -36,13 +36,7 @@ type Tester = {
 };
 const test = ava as TestFn<Tester>;
 
-const isCopilotConfigured =
-  !!process.env.COPILOT_OPENAI_API_KEY &&
-  !!process.env.COPILOT_FAL_API_KEY &&
-  !!process.env.COPILOT_PERPLEXITY_API_KEY &&
-  process.env.COPILOT_OPENAI_API_KEY !== '1' &&
-  process.env.COPILOT_FAL_API_KEY !== '1' &&
-  process.env.COPILOT_PERPLEXITY_API_KEY !== '1';
+let isCopilotConfigured = false;
 const runIfCopilotConfigured = test.macro(
   async (
     t,
@@ -59,29 +53,11 @@ const runIfCopilotConfigured = test.macro(
 
 test.serial.before(async t => {
   const module = await createTestingModule({
-    imports: [
-      ConfigModule.override({
-        copilot: {
-          providers: {
-            openai: {
-              apiKey: process.env.COPILOT_OPENAI_API_KEY || '',
-            },
-            fal: {
-              apiKey: process.env.COPILOT_FAL_API_KEY || '',
-            },
-            perplexity: {
-              apiKey: process.env.COPILOT_PERPLEXITY_API_KEY || '',
-            },
-            gemini: {
-              apiKey: process.env.COPILOT_GOOGLE_API_KEY || '',
-            },
-          },
-        },
-      }),
-      QuotaModule,
-      CopilotModule,
-    ],
+    imports: [QuotaModule, CopilotModule],
   });
+
+  const service = module.get(ServerService);
+  isCopilotConfigured = service.features.includes(ServerFeature.Copilot);
 
   const auth = module.get(AuthService);
   const prompt = module.get(PromptService);
@@ -357,10 +333,10 @@ const actions = [
         .trim();
       t.notThrows(() => {
         z.object({
-          speaker: z.string(),
-          start: z.string(),
-          end: z.string(),
-          transcription: z.string(),
+          a: z.string(),
+          s: z.number(),
+          e: z.number(),
+          t: z.string(),
         })
           .array()
           .parse(JSON.parse(cleaned));
