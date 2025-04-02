@@ -538,7 +538,6 @@ export class AtMenuConfigService extends Service {
       const loading = this.memberSearchService.isLoading$.signal.value;
       return query.length > 0 && !loading && members.length === 0;
     });
-    const loading = this.memberSearchService.isLoading$.signal.value;
 
     if (query.length > 0) {
       this.memberSearchService.search(query);
@@ -547,7 +546,7 @@ export class AtMenuConfigService extends Service {
     return {
       name: I18n.t('com.affine.editor.at-menu.mention-members'),
       items,
-      loading,
+      loading: this.memberSearchService.isLoading$.signal,
       hidden,
     };
   }
