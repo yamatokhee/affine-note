@@ -72,9 +72,9 @@ export class JobExecutor implements OnModuleDestroy {
 
           const signature = `[${name}] (${handler.name})`;
           try {
-            this.logger.debug(`Job started: ${signature}`);
+            this.logger.log(`Job started: ${signature}`);
             const ret = await handler.fn(payload);
-            this.logger.debug(`Job finished: ${signature}`);
+            this.logger.log(`Job finished: ${signature}, signal=${ret}`);
             return ret;
           } catch (e) {
             this.logger.error(`Job failed: ${signature}`, e);
