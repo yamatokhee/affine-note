@@ -191,7 +191,7 @@ export class AppConfigResolver {
     description: 'get the whole app configuration',
   })
   appConfig() {
-    return this.service.config;
+    return this.service.getConfig();
   }
 
   @Mutation(() => GraphQLJSONObject, {

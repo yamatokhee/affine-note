@@ -1,14 +1,13 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
-import { merge } from 'lodash-es';
 
 import { InvalidAppConfig } from '../error';
-import { APP_CONFIG_DESCRIPTORS, getDefaultConfig } from './register';
+import { APP_CONFIG_DESCRIPTORS, getDefaultConfig, override } from './register';
 
 export const OVERRIDE_CONFIG_TOKEN = Symbol('OVERRIDE_CONFIG_TOKEN');
 
 @Injectable()
 export class ConfigFactory {
-  readonly #config: DeepReadonly<AppConfig>;
+  readonly #config: AppConfig;
 
   constructor(
     @Inject(OVERRIDE_CONFIG_TOKEN)
@@ -22,8 +21,12 @@ export class ConfigFactory {
     return this.#config;
   }
 
+  clone() {
+    return structuredClone(this.#config);
+  }
+
   override(updates: DeepPartial<AppConfig>) {
-    merge(this.#config, updates);
+    override(this.#config, updates);
   }
 
   validate(updates: Array<{ module: string; key: string; value: any }>) {
@@ -53,8 +56,9 @@ Error: ${issue.message}`);
     }
   }
 
-  private loadDefault(): DeepReadonly<AppConfig> {
+  private loadDefault() {
     const config = getDefaultConfig();
-    return merge(config, this.overrides);
+    override(config, this.overrides);
+    return config;
   }
 }

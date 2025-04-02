@@ -56,8 +56,8 @@ export class ServerService implements OnApplicationBootstrap {
     this.#features.delete(feature);
   }
 
-  get config() {
-    return this.configFactory.config;
+  getConfig() {
+    return this.configFactory.clone();
   }
 
   async updateConfig(

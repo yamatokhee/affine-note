@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-import { merge, once, set } from 'lodash-es';
+import { mergeWith, once, set } from 'lodash-es';
 import { z } from 'zod';
 
 import { type EnvConfigType, parseEnvValue } from './env';
@@ -208,14 +209,15 @@ export function defineModuleConfig<T extends keyof AppConfigSchema>(
   };
 }
 
-function readConfigJSONOverrides() {
-  if (existsSync(join(env.projectRoot, 'config.json'))) {
+const CONFIG_JSON_PATHS = [
+  join(env.projectRoot, 'config.json'),
+  `${homedir()}/.affine/config/config.json`,
+];
+function readConfigJSONOverrides(path: string) {
+  const overrides: DeepPartial<AppConfig> = {};
+  if (existsSync(path)) {
     try {
-      const config = JSON.parse(
-        readFileSync(join(env.projectRoot, 'config.json'), 'utf-8')
-      ) as AppConfig;
-
-      const overrides = {};
+      const config = JSON.parse(readFileSync(path, 'utf-8')) as AppConfig;
 
       Object.entries(config).forEach(([key, value]) => {
         if (key === '$schema') {
@@ -226,18 +228,41 @@ function readConfigJSONOverrides() {
           set(overrides, `${key}.${k}`, v);
         });
       });
-
-      return overrides;
     } catch (e) {
       console.error('Invalid json config file', e);
     }
   }
 
-  return {};
+  return overrides;
 }
 
-export function getDefaultConfig(): AppConfigSchema {
-  const config: Record<string, any> = {};
+export function override(config: AppConfig, update: DeepPartial<AppConfig>) {
+  Object.keys(update).forEach(module => {
+    const moduleDescriptors = APP_CONFIG_DESCRIPTORS[module];
+    const configKeys = new Set(Object.keys(moduleDescriptors));
+
+    const moduleConfig = config[module as keyof AppConfig];
+    const moduleOverrides = update[module as keyof AppConfig];
+
+    const merge = (left: any, right: any, path: string = '') => {
+      // if we found the key in the config keys
+      // we should use the override object instead of merge it with left
+      if (configKeys.has(path)) {
+        return right;
+      }
+
+      // go deeper
+      return mergeWith(left, right, (left, right, key) => {
+        return merge(left, right, path === '' ? key : `${path}.${key}`);
+      });
+    };
+
+    config[module as keyof AppConfig] = merge(moduleConfig, moduleOverrides);
+  });
+}
+
+export function getDefaultConfig(): AppConfig {
+  const config = {} as AppConfig;
   const envs = process.env;
 
   for (const [module, defs] of Object.entries(APP_CONFIG_DESCRIPTORS)) {
@@ -271,12 +296,14 @@ Error: ${issue.message}`;
       set(modulizedConfig, key, defaultValue);
     }
 
+    // @ts-expect-error all keys are known
     config[module] = modulizedConfig;
   }
 
-  const fileOverrides = readConfigJSONOverrides();
-
-  merge(config, fileOverrides);
+  CONFIG_JSON_PATHS.forEach(path => {
+    const overrides = readConfigJSONOverrides(path);
+    override(config, overrides);
+  });
 
   return config as AppConfigSchema;
 }

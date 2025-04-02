@@ -3,6 +3,7 @@ import test from 'ava';
 import { createModule } from '../../../__tests__/create-module';
 import { ConfigFactory, ConfigModule } from '..';
 import { Config } from '../config';
+import { override } from '../register';
 
 const module = await createModule();
 test.after.always(async () => {
@@ -49,13 +50,14 @@ test('should override config', async t => {
     auth: {
       passwordRequirements: {
         max: 10,
+        min: 1,
       },
     },
   });
 
   t.deepEqual(config.auth.passwordRequirements, {
     max: 10,
-    min: 6,
+    min: 1,
   });
 });
 
@@ -87,4 +89,88 @@ Value: {"max":10,"min":10}
 Error: Minimum length of password must be less than maximum length`,
     }
   );
+});
+
+test('should override correctly', t => {
+  const config = {
+    auth: {
+      // object config
+      passwordRequirements: {
+        max: 10,
+        min: 6,
+      },
+      allowSignup: false,
+      // keyed config
+      // 'session.ttl', 'session.ttr'
+      session: {
+        ttl: 2000,
+        ttr: 1000,
+      },
+    },
+    storages: {
+      avatar: {
+        // keyed config
+        // "avatar.publicPath: String"
+        publicPath: '/',
+        // object config
+        // "avatar.storage => Object { }"
+        storage: {
+          provider: 'fs',
+          config: {
+            path: '/path/to/avatar',
+          },
+        },
+      },
+    },
+  } as AppConfig;
+
+  override(config, {
+    auth: {
+      passwordRequirements: {
+        max: 20,
+      },
+      allowSignup: true,
+      session: {
+        ttl: 3000,
+      },
+    },
+    storages: {
+      avatar: {
+        storage: {
+          provider: 'aws-s3',
+          config: {
+            credentials: {
+              accessKeyId: '1',
+              accessKeySecret: '1',
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // simple value override
+  t.deepEqual(config.auth.allowSignup, true);
+
+  // right covered left
+  t.deepEqual(config.auth.passwordRequirements, {
+    max: 20,
+  });
+
+  // right merged to left
+  t.deepEqual(config.auth.session, {
+    ttl: 3000,
+    ttr: 1000,
+  });
+
+  // right covered left
+  t.deepEqual(config.storages.avatar.storage, {
+    provider: 'aws-s3',
+    config: {
+      credentials: {
+        accessKeyId: '1',
+        accessKeySecret: '1',
+      },
+    },
+  });
 });

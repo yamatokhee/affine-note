@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 
 import { ModuleScanner } from '../../nestjs';
 import { getJobHandlerMetadata, JOB_SIGNAL } from './def';
@@ -11,6 +11,7 @@ interface JobHandler {
 @Injectable()
 export class JobHandlerScanner implements OnModuleInit {
   private readonly handlers: Record<string, JobHandler> = {};
+  private readonly logger = new Logger(JobHandlerScanner.name);
 
   constructor(private readonly scanner: ModuleScanner) {}
 
@@ -70,6 +71,8 @@ export class JobHandlerScanner implements OnModuleInit {
               return instance[method].bind(instance)(payload);
             },
           };
+
+          this.logger.log(`Job handler registered [${jobName}] (${signature})`);
         });
       });
     });

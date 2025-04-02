@@ -23,7 +23,7 @@ test.after.always(async () => {
 });
 
 test('should update config', async t => {
-  const oldValue = service.config.server.externalUrl;
+  const oldValue = service.getConfig().server.externalUrl;
   const newValue = faker.internet.url();
   await service.updateConfig(user.id, [
     {
@@ -33,8 +33,8 @@ test('should update config', async t => {
     },
   ]);
 
-  t.not(service.config.server.externalUrl, oldValue);
-  t.is(service.config.server.externalUrl, newValue);
+  t.not(service.getConfig().server.externalUrl, oldValue);
+  t.is(service.getConfig().server.externalUrl, newValue);
 });
 
 test('should validate config before update', async t => {
@@ -53,7 +53,7 @@ Error: Invalid url`,
     }
   );
 
-  t.not(service.config.server.externalUrl, 'invalid-url');
+  t.not(service.getConfig().server.externalUrl, 'invalid-url');
 
   await t.throwsAsync(
     service.updateConfig(user.id, [
@@ -68,8 +68,11 @@ Error: Invalid url`,
     }
   );
 
-  // @ts-expect-error allow
-  t.is(service.config.auth['unknown-key'], undefined);
+  t.is(
+    // @ts-expect-error testing
+    service.getConfig().auth['unknown-key'],
+    undefined
+  );
 });
 
 test('should emit config.init event', async t => {
@@ -77,12 +80,12 @@ test('should emit config.init event', async t => {
   const event = module.event.last('config.init');
   t.is(event.name, 'config.init');
   t.deepEqual(event.payload, {
-    config: service.config,
+    config: service.getConfig(),
   });
 });
 
 test('should revalidate config', async t => {
-  const outdatedValue = service.config.server.externalUrl;
+  const outdatedValue = service.getConfig().server.externalUrl;
   const newValue = faker.internet.url();
 
   await models.appConfig.save(user.id, [
@@ -94,8 +97,8 @@ test('should revalidate config', async t => {
 
   await service.revalidateConfig();
 
-  t.not(service.config.server.externalUrl, outdatedValue);
-  t.is(service.config.server.externalUrl, newValue);
+  t.not(service.getConfig().server.externalUrl, outdatedValue);
+  t.is(service.getConfig().server.externalUrl, newValue);
 });
 
 test('should emit config changed event', async t => {

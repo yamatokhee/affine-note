@@ -155,7 +155,7 @@ export class EventBus
 
     add.call(this.emitter, event, handler as any, opts);
 
-    this.logger.verbose(`Event handler registered ${signature}`);
+    this.logger.log(`Event handler registered ${signature}`);
 
     return () => {
       this.emitter.off(event, handler as any);

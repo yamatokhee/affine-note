@@ -64,16 +64,16 @@ test.serial.before(async t => {
         copilot: {
           providers: {
             openai: {
-              apiKey: process.env.COPILOT_OPENAI_API_KEY,
+              apiKey: process.env.COPILOT_OPENAI_API_KEY || '',
             },
             fal: {
-              apiKey: process.env.COPILOT_FAL_API_KEY,
+              apiKey: process.env.COPILOT_FAL_API_KEY || '',
             },
             perplexity: {
-              apiKey: process.env.COPILOT_PERPLEXITY_API_KEY,
+              apiKey: process.env.COPILOT_PERPLEXITY_API_KEY || '',
             },
             gemini: {
-              apiKey: process.env.COPILOT_GOOGLE_API_KEY,
+              apiKey: process.env.COPILOT_GOOGLE_API_KEY || '',
             },
           },
         },
