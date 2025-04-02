@@ -116,8 +116,8 @@ export class UserFriendlyError extends Error {
 
   get stacktrace() {
     return this.name === 'internal_server_error'
-      ? ((this.cause as Error)?.stack ?? super.stack)
-      : super.stack;
+      ? ((this.cause as Error)?.stack ?? this.stack)
+      : this.stack;
   }
 
   toJSON() {
