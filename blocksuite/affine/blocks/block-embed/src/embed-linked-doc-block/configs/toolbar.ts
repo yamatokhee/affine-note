@@ -11,6 +11,7 @@ import {
 } from '@blocksuite/affine-shared/consts';
 import {
   ActionPlacement,
+  DocDisplayMetaProvider,
   type LinkEventType,
   type OpenDocMode,
   type ToolbarAction,
@@ -76,11 +77,13 @@ const docTitleAction = {
     if (!model.props.title) return null;
 
     const originalTitle =
-      ctx.workspace.getDoc(model.props.pageId)?.meta?.title || 'Untitled';
+      ctx.std.get(DocDisplayMetaProvider).title(model.props.pageId).value ||
+      'Untitled';
+    const open = (event: MouseEvent) => block.open({ event });
 
     return html`<affine-linked-doc-title
       .title=${originalTitle}
-      .open=${(event: MouseEvent) => block.open({ event })}
+      .open=${open}
     ></affine-linked-doc-title>`;
   },
 } as const satisfies ToolbarAction;

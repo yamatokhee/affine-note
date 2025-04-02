@@ -15,7 +15,12 @@ import {
 } from '@blocksuite/icons/lit';
 import { LifeCycleWatcher, StdIdentifier } from '@blocksuite/std';
 import type { Store } from '@blocksuite/store';
-import { computed, type Signal, signal } from '@preact/signals-core';
+import {
+  computed,
+  type ReadonlySignal,
+  type Signal,
+  signal,
+} from '@preact/signals-core';
 import type { TemplateResult } from 'lit';
 
 import { referenceToNode } from '../utils/reference.js';
@@ -44,11 +49,11 @@ export interface DocDisplayMetaExtension {
   icon: (
     docId: string,
     referenceInfo?: DocDisplayMetaParams
-  ) => Signal<TemplateResult>;
+  ) => ReadonlySignal<TemplateResult>;
   title: (
     docId: string,
     referenceInfo?: DocDisplayMetaParams
-  ) => Signal<string>;
+  ) => ReadonlySignal<string>;
 }
 
 export const DocDisplayMetaProvider = createIdentifier<DocDisplayMetaExtension>(
@@ -93,11 +98,11 @@ export class DocDisplayMetaService
   icon(
     pageId: string,
     { params, title, referenced }: DocDisplayMetaParams = {}
-  ): Signal<TemplateResult> {
+  ): ReadonlySignal<TemplateResult> {
     const doc = this.std.workspace.getDoc(pageId);
 
     if (!doc) {
-      return signal(DocDisplayMetaService.icons.deleted);
+      return computed(() => DocDisplayMetaService.icons.deleted);
     }
 
     const store = doc.getStore();
@@ -160,11 +165,14 @@ export class DocDisplayMetaService
     });
   }
 
-  title(pageId: string, { title }: DocDisplayMetaParams = {}): Signal<string> {
+  title(
+    pageId: string,
+    { title }: DocDisplayMetaParams = {}
+  ): ReadonlySignal<string> {
     const doc = this.std.workspace.getDoc(pageId);
 
     if (!doc) {
-      return signal(title || 'Deleted doc');
+      return computed(() => title || 'Deleted doc');
     }
 
     const store = doc.getStore();

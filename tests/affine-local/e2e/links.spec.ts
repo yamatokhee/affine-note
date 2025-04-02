@@ -12,7 +12,6 @@ import {
   createLinkedPage,
   createTodayPage,
   getBlockSuiteEditorTitle,
-  waitForEditorLoad,
   waitForEmptyEditor,
 } from '@affine-test/kit/utils/page-logic';
 import {
@@ -980,7 +979,6 @@ test.describe('Customize linked doc title and description', () => {
   });
 
   test('should show emoji doc icon in normal document', async ({ page }) => {
-    await waitForEditorLoad(page);
     await enableEmojiDocIcon(page);
 
     await clickNewPageButton(page);
@@ -1010,7 +1008,6 @@ test.describe('Customize linked doc title and description', () => {
   });
 
   test('should show emoji doc icon in journal document', async ({ page }) => {
-    await waitForEditorLoad(page);
     await enableEmojiDocIcon(page);
 
     await clickNewPageButton(page);
@@ -1042,7 +1039,6 @@ test.describe('Customize linked doc title and description', () => {
 });
 
 test('should save open doc mode of internal links', async ({ page }) => {
-  await waitForEditorLoad(page);
   await enableEmojiDocIcon(page);
 
   await clickNewPageButton(page);
@@ -1222,4 +1218,68 @@ test('should reach target block when clicking affine-link multiple times', async
   await expect(highlight).toBeHidden();
 
   expect(refreshKey0).not.toEqual(refreshKey1);
+});
+
+test('should display date as the original title of journal', async ({
+  page,
+}) => {
+  await page.keyboard.press('Enter');
+  await createTodayPage(page);
+
+  const { toolbar, switchViewBtn, cardViewBtn } = toolbarButtons(page);
+
+  const linkedDocTitle = toolbar.locator('affine-linked-doc-title .label');
+
+  const inlineLink = page.locator('affine-reference');
+  await inlineLink.hover();
+
+  await expect(toolbar).toBeVisible();
+  await expect(linkedDocTitle).toBeHidden();
+
+  // Edits title & description
+  await toolbar.getByRole('button', { name: 'Edit' }).click();
+
+  await expect(toolbar).toBeHidden();
+
+  const popover = page.locator('reference-popup');
+
+  // Title alias
+  await page.keyboard.type('Test Page Alias Again');
+  await page.keyboard.press('Tab');
+  // Description alias
+  await page.keyboard.type('This is a new description');
+
+  await popover.getByLabel('Save').click();
+
+  await inlineLink.hover();
+  await expect(toolbar).toBeVisible();
+  await expect(linkedDocTitle).toBeVisible();
+  const inlineTitleText = (await linkedDocTitle.textContent())?.trim() ?? '';
+
+  const year = String(new Date().getFullYear());
+  expect(inlineTitleText).toContain(year);
+
+  await switchViewBtn.click();
+  await cardViewBtn.click();
+
+  const cardLink = page.locator('affine-embed-linked-doc-block');
+  await expect(cardLink).toBeVisible();
+
+  await expect(toolbar).toBeVisible();
+  await expect(linkedDocTitle).toBeVisible();
+  const cardViewTitleText = (await linkedDocTitle.textContent())?.trim() ?? '';
+
+  expect(cardViewTitleText).toBe(inlineTitleText);
+
+  // Edits title & description
+  await toolbar.getByRole('button', { name: 'Edit' }).click();
+
+  await expect(toolbar).toBeHidden();
+
+  const cardEditPopup = page.locator('embed-card-edit-modal');
+  // Resets
+  await cardEditPopup.getByRole('button', { name: 'Reset' }).click();
+
+  await expect(toolbar).toBeVisible();
+  await expect(linkedDocTitle).toBeHidden();
 });

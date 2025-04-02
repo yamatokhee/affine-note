@@ -8,10 +8,10 @@ import { DocDisplayMetaProvider } from '@blocksuite/affine/shared/services';
 import {
   createSignalFromObservable,
   referenceToNode,
-  type Signal,
 } from '@blocksuite/affine/shared/utils';
 import { LifeCycleWatcher, StdIdentifier } from '@blocksuite/affine/std';
 import { LinkedPageIcon, PageIcon } from '@blocksuite/icons/lit';
+import { computed, type ReadonlySignal } from '@preact/signals-core';
 import { type FrameworkProvider } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
 
@@ -52,7 +52,7 @@ export function buildDocDisplayMetaExtension(framework: FrameworkProvider) {
     icon(
       docId: string,
       { params, title, referenced }: DocDisplayMetaParams = {}
-    ): Signal<TemplateResult> {
+    ): ReadonlySignal<TemplateResult> {
       const icon$ = docDisplayMetaService
         .icon$(docId, {
           type: 'lit',
@@ -69,13 +69,13 @@ export function buildDocDisplayMetaExtension(framework: FrameworkProvider) {
 
       this.disposables.push(cleanup);
 
-      return iconSignal;
+      return computed(() => iconSignal.value);
     }
 
     title(
       docId: string,
       { title, referenced }: DocDisplayMetaParams = {}
-    ): Signal<string> {
+    ): ReadonlySignal<string> {
       const title$ = docDisplayMetaService.title$(docId, {
         title,
         reference: referenced,
@@ -86,7 +86,7 @@ export function buildDocDisplayMetaExtension(framework: FrameworkProvider) {
 
       this.disposables.push(cleanup);
 
-      return titleSignal;
+      return computed(() => titleSignal.value);
     }
 
     override unmounted() {

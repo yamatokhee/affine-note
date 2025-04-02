@@ -1,6 +1,7 @@
 import { notifyLinkedDocSwitchedToEmbed } from '@blocksuite/affine-components/notification';
 import {
   ActionPlacement,
+  DocDisplayMetaProvider,
   type ToolbarAction,
   type ToolbarActionGroup,
   type ToolbarModuleConfig,
@@ -34,9 +35,14 @@ export const builtinInlineReferenceToolbarConfig = {
         if (!(target instanceof AffineReference)) return null;
         if (!target.referenceInfo.title) return null;
 
+        const originalTitle =
+          ctx.std.get(DocDisplayMetaProvider).title(target.referenceInfo.pageId)
+            .value || 'Untitled';
+        const open = (event: MouseEvent) => target.open({ event });
+
         return html`<affine-linked-doc-title
-          .title=${target.docTitle}
-          .open=${(event: MouseEvent) => target.open({ event })}
+          .title=${originalTitle}
+          .open=${open}
         ></affine-linked-doc-title>`;
       },
     },
