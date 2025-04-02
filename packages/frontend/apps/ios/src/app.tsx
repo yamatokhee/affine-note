@@ -26,12 +26,19 @@ import {
 } from '@affine/core/modules/storage';
 import { PopupWindowProvider } from '@affine/core/modules/url';
 import { ClientSchemeProvider } from '@affine/core/modules/url/providers/client-schema';
-import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench';
-import { WorkspacesService } from '@affine/core/modules/workspace';
+import {
+  configureBrowserWorkbenchModule,
+  WorkbenchService,
+} from '@affine/core/modules/workbench';
+import {
+  getAFFiNEWorkspaceSchema,
+  WorkspacesService,
+} from '@affine/core/modules/workspace';
 import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
 import { I18n } from '@affine/i18n';
 import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { defaultBlockMarkdownAdapterMatchers } from '@blocksuite/affine/adapters';
+import { MarkdownTransformer } from '@blocksuite/affine/blocks/root';
 import { Container } from '@blocksuite/affine/global/di';
 import {
   InlineDeltaToMarkdownAdapterExtensions,
@@ -280,6 +287,45 @@ const frameworkProvider = framework.provider();
   } finally {
     disposeDoc();
     disposeWorkspace();
+  }
+};
+(window as any).createNewDocByMarkdownInCurrentWorkspace = async (
+  markdown: string,
+  title: string
+) => {
+  const globalContextService = frameworkProvider.get(GlobalContextService);
+  const currentWorkspaceId =
+    globalContextService.globalContext.workspaceId.get();
+  const workspacesService = frameworkProvider.get(WorkspacesService);
+  const workspaceRef = currentWorkspaceId
+    ? workspacesService.openByWorkspaceId(currentWorkspaceId)
+    : null;
+
+  try {
+    const workspace = workspaceRef?.workspace;
+    if (!workspace) {
+      return;
+    }
+
+    const workbench = workspace.scope.get(WorkbenchService).workbench;
+    await workspace.engine.doc.waitForDocReady(workspace.id); // wait for root doc ready
+    const docId = await MarkdownTransformer.importMarkdownToDoc({
+      collection: workspace.docCollection,
+      schema: getAFFiNEWorkspaceSchema(),
+      markdown,
+    });
+    const docsService = workspace.scope.get(DocsService);
+    if (docId) {
+      // only support page mode for now
+      await docsService.changeDocTitle(docId, title);
+      docsService.list.setPrimaryMode(docId, 'page');
+      workbench.openDoc(docId);
+      return docId;
+    } else {
+      throw new Error('Failed to import doc');
+    }
+  } finally {
+    workspaceRef?.dispose();
   }
 };
 
