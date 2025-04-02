@@ -29,13 +29,13 @@ declare global {
     };
   }
   interface Jobs {
-    'doc.embedPendingDocs': {
+    'copilot.embedding.docs': {
       contextId?: string;
       workspaceId: string;
       docId: string;
     };
 
-    'doc.embedPendingFiles': {
+    'copilot.embedding.files': {
       contextId: string;
       userId: string;
       workspaceId: string;

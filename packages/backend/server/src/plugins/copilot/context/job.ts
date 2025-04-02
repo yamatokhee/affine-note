@@ -58,11 +58,11 @@ export class CopilotContextDocJob {
     return this.client as EmbeddingClient;
   }
 
-  async addFileEmbeddingQueue(file: Jobs['doc.embedPendingFiles']) {
+  async addFileEmbeddingQueue(file: Jobs['copilot.embedding.files']) {
     if (!this.supportEmbedding) return;
 
     const { userId, workspaceId, contextId, blobId, fileId, fileName } = file;
-    await this.queue.add('doc.embedPendingFiles', {
+    await this.queue.add('copilot.embedding.files', {
       userId,
       workspaceId,
       contextId,
@@ -80,7 +80,7 @@ export class CopilotContextDocJob {
     if (!this.supportEmbedding) return;
 
     for (const { workspaceId, docId } of docs) {
-      await this.queue.add('doc.embedPendingDocs', {
+      await this.queue.add('copilot.embedding.docs', {
         contextId,
         workspaceId,
         docId,
@@ -100,7 +100,7 @@ export class CopilotContextDocJob {
     return new File([buffer], fileName);
   }
 
-  @OnJob('doc.embedPendingFiles')
+  @OnJob('copilot.embedding.files')
   async embedPendingFile({
     userId,
     workspaceId,
@@ -108,7 +108,7 @@ export class CopilotContextDocJob {
     blobId,
     fileId,
     fileName,
-  }: Jobs['doc.embedPendingFiles']) {
+  }: Jobs['copilot.embedding.files']) {
     if (!this.supportEmbedding || !this.embeddingClient) return;
 
     try {
@@ -149,12 +149,12 @@ export class CopilotContextDocJob {
     }
   }
 
-  @OnJob('doc.embedPendingDocs')
+  @OnJob('copilot.embedding.docs')
   async embedPendingDocs({
     contextId,
     workspaceId,
     docId,
-  }: Jobs['doc.embedPendingDocs']) {
+  }: Jobs['copilot.embedding.docs']) {
     if (!this.supportEmbedding) return;
 
     try {
