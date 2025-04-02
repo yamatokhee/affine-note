@@ -228,10 +228,7 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
         .inSurface=${this.inSurface}
         .options=${options}
       ></embed-iframe-link-input-popup>`,
-      portalStyles: {
-        zIndex: 'var(--affine-z-index-popover)',
-      },
-      container: this.host,
+      container: document.body,
       computePosition: {
         referenceElement: this._blockContainer,
         placement: 'bottom',

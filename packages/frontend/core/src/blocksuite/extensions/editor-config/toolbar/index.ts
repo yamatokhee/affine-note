@@ -971,11 +971,11 @@ const embedIframeToolbarConfig = {
   },
   actions: [
     {
-      id: 'a.copy-link-and-edit',
+      id: 'b.copy-link',
       actions: [
         {
           id: 'copy-link',
-          tooltip: 'Copy link',
+          tooltip: 'Copy original link',
           icon: CopyIcon(),
           run(ctx) {
             const model = ctx.getCurrentBlockByType(
@@ -989,49 +989,11 @@ const embedIframeToolbarConfig = {
             toast(ctx.host, 'Copied link to clipboard');
 
             ctx.track('CopiedLink', {
-              category: matchModels(model, [BookmarkBlockModel])
-                ? 'bookmark'
+              category: matchModels(model, [EmbedIframeBlockModel])
+                ? 'embed iframe block'
                 : 'link',
               type: 'card view',
               control: 'copy link',
-            });
-          },
-        },
-        {
-          id: 'edit',
-          tooltip: 'Edit',
-          icon: EditIcon(),
-          run(ctx) {
-            const component = ctx.getCurrentBlockByType(
-              EmbedIframeBlockComponent
-            );
-            if (!component) return;
-
-            ctx.hide();
-
-            const model = component.model;
-            const abortController = new AbortController();
-            abortController.signal.onabort = () => ctx.show();
-
-            toggleEmbedCardEditModal(
-              ctx.host,
-              model,
-              'card',
-              undefined,
-              undefined,
-              (_std, _component, props) => {
-                ctx.store.updateBlock(model, props);
-                component.requestUpdate();
-              },
-              abortController
-            );
-
-            ctx.track('OpenedAliasPopup', {
-              category: matchModels(model, [BookmarkBlockModel])
-                ? 'bookmark'
-                : 'link',
-              type: 'card view',
-              control: 'edit',
             });
           },
         },

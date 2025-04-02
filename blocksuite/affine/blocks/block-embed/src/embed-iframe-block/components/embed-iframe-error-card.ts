@@ -197,10 +197,7 @@ export class EmbedIframeErrorCard extends WithDisposable(LitElement) {
         .std=${this.std}
         .inSurface=${this.inSurface}
       ></embed-iframe-link-edit-popup>`,
-      portalStyles: {
-        zIndex: 'var(--affine-z-index-popover)',
-      },
-      container: this.host,
+      container: document.body,
       computePosition: {
         referenceElement: this._editButton,
         placement: 'bottom-start',
