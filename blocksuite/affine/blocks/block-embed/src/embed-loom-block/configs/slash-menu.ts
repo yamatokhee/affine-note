@@ -2,12 +2,18 @@ import { toggleEmbedCardCreateModal } from '@blocksuite/affine-components/embed-
 import type { SlashMenuConfig } from '@blocksuite/affine-widget-slash-menu';
 import { LoomLogoDuotoneIcon } from '@blocksuite/icons/lit';
 
+import { LoomTooltip } from './tooltips';
+
 export const embedLoomSlashMenuConfig: SlashMenuConfig = {
   items: [
     {
       name: 'Loom',
       icon: LoomLogoDuotoneIcon(),
       description: 'Embed a Loom video.',
+      tooltip: {
+        figure: LoomTooltip,
+        caption: 'loom',
+      },
       group: '4_Content & Media@9',
       when: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-loom'),
