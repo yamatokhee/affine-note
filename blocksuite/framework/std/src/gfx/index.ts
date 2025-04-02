@@ -52,7 +52,7 @@ export {
   GfxCompatibleBlockModel as GfxCompatible,
   type GfxCompatibleProps,
 } from './model/gfx-block-model.js';
-export { type GfxModel } from './model/model.js';
+export { type GfxModel, isPrimitiveModel } from './model/model.js';
 export {
   convert,
   convertProps,
