@@ -628,9 +628,13 @@ export class WorkspaceResolver {
       }
     }
 
+    await this.acceptInviteByInviteId(inviteId);
+    return true;
+  }
+
+  private async acceptInviteByInviteId(inviteId: string) {
     await this.models.workspaceUser.accept(inviteId);
     await this.workspaceService.sendInvitationAcceptedNotification(inviteId);
-    return true;
   }
 
   private async acceptInviteByLink(user: CurrentUser, workspaceId: string) {
@@ -642,6 +646,11 @@ export class WorkspaceResolver {
         WorkspaceRole.Collaborator,
         WorkspaceMemberStatus.UnderReview
       );
+      // if status is pending, should accept the invite directly
+      if (role.status === WorkspaceMemberStatus.Pending) {
+        await this.acceptInviteByInviteId(role.id);
+        return;
+      }
       await this.workspaceService.sendReviewRequestNotification(role.id);
       return;
     }
