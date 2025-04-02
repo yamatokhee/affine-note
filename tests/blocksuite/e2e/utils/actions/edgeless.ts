@@ -1082,6 +1082,19 @@ type Action =
   | 'autoArrange'
   | 'autoResize';
 
+export async function triggerShapeSwitch(
+  page: Page,
+  type: 'Square' | 'Ellipse' | 'Diamond' | 'Triangle' | 'Rounded rectangle'
+) {
+  const button = locatorComponentToolbar(page)
+    .getByLabel('Switch shape type')
+    .first();
+  await button.click();
+
+  const shapeButton = locatorComponentToolbar(page).getByLabel(type);
+  await shapeButton.click();
+}
+
 export async function triggerComponentToolbarAction(
   page: Page,
   action: Action
@@ -1593,6 +1606,31 @@ export async function getConnectorPath(page: Page, index = 0): Promise<IVec[]> {
       if (!container) throw new Error('container not found');
       const connectors = container.service.crud.getElementsByType('connector');
       return connectors[index].absolutePath;
+    },
+    [index]
+  );
+}
+
+export async function getConnectorPathWithInOut(
+  page: Page,
+  index = 0
+): Promise<
+  {
+    point: IVec;
+    in: IVec;
+    out: IVec;
+  }[]
+> {
+  return page.evaluate(
+    ([index]) => {
+      const container = document.querySelector('affine-edgeless-root');
+      if (!container) throw new Error('container not found');
+      const connectors = container.service.crud.getElementsByType('connector');
+      return connectors[index].absolutePath.map(path => ({
+        point: [path[0], path[1]],
+        in: path.in,
+        out: path.out,
+      }));
     },
     [index]
   );

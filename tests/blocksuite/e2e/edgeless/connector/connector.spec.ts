@@ -9,12 +9,17 @@ import {
   createShapeElement,
   dragBetweenViewCoords,
   edgelessCommonSetup as commonSetup,
+  getConnectorPath,
+  getConnectorPathWithInOut,
   pickColorAtPoints,
   rotateElementByHandle,
+  selectElementInEdgeless,
+  setEdgelessTool,
   Shape,
   toModelCoord,
   toViewCoord,
   triggerComponentToolbarAction,
+  triggerShapeSwitch,
 } from '../../utils/actions/edgeless.js';
 import { pressBackspace, waitNextFrame } from '../../utils/actions/index.js';
 import {
@@ -319,5 +324,57 @@ test.describe('quick connect', () => {
     endpoint = await toModelCoord(page, point);
     await page.mouse.move(...point);
     await assertConnectorPath(page, [[50, 100], endpoint]);
+  });
+
+  test('the triangle connectors should remain the same when switch to other shape', async ({
+    page,
+  }) => {
+    await commonSetup(page);
+
+    const shape1Id = await createShapeElement(
+      page,
+      [0, 0],
+      [100, 100],
+      Shape.Triangle
+    );
+    const shape2Id = await createShapeElement(
+      page,
+      [200, 0],
+      [300, 100],
+      Shape.Triangle
+    );
+
+    await setEdgelessTool(page, 'connector');
+    await dragBetweenViewCoords(page, [60, 50], [240, 50]);
+
+    {
+      const path = await getConnectorPath(page);
+      // make sure the connector is created
+      expect(path.length).toBeGreaterThan(0);
+    }
+
+    // switch to other shape
+
+    await selectElementInEdgeless(page, [shape1Id]);
+    await triggerShapeSwitch(page, 'Square');
+
+    await selectElementInEdgeless(page, [shape2Id]);
+    await triggerShapeSwitch(page, 'Square');
+
+    await dragBetweenViewCoords(page, [50, 50], [0, 0]);
+
+    await dragBetweenViewCoords(page, [250, 50], [300, 50]);
+
+    {
+      const path = await getConnectorPathWithInOut(page);
+      expect(path.length).toBeGreaterThan(0);
+      path.forEach(point => {
+        [0, 1].forEach(i => {
+          expect(point.in[i]).not.toBeNaN();
+          expect(point.out[i]).not.toBeNaN();
+          expect(point.point[i]).not.toBeNaN();
+        });
+      });
+    }
   });
 });

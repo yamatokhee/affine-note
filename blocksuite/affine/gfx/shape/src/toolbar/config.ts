@@ -141,7 +141,7 @@ export const shapeToolbarConfig = {
 
         return renderMenu({
           icon: ShapeIcon(),
-          label: 'Switch type',
+          label: 'Switch shape type',
           items: ShapeComponentConfig.map(item => ({
             key: item.tooltip,
             value: item.name,

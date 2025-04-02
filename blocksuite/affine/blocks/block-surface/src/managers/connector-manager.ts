@@ -1319,27 +1319,31 @@ export class ConnectorPathGenerator extends PathGenerator {
 
       if (source.id) {
         const startTangentVertical = Vec.rot(startPoint.tangent, -Math.PI / 2);
-        startPoint.out = Vec.mul(
-          startTangentVertical,
-          Math.max(
-            100,
-            Math.abs(
-              Vec.pry(Vec.sub(endPoint, startPoint), startTangentVertical)
-            ) / 3
-          )
-        );
+        startPoint.out = isVecZero(startTangentVertical)
+          ? Vec.mul(Vec.per(Vec.normalize(Vec.sub(startPoint, endPoint))), 20)
+          : Vec.mul(
+              startTangentVertical,
+              Math.max(
+                100,
+                Math.abs(
+                  Vec.pry(Vec.sub(endPoint, startPoint), startTangentVertical)
+                ) / 3
+              )
+            );
       }
       if (target.id) {
         const endTangentVertical = Vec.rot(endPoint.tangent, -Math.PI / 2);
-        endPoint.in = Vec.mul(
-          endTangentVertical,
-          Math.max(
-            100,
-            Math.abs(
-              Vec.pry(Vec.sub(startPoint, endPoint), endTangentVertical)
-            ) / 3
-          )
-        );
+        endPoint.in = isVecZero(endTangentVertical)
+          ? Vec.mul(Vec.per(Vec.normalize(Vec.sub(endPoint, startPoint))), 20)
+          : Vec.mul(
+              endTangentVertical,
+              Math.max(
+                100,
+                Math.abs(
+                  Vec.pry(Vec.sub(startPoint, endPoint), endTangentVertical)
+                ) / 3
+              )
+            );
       }
       return [startPoint, endPoint];
     } else {
