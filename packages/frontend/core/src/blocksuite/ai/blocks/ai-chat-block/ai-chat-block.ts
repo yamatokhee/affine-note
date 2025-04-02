@@ -3,8 +3,9 @@ import { BlockComponent } from '@blocksuite/affine/std';
 import { computed } from '@preact/signals-core';
 import { html } from 'lit';
 
+import { ChatMessagesSchema } from '../../components/ai-chat-messages';
 import { ChatWithAIIcon } from './components/icon';
-import { type AIChatBlockModel, ChatMessagesSchema } from './model';
+import { type AIChatBlockModel } from './model';
 import { AIChatBlockStyles } from './styles';
 
 @Peekable({

@@ -14,13 +14,13 @@ import { repeat } from 'lit/directives/repeat.js';
 import { debounce } from 'lodash-es';
 
 import { AffineIcon } from '../_common/icons';
-import { type AIError, AIProvider, UnauthorizedError } from '../provider';
 import {
-  type ChatContextValue,
   type ChatMessage,
   isChatAction,
   isChatMessage,
-} from './chat-context';
+} from '../components/ai-chat-messages';
+import { type AIError, AIProvider, UnauthorizedError } from '../provider';
+import { type ChatContextValue } from './chat-context';
 import { HISTORY_IMAGE_ACTIONS } from './const';
 import { AIPreloadConfig } from './preload-config';
 
@@ -209,9 +209,9 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   };
 
   protected override render() {
-    const { items, status, error } = this.chatContextValue;
+    const { messages, status, error } = this.chatContextValue;
     const { isLoading } = this;
-    const filteredItems = items.filter(item => {
+    const filteredItems = messages.filter(item => {
       return (
         isChatMessage(item) ||
         item.messages?.length === 3 ||
@@ -351,13 +351,13 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
       if (!sessionId) return;
 
       const abortController = new AbortController();
-      const items = [...this.chatContextValue.items];
-      const last = items[items.length - 1];
+      const messages = [...this.chatContextValue.messages];
+      const last = messages[messages.length - 1];
       if ('content' in last) {
         last.content = '';
         last.createdAt = new Date().toISOString();
       }
-      this.updateContext({ items, status: 'loading', error: null });
+      this.updateContext({ messages, status: 'loading', error: null });
 
       const stream = AIProvider.actions.chat?.({
         sessionId,
@@ -375,10 +375,10 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
       if (stream) {
         this.updateContext({ abortController });
         for await (const text of stream) {
-          const items = [...this.chatContextValue.items];
-          const last = items[items.length - 1] as ChatMessage;
+          const messages = [...this.chatContextValue.messages];
+          const last = messages[messages.length - 1] as ChatMessage;
           last.content += text;
-          this.updateContext({ items, status: 'transmitting' });
+          this.updateContext({ messages, status: 'transmitting' });
         }
 
         this.updateContext({ status: 'success' });

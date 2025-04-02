@@ -35,21 +35,23 @@ import {
   isDocChip,
   isTagChip,
 } from '../components/ai-chat-chips';
+import type { AINetworkSearchConfig } from '../components/ai-chat-input';
+import { type HistoryMessage } from '../components/ai-chat-messages';
 import { AIProvider } from '../provider';
 import { extractSelectedContent } from '../utils/extract';
 import {
   getSelectedImagesAsBlobs,
   getSelectedTextContent,
 } from '../utils/selection-utils';
-import type { AINetworkSearchConfig, AppSidebarConfig } from './chat-config';
-import type { ChatContextValue, ChatItem } from './chat-context';
+import type { AppSidebarConfig } from './chat-config';
+import type { ChatContextValue } from './chat-context';
 import type { ChatPanelMessages } from './chat-panel-messages';
 
 const DEFAULT_CHAT_CONTEXT_VALUE: ChatContextValue = {
   quote: '',
   images: [],
   abortController: null,
-  items: [],
+  messages: [],
   status: 'idle',
   error: null,
   markdown: '',
@@ -160,19 +162,19 @@ export class ChatPanel extends SignalWatcher(
       return;
     }
 
-    const items: ChatItem[] = actions ? [...actions] : [];
+    const messages: HistoryMessage[] = actions ? [...actions] : [];
 
     const history = histories?.find(
       history => history.sessionId === this._chatSessionId
     );
     if (history) {
-      items.push(...history.messages);
+      messages.push(...history.messages);
       AIProvider.LAST_ROOT_SESSION_ID = history.sessionId;
     }
 
     this.chatContextValue = {
       ...this.chatContextValue,
-      items: items.sort(
+      messages: messages.sort(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       ),
@@ -339,7 +341,7 @@ export class ChatPanel extends SignalWatcher(
           cancelText: 'Cancel',
         })
       ) {
-        const actionIds = this.chatContextValue.items
+        const actionIds = this.chatContextValue.messages
           .filter(item => 'sessionId' in item)
           .map(item => item.sessionId);
         await AIProvider.histories?.cleanup(

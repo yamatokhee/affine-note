@@ -41,7 +41,7 @@ import {
 import type { TemplateResult } from 'lit';
 
 import { insertFromMarkdown } from '../../utils';
-import type { ChatMessage } from '../blocks';
+import type { ChatMessage } from '../components/ai-chat-messages';
 import { AIProvider, type AIUserInfo } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { insertBelow } from '../utils/editor-actions';

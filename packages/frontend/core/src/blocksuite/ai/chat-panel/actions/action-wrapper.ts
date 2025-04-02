@@ -23,8 +23,8 @@ import {
 import { css, html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
+import { type ChatAction } from '../../components/ai-chat-messages';
 import { createTextRenderer } from '../../components/text-renderer';
-import type { ChatAction } from '../chat-context';
 import { HISTORY_IMAGE_ACTIONS } from '../const';
 
 const icons: Record<string, TemplateResult<1>> = {

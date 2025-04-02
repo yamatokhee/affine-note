@@ -6,7 +6,10 @@ import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { ChatMessage, MessageRole } from '../model';
+import type {
+  ChatMessage,
+  MessageRole,
+} from '../../../components/ai-chat-messages';
 import { UserInfoTemplate } from './user-info';
 
 export class AIChatMessage extends LitElement {

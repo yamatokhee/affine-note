@@ -6,7 +6,7 @@ import { ShadowlessElement } from '@blocksuite/affine/std';
 import { css, html, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { type ChatMessage } from '../chat-context';
+import { type ChatMessage } from '../../components/ai-chat-messages';
 
 export class ChatMessageUser extends WithDisposable(ShadowlessElement) {
   static override styles = css`

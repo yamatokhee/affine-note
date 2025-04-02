@@ -7,8 +7,9 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
+import { type ChatAction } from '../../components/ai-chat-messages';
 import { createTextRenderer } from '../../components/text-renderer';
-import type { ChatAction } from '../chat-context';
+
 export class ActionText extends WithDisposable(LitElement) {
   static override styles = css`
     .original-text {

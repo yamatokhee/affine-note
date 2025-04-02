@@ -12,9 +12,12 @@ import {
   EdgelessEditorActions,
   PageEditorActions,
 } from '../../_common/chat-actions-handle';
+import {
+  type ChatMessage,
+  isChatMessage,
+} from '../../components/ai-chat-messages';
 import { AIChatErrorRenderer } from '../../messages/error';
 import { type AIError } from '../../provider';
-import { type ChatMessage, isChatMessage } from '../chat-context';
 
 export class ChatMessageAssistant extends WithDisposable(ShadowlessElement) {
   static override styles = css`

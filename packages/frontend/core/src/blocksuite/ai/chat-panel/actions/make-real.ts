@@ -7,8 +7,8 @@ import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
+import { type ChatAction } from '../../components/ai-chat-messages';
 import { createIframeRenderer } from '../../messages/wrapper';
-import type { ChatAction } from '../chat-context';
 
 export class ActionMakeReal extends WithDisposable(ShadowlessElement) {
   @property({ attribute: false })

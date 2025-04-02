@@ -2,7 +2,10 @@ import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, type TemplateResult, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { MessageRole, MessageUserInfo } from '../model';
+import type {
+  MessageRole,
+  MessageUserInfo,
+} from '../../../components/ai-chat-messages';
 import { AffineAIIcon } from './icon';
 
 export class UserInfo extends LitElement {

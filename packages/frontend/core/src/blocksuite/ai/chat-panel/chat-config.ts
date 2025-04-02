@@ -10,9 +10,3 @@ export interface AppSidebarConfig {
     cleanup: () => void;
   };
 }
-
-export interface AINetworkSearchConfig {
-  visible: Signal<boolean | undefined>;
-  enabled: Signal<boolean | undefined>;
-  setEnabled: (state: boolean) => void;
-}

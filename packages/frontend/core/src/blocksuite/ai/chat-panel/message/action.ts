@@ -6,7 +6,7 @@ import { ShadowlessElement } from '@blocksuite/affine/std';
 import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { type ChatAction } from '../chat-context';
+import { type ChatAction } from '../../components/ai-chat-messages';
 import { HISTORY_IMAGE_ACTIONS } from '../const';
 
 export class ChatMessageAction extends WithDisposable(ShadowlessElement) {
