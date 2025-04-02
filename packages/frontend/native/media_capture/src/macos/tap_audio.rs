@@ -225,6 +225,8 @@ impl AggregateDevice {
     // Start the device to activate it
     let status = unsafe { AudioDeviceStart(device_id, dummy_proc_id) };
     if status != 0 {
+      // Clean up the IO proc if AudioDeviceStart fails
+      let _ = unsafe { AudioDeviceDestroyIOProcID(device_id, dummy_proc_id) };
       return Err(CoreAudioError::AudioDeviceStartFailed(status).into());
     }
 
