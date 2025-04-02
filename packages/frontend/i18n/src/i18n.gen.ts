@@ -4380,6 +4380,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.peek-view-controls.open-doc-in-center-peek"](): string;
     /**
+      * `Copy link`
+      */
+    ["com.affine.peek-view-controls.copy-link"](): string;
+    /**
       * `Click or drag`
       */
     ["com.affine.split-view-drag-handle.tooltip"](): string;

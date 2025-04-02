@@ -1,4 +1,5 @@
-import { IconButton } from '@affine/component';
+import { IconButton, notify } from '@affine/component';
+import { copyTextToClipboard } from '@affine/core/utils/clipboard';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import type { DocMode } from '@blocksuite/affine/model';
@@ -6,6 +7,7 @@ import {
   CloseIcon,
   ExpandFullIcon,
   InformationIcon,
+  LinkIcon,
   OpenInNewIcon,
   SplitViewIcon,
 } from '@blocksuite/icons/rc';
@@ -21,7 +23,10 @@ import {
   useMemo,
 } from 'react';
 
+import { ServerService } from '../../cloud';
 import { WorkspaceDialogService } from '../../dialogs';
+import { DocsService } from '../../doc/services/docs';
+import { toURLSearchParams } from '../../navigation';
 import { WorkbenchService } from '../../workbench';
 import type {
   AttachmentPeekViewInfo,
@@ -105,6 +110,8 @@ export const DocPeekViewControls = ({
   const workbench = useService(WorkbenchService).workbench;
   const t = useI18n();
   const workspaceDialogService = useService(WorkspaceDialogService);
+  const serverService = useService(ServerService);
+  const docsService = useService(DocsService);
   const controls = useMemo(() => {
     return [
       {
@@ -141,6 +148,27 @@ export const DocPeekViewControls = ({
         },
       },
       {
+        icon: <LinkIcon />,
+        nameKey: 'copy-link',
+        name: t['com.affine.peek-view-controls.copy-link'](),
+        onClick: async () => {
+          const preferredMode = docsService.list.getPrimaryMode(docRef.docId);
+          const search = toURLSearchParams({
+            mode: docRef.mode || preferredMode,
+            blockIds: docRef.blockIds,
+            elementIds: docRef.elementIds,
+            xywh: docRef.xywh,
+          });
+          const url = new URL(
+            workbench.basename$.value + '/' + docRef.docId,
+            serverService.server.baseUrl
+          );
+          if (search?.size) url.search = search.toString();
+          await copyTextToClipboard(url.toString());
+          notify.success({ title: t['Copied link to clipboard']() });
+        },
+      },
+      {
         icon: <InformationIcon />,
         nameKey: 'info',
         name: t['com.affine.peek-view-controls.open-info'](),
@@ -149,7 +177,15 @@ export const DocPeekViewControls = ({
         },
       },
     ].filter((opt): opt is ControlButtonProps => Boolean(opt));
-  }, [t, peekView, workbench, docRef, workspaceDialogService]);
+  }, [
+    t,
+    peekView,
+    workbench,
+    docRef,
+    docsService.list,
+    serverService.server.baseUrl,
+    workspaceDialogService,
+  ]);
   return (
     <div {...rest} className={clsx(styles.root, className)}>
       {controls.map(option => (

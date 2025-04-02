@@ -1086,6 +1086,7 @@
   "com.affine.peek-view-controls.open-attachment-in-new-tab": "Open in new tab",
   "com.affine.peek-view-controls.open-attachment-in-split-view": "Open in split view",
   "com.affine.peek-view-controls.open-doc-in-center-peek": "Open in center peek",
+  "com.affine.peek-view-controls.copy-link": "Copy link",
   "com.affine.split-view-drag-handle.tooltip": "Click or drag",
   "com.affine.split-view-folder-warning.description": "Split view does not support folders.",
   "do-not-show-this-again": "Do not show this again",
