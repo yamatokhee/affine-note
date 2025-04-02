@@ -1,6 +1,7 @@
 import {
   claimAudioTranscriptionMutation,
   getAudioTranscriptionQuery,
+  retryAudioTranscriptionMutation,
   submitAudioTranscriptionMutation,
 } from '@affine/graphql';
 import { Entity } from '@toeverything/infra';
@@ -53,6 +54,24 @@ export class AudioTranscriptionJobStore extends Entity<{
       throw new Error('Failed to submit audio transcription');
     }
     return response.submitAudioTranscription;
+  };
+
+  retryAudioTranscription = async (jobId: string) => {
+    const graphqlService = this.graphqlService;
+    if (!graphqlService) {
+      throw new Error('No graphql service available');
+    }
+    const response = await graphqlService.gql({
+      query: retryAudioTranscriptionMutation,
+      variables: {
+        jobId,
+        workspaceId: this.currentWorkspaceId,
+      },
+    });
+    if (!response.retryAudioTranscription) {
+      throw new Error('Failed to retry audio transcription');
+    }
+    return response.retryAudioTranscription;
   };
 
   getAudioTranscription = async (blobId: string, jobId?: string) => {

@@ -146,6 +146,11 @@ export class AudioTranscriptionJob extends Entity<{
       if (!job) {
         logger.debug('No existing job found, submitting new transcription job');
         job = await this.store.submitAudioTranscription();
+      } else if (job.status === AiJobStatus.failed) {
+        logger.debug('Found existing failed job, retrying', {
+          jobId: job.id,
+        });
+        job = await this.store.retryAudioTranscription(job.id);
       } else {
         logger.debug('Found existing job', {
           jobId: job.id,
