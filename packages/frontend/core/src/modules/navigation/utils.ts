@@ -189,3 +189,12 @@ export function toURLSearchParams(
       .map(([k, v]) => [k, Array.isArray(v) ? v.join(',') : v])
   );
 }
+
+// a type safe version of toURLSearchParams for doc search params
+export function toDocSearchParams(
+  params?: ReferenceParams & {
+    refreshKey?: string;
+  }
+) {
+  return toURLSearchParams(params);
+}

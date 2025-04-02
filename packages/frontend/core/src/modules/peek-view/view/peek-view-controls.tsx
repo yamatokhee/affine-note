@@ -26,7 +26,7 @@ import {
 import { ServerService } from '../../cloud';
 import { WorkspaceDialogService } from '../../dialogs';
 import { DocsService } from '../../doc/services/docs';
-import { toURLSearchParams } from '../../navigation';
+import { toDocSearchParams } from '../../navigation';
 import { WorkbenchService } from '../../workbench';
 import type {
   AttachmentPeekViewInfo,
@@ -153,7 +153,7 @@ export const DocPeekViewControls = ({
         name: t['com.affine.peek-view-controls.copy-link'](),
         onClick: async () => {
           const preferredMode = docsService.list.getPrimaryMode(docRef.docId);
-          const search = toURLSearchParams({
+          const search = toDocSearchParams({
             mode: docRef.mode || preferredMode,
             blockIds: docRef.blockIds,
             elementIds: docRef.elementIds,

@@ -18,7 +18,7 @@ import { EditorService } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { JournalService } from '@affine/core/modules/journal';
-import { toURLSearchParams } from '@affine/core/modules/navigation';
+import { toDocSearchParams } from '@affine/core/modules/navigation';
 import { useInsidePeekView } from '@affine/core/modules/peek-view';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
 import { MemberSearchService } from '@affine/core/modules/permissions';
@@ -121,7 +121,7 @@ const usePatchSpecs = (mode: DocMode) => {
 
       // title alias
       const title = data.title;
-      const params = toURLSearchParams(data.params);
+      const params = toDocSearchParams(data.params);
 
       if (workspaceService.workspace.openOptions.isSharedMode) {
         return (

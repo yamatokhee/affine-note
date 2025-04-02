@@ -7,7 +7,7 @@ import {
   DocLinksService,
   type Link,
 } from '@affine/core/modules/doc-link';
-import { toURLSearchParams } from '@affine/core/modules/navigation';
+import { toDocSearchParams } from '@affine/core/modules/navigation/utils';
 import { GlobalSessionStateService } from '@affine/core/modules/storage';
 import { WorkbenchLink } from '@affine/core/modules/workbench';
 import {
@@ -144,7 +144,7 @@ const usePreviewExtensions = () => {
       const pageId = data.pageId;
       if (!pageId) return <span />;
 
-      const params = toURLSearchParams(data.params);
+      const params = toDocSearchParams(data.params);
 
       if (workspaceService.workspace.openOptions.isSharedMode) {
         return (

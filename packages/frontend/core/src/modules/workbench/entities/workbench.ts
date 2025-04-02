@@ -1,4 +1,4 @@
-import { toURLSearchParams } from '@affine/core/modules/navigation/utils';
+import { toDocSearchParams } from '@affine/core/modules/navigation/utils';
 import { Unreachable } from '@affine/env/constant';
 import type { ReferenceParams } from '@blocksuite/affine/model';
 import { Entity, LiveData } from '@toeverything/infra';
@@ -156,10 +156,11 @@ export class Workbench extends Entity {
   openDoc(
     id:
       | string
-      | ({ docId: string } & (
-          | ReferenceParams
-          | Record<string, string | undefined>
-        )),
+      | ({
+          docId: string;
+          refreshKey?: string;
+          fromTab?: string;
+        } & ReferenceParams),
     options?: WorkbenchOpenOptions
   ) {
     const isString = typeof id === 'string';
@@ -167,7 +168,7 @@ export class Workbench extends Entity {
 
     let query = '';
     if (!isString) {
-      const search = toURLSearchParams(omit(id, ['docId']));
+      const search = toDocSearchParams(omit(id, ['docId']));
       if (search?.size) {
         query = `?${search.toString()}`;
       }

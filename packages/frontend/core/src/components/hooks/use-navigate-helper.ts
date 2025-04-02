@@ -1,5 +1,5 @@
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
-import { toURLSearchParams } from '@affine/core/modules/navigation';
+import { toDocSearchParams } from '@affine/core/modules/navigation';
 import { getOpenUrlInDesktopAppLink } from '@affine/core/modules/open-in-app';
 import type { DocMode } from '@blocksuite/affine/model';
 import { nanoid } from 'nanoid';
@@ -49,7 +49,7 @@ export function useNavigateHelper() {
       elementIds?: string[],
       logic: RouteLogic = RouteLogic.PUSH
     ) => {
-      const search = toURLSearchParams({
+      const search = toDocSearchParams({
         mode,
         blockIds,
         elementIds,

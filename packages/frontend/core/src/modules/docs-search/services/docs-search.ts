@@ -1,4 +1,4 @@
-import { toURLSearchParams } from '@affine/core/modules/navigation';
+import { toDocSearchParams } from '@affine/core/modules/navigation';
 import type { IndexerSyncState } from '@affine/nbstore';
 import type { ReferenceParams } from '@blocksuite/affine/model';
 import { fromPromise, LiveData, Service } from '@toeverything/infra';
@@ -193,7 +193,7 @@ export class DocsSearchService extends Service {
                   docId: doc.id,
                   params: isEmpty(params)
                     ? undefined
-                    : toURLSearchParams(params),
+                    : toDocSearchParams(params),
                 };
               })
               .filter(ref => !!ref);
