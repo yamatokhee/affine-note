@@ -39,7 +39,7 @@ export const showButton = style({
   height: '28px',
   borderRadius: '8px',
   border: '1px solid ' + cssVar('--affine-border-color'),
-  backgroundColor: cssVar('--affine-white'),
+  backgroundColor: cssVarV2('button/secondary'),
   textAlign: 'center',
   fontSize: '12px',
   lineHeight: '28px',
