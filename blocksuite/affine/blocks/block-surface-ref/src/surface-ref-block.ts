@@ -106,6 +106,15 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       pointer-events: none;
       user-select: none;
     }
+
+    .ref-viewport-event-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+    }
   `;
 
   private _previewDoc: Store | null = null;
@@ -390,6 +399,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
               }).render()
             : nothing;
         })}
+        <div class="ref-viewport-event-mask"></div>
       </div>
     </div>`;
   }
