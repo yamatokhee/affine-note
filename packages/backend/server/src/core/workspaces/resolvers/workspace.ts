@@ -664,6 +664,11 @@ export class WorkspaceResolver {
         WorkspaceRole.Collaborator,
         WorkspaceMemberStatus.NeedMoreSeatAndReview
       );
+      // if status is pending, should accept the invite directly
+      if (role.status === WorkspaceMemberStatus.Pending) {
+        await this.acceptInviteByInviteId(role.id);
+        return;
+      }
       await this.workspaceService.sendReviewRequestNotification(role.id);
       const memberCount = await this.models.workspaceUser.count(workspaceId);
       this.event.emit('workspace.members.updated', {

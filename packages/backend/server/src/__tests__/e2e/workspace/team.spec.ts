@@ -1,7 +1,10 @@
 import {
   acceptInviteByInviteIdMutation,
   createInviteLinkMutation,
+  getInviteInfoQuery,
+  inviteByEmailMutation,
   WorkspaceInviteLinkExpireTime,
+  WorkspaceMemberStatus,
 } from '@affine/graphql';
 
 import { Mockers } from '../../mocks';
@@ -91,5 +94,53 @@ e2e(
     );
     t.is(notification.payload.reviewerId, owner.id);
     t.truthy(notification.payload.inviteId);
+  }
+);
+
+e2e(
+  'should accept invitation by link directly if status is pending on team workspace',
+  async t => {
+    const { owner, workspace } = await createTeamWorkspace(2);
+    const member = await app.create(Mockers.User);
+
+    await app.login(owner);
+    // create a pending invitation
+    const invite = await app.gql({
+      query: inviteByEmailMutation,
+      variables: {
+        email: member.email,
+        workspaceId: workspace.id,
+      },
+    });
+    t.truthy(invite, 'failed to create invitation');
+
+    const { createInviteLink } = await app.gql({
+      query: createInviteLinkMutation,
+      variables: {
+        workspaceId: workspace.id,
+        expireTime: WorkspaceInviteLinkExpireTime.OneDay,
+      },
+    });
+    t.truthy(createInviteLink, 'failed to create invite link');
+    const link = createInviteLink.link;
+    const inviteLinkId = link.split('/').pop()!;
+
+    // member accept invitation by link
+    await app.login(member);
+    await app.gql({
+      query: acceptInviteByInviteIdMutation,
+      variables: {
+        inviteId: inviteLinkId,
+        workspaceId: workspace.id,
+      },
+    });
+
+    const { getInviteInfo } = await app.gql({
+      query: getInviteInfoQuery,
+      variables: {
+        inviteId: invite.invite,
+      },
+    });
+    t.is(getInviteInfo.status, WorkspaceMemberStatus.Accepted);
   }
 );
