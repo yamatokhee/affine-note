@@ -3,7 +3,6 @@ import {
   ActionPlacement,
   EmbedIframeService,
   EmbedOptionProvider,
-  FeatureFlagService,
   type ToolbarAction,
   type ToolbarActionGroup,
   type ToolbarModuleConfig,
@@ -196,13 +195,8 @@ export const builtinInlineLinkToolbarConfig = {
             if (!url) return false;
 
             // check if the url can be embedded as iframe block
-            const featureFlag = ctx.std.get(FeatureFlagService);
             const embedIframeService = ctx.std.get(EmbedIframeService);
-            const isEmbedIframeEnabled = featureFlag.getFlag(
-              'enable_embed_iframe_block'
-            );
-            const canEmbedAsIframe =
-              isEmbedIframeEnabled && embedIframeService.canEmbed(url);
+            const canEmbedAsIframe = embedIframeService.canEmbed(url);
 
             const options = ctx.std
               .get(EmbedOptionProvider)
@@ -234,12 +228,8 @@ export const builtinInlineLinkToolbarConfig = {
             let blockId: string | undefined;
 
             // first try to embed as iframe block
-            const featureFlag = ctx.std.get(FeatureFlagService);
-            const isEmbedIframeEnabled = featureFlag.getFlag(
-              'enable_embed_iframe_block'
-            );
             const embedIframeService = ctx.std.get(EmbedIframeService);
-            if (isEmbedIframeEnabled && embedIframeService.canEmbed(url)) {
+            if (embedIframeService.canEmbed(url)) {
               blockId = embedIframeService.addEmbedIframeBlock(
                 props,
                 parent.id,

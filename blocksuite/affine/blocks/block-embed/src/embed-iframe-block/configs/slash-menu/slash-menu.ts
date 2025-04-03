@@ -1,5 +1,4 @@
 import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
-import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import type { SlashMenuConfig } from '@blocksuite/affine-widget-slash-menu';
 import { EmbedIcon } from '@blocksuite/icons/lit';
 
@@ -17,12 +16,8 @@ export const embedIframeSlashMenuConfig: SlashMenuConfig = {
         caption: 'Embed',
       },
       group: '4_Content & Media@5',
-      when: ({ model, std }) => {
-        const featureFlagService = std.get(FeatureFlagService);
-        return (
-          featureFlagService.getFlag('enable_embed_iframe_block') &&
-          model.doc.schema.flavourSchemaMap.has('affine:embed-iframe')
-        );
+      when: ({ model }) => {
+        return model.doc.schema.flavourSchemaMap.has('affine:embed-iframe');
       },
       action: ({ std }) => {
         std.command

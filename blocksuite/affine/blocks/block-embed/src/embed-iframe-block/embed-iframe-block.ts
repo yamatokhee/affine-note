@@ -8,7 +8,6 @@ import type { EmbedIframeBlockModel } from '@blocksuite/affine-model';
 import {
   type EmbedIframeData,
   EmbedIframeService,
-  FeatureFlagService,
   type IframeOptions,
   LinkPreviewerService,
   NotificationProvider,
@@ -23,7 +22,7 @@ import {
   type ReadonlySignal,
   signal,
 } from '@preact/signals-core';
-import { html, nothing } from 'lit';
+import { html } from 'lit';
 import { query } from 'lit/decorators.js';
 import { type ClassInfo, classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
@@ -104,12 +103,6 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
 
   get inSurface() {
     return matchModels(this.model.parent, [SurfaceBlockModel]);
-  }
-
-  get isEmbedIframeBlockEnabled() {
-    const featureFlagService = this.doc.get(FeatureFlagService);
-    const flag = featureFlagService.getFlag('enable_embed_iframe_block');
-    return flag ?? false;
   }
 
   get _horizontalCardHeight(): number {
@@ -420,10 +413,6 @@ export class EmbedIframeBlockComponent extends CaptionedBlockComponent<EmbedIfra
   }
 
   override renderBlock() {
-    if (!this.isEmbedIframeBlockEnabled) {
-      return nothing;
-    }
-
     const containerClasses = classMap({
       'affine-embed-iframe-block-container': true,
       ...this.selectedStyle$?.value,

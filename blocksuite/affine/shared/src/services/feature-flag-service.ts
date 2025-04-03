@@ -18,7 +18,6 @@ export interface BlockSuiteFlags {
   enable_mobile_linked_doc_menu: boolean;
   enable_block_meta: boolean;
   enable_callout: boolean;
-  enable_embed_iframe_block: boolean;
   enable_edgeless_scribbled_style: boolean;
 }
 
@@ -42,7 +41,6 @@ export class FeatureFlagService extends StoreExtension {
     enable_mobile_linked_doc_menu: false,
     enable_block_meta: false,
     enable_callout: false,
-    enable_embed_iframe_block: false,
     enable_edgeless_scribbled_style: false,
   });
 

@@ -1,7 +1,4 @@
-import {
-  EmbedIframeService,
-  FeatureFlagService,
-} from '@blocksuite/affine-shared/services';
+import { EmbedIframeService } from '@blocksuite/affine-shared/services';
 import type { BlockStdScope } from '@blocksuite/std';
 
 /**
@@ -73,8 +70,6 @@ export function safeGetIframeSrc(htmlString: string): string | undefined {
  * @returns Whether the url can be embedded as an iframe
  */
 export function canEmbedAsIframe(std: BlockStdScope, url: string) {
-  const featureFlag = std.get(FeatureFlagService);
-  const isEmbedIframeEnabled = featureFlag.getFlag('enable_embed_iframe_block');
   const embedIframeService = std.get(EmbedIframeService);
-  return isEmbedIframeEnabled && embedIframeService.canEmbed(url);
+  return embedIframeService.canEmbed(url);
 }

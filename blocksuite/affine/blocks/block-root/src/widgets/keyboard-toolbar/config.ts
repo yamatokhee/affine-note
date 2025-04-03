@@ -48,10 +48,7 @@ import {
   getTextSelectionCommand,
 } from '@blocksuite/affine-shared/commands';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
-import {
-  FeatureFlagService,
-  FileSizeLimitService,
-} from '@blocksuite/affine-shared/services';
+import { FileSizeLimitService } from '@blocksuite/affine-shared/services';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import {
   createDefaultDoc,
@@ -477,11 +474,7 @@ const embedToolGroup: KeyboardToolPanelGroup = {
       name: 'Embed',
       icon: EmbedIcon({ style: `color: black` }),
       showWhen: ({ std }) => {
-        const featureFlagService = std.get(FeatureFlagService);
-        return (
-          featureFlagService.getFlag('enable_embed_iframe_block') &&
-          std.store.schema.flavourSchemaMap.has('affine:embed-iframe')
-        );
+        return std.store.schema.flavourSchemaMap.has('affine:embed-iframe');
       },
       action: async ({ std }) => {
         std.command
