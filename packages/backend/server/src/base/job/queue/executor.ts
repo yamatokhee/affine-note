@@ -52,7 +52,10 @@ export class JobExecutor implements OnModuleDestroy {
     await this.stopWorkers();
   }
 
-  async run(name: JobName, payload: any): Promise<JOB_SIGNAL | undefined> {
+  async run<T extends JobName>(
+    name: T,
+    payload: Jobs[T]
+  ): Promise<JOB_SIGNAL | undefined> {
     const ns = namespace(name);
     const handler = this.scanner.getHandler(name);
 
@@ -63,24 +66,16 @@ export class JobExecutor implements OnModuleDestroy {
 
     const fn = wrapCallMetric(
       async () => {
-        const cls = ClsServiceManager.getClsService();
-        await cls.run({ ifNested: 'reuse' }, async () => {
-          const requestId = cls.getId();
-          if (!requestId) {
-            cls.set(CLS_ID, genRequestId('job'));
-          }
-
-          const signature = `[${name}] (${handler.name})`;
-          try {
-            this.logger.log(`Job started: ${signature}`);
-            const ret = await handler.fn(payload);
-            this.logger.log(`Job finished: ${signature}, signal=${ret}`);
-            return ret;
-          } catch (e) {
-            this.logger.error(`Job failed: ${signature}`, e);
-            throw e;
-          }
-        });
+        const signature = `[${name}] (${handler.name})`;
+        try {
+          this.logger.log(`Job started: ${signature}`);
+          const ret = await handler.fn(payload);
+          this.logger.log(`Job finished: ${signature}, signal=${ret}`);
+          return ret;
+        } catch (e) {
+          this.logger.error(`Job failed: ${signature}`, e);
+          throw e;
+        }
       },
       'queue',
       'job_handler',
@@ -116,7 +111,22 @@ export class JobExecutor implements OnModuleDestroy {
       const worker = new Worker(
         queue,
         async job => {
-          return await this.run(job.name as JobName, job.data);
+          const cls = ClsServiceManager.getClsService();
+          let payload: any;
+          let requestId: string;
+
+          if (job.data.$$requestId) {
+            requestId = job.data.$$requestId;
+            payload = job.data.payload;
+          } else {
+            requestId = genRequestId('job');
+            payload = job.data;
+          }
+
+          return await cls.run(async () => {
+            cls.set(CLS_ID, requestId);
+            return await this.run(job.name as JobName, payload);
+          });
         },
         merge({}, this.config.job.queue, this.config.job.worker, queueOptions, {
           prefix: this.ref.get(getSharedConfigToken(), { strict: false })

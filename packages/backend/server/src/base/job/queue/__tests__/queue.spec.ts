@@ -3,13 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import test from 'ava';
 import { Queue as Bullmq } from 'bullmq';
-import { CLS_ID, ClsServiceManager } from 'nestjs-cls';
 import Sinon from 'sinon';
 
 import { createTestingModule } from '../../../../__tests__/utils';
 import { ConfigModule } from '../../../config';
 import { metrics } from '../../../metrics';
-import { genRequestId } from '../../../utils';
 import { JobModule, JobQueue, OnJob } from '..';
 import { JobExecutor } from '../executor';
 import { JobHandlerScanner } from '../scanner';
@@ -43,12 +41,6 @@ class JobHandlers {
   @OnJob('nightly.__test__throw')
   async throwJob() {
     throw new Error('Throw in job handler');
-  }
-
-  @OnJob('nightly.__test__requestId')
-  onRequestId() {
-    const cls = ClsServiceManager.getClsService();
-    return cls.getId() ?? genRequestId('job');
   }
 }
 
@@ -111,7 +103,7 @@ test('should add job to queue', async t => {
 test('should remove job from queue', async t => {
   const job = await queue.add('nightly.__test__job', { name: 'test' });
 
-  const data = await queue.remove(job.id!, job.name as JobName);
+  const data = await queue.remove(job.id!, 'nightly.__test__job');
 
   t.deepEqual(data, { name: 'test' });
 
@@ -196,29 +188,5 @@ test('should be able to record job metrics', async t => {
     handler: 'JobHandlers.throwJob',
     error: true,
   });
-});
-
-test('should generate request id', async t => {
-  const handlers = module.get(JobHandlers);
-  const spy = Sinon.spy(handlers, 'onRequestId');
-
-  await executor.run('nightly.__test__requestId', {});
-
-  t.true(spy.returnValues.some(v => v.includes(':job:')));
-
-  spy.restore();
-});
-
-test('should continuously use request id', async t => {
-  const handlers = module.get(JobHandlers);
-  const spy = Sinon.spy(handlers, 'onRequestId');
-
-  const cls = ClsServiceManager.getClsService();
-  await cls.run(async () => {
-    cls.set(CLS_ID, 'test-request-id');
-    await executor.run('nightly.__test__requestId', {});
-  });
-  t.true(spy.returned('test-request-id'));
-  spy.restore();
 });
 // #endregion
