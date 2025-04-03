@@ -223,6 +223,9 @@ export class AIChatInput extends SignalWatcher(WithDisposable(LitElement)) {
   accessor getSessionId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
+  accessor createSessionId!: () => Promise<string | undefined>;
+
+  @property({ attribute: false })
   accessor getContextId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
@@ -241,13 +244,10 @@ export class AIChatInput extends SignalWatcher(WithDisposable(LitElement)) {
   accessor isRootSession: boolean = true;
 
   @property({ attribute: false })
-  accessor onChatSuccess = () => null;
+  accessor onChatSuccess: (() => void) | undefined;
 
   @property({ attribute: false })
-  accessor trackOptions: BlockSuitePresets.TrackerOptions = {
-    control: 'chat-send',
-    where: 'chat-panel',
-  };
+  accessor trackOptions!: BlockSuitePresets.TrackerOptions;
 
   @property({ attribute: 'data-testid', reflect: true })
   accessor testId = 'chat-panel-input-container';
@@ -284,7 +284,7 @@ export class AIChatInput extends SignalWatcher(WithDisposable(LitElement)) {
   }
 
   private async _updatePromptName(promptName: string) {
-    const sessionId = await this.getSessionId();
+    const sessionId = await this.createSessionId();
     if (sessionId && AIProvider.session) {
       await AIProvider.session.updateSession(sessionId, promptName);
     }
@@ -542,7 +542,7 @@ export class AIChatInput extends SignalWatcher(WithDisposable(LitElement)) {
       // otherwise, the unauthorized error can not be rendered properly
       await this._updatePromptName(promptName);
 
-      const sessionId = await this.getSessionId();
+      const sessionId = await this.createSessionId();
       const contexts = await this._getMatchedContexts(userInput);
       if (abortController.signal.aborted) {
         return;
@@ -570,7 +570,7 @@ export class AIChatInput extends SignalWatcher(WithDisposable(LitElement)) {
       }
 
       this.updateContext({ status: 'success' });
-      this.onChatSuccess();
+      this.onChatSuccess?.();
       // update message id from server
       await this._postUpdateMessages();
     } catch (error) {

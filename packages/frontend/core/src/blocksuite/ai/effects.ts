@@ -39,6 +39,7 @@ import { ChatPanelCollectionChip } from './components/ai-chat-chips/collection-c
 import { ChatPanelDocChip } from './components/ai-chat-chips/doc-chip';
 import { ChatPanelFileChip } from './components/ai-chat-chips/file-chip';
 import { ChatPanelTagChip } from './components/ai-chat-chips/tag-chip';
+import { AIChatComposer } from './components/ai-chat-composer';
 import { AIChatInput } from './components/ai-chat-input/ai-chat-input';
 import { effects as componentAiItemEffects } from './components/ai-item';
 import { AIScrollableTextRenderer } from './components/ai-scrollable-text-renderer';
@@ -98,6 +99,7 @@ export function registerAIEffects() {
   customElements.define('chat-panel-messages', ChatPanelMessages);
   customElements.define('chat-panel', ChatPanel);
   customElements.define('ai-chat-input', AIChatInput);
+  customElements.define('ai-chat-composer', AIChatComposer);
   customElements.define('chat-panel-chips', ChatPanelChips);
   customElements.define('chat-panel-add-popover', ChatPanelAddPopover);
   customElements.define(

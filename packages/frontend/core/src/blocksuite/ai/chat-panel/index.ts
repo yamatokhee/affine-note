@@ -1,18 +1,12 @@
 import './chat-panel-messages';
 
-import type {
-  ContextEmbedStatus,
-  CopilotContextDoc,
-  CopilotContextFile,
-  CopilotDocType,
-} from '@affine/graphql';
+import type { ContextEmbedStatus } from '@affine/graphql';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/lit';
-import { NotificationProvider } from '@blocksuite/affine/shared/services';
 import type { SpecBuilder } from '@blocksuite/affine/shared/utils';
 import type { EditorHost } from '@blocksuite/affine/std';
 import { ShadowlessElement } from '@blocksuite/affine/std';
 import type { Store } from '@blocksuite/affine/store';
-import { HelpIcon, InformationIcon } from '@blocksuite/icons/lit';
+import { HelpIcon } from '@blocksuite/icons/lit';
 import { type Signal, signal } from '@preact/signals-core';
 import { css, html, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
@@ -21,18 +15,8 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { throttle } from 'lodash-es';
 
 import type {
-  ChatChip,
-  CollectionChip,
-  DocChip,
   DocDisplayConfig,
-  FileChip,
   SearchMenuConfig,
-  TagChip,
-} from '../components/ai-chat-chips';
-import {
-  isCollectionChip,
-  isDocChip,
-  isTagChip,
 } from '../components/ai-chat-chips';
 import type { AINetworkSearchConfig } from '../components/ai-chat-input';
 import { type HistoryMessage } from '../components/ai-chat-messages';
@@ -125,20 +109,9 @@ export class ChatPanel extends SignalWatcher(
     .chat-panel-hints :nth-child(2) {
       color: var(--affine-text-secondary-color);
     }
-
-    .chat-panel-footer {
-      margin: 8px 0px;
-      height: 20px;
-      display: flex;
-      gap: 4px;
-      align-items: center;
-      color: var(--affine-text-secondary-color);
-      font-size: 12px;
-      user-select: none;
-    }
   `;
 
-  private readonly _chatMessages: Ref<ChatPanelMessages> =
+  private readonly _chatMessagesRef: Ref<ChatPanelMessages> =
     createRef<ChatPanelMessages>();
 
   // request counter to track the latest request
@@ -163,9 +136,8 @@ export class ChatPanel extends SignalWatcher(
 
     const messages: HistoryMessage[] = actions ? [...actions] : [];
 
-    const history = histories?.find(
-      history => history.sessionId === this._chatSessionId
-    );
+    const sessionId = await this._getSessionId();
+    const history = histories?.find(history => history.sessionId === sessionId);
     if (history) {
       messages.push(...history.messages);
       AIProvider.LAST_ROOT_SESSION_ID = history.sessionId;
@@ -182,98 +154,38 @@ export class ChatPanel extends SignalWatcher(
     this._scrollToEnd();
   };
 
-  private readonly _initChips = async () => {
-    // context not initialized
-    if (!this._chatSessionId || !this._chatContextId) {
-      return;
-    }
-
-    // context initialized, show the chips
-    const {
-      docs = [],
-      files = [],
-      tags = [],
-      collections = [],
-    } = (await AIProvider.context?.getContextDocsAndFiles(
-      this.doc.workspace.id,
-      this._chatSessionId,
-      this._chatContextId
-    )) || {};
-
-    const docChips: DocChip[] = docs.map(doc => ({
-      docId: doc.id,
-      state: doc.status || 'processing',
-      tooltip: doc.error,
-      createdAt: doc.createdAt,
-    }));
-
-    const fileChips: FileChip[] = await Promise.all(
-      files.map(async file => {
-        const blob = await this.host.doc.blobSync.get(file.blobId);
-        return {
-          file: new File(blob ? [blob] : [], file.name),
-          blobId: file.blobId,
-          fileId: file.id,
-          state: blob ? file.status : 'failed',
-          tooltip: blob ? file.error : 'File not found in blob storage',
-          createdAt: file.createdAt,
-        };
-      })
-    );
-
-    const tagChips: TagChip[] = tags.map(tag => ({
-      tagId: tag.id,
-      state: 'finished',
-      createdAt: tag.createdAt,
-    }));
-
-    const collectionChips: CollectionChip[] = collections.map(collection => ({
-      collectionId: collection.id,
-      state: 'finished',
-      createdAt: collection.createdAt,
-    }));
-
-    const chips: ChatChip[] = [
-      ...docChips,
-      ...fileChips,
-      ...tagChips,
-      ...collectionChips,
-    ].sort((a, b) => {
-      const aTime = a.createdAt ?? Date.now();
-      const bTime = b.createdAt ?? Date.now();
-      return aTime - bTime;
-    });
-
-    this.updateChips(chips);
-  };
-
-  private readonly _initEmbeddingProgress = async () => {
-    await this._pollContextDocsAndFiles();
+  private readonly _updateEmbeddingProgress = (
+    count: Record<ContextEmbedStatus, number>
+  ) => {
+    const total = count.finished + count.processing + count.failed;
+    this.embeddingProgress = [count.finished, total];
   };
 
   private readonly _getSessionId = async () => {
-    if (this._chatSessionId) {
-      return this._chatSessionId;
+    if (this._sessionId) {
+      return this._sessionId;
     }
-    this._chatSessionId = await AIProvider.session?.createSession(
+    const sessions = (
+      (await AIProvider.session?.getSessions(
+        this.doc.workspace.id,
+        this.doc.id,
+        { action: false }
+      )) || []
+    ).filter(session => !session.parentSessionId);
+    const sessionId = sessions.at(-1)?.id;
+    this._sessionId = sessionId;
+    return this._sessionId;
+  };
+
+  private readonly _createSessionId = async () => {
+    if (this._sessionId) {
+      return this._sessionId;
+    }
+    this._sessionId = await AIProvider.session?.createSession(
       this.doc.workspace.id,
       this.doc.id
     );
-    return this._chatSessionId;
-  };
-
-  private readonly _getContextId = async () => {
-    if (this._chatContextId) {
-      return this._chatContextId;
-    }
-    const sessionId = await this._getSessionId();
-    if (sessionId) {
-      this._chatContextId = await AIProvider.context?.createContext(
-        this.doc.workspace.id,
-        sessionId
-      );
-    }
-    return this._chatContextId;
+    return this._sessionId;
   };
 
   @property({ attribute: false })
@@ -298,190 +210,53 @@ export class ChatPanel extends SignalWatcher(
   accessor previewSpecBuilder!: SpecBuilder;
 
   @state()
-  accessor isLoading = true;
+  accessor isLoading = false;
 
   @state()
   accessor chatContextValue: ChatContextValue = DEFAULT_CHAT_CONTEXT_VALUE;
 
   @state()
-  accessor chips: ChatChip[] = [];
-
-  @state()
   accessor embeddingProgress: [number, number] = [0, 0];
 
-  private _chatSessionId: string | null | undefined = null;
+  private _isInitialized = false;
 
-  private _chatContextId: string | null | undefined = null;
+  // always use getSessionId to get the sessionId
+  private _sessionId: string | undefined = undefined;
 
-  private _isOpen: Signal<boolean | undefined> = signal(false);
+  private _isSidebarOpen: Signal<boolean | undefined> = signal(false);
 
-  private _width: Signal<number | undefined> = signal(undefined);
-
-  private _pollAbortController: AbortController | null = null;
+  private _sidebarWidth: Signal<number | undefined> = signal(undefined);
 
   private readonly _scrollToEnd = () => {
     if (!this._wheelTriggered) {
-      this._chatMessages.value?.scrollToEnd();
+      this._chatMessagesRef.value?.scrollToEnd();
     }
   };
 
   private readonly _throttledScrollToEnd = throttle(this._scrollToEnd, 600);
 
-  private readonly _cleanupHistories = async () => {
-    const notification = this.host.std.getOptional(NotificationProvider);
-    if (!notification) return;
-    try {
-      if (
-        await notification.confirm({
-          title: 'Clear History',
-          message:
-            'Are you sure you want to clear all history? This action will permanently delete all content, including all chat logs and data, and cannot be undone.',
-          confirmText: 'Confirm',
-          cancelText: 'Cancel',
-        })
-      ) {
-        const actionIds = this.chatContextValue.messages
-          .filter(item => 'sessionId' in item)
-          .map(item => item.sessionId);
-        await AIProvider.histories?.cleanup(
-          this.doc.workspace.id,
-          this.doc.id,
-          [
-            ...(this._chatSessionId ? [this._chatSessionId] : []),
-            ...(actionIds || []),
-          ]
-        );
-        notification.toast('History cleared');
-        await this._updateHistory();
-      }
-    } catch {
-      notification.toast('Failed to clear history');
-    }
-  };
-
   private readonly _initPanel = async () => {
     try {
-      if (!this._isOpen.value) return;
-
+      if (!this._isSidebarOpen.value) return;
+      if (this.isLoading) return;
       const userId = (await AIProvider.userInfo)?.id;
       if (!userId) return;
 
       this.isLoading = true;
-      const sessions = (
-        (await AIProvider.session?.getSessions(
-          this.doc.workspace.id,
-          this.doc.id,
-          { action: false }
-        )) || []
-      ).filter(session => !session.parentSessionId);
-
-      if (sessions && sessions.length) {
-        this._chatSessionId = sessions.at(-1)?.id;
-        await this._updateHistory();
-      }
+      await this._updateHistory();
       this.isLoading = false;
-      if (this._chatSessionId) {
-        this._chatContextId = await AIProvider.context?.getContextId(
-          this.doc.workspace.id,
-          this._chatSessionId
-        );
-      }
-      await this._initChips();
-      await this._initEmbeddingProgress();
+      this._isInitialized = true;
     } catch (error) {
       console.error(error);
     }
   };
 
   private readonly _resetPanel = () => {
-    this._abortPoll();
-    this._chatSessionId = null;
-    this._chatContextId = null;
+    this._sessionId = undefined;
     this.chatContextValue = DEFAULT_CHAT_CONTEXT_VALUE;
-    this.isLoading = true;
-    this.chips = [];
+    this.isLoading = false;
+    this._isInitialized = false;
     this.embeddingProgress = [0, 0];
-  };
-
-  private readonly _pollContextDocsAndFiles = async () => {
-    if (!this._chatSessionId || !this._chatContextId || !AIProvider.context) {
-      return;
-    }
-    if (this._pollAbortController) {
-      // already polling, reset timer
-      this._abortPoll();
-    }
-    this._pollAbortController = new AbortController();
-    await AIProvider.context.pollContextDocsAndFiles(
-      this.doc.workspace.id,
-      this._chatSessionId,
-      this._chatContextId,
-      this._onPoll,
-      this._pollAbortController.signal
-    );
-  };
-
-  private readonly _onPoll = (
-    result?: BlockSuitePresets.AIDocsAndFilesContext
-  ) => {
-    if (!result) {
-      this._abortPoll();
-      return;
-    }
-    const {
-      docs: sDocs = [],
-      files = [],
-      tags = [],
-      collections = [],
-    } = result;
-    const docs = [
-      ...sDocs,
-      ...tags.flatMap(tag => tag.docs),
-      ...collections.flatMap(collection => collection.docs),
-    ];
-    const hashMap = new Map<
-      string,
-      CopilotContextDoc | CopilotDocType | CopilotContextFile
-    >();
-    const count: Record<ContextEmbedStatus, number> = {
-      finished: 0,
-      processing: 0,
-      failed: 0,
-    };
-    docs.forEach(doc => {
-      hashMap.set(doc.id, doc);
-      doc.status && count[doc.status]++;
-    });
-    files.forEach(file => {
-      hashMap.set(file.id, file);
-      file.status && count[file.status]++;
-    });
-    const nextChips = this.chips.map(chip => {
-      if (isTagChip(chip) || isCollectionChip(chip)) {
-        return chip;
-      }
-      const id = isDocChip(chip) ? chip.docId : chip.fileId;
-      const item = id && hashMap.get(id);
-      if (item && item.status) {
-        return {
-          ...chip,
-          state: item.status,
-          tooltip: 'error' in item ? item.error : undefined,
-        };
-      }
-      return chip;
-    });
-    const total = count.finished + count.processing + count.failed;
-    this.embeddingProgress = [count.finished, total];
-    this.updateChips(nextChips);
-    if (count.processing === 0) {
-      this._abortPoll();
-    }
-  };
-
-  private readonly _abortPoll = () => {
-    this._pollAbortController?.abort();
-    this._pollAbortController = null;
   };
 
   protected override updated(_changedProperties: PropertyValues) {
@@ -515,7 +290,7 @@ export class ChatPanel extends SignalWatcher(
   }
 
   protected override firstUpdated(): void {
-    const chatMessages = this._chatMessages.value;
+    const chatMessages = this._chatMessagesRef.value;
     if (chatMessages) {
       chatMessages.updateComplete
         .then(() => {
@@ -561,16 +336,16 @@ export class ChatPanel extends SignalWatcher(
     );
 
     const isOpen = this.appSidebarConfig.isOpen();
-    this._isOpen = isOpen.signal;
+    this._isSidebarOpen = isOpen.signal;
     this._disposables.add(isOpen.cleanup);
 
     const width = this.appSidebarConfig.getWidth();
-    this._width = width.signal;
+    this._sidebarWidth = width.signal;
     this._disposables.add(width.cleanup);
 
     this._disposables.add(
-      this._isOpen.subscribe(isOpen => {
-        if (isOpen && this.isLoading) {
+      this._isSidebarOpen.subscribe(isOpen => {
+        if (isOpen && !this._isInitialized) {
           this._initPanel().catch(console.error);
         }
       })
@@ -579,10 +354,6 @@ export class ChatPanel extends SignalWatcher(
 
   updateContext = (context: Partial<ChatContextValue>) => {
     this.chatContextValue = { ...this.chatContextValue, ...context };
-  };
-
-  updateChips = (chips: ChatChip[]) => {
-    this.chips = chips;
   };
 
   continueInChat = async () => {
@@ -597,7 +368,7 @@ export class ChatPanel extends SignalWatcher(
   };
 
   override render() {
-    const width = this._width.value || 0;
+    const width = this._sidebarWidth.value || 0;
     const style = styleMap({
       padding: width > 540 ? '8px 24px 0 24px' : '8px 12px 0 12px',
     });
@@ -622,38 +393,34 @@ export class ChatPanel extends SignalWatcher(
         </div>
       </div>
       <chat-panel-messages
-        ${ref(this._chatMessages)}
+        ${ref(this._chatMessagesRef)}
         .chatContextValue=${this.chatContextValue}
         .getSessionId=${this._getSessionId}
+        .createSessionId=${this._createSessionId}
         .updateContext=${this.updateContext}
         .host=${this.host}
-        .isLoading=${this.isLoading}
+        .isLoading=${this.isLoading || !this._isInitialized}
         .previewSpecBuilder=${this.previewSpecBuilder}
       ></chat-panel-messages>
-      <chat-panel-chips
+      <ai-chat-composer
         .host=${this.host}
-        .chips=${this.chips}
-        .getContextId=${this._getContextId}
-        .updateChips=${this.updateChips}
-        .pollContextDocsAndFiles=${this._pollContextDocsAndFiles}
-        .docDisplayConfig=${this.docDisplayConfig}
-        .searchMenuConfig=${this.searchMenuConfig}
-      ></chat-panel-chips>
-      <ai-chat-input
-        .chips=${this.chips}
-        .chatContextValue=${this.chatContextValue}
+        .doc=${this.doc}
         .getSessionId=${this._getSessionId}
-        .getContextId=${this._getContextId}
+        .createSessionId=${this._createSessionId}
+        .createChatSessionId=${this._createSessionId}
+        .chatContextValue=${this.chatContextValue}
+        .updateContext=${this.updateContext}
+        .updateEmbeddingProgress=${this._updateEmbeddingProgress}
+        .onHistoryCleared=${this._updateHistory}
+        .isVisible=${this._isSidebarOpen}
         .networkSearchConfig=${this.networkSearchConfig}
         .docDisplayConfig=${this.docDisplayConfig}
-        .updateContext=${this.updateContext}
-        .host=${this.host}
-        .cleanupHistories=${this._cleanupHistories}
-      ></ai-chat-input>
-      <div class="chat-panel-footer">
-        ${InformationIcon()}
-        <div>AI outputs can be misleading or wrong</div>
-      </div>
+        .searchMenuConfig=${this.searchMenuConfig}
+        .trackOptions=${{
+          where: 'chat-panel',
+          control: 'chat-send',
+        }}
+      ></ai-chat-composer>
     </div>`;
   }
 }

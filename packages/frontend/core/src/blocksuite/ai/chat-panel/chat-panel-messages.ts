@@ -151,6 +151,9 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   accessor getSessionId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
+  accessor createSessionId!: () => Promise<string | undefined>;
+
+  @property({ attribute: false })
   accessor updateContext!: (context: Partial<ChatContextValue>) => void;
 
   @property({ attribute: false })
@@ -347,7 +350,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   retry = async () => {
     const { doc } = this.host;
     try {
-      const sessionId = await this.getSessionId();
+      const sessionId = await this.createSessionId();
       if (!sessionId) return;
 
       const abortController = new AbortController();

@@ -86,7 +86,7 @@ export class ChatPanelChips extends SignalWatcher(
   accessor chips!: ChatChip[];
 
   @property({ attribute: false })
-  accessor getContextId!: () => Promise<string | undefined>;
+  accessor createContextId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
   accessor updateChips!: (chips: ChatChip[]) => void;
@@ -378,7 +378,7 @@ export class ChatPanelChips extends SignalWatcher(
 
   private readonly _addDocToContext = async (chip: DocChip) => {
     try {
-      const contextId = await this.getContextId();
+      const contextId = await this.createContextId();
       if (!contextId || !AIProvider.context) {
         throw new Error('Context not found');
       }
@@ -396,7 +396,7 @@ export class ChatPanelChips extends SignalWatcher(
 
   private readonly _addFileToContext = async (chip: FileChip) => {
     try {
-      const contextId = await this.getContextId();
+      const contextId = await this.createContextId();
       if (!contextId || !AIProvider.context) {
         throw new Error('Context not found');
       }
@@ -420,7 +420,7 @@ export class ChatPanelChips extends SignalWatcher(
 
   private readonly _addTagToContext = async (chip: TagChip) => {
     try {
-      const contextId = await this.getContextId();
+      const contextId = await this.createContextId();
       if (!contextId || !AIProvider.context) {
         throw new Error('Context not found');
       }
@@ -444,7 +444,7 @@ export class ChatPanelChips extends SignalWatcher(
 
   private readonly _addCollectionToContext = async (chip: CollectionChip) => {
     try {
-      const contextId = await this.getContextId();
+      const contextId = await this.createContextId();
       if (!contextId || !AIProvider.context) {
         throw new Error('Context not found');
       }
@@ -474,7 +474,7 @@ export class ChatPanelChips extends SignalWatcher(
     chip: ChatChip
   ): Promise<boolean> => {
     try {
-      const contextId = await this.getContextId();
+      const contextId = await this.createContextId();
       if (!contextId || !AIProvider.context) {
         return true;
       }

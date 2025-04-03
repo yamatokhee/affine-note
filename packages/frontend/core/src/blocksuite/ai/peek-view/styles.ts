@@ -57,16 +57,4 @@ export const PeekViewStyles = css`
     flex-direction: column;
     gap: 8px;
   }
-
-  .peek-view-footer {
-    margin-top: 8px;
-    width: 100%;
-    height: 20px;
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    color: var(--affine-text-secondary-color);
-    font-size: var(--affine-font-xs);
-    user-select: none;
-  }
 `;
