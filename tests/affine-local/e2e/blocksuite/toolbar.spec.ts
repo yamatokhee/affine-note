@@ -196,3 +196,39 @@ test('should not show toolbar when releasing spacebar and elements have been del
 
   await expect(toolbar).toBeHidden();
 });
+
+test('should not show inner toolbar of surface-ref in note under edgeless', async ({
+  page,
+}) => {
+  await page.keyboard.press('Enter');
+  await page.keyboard.type('/frame');
+  await page.keyboard.press('Enter');
+
+  const toolbar = locateToolbar(page);
+
+  const surfaceRef = page.locator('affine-surface-ref');
+  await surfaceRef.hover();
+
+  await expect(toolbar).toBeVisible();
+
+  await clickEdgelessModeButton(page);
+
+  const note = page.locator('affine-edgeless-note');
+  await note.click();
+  await note.click();
+
+  const edgelessSurfaceRef = note.locator('affine-edgeless-surface-ref');
+  await edgelessSurfaceRef.hover();
+
+  await expect(toolbar).toBeHidden();
+
+  const dragHandler = page.locator('.affine-drag-handle-grabber');
+  await dragHandler.hover();
+  await dragHandler.click();
+
+  await expect(
+    edgelessSurfaceRef.locator('.affine-edgeless-surface-ref-container')
+  ).toHaveClass(/focused$/);
+
+  await expect(toolbar).toBeHidden();
+});

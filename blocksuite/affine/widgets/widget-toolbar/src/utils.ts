@@ -70,9 +70,8 @@ export function autoUpdatePosition(
           offset(({ rects }) => -rects.floating.height),
           size({
             apply: ({ elements }) => {
-              elements.floating.style.width = `${
-                elements.reference.getBoundingClientRect().width
-              }px`;
+              const { width } = elements.reference.getBoundingClientRect();
+              elements.floating.style.width = `${width}px`;
             },
           }),
         ],
@@ -126,12 +125,14 @@ export function autoUpdatePosition(
 
     toolbar.style.transform = `translate3d(${x}px, ${y}px, 0)`;
 
-    if (toolbar.dataset.open) {
-      if (middlewareData.hide?.referenceHidden) {
-        delete toolbar.dataset.open;
+    if (middlewareData.hide) {
+      if (toolbar.dataset.open) {
+        if (middlewareData.hide.referenceHidden) {
+          delete toolbar.dataset.open;
+        }
+      } else {
+        toolbar.dataset.open = 'true';
       }
-    } else {
-      toolbar.dataset.open = 'true';
     }
   };
 
@@ -239,6 +240,12 @@ export function renderToolbar(
     a => a.placement === ActionPlacement.More
   );
 
+  // Resets
+  if (primaryActionGroup.length === 0) {
+    context.reset();
+    return;
+  }
+
   const innerToolbar = context.placement$.value === 'inner';
 
   if (moreActionGroup.length) {
@@ -289,6 +296,9 @@ export function renderToolbar(
     ),
     toolbar
   );
+
+  if (toolbar.dataset.open) return;
+  toolbar.dataset.open = 'true';
 }
 
 function renderActions(

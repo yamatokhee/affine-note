@@ -698,6 +698,8 @@ function createSurfaceRefToolbarConfig(baseUrl?: string): ToolbarModuleConfig {
         ],
       },
     ],
+
+    when: ctx => ctx.isPageMode,
   };
 }
 

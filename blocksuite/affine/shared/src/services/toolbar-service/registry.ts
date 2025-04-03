@@ -46,10 +46,14 @@ export class ToolbarRegistryExtension extends Extension {
     return this.std.provider.getAll(ToolbarModuleIdentifier);
   }
 
+  getModuleBy(flavour: string) {
+    return this.modules.get(flavour)?.config ?? null;
+  }
+
   getModulePlacement(flavour: string, fallback: ToolbarPlacement = 'top') {
     return (
-      this.modules.get(`custom:${flavour}`)?.config.placement ??
-      this.modules.get(flavour)?.config.placement ??
+      this.getModuleBy(`custom:${flavour}`)?.placement ??
+      this.getModuleBy(flavour)?.placement ??
       fallback
     );
   }

@@ -4,7 +4,7 @@ import {
   MindmapElementModel,
   ShapeElementModel,
 } from '@blocksuite/affine-model';
-import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
+import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import {
   EdgelessIcon,
   FrameIcon,
@@ -24,8 +24,10 @@ export class SurfaceRefToolbarTitle extends ShadowlessElement {
       margin-right: auto;
       align-items: center;
       gap: 4px;
-      border-radius: 2px;
-      background: ${unsafeCSSVarV2('button/iconButtonSolid')};
+      border-radius: 4px;
+      color: ${unsafeCSSVarV2('text/primary')};
+      box-shadow: ${unsafeCSSVar('buttonShadow')};
+      background: ${unsafeCSSVar('white')};
 
       svg {
         color: ${unsafeCSSVarV2('icon/primary')};

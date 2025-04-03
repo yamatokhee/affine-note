@@ -11,24 +11,20 @@ import { literal } from 'lit/static-html.js';
 import { SurfaceRefSlashMenuConfigExtension } from './configs/slash-menu';
 import { surfaceRefToolbarModuleConfig } from './configs/toolbar';
 
+const flavour = SurfaceRefBlockSchema.model.flavour;
+
 export const PageSurfaceRefBlockSpec: ExtensionType[] = [
-  FlavourExtension(SurfaceRefBlockSchema.model.flavour),
-  BlockViewExtension(
-    SurfaceRefBlockSchema.model.flavour,
-    literal`affine-surface-ref`
-  ),
+  FlavourExtension(flavour),
+  BlockViewExtension(flavour, literal`affine-surface-ref`),
   ToolbarModuleExtension({
-    id: BlockFlavourIdentifier(SurfaceRefBlockSchema.model.flavour),
+    id: BlockFlavourIdentifier(flavour),
     config: surfaceRefToolbarModuleConfig,
   }),
   SurfaceRefSlashMenuConfigExtension,
 ];
 
 export const EdgelessSurfaceRefBlockSpec: ExtensionType[] = [
-  FlavourExtension(SurfaceRefBlockSchema.model.flavour),
-  BlockViewExtension(
-    SurfaceRefBlockSchema.model.flavour,
-    literal`affine-edgeless-surface-ref`
-  ),
+  FlavourExtension(flavour),
+  BlockViewExtension(flavour, literal`affine-edgeless-surface-ref`),
   SurfaceRefSlashMenuConfigExtension,
 ];

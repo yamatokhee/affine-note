@@ -641,8 +641,6 @@ export class AffineToolbarWidget extends WidgetComponent {
         // 4. `Flag.Hovering`: inline links in note/database/table
         // 5. `Flag.Surface`: elements in edgeless
         renderToolbar(toolbar, context, flavour);
-        if (toolbar.dataset.open) return;
-        toolbar.dataset.open = 'true';
       })
     );
 
