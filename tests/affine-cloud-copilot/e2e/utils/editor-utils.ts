@@ -160,6 +160,33 @@ export class EditorUtils {
     return id;
   }
 
+  public static async createShape(page: Page, text: string) {
+    // Create shape
+    await page.keyboard.press('s');
+    await page.mouse.click(400, 400);
+
+    const id = await page.evaluate(() => {
+      const edgelessBlock = document.querySelector(
+        'affine-edgeless-root'
+      ) as EdgelessRootBlockComponent;
+      if (!edgelessBlock) {
+        throw new Error('edgeless block not found');
+      }
+      const shapes = edgelessBlock.gfx.gfxElements.filter(
+        (el: GfxModel) => 'type' in el && el.type === 'shape'
+      );
+
+      return shapes[shapes.length - 1].id;
+    });
+
+    // Insert text inside shape
+    await page.mouse.dblclick(400, 400);
+    await page.keyboard.insertText(text);
+    // Prevent the shape from being dragged
+    await page.mouse.click(500, 500);
+    return id;
+  }
+
   public static async getMindMapNode(
     page: Page,
     mindmapId: string,

@@ -60,6 +60,22 @@ test.describe('AIAction/MakeItReal', () => {
     expect(responses).toEqual(new Set(['insert-below']));
   });
 
+  test('should support making the selected element to real in edgeless', async ({
+    page,
+    utils,
+  }) => {
+    const { makeItReal } = await utils.editor.askAIWithEdgeless(
+      page,
+      async () => {
+        await utils.editor.createShape(page, 'HelloWorld');
+      }
+    );
+
+    const { answer, responses } = await makeItReal();
+    await expect(answer.locator('iframe')).toBeVisible({ timeout: 30000 });
+    expect(responses).toEqual(new Set(['insert-below']));
+  });
+
   test('should show chat history in chat panel', async ({ page, utils }) => {
     const { makeItReal } = await utils.editor.askAIWithText(
       page,

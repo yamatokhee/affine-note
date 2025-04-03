@@ -29,53 +29,53 @@ test.describe('AIAction/GenerateHeadings', () => {
     expect(responses).toEqual(new Set(['insert-above', 'replace-selection']));
   });
 
-  test.fixme(
-    'should generate headings for selected text block in edgeless',
-    async ({ page, utils }) => {
-      const { generateHeadings } = await utils.editor.askAIWithEdgeless(
-        page,
-        async () => {
-          await utils.editor.createEdgelessText(
-            page,
-            'AFFiNE is a workspace with fully merged docs'
-          );
-        }
-      );
+  test('should generate headings for selected text block in edgeless', async ({
+    page,
+    utils,
+  }) => {
+    const { generateHeadings } = await utils.editor.askAIWithEdgeless(
+      page,
+      async () => {
+        await utils.editor.createEdgelessText(
+          page,
+          'AFFiNE is a workspace with fully merged docs'
+        );
+      }
+    );
 
-      const { answer, responses } = await generateHeadings();
-      await Promise.race([
-        answer.locator('h1').isVisible(),
-        answer.locator('h2').isVisible(),
-        answer.locator('h3').isVisible(),
-      ]);
-      await expect(answer).toHaveText(/AFFiNE/, { timeout: 10000 });
-      expect(responses).toEqual(new Set(['insert-above']));
-    }
-  );
+    const { answer, responses } = await generateHeadings();
+    await Promise.race([
+      answer.locator('h1').isVisible(),
+      answer.locator('h2').isVisible(),
+      answer.locator('h3').isVisible(),
+    ]);
+    await expect(answer).toHaveText(/AFFiNE/, { timeout: 10000 });
+    expect(responses).toEqual(new Set(['insert-below']));
+  });
 
-  test.fixme(
-    'should generate headings for selected note block in edgeless',
-    async ({ page, utils }) => {
-      const { generateHeadings } = await utils.editor.askAIWithEdgeless(
-        page,
-        async () => {
-          await utils.editor.createEdgelessNote(
-            page,
-            'AFFiNE is a workspace with fully merged docs'
-          );
-        }
-      );
+  test('should generate headings for selected note block in edgeless', async ({
+    page,
+    utils,
+  }) => {
+    const { generateHeadings } = await utils.editor.askAIWithEdgeless(
+      page,
+      async () => {
+        await utils.editor.createEdgelessNote(
+          page,
+          'AFFiNE is a workspace with fully merged docs'
+        );
+      }
+    );
 
-      const { answer, responses } = await generateHeadings();
-      await Promise.race([
-        answer.locator('h1').isVisible(),
-        answer.locator('h2').isVisible(),
-        answer.locator('h3').isVisible(),
-      ]);
-      await expect(answer).toHaveText(/AFFiNE/, { timeout: 10000 });
-      expect(responses).toEqual(new Set(['insert-above']));
-    }
-  );
+    const { answer, responses } = await generateHeadings();
+    await Promise.race([
+      answer.locator('h1').isVisible(),
+      answer.locator('h2').isVisible(),
+      answer.locator('h3').isVisible(),
+    ]);
+    await expect(answer).toHaveText(/AFFiNE/, { timeout: 10000 });
+    expect(responses).toEqual(new Set(['insert-below']));
+  });
 
   test('should show chat history in chat panel', async ({ page, utils }) => {
     const { generateHeadings } = await utils.editor.askAIWithText(

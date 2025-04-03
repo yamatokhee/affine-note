@@ -51,6 +51,21 @@ test.describe('AIAction/GenerateAnImageWithText', () => {
     expect(responses).toEqual(new Set(['insert-below']));
   });
 
+  test('should generate an image for the selected shape in edgeless', async ({
+    page,
+    utils,
+  }) => {
+    const { generateImage } = await utils.editor.askAIWithEdgeless(
+      page,
+      async () => {
+        await utils.editor.createShape(page, 'HelloWorld');
+      }
+    );
+    const { answer, responses } = await generateImage();
+    await expect(answer.getByTestId('ai-answer-image')).toBeVisible();
+    expect(responses).toEqual(new Set(['insert-below']));
+  });
+
   test('should show chat history in chat panel', async ({ page, utils }) => {
     const { generateImage } = await utils.editor.askAIWithText(page, 'Panda');
     const { answer } = await generateImage();
