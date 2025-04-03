@@ -1054,11 +1054,18 @@ test('should save open doc mode of internal links', async ({ page }) => {
   const inlineLink = page.locator('affine-reference');
   await inlineLink.hover();
 
-  const openDocBtn = toolbar.getByLabel(/^Open doc$/);
-  await expect(openDocBtn).toHaveAttribute(
-    'data-open-doc-mode',
+  const recentOpenModeBtn = toolbar.locator(
+    'editor-icon-button:has-text("Open")'
+  );
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
     'Open this doc'
   );
+  await expect(
+    recentOpenModeBtn.locator('span.label:has-text("Open")')
+  ).toBeVisible();
+
+  const openDocBtn = toolbar.getByLabel(/^Open doc with$/);
   await openDocBtn.click();
 
   const openDocMenu = toolbar.getByLabel('Open doc menu');
@@ -1081,8 +1088,8 @@ test('should save open doc mode of internal links', async ({ page }) => {
   await inlineLink.hover();
 
   await expect(toolbar).toBeVisible();
-  await expect(openDocBtn).toHaveAttribute(
-    'data-open-doc-mode',
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
     'Open in center peek'
   );
 
@@ -1090,8 +1097,8 @@ test('should save open doc mode of internal links', async ({ page }) => {
   await cardViewBtn.click();
 
   await expect(toolbar).toBeVisible();
-  await expect(openDocBtn).toHaveAttribute(
-    'data-open-doc-mode',
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
     'Open in center peek'
   );
 
@@ -1099,8 +1106,8 @@ test('should save open doc mode of internal links', async ({ page }) => {
   await embedViewBtn.click();
 
   await expect(toolbar).toBeVisible();
-  await expect(openDocBtn).toHaveAttribute(
-    'data-open-doc-mode',
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
     'Open in center peek'
   );
 
@@ -1112,8 +1119,8 @@ test('should save open doc mode of internal links', async ({ page }) => {
   await page.waitForTimeout(250);
 
   await expect(toolbar).toBeVisible();
-  await expect(openDocBtn).toHaveAttribute(
-    'data-open-doc-mode',
+  await expect(recentOpenModeBtn).toHaveAttribute(
+    'aria-label',
     'Open in center peek'
   );
 });

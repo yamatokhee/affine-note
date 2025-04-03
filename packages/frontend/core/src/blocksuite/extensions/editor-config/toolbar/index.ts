@@ -716,18 +716,20 @@ function renderOpenDocMenu(
   }));
   if (!actions.length) return null;
 
+  const openDocMode = computed(
+    () => settings.settingSignal.value.openDocMode ?? 'open-in-active-view'
+  );
+  const updateOpenDocMode = (mode: OpenDocMode) =>
+    settings.openDocMode.set(mode);
+
   return html`${keyed(
     target,
     html`
       <affine-open-doc-dropdown-menu
         .actions=${actions}
         .context=${ctx}
-        .openDocMode$=${computed(
-          () =>
-            settings.settingSignal.value.openDocMode ?? 'open-in-active-view'
-        )}
-        .updateOpenDocMode=${(mode: OpenDocMode) =>
-          settings.openDocMode.set(mode)}
+        .openDocMode$=${openDocMode}
+        .updateOpenDocMode=${updateOpenDocMode}
       >
       </affine-open-doc-dropdown-menu>
     `

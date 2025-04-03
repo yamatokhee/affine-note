@@ -28,7 +28,7 @@ test('can open peek view via link popover', async ({ page }) => {
   const toolbar = page.locator('affine-toolbar-widget editor-toolbar');
   await expect(toolbar).toBeVisible();
 
-  await toolbar.getByLabel(/^Open doc$/).click();
+  await toolbar.getByLabel(/^Open doc with$/).click();
   await toolbar
     .getByLabel('Open doc menu')
     .getByLabel('Open in center peek')

@@ -6,7 +6,7 @@ import {
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import { PropTypes, requiredProperties } from '@blocksuite/std';
-import type { ReadonlySignal } from '@preact/signals-core';
+import { computed, type ReadonlySignal } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { ifDefined } from 'lit-html/directives/if-defined.js';
@@ -24,6 +24,17 @@ export class OpenDocDropdownMenu extends SignalWatcher(
   WithDisposable(LitElement)
 ) {
   static override styles = css`
+    :host {
+      display: flex;
+      gap: unset !important;
+    }
+
+    editor-icon-button {
+      .label {
+        font-weight: 400;
+      }
+    }
+
     div[data-orientation] {
       width: 264px;
       gap: 4px;
@@ -59,31 +70,36 @@ export class OpenDocDropdownMenu extends SignalWatcher(
   @property({ attribute: false })
   accessor updateOpenDocMode!: (mode: OpenDocMode) => void;
 
+  currentAction$ = computed(() => {
+    const currentOpenDocMode = this.openDocMode$.value;
+    return (
+      this.actions.find(a => a.mode === currentOpenDocMode) ?? this.actions[0]
+    );
+  });
+
   override render() {
     const {
       actions,
       context,
-      openDocMode$: { value: openDocMode },
       updateOpenDocMode,
+      currentAction$: { value: currentAction },
     } = this;
-    const currentAction =
-      actions.find(a => a.mode === openDocMode) ?? actions[0];
 
     return html`
+      <editor-icon-button
+        aria-label="${currentAction.label}"
+        .tooltip="${currentAction.label}"
+        @click=${() => currentAction.run?.(context)}
+      >
+        ${currentAction.icon}
+        <span class="label">Open</span>
+      </editor-icon-button>
       <editor-menu-button
         aria-label="Open doc menu"
         .contentPadding="${'8px'}"
         .button=${html`
-          <editor-icon-button
-            data-open-doc-mode="${currentAction.label}"
-            aria-label="Open doc"
-            .tooltip="${'Open doc'}"
-            .justify="${'space-between'}"
-            .labelHeight="${'20px'}"
-            .iconContainerWidth="${'84px'}"
-          >
-            ${currentAction.icon}
-            <span class="label">Open</span> ${EditorChevronDown}
+          <editor-icon-button aria-label="Open doc with">
+            ${EditorChevronDown}
           </editor-icon-button>
         `}
       >
