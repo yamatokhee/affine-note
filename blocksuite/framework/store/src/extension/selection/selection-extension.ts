@@ -162,6 +162,13 @@ export class StoreSelectionExtension extends StoreExtension {
     this.set([...current, ...selections]);
   }
 
+  // This method is used to clear **current editor's remote selections**
+  // When the editor is not active, the remote selections should be cleared
+  // So other editors won't see the remote selections from this editor
+  clearRemote() {
+    this.store.awarenessStore.setLocalSelection(this._id, []);
+  }
+
   update(fn: (currentSelections: BaseSelection[]) => BaseSelection[]) {
     const selections = fn(this.value);
     this.set(selections);

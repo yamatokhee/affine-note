@@ -323,6 +323,14 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
         this._updateSelections(selections);
       })
     );
+
+    this.disposables.add(
+      this.std.event.active$.subscribe(value => {
+        if (!value) {
+          this.std.selection.clearRemote();
+        }
+      })
+    );
   }
 
   override render() {
