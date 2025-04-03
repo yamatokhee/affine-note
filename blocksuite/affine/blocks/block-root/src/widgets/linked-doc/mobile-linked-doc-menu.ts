@@ -230,9 +230,6 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
   }
 
   override firstUpdated() {
-    if (!this.keyboard.visible$.value) {
-      this.keyboard.show();
-    }
     this._scrollInputToTop();
   }
 

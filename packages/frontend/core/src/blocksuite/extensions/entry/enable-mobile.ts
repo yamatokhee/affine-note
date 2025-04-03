@@ -10,9 +10,9 @@ import type {
 } from '@blocksuite/affine/global/di';
 import { DisposableGroup } from '@blocksuite/affine/global/disposable';
 import {
-  DocModeProvider,
   FeatureFlagService,
   VirtualKeyboardProvider as BSVirtualKeyboardProvider,
+  type VirtualKeyboardProviderWithAction,
 } from '@blocksuite/affine/shared/services';
 import type { SpecBuilder } from '@blocksuite/affine/shared/utils';
 import {
@@ -69,34 +69,11 @@ function KeyboardToolbarExtension(framework: FrameworkProvider): ExtensionType {
 
     private readonly _disposables = new DisposableGroup();
 
-    private get _rootContentEditable() {
-      const editorMode = this.std.get(DocModeProvider).getEditorMode();
-      if (editorMode !== 'page') return null;
-
-      if (!this.std.host.doc.root) return;
-      return this.std.view.getBlock(this.std.host.doc.root.id);
-    }
-
     // eslint-disable-next-line rxjs/finnish
     readonly visible$ = signal(false);
 
     // eslint-disable-next-line rxjs/finnish
     readonly height$ = signal(0);
-
-    show() {
-      if ('show' in affineVirtualKeyboardProvider) {
-        affineVirtualKeyboardProvider.show();
-      } else if (this._rootContentEditable) {
-        this._rootContentEditable.inputMode = '';
-      }
-    }
-    hide() {
-      if ('hide' in affineVirtualKeyboardProvider) {
-        affineVirtualKeyboardProvider.hide();
-      } else if (this._rootContentEditable) {
-        this._rootContentEditable.inputMode = 'none';
-      }
-    }
 
     static override setup(di: Container) {
       super.setup(di);
@@ -123,6 +100,20 @@ function KeyboardToolbarExtension(framework: FrameworkProvider): ExtensionType {
     override unmounted() {
       this._disposables.dispose();
     }
+  }
+
+  if ('show' in affineVirtualKeyboardProvider) {
+    return class
+      extends BSVirtualKeyboardService
+      implements VirtualKeyboardProviderWithAction
+    {
+      show() {
+        affineVirtualKeyboardProvider.show();
+      }
+      hide() {
+        affineVirtualKeyboardProvider.hide();
+      }
+    };
   }
 
   return BSVirtualKeyboardService;

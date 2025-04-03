@@ -1,5 +1,5 @@
 import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
-import { VirtualKeyboardProvider } from '@blocksuite/affine-shared/services';
+import { type VirtualKeyboardProviderWithAction } from '@blocksuite/affine-shared/services';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/lit';
 import { ArrowLeftBigIcon, KeyboardIcon } from '@blocksuite/icons/lit';
 import {
@@ -48,10 +48,6 @@ export class AffineKeyboardToolbar extends SignalWatcher(
 
   get std() {
     return this.rootComponent.std;
-  }
-
-  get keyboard() {
-    return this._context.std.get(VirtualKeyboardProvider);
   }
 
   get panelOpened() {
@@ -323,6 +319,9 @@ export class AffineKeyboardToolbar extends SignalWatcher(
       ></affine-keyboard-tool-panel>
     `;
   }
+
+  @property({ attribute: false })
+  accessor keyboard!: VirtualKeyboardProviderWithAction;
 
   @property({ attribute: false })
   accessor close: (blur: boolean) => void = () => {};
