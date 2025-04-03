@@ -17,6 +17,8 @@ export const surfaceRefToolbarModuleConfig: ToolbarModuleConfig = {
   actions: [
     {
       id: 'a.surface-ref-title',
+      when: ctx =>
+        !!ctx.getCurrentBlockByType(SurfaceRefBlockComponent)?.referenceModel,
       content: ctx => {
         const surfaceRefBlock = ctx.getCurrentBlockByType(
           SurfaceRefBlockComponent

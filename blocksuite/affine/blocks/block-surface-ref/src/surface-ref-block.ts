@@ -32,7 +32,6 @@ import {
   type SerializedXYWH,
 } from '@blocksuite/global/gfx';
 import { assertType } from '@blocksuite/global/utils';
-import { DeleteIcon } from '@blocksuite/icons/lit';
 import {
   BlockComponent,
   BlockSelection,
@@ -55,20 +54,9 @@ import { classMap } from 'lit/directives/class-map.js';
 import { guard } from 'lit/directives/guard.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { noContentPlaceholder } from './utils.js';
-
-const NO_CONTENT_TITLE = {
-  'affine:frame': 'Frame',
-  group: 'Group',
-  DEFAULT: 'Content',
-} as Record<string, string>;
-
-const NO_CONTENT_REASON = {
-  group: 'This content was ungrouped or deleted on edgeless mode',
-  DEFAULT: 'This content was deleted on edgeless mode',
-} as Record<string, string>;
-
-@Peekable()
+@Peekable({
+  enableOn: (block: SurfaceRefBlockComponent) => !!block.referenceModel,
+})
 export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockModel> {
   static override styles = css`
     affine-surface-ref {
@@ -99,70 +87,6 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       .affine-surface-ref {
         outline: none !important;
       }
-    }
-
-    .ref-placeholder {
-      padding: 26px 0px 0px;
-    }
-
-    .placeholder-image {
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .placeholder-text {
-      margin: 12px auto 0;
-      text-align: center;
-      font-size: 28px;
-      font-weight: 600;
-      line-height: 36px;
-      font-family: var(--affine-font-family);
-    }
-
-    .placeholder-action {
-      margin: 32px auto 0;
-      text-align: center;
-    }
-
-    .delete-button {
-      width: 204px;
-      padding: 4px 18px;
-
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 4px;
-
-      border-radius: 8px;
-      border: 1px solid var(--affine-border-color);
-
-      font-family: var(--affine-font-family);
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 20px;
-
-      background-color: transparent;
-      cursor: pointer;
-    }
-
-    .delete-button > .icon > svg {
-      color: var(--affine-icon-color);
-      width: 16px;
-      height: 16px;
-      display: block;
-    }
-
-    .placeholder-reason {
-      margin: 72px auto 0;
-      padding: 10px;
-
-      text-align: center;
-      font-size: 12px;
-      font-family: var(--affine-font-family);
-      line-height: 20px;
-
-      color: var(--affine-warning-color);
-      background-color: var(--affine-background-error-color);
     }
 
     .ref-content {
@@ -204,10 +128,6 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
   get referenceModel() {
     return this._referencedModel;
-  }
-
-  private _deleteThis() {
-    this.doc.deleteBlock(this.model);
   }
 
   private _focusBlock() {
@@ -474,27 +394,6 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     </div>`;
   }
 
-  private _renderRefPlaceholder(model: SurfaceRefBlockModel) {
-    return html`<div class="ref-placeholder">
-      <div class="placeholder-image">${noContentPlaceholder}</div>
-      <div class="placeholder-text">
-        No Such
-        ${NO_CONTENT_TITLE[model.props.refFlavour ?? 'DEFAULT'] ??
-        NO_CONTENT_TITLE.DEFAULT}
-      </div>
-      <div class="placeholder-action">
-        <button class="delete-button" type="button" @click=${this._deleteThis}>
-          <span class="icon">${DeleteIcon()}</span
-          ><span>Delete this block</span>
-        </button>
-      </div>
-      <div class="placeholder-reason">
-        ${NO_CONTENT_REASON[model.props.refFlavour ?? 'DEFAULT'] ??
-        NO_CONTENT_REASON.DEFAULT}
-      </div>
-    </div>`;
-  }
-
   readonly open = ({
     openMode,
     event,
@@ -537,7 +436,10 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     const { _referencedModel, model } = this;
     const isEmpty = !_referencedModel || !_referencedModel.xywh;
     const content = isEmpty
-      ? this._renderRefPlaceholder(model)
+      ? html`<surface-ref-placeholder
+          .referenceModel=${_referencedModel}
+          .refFlavour=${model.props.refFlavour$.value}
+        ></surface-ref-placeholder>`
       : this._renderRefContent(_referencedModel);
     const edgelessTheme = this.std.get(ThemeProvider).edgeless$.value;
 

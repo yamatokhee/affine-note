@@ -1,4 +1,4 @@
-import { SurfaceRefToolbarTitle } from './components';
+import { SurfaceRefPlaceHolder, SurfaceRefToolbarTitle } from './components';
 import { SurfaceRefGenericBlockPortal } from './portal/generic-block';
 import { SurfaceRefNotePortal } from './portal/note';
 import { SurfaceRefBlockComponent } from './surface-ref-block';
@@ -16,10 +16,5 @@ export function effects() {
   );
   customElements.define('surface-ref-note-portal', SurfaceRefNotePortal);
   customElements.define('surface-ref-toolbar-title', SurfaceRefToolbarTitle);
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'surface-ref-toolbar-title': SurfaceRefToolbarTitle;
-  }
+  customElements.define('surface-ref-placeholder', SurfaceRefPlaceHolder);
 }

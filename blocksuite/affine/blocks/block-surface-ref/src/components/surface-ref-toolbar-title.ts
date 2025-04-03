@@ -66,3 +66,9 @@ export class SurfaceRefToolbarTitle extends ShadowlessElement {
     return html`${icon}<span>${title}</span>`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'surface-ref-toolbar-title': SurfaceRefToolbarTitle;
+  }
+}
