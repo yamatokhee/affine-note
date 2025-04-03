@@ -96,7 +96,7 @@ test.describe('AIChatWith/Network', () => {
       buffer: buffer,
     });
 
-    await page.waitForSelector('chat-panel-input img');
+    await page.waitForSelector('ai-chat-input img');
     const isNetworkSearchEnabled =
       await utils.chatPanel.isNetworkSearchEnabled(page);
     await expect(isNetworkSearchEnabled).toBe(false);

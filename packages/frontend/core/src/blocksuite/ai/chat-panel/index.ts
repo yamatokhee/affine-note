@@ -1,4 +1,3 @@
-import './chat-panel-input';
 import './chat-panel-messages';
 
 import type {
@@ -640,7 +639,7 @@ export class ChatPanel extends SignalWatcher(
         .docDisplayConfig=${this.docDisplayConfig}
         .searchMenuConfig=${this.searchMenuConfig}
       ></chat-panel-chips>
-      <chat-panel-input
+      <ai-chat-input
         .chips=${this.chips}
         .chatContextValue=${this.chatContextValue}
         .getSessionId=${this._getSessionId}
@@ -650,7 +649,7 @@ export class ChatPanel extends SignalWatcher(
         .updateContext=${this.updateContext}
         .host=${this.host}
         .cleanupHistories=${this._cleanupHistories}
-      ></chat-panel-input>
+      ></ai-chat-input>
       <div class="chat-panel-footer">
         ${InformationIcon()}
         <div>AI outputs can be misleading or wrong</div>

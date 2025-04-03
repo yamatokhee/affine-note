@@ -23,7 +23,6 @@ import { ActionMindmap } from './chat-panel/actions/mindmap';
 import { ActionSlides } from './chat-panel/actions/slides';
 import { ActionText } from './chat-panel/actions/text';
 import { AILoading } from './chat-panel/ai-loading';
-import { ChatPanelInput } from './chat-panel/chat-panel-input';
 import { ChatPanelMessages } from './chat-panel/chat-panel-messages';
 import { AssistantAvatar } from './chat-panel/content/assistant-avatar';
 import { ChatContentImages } from './chat-panel/content/images';
@@ -40,6 +39,7 @@ import { ChatPanelCollectionChip } from './components/ai-chat-chips/collection-c
 import { ChatPanelDocChip } from './components/ai-chat-chips/doc-chip';
 import { ChatPanelFileChip } from './components/ai-chat-chips/file-chip';
 import { ChatPanelTagChip } from './components/ai-chat-chips/tag-chip';
+import { AIChatInput } from './components/ai-chat-input/ai-chat-input';
 import { effects as componentAiItemEffects } from './components/ai-item';
 import { AIScrollableTextRenderer } from './components/ai-scrollable-text-renderer';
 import { AskAIButton } from './components/ask-ai-button';
@@ -54,7 +54,6 @@ import { AIErrorWrapper } from './messages/error';
 import { AISlidesRenderer } from './messages/slides-renderer';
 import { AIAnswerWrapper } from './messages/wrapper';
 import { registerMiniMindmapBlocks } from './mini-mindmap';
-import { ChatBlockInput } from './peek-view/chat-block-input';
 import { AIChatBlockPeekView } from './peek-view/chat-block-peek-view';
 import { DateTime } from './peek-view/date-time';
 import {
@@ -96,9 +95,9 @@ export function registerAIEffects() {
   customElements.define('action-slides', ActionSlides);
   customElements.define('action-text', ActionText);
   customElements.define('ai-loading', AILoading);
-  customElements.define('chat-panel-input', ChatPanelInput);
   customElements.define('chat-panel-messages', ChatPanelMessages);
   customElements.define('chat-panel', ChatPanel);
+  customElements.define('ai-chat-input', AIChatInput);
   customElements.define('chat-panel-chips', ChatPanelChips);
   customElements.define('chat-panel-add-popover', ChatPanelAddPopover);
   customElements.define(
@@ -113,7 +112,6 @@ export function registerAIEffects() {
   customElements.define('ai-error-wrapper', AIErrorWrapper);
   customElements.define('ai-slides-renderer', AISlidesRenderer);
   customElements.define('ai-answer-wrapper', AIAnswerWrapper);
-  customElements.define('chat-block-input', ChatBlockInput);
   customElements.define('ai-chat-block-peek-view', AIChatBlockPeekView);
   customElements.define('date-time', DateTime);
   customElements.define(

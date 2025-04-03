@@ -15,14 +15,16 @@ import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { ChatAbortIcon, ChatSendIcon } from '../../_common/icons';
-import { AIProvider } from '../../provider';
+import { type AIError, AIProvider } from '../../provider';
 import { reportResponse } from '../../utils/action-reporter';
+import { readBlobAsURL } from '../../utils/image';
 import type {
   ChatChip,
   DocDisplayConfig,
   FileChip,
 } from '../ai-chat-chips/type';
 import { isDocChip, isFileChip } from '../ai-chat-chips/utils';
+import type { ChatMessage } from '../ai-chat-messages';
 import { PROMPT_NAME_AFFINE_AI, PROMPT_NAME_NETWORK_SEARCH } from './const';
 import type { AIChatInputContext, AINetworkSearchConfig } from './type';
 
@@ -33,9 +35,7 @@ function getFirstTwoLines(text: string) {
   return lines.slice(0, 2);
 }
 
-export abstract class AIChatInput extends SignalWatcher(
-  WithDisposable(LitElement)
-) {
+export class AIChatInput extends SignalWatcher(WithDisposable(LitElement)) {
   static override styles = css`
     :host {
       width: 100%;
@@ -220,10 +220,10 @@ export abstract class AIChatInput extends SignalWatcher(
   accessor chips: ChatChip[] = [];
 
   @property({ attribute: false })
-  accessor getSessionId!: () => Promise<string | null | undefined>;
+  accessor getSessionId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
-  accessor getContextId!: () => Promise<string | null | undefined>;
+  accessor getContextId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
   accessor updateContext!: (context: Partial<AIChatInputContext>) => void;
@@ -236,6 +236,18 @@ export abstract class AIChatInput extends SignalWatcher(
 
   @property({ attribute: false })
   accessor docDisplayConfig!: DocDisplayConfig;
+
+  @property({ attribute: false })
+  accessor isRootSession: boolean = true;
+
+  @property({ attribute: false })
+  accessor onChatSuccess = () => null;
+
+  @property({ attribute: false })
+  accessor trackOptions: BlockSuitePresets.TrackerOptions = {
+    control: 'chat-send',
+    where: 'chat-panel',
+  };
 
   @property({ attribute: 'data-testid', reflect: true })
   accessor testId = 'chat-panel-input-container';
@@ -262,7 +274,7 @@ export abstract class AIChatInput extends SignalWatcher(
     );
   }
 
-  protected getPromptName() {
+  private _getPromptName() {
     if (this._isNetworkDisabled) {
       return PROMPT_NAME_AFFINE_AI;
     }
@@ -271,7 +283,7 @@ export abstract class AIChatInput extends SignalWatcher(
       : PROMPT_NAME_AFFINE_AI;
   }
 
-  protected async updatePromptName(promptName: string) {
+  private async _updatePromptName(promptName: string) {
     const sessionId = await this.getSessionId();
     if (sessionId && AIProvider.session) {
       await AIProvider.session.updateSession(sessionId, promptName);
@@ -501,9 +513,117 @@ export abstract class AIChatInput extends SignalWatcher(
     await this.send(value);
   };
 
-  protected abstract send(text: string): Promise<void>;
+  send = async (text: string) => {
+    const { status, markdown, images } = this.chatContextValue;
+    if (status === 'loading' || status === 'transmitting') return;
+    if (!text) return;
+    if (!AIProvider.actions.chat) return;
 
-  protected async getMatchedContexts(userInput: string) {
+    try {
+      const promptName = this._getPromptName();
+      const abortController = new AbortController();
+      this.updateContext({
+        images: [],
+        status: 'loading',
+        error: null,
+        quote: '',
+        markdown: '',
+        abortController,
+      });
+
+      const attachments = await Promise.all(
+        images?.map(image => readBlobAsURL(image))
+      );
+      const userInput = (markdown ? `${markdown}\n` : '') + text;
+
+      // optimistic update messages
+      await this._preUpdateMessages(userInput, attachments);
+      // must update prompt name after local chat message is updated
+      // otherwise, the unauthorized error can not be rendered properly
+      await this._updatePromptName(promptName);
+
+      const sessionId = await this.getSessionId();
+      const contexts = await this._getMatchedContexts(userInput);
+      if (abortController.signal.aborted) {
+        return;
+      }
+      const stream = AIProvider.actions.chat({
+        sessionId,
+        input: userInput,
+        contexts,
+        docId: this.host.doc.id,
+        attachments: images,
+        workspaceId: this.host.doc.workspace.id,
+        host: this.host,
+        stream: true,
+        signal: abortController.signal,
+        isRootSession: this.isRootSession,
+        where: this.trackOptions.where,
+        control: this.trackOptions.control,
+      });
+
+      for await (const text of stream) {
+        const messages = [...this.chatContextValue.messages];
+        const last = messages[messages.length - 1] as ChatMessage;
+        last.content += text;
+        this.updateContext({ messages, status: 'transmitting' });
+      }
+
+      this.updateContext({ status: 'success' });
+      this.onChatSuccess();
+      // update message id from server
+      await this._postUpdateMessages();
+    } catch (error) {
+      this.updateContext({ status: 'error', error: error as AIError });
+    } finally {
+      this.updateContext({ abortController: null });
+    }
+  };
+
+  private readonly _preUpdateMessages = async (
+    userInput: string,
+    attachments: string[]
+  ) => {
+    const userInfo = await AIProvider.userInfo;
+    this.updateContext({
+      messages: [
+        ...this.chatContextValue.messages,
+        {
+          id: '',
+          role: 'user',
+          content: userInput,
+          createdAt: new Date().toISOString(),
+          attachments,
+          userId: userInfo?.id,
+          userName: userInfo?.name,
+          avatarUrl: userInfo?.avatarUrl ?? undefined,
+        },
+        {
+          id: '',
+          role: 'assistant',
+          content: '',
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    });
+  };
+
+  private readonly _postUpdateMessages = async () => {
+    const { messages } = this.chatContextValue;
+    const last = messages[messages.length - 1] as ChatMessage;
+    if (!last.id) {
+      const sessionId = await this.getSessionId();
+      const historyIds = await AIProvider.histories?.ids(
+        this.host.doc.workspace.id,
+        this.host.doc.id,
+        { sessionId }
+      );
+      if (!historyIds || !historyIds[0]) return;
+      last.id = historyIds[0].messages.at(-1)?.id ?? '';
+    }
+  };
+
+  private async _getMatchedContexts(userInput: string) {
     const contextId = await this.getContextId();
     if (!contextId) {
       return { files: [], docs: [] };
@@ -584,5 +704,11 @@ export abstract class AIChatInput extends SignalWatcher(
       docs,
       files: Array.from(fileContexts.values()),
     };
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ai-chat-input': AIChatInput;
   }
 }

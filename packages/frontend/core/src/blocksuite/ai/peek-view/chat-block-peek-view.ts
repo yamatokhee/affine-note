@@ -173,8 +173,12 @@ export class AIChatBlockPeekView extends LitElement {
     return this._chatContextId;
   };
 
-  private readonly _getBlockId = () => {
-    return this._chatBlockId;
+  private readonly _onChatSuccess = async () => {
+    if (!this._chatBlockId) {
+      await this.createAIChatBlock();
+    }
+    // Update new chat block messages if there are contents returned from AI
+    await this.updateChatBlockMessages();
   };
 
   /**
@@ -518,8 +522,6 @@ export class AIChatBlockPeekView extends LitElement {
     const latestHistoryMessage = _historyMessages[_historyMessages.length - 1];
     const latestMessageCreatedAt = latestHistoryMessage.createdAt;
     const {
-      updateChatBlockMessages,
-      createAIChatBlock,
       cleanCurrentChatHistories,
       chatContext,
       updateContext,
@@ -541,20 +543,22 @@ export class AIChatBlockPeekView extends LitElement {
           ${this.CurrentMessages(currentChatMessages)}
         </div>
       </div>
-      <chat-block-input
+      <ai-chat-input
         .host=${host}
         .chips=${this.chips}
         .getSessionId=${this._getSessionId}
         .getContextId=${this._getContextId}
-        .getBlockId=${this._getBlockId}
-        .updateChatBlock=${updateChatBlockMessages}
-        .createChatBlock=${createAIChatBlock}
         .cleanupHistories=${cleanCurrentChatHistories}
         .chatContextValue=${chatContext}
         .updateContext=${updateContext}
         .networkSearchConfig=${networkSearchConfig}
         .docDisplayConfig=${this.docDisplayConfig}
-      ></chat-block-input>
+        .onChatSuccess=${this._onChatSuccess}
+        .trackOptions=${{
+          where: 'ai-chat-block',
+          control: 'chat-send',
+        }}
+      ></ai-chat-input>
       <div class="peek-view-footer">
         ${InformationIcon()}
         <div>AI outputs can be misleading or wrong</div>

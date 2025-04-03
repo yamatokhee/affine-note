@@ -244,7 +244,7 @@ export class ChatPanelUtils {
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles(images);
 
-    await page.waitForSelector('chat-panel-input img');
+    await page.waitForSelector('ai-chat-input img');
     await this.makeChat(page, text);
   }
 
