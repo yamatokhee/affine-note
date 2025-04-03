@@ -315,7 +315,7 @@ export class AffineKeyboardToolbar extends SignalWatcher(
       <affine-keyboard-tool-panel
         .config=${this._currentPanelConfig}
         .context=${this._context}
-        height=${this.panelHeight$.value}
+        .height=${this.panelHeight$.value}
       ></affine-keyboard-tool-panel>
     `;
   }

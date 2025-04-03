@@ -95,6 +95,6 @@ export class AffineKeyboardToolPanel extends SignalWatcher(
   @property({ attribute: false })
   accessor context!: KeyboardToolbarContext;
 
-  @property({ type: Number })
+  @property({ attribute: false })
   accessor height = 0;
 }
