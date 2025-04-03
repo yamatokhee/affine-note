@@ -191,13 +191,9 @@ export const BackupSettingPanel = () => {
   const t = useI18n();
   const backupService = useService(BackupService);
 
-  const handlePageChange = useCallback(() => {
-    backupService.revalidate();
-  }, [backupService]);
-
   useEffect(() => {
     backupService.revalidate();
-  }, [backupService, handlePageChange]);
+  }, [backupService]);
 
   const isLoading = useLiveData(backupService.isLoading$);
   const backupWorkspaces = useLiveData(backupService.pageBackupWorkspaces$);

@@ -1,3 +1,4 @@
+import { getWorkerUrl } from '@affine/env/worker';
 import { ListLayoutHandlerExtension } from '@blocksuite/affine/blocks/list';
 import { ParagraphLayoutHandlerExtension } from '@blocksuite/affine/blocks/paragraph';
 import {
@@ -6,15 +7,7 @@ import {
 } from '@blocksuite/affine/gfx/turbo-renderer';
 
 function createPainterWorker() {
-  const worker = new Worker(
-    /* webpackChunkName: "turbo-painter-entry" */ new URL(
-      './turbo-painter-entry.worker.ts',
-      import.meta.url
-    ),
-    {
-      type: 'module',
-    }
-  );
+  const worker = new Worker(getWorkerUrl('turbo-painter-entry.worker.js'));
   return worker;
 }
 

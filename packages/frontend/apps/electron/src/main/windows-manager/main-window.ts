@@ -63,8 +63,6 @@ export class MainWindowManager {
       defaultHeight: 800,
     });
 
-    await ensureHelperProcess();
-
     const browserWindow = new BrowserWindow({
       titleBarStyle: isMacOS()
         ? 'hiddenInset'
@@ -88,6 +86,8 @@ export class MainWindowManager {
         sandbox: false,
       },
     });
+    const helper = await ensureHelperProcess();
+    helper.connectMain(browserWindow);
 
     if (isLinux()) {
       browserWindow.setIcon(

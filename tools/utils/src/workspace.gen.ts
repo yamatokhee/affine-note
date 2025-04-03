@@ -923,6 +923,7 @@ export const PackageList = [
     workspaceDependencies: [
       'packages/frontend/component',
       'packages/frontend/core',
+      'packages/common/env',
       'packages/frontend/i18n',
       'packages/common/nbstore',
       'blocksuite/affine/all',
@@ -961,6 +962,7 @@ export const PackageList = [
     workspaceDependencies: [
       'packages/frontend/component',
       'packages/frontend/core',
+      'packages/common/env',
       'packages/frontend/i18n',
       'packages/common/nbstore',
       'blocksuite/affine/all',
@@ -976,6 +978,7 @@ export const PackageList = [
     workspaceDependencies: [
       'packages/frontend/component',
       'packages/frontend/core',
+      'packages/common/env',
       'packages/frontend/i18n',
       'packages/common/nbstore',
       'blocksuite/affine/all',
@@ -988,6 +991,7 @@ export const PackageList = [
     workspaceDependencies: [
       'packages/frontend/component',
       'packages/frontend/core',
+      'packages/common/env',
       'packages/frontend/i18n',
       'packages/common/nbstore',
       'packages/frontend/track',

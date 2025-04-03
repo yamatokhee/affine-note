@@ -1,5 +1,5 @@
 import { mixpanel, sentry } from '@affine/track';
-import { APP_SETTINGS_STORAGE_KEY } from '@toeverything/infra';
+import { APP_SETTINGS_STORAGE_KEY } from '@toeverything/infra/atom';
 
 mixpanel.init();
 sentry.init();

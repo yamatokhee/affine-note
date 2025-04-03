@@ -11,8 +11,8 @@ type Middleware = (
 
 function createMixpanel() {
   let mixpanel;
-  if (process.env.MIXPANEL_TOKEN) {
-    mixpanelBrowser.init(process.env.MIXPANEL_TOKEN || '', {
+  if (BUILD_CONFIG.MIXPANEL_TOKEN) {
+    mixpanelBrowser.init(BUILD_CONFIG.MIXPANEL_TOKEN || '', {
       track_pageview: true,
       persistence: 'localStorage',
       api_host: 'https://telemetry.affine.run',

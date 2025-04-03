@@ -7,8 +7,6 @@
 import type { PropertyDeclaration } from 'lit';
 import type React from 'react';
 
-const DEV_MODE = process.env.NODE_ENV !== 'production';
-
 type DistributiveOmit<T, K extends string | number | symbol> = T extends any
   ? K extends keyof T
     ? Omit<T, K>
@@ -245,7 +243,7 @@ export const createComponent = <
 }: Options<I, E>): ReactWebComponent<I, E> => {
   const eventProps = new Set(Object.keys(events ?? {}));
 
-  if (DEV_MODE) {
+  if (BUILD_CONFIG.debug) {
     for (const p of reservedReactProperties) {
       if (p in elementClass.prototype && !(p in HTMLElement.prototype)) {
         // Note, this effectively warns only for `ref` since the other

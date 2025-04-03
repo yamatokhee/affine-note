@@ -8,6 +8,7 @@
     "./utils": "./src/utils/index.ts",
     "./app-config-storage": "./src/app-config-storage.ts",
     "./op": "./src/op/index.ts",
+    "./atom": "./src/atom/index.ts",
     ".": "./src/index.ts"
   },
   "dependencies": {

@@ -2,7 +2,13 @@ import path from 'node:path';
 
 import type { _AsyncVersionOf } from 'async-call-rpc';
 import { AsyncCall } from 'async-call-rpc';
-import type { UtilityProcess, WebContents } from 'electron';
+import type {
+  BaseWindow,
+  OpenDialogOptions,
+  SaveDialogOptions,
+  UtilityProcess,
+  WebContents,
+} from 'electron';
 import {
   app,
   dialog,
@@ -57,7 +63,6 @@ class HelperProcessManager {
     this.ready = new Promise((resolve, reject) => {
       helperProcess.once('spawn', () => {
         try {
-          this.#connectMain();
           logger.info('[helper] forked', helperProcess.pid);
           resolve();
         } catch (err) {
@@ -91,11 +96,15 @@ class HelperProcessManager {
 
   // bridge main <-> helper process
   // also set up the RPC to the helper process
-  #connectMain() {
-    const dialogMethods = pickAndBind(dialog, [
-      'showOpenDialog',
-      'showSaveDialog',
-    ]);
+  connectMain(window: BaseWindow) {
+    const dialogMethods = {
+      showOpenDialog: async (opts: OpenDialogOptions) => {
+        return dialog.showOpenDialog(window, opts);
+      },
+      showSaveDialog: async (opts: SaveDialogOptions) => {
+        return dialog.showSaveDialog(window, opts);
+      },
+    };
     const shellMethods = pickAndBind(shell, [
       'openExternal',
       'showItemInFolder',

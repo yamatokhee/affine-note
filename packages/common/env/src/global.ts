@@ -17,6 +17,7 @@ export function setupGlobal() {
     isMobile: false,
     isSelfHosted: false,
     publicPath: '/',
+    workerPath: '/js/',
   };
 
   if (globalThis.navigator) {

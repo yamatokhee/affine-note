@@ -121,7 +121,7 @@ export const test = base.extend<{
         electronRoot.join('package.json').value
       );
       // overwrite the app name
-      packageJson.name = 'affine-test-' + id;
+      packageJson.name = '@affine/electron-test-' + id;
       // overwrite the path to the main script
       packageJson.main = './main.js';
       // write to the cloned dist

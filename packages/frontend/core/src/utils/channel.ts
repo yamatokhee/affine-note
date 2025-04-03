@@ -23,8 +23,7 @@ export const schemeToChannel = {
 
 export const channelToScheme = {
   stable: 'affine',
-  canary:
-    process.env.NODE_ENV === 'development' ? 'affine-dev' : 'affine-canary',
+  canary: BUILD_CONFIG.debug ? 'affine-dev' : 'affine-canary',
   beta: 'affine-beta',
   internal: 'affine-internal',
 } as Record<Channel, Scheme>;

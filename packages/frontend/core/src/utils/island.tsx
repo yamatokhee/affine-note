@@ -36,7 +36,7 @@ export const createIsland = () => {
     Provider: ({ children }: React.PropsWithChildren) => {
       const target = useLiveData(targetLiveData$);
       useEffect(() => {
-        if (provided === true && process.env.NODE_ENV !== 'production') {
+        if (provided === true && BUILD_CONFIG.debug) {
           throw new Error('Island should not be provided more than once');
         }
         provided = true;

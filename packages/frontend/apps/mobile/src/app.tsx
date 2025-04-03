@@ -14,6 +14,7 @@ import {
 import { PopupWindowProvider } from '@affine/core/modules/url';
 import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench';
 import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
+import { getWorkerUrl } from '@affine/env/worker';
 import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { OpClient } from '@toeverything/infra/op';
@@ -22,16 +23,12 @@ import { RouterProvider } from 'react-router-dom';
 
 let storeManagerClient: StoreManagerClient;
 
+const workerUrl = getWorkerUrl('nbstore.worker.js');
 if (window.SharedWorker) {
-  const worker = new SharedWorker(
-    new URL(/* webpackChunkName: "nbstore" */ './nbstore.ts', import.meta.url),
-    { name: 'affine-shared-worker' }
-  );
+  const worker = new SharedWorker(workerUrl, { name: 'affine-shared-worker' });
   storeManagerClient = new StoreManagerClient(new OpClient(worker.port));
 } else {
-  const worker = new Worker(
-    new URL(/* webpackChunkName: "nbstore" */ './nbstore.ts', import.meta.url)
-  );
+  const worker = new Worker(workerUrl);
   storeManagerClient = new StoreManagerClient(new OpClient(worker));
 }
 window.addEventListener('beforeunload', () => {

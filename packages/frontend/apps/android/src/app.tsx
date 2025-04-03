@@ -23,6 +23,7 @@ import { ClientSchemeProvider } from '@affine/core/modules/url/providers/client-
 import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench';
 import { WorkspacesService } from '@affine/core/modules/workspace';
 import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
+import { getWorkerUrl } from '@affine/env/worker';
 import { I18n } from '@affine/i18n';
 import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { defaultBlockMarkdownAdapterMatchers } from '@blocksuite/affine/adapters';
@@ -51,11 +52,7 @@ import { AffineTheme } from './plugins/affine-theme';
 import { AIButton } from './plugins/ai-button';
 
 const storeManagerClient = new StoreManagerClient(
-  new OpClient(
-    new Worker(
-      new URL(/* webpackChunkName: "nbstore" */ './nbstore.ts', import.meta.url)
-    )
-  )
+  new OpClient(new Worker(getWorkerUrl('nbstore.worker.js')))
 );
 window.addEventListener('beforeunload', () => {
   storeManagerClient.dispose();

@@ -37,6 +37,7 @@ declare type Environment = {
 
   // runtime configs
   publicPath: string;
+  workerPath: string
 };
 
   var process: {

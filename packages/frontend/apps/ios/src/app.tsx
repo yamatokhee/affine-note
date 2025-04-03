@@ -35,6 +35,7 @@ import {
   WorkspacesService,
 } from '@affine/core/modules/workspace';
 import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
+import { getWorkerUrl } from '@affine/env/worker';
 import { I18n } from '@affine/i18n';
 import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { defaultBlockMarkdownAdapterMatchers } from '@blocksuite/affine/adapters';
@@ -414,12 +415,7 @@ export function App() {
 }
 
 function createStoreManagerClient() {
-  const worker = new Worker(
-    new URL(
-      /* webpackChunkName: "nbstore-worker" */ './worker.ts',
-      import.meta.url
-    )
-  );
+  const worker = new Worker(getWorkerUrl('nbstore.worker.js'));
   const { port1: nativeDBApiChannelServer, port2: nativeDBApiChannelClient } =
     new MessageChannel();
   AsyncCall<typeof NbStoreNativeDBApis>(NbStoreNativeDBApis, {

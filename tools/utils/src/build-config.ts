@@ -50,6 +50,10 @@ export function getBuildConfig(
         discordUrl: 'https://affine.pro/redirect/discord',
         imageProxyUrl: '/api/worker/image-proxy',
         linkPreviewUrl: '/api/worker/link-preview',
+        CAPTCHA_SITE_KEY: process.env.CAPTCHA_SITE_KEY ?? '',
+        SENTRY_DSN: process.env.SENTRY_DSN ?? '',
+        MIXPANEL_TOKEN: process.env.MIXPANEL_TOKEN ?? '',
+        DEBUG_JOTAI: process.env.DEBUG_JOTAI ?? '',
       };
     },
     get beta() {

@@ -16,6 +16,7 @@
   "dependencies": {
     "@affine/component": "workspace:*",
     "@affine/core": "workspace:*",
+    "@affine/env": "workspace:*",
     "@affine/i18n": "workspace:*",
     "@affine/nbstore": "workspace:*",
     "@blocksuite/affine": "workspace:*",

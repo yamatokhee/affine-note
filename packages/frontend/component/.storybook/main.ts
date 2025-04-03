@@ -54,18 +54,15 @@ export default {
           inlineSourcesContent: true,
         }),
       ],
-      define: {
-        'process.env.CAPTCHA_SITE_KEY': `"${process.env.CAPTCHA_SITE_KEY}"`,
-        ...Object.entries(
-          getBuildConfig(new Package('@affine/web'), {
-            mode: 'development',
-            channel: 'canary',
-          })
-        ).reduce((envs, [key, value]) => {
-          envs[`BUILD_CONFIG.${key}`] = JSON.stringify(value);
-          return envs;
-        }, {}),
-      },
+      define: Object.entries(
+        getBuildConfig(new Package('@affine/web'), {
+          mode: 'development',
+          channel: 'canary',
+        })
+      ).reduce((envs, [key, value]) => {
+        envs[`BUILD_CONFIG.${key}`] = JSON.stringify(value);
+        return envs;
+      }, {}),
     });
   },
 
