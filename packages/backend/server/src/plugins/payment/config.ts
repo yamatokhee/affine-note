@@ -47,7 +47,7 @@ defineModuleConfig('payment', {
     env: 'STRIPE_WEBHOOK_KEY',
   },
   stripe: {
-    desc: 'Stripe API keys',
+    desc: 'Stripe sdk options',
     default: {},
     link: 'https://docs.stripe.com/api',
   },

@@ -866,7 +866,7 @@
         },
         "stripe": {
           "type": "object",
-          "description": "Stripe API keys\n@default {}\n@link https://docs.stripe.com/api",
+          "description": "Stripe sdk options\n@default {}\n@link https://docs.stripe.com/api",
           "default": {}
         }
       }

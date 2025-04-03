@@ -174,3 +174,14 @@ test('should override correctly', t => {
     },
   });
 });
+
+test('should clone from original config without modifications', t => {
+  const config = module.get(Config);
+  const configFactory = module.get(ConfigFactory);
+
+  config.auth.allowSignup = !config.auth.allowSignup;
+
+  const newConfig = configFactory.clone();
+
+  t.not(newConfig.auth.allowSignup, config.auth.allowSignup);
+});

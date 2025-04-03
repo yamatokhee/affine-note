@@ -7,7 +7,11 @@ export const OVERRIDE_CONFIG_TOKEN = Symbol('OVERRIDE_CONFIG_TOKEN');
 
 @Injectable()
 export class ConfigFactory {
+  #original: AppConfig;
   readonly #config: AppConfig;
+  get config() {
+    return this.#config;
+  }
 
   constructor(
     @Inject(OVERRIDE_CONFIG_TOKEN)
@@ -15,18 +19,17 @@ export class ConfigFactory {
     private readonly overrides: DeepPartial<AppConfig> = {}
   ) {
     this.#config = this.loadDefault();
-  }
-
-  get config() {
-    return this.#config;
+    this.#original = structuredClone(this.#config);
   }
 
   clone() {
-    return structuredClone(this.#config);
+    // we did not freeze the #config object, it might be modified
+    return structuredClone(this.#original);
   }
 
   override(updates: DeepPartial<AppConfig>) {
     override(this.#config, updates);
+    this.#original = structuredClone(this.#config);
   }
 
   validate(updates: Array<{ module: string; key: string; value: any }>) {

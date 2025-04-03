@@ -293,7 +293,7 @@
     },
     "stripe": {
       "type": "Object",
-      "desc": "Stripe API keys",
+      "desc": "Stripe sdk options",
       "link": "https://docs.stripe.com/api"
     }
   },
