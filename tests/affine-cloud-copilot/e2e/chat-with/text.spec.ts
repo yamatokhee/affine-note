@@ -127,4 +127,15 @@ test.describe('AIChatWith/Text', () => {
     const content = await utils.editor.getEditorContent(page);
     expect(content).toBe('Apple');
   });
+
+  test('should focus on textarea', async ({ page, utils }) => {
+    await utils.editor.askAIWithText(page, 'Apple');
+
+    const textarea = await utils.editor.whatAreYourThoughts(page, 'Coffee');
+
+    await expect(textarea).toBeFocused();
+
+    const value = await textarea.inputValue();
+    expect(value).toBe('Coffee');
+  });
 });

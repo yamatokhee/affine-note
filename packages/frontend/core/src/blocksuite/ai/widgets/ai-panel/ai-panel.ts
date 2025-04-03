@@ -15,6 +15,7 @@ import {
 } from '@blocksuite/affine/shared/utils';
 import { WidgetComponent, WidgetViewExtension } from '@blocksuite/affine/std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/std/gfx';
+import { RANGE_SYNC_EXCLUDE_ATTR } from '@blocksuite/affine/std/inline';
 import type { BaseSelection } from '@blocksuite/affine/store';
 import {
   autoPlacement,
@@ -415,6 +416,8 @@ export class AffineAIPanelWidget extends WidgetComponent {
     super.connectedCallback();
 
     this.tabIndex = -1;
+    // No need to synchronize the contents of the input into the editor.
+    this.setAttribute(RANGE_SYNC_EXCLUDE_ATTR, 'true');
     this.disposables.addFromEvent(
       document,
       'pointerdown',
@@ -437,6 +440,9 @@ export class AffineAIPanelWidget extends WidgetComponent {
     this.disposables.addFromEvent(this, 'wheel', stopPropagation);
     this.disposables.addFromEvent(this, 'pointerdown', stopPropagation);
     this.disposables.addFromEvent(this, 'pointerup', stopPropagation);
+    this.disposables.addFromEvent(this, 'cut', stopPropagation);
+    this.disposables.addFromEvent(this, 'copy', stopPropagation);
+    this.disposables.addFromEvent(this, 'paste', stopPropagation);
     this.disposables.addFromEvent(this, 'keydown', this._onKeyDown);
   }
 

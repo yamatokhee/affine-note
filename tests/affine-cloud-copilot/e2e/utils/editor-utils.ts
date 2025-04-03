@@ -582,4 +582,12 @@ export class EditorUtils {
       ),
     } as const;
   }
+
+  public static async whatAreYourThoughts(page: Page, text: string) {
+    const textarea = page.locator(
+      'affine-ai-panel-widget .ai-panel-container textarea'
+    );
+    await textarea.fill(text);
+    return textarea;
+  }
 }

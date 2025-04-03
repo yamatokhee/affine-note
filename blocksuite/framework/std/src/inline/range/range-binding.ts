@@ -210,12 +210,11 @@ export class RangeBinding {
     const el = getElement(range.commonAncestorContainer);
     if (!el) return;
 
-    const closestExclude = el.closest(`[${RANGE_SYNC_EXCLUDE_ATTR}]`);
-    if (closestExclude?.getAttribute(RANGE_SYNC_EXCLUDE_ATTR) === 'true')
-      return;
+    const closestExclude = el.closest(`[${RANGE_SYNC_EXCLUDE_ATTR}="true"]`);
+    if (closestExclude) return;
 
-    const closestEditable = el.closest('[contenteditable]');
-    if (closestEditable?.getAttribute('contenteditable') === 'false') return;
+    const closestEditable = el.closest('[contenteditable="false"]');
+    if (closestEditable) return;
 
     const startElement = getElement(range.startContainer);
     const endElement = getElement(range.endContainer);
