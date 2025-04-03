@@ -1,7 +1,11 @@
 import { join } from 'node:path';
 import { setTimeout } from 'node:timers/promises';
 
-import { BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  type BrowserWindowConstructorOptions,
+} from 'electron';
 import { BehaviorSubject } from 'rxjs';
 
 import { popupViewUrl } from '../constants';
@@ -95,6 +99,9 @@ abstract class PopupWindow {
         additionalArguments: await getAdditionalArguments(this.name),
       },
     });
+
+    // it seems that the dock will disappear when popup windows are shown
+    await app.dock?.show();
 
     // required to make the window transparent
     browserWindow.setBackgroundColor('#00000000');

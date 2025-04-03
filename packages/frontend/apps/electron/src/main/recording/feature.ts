@@ -1,5 +1,6 @@
 /* oxlint-disable no-var-requires */
 import { execSync } from 'node:child_process';
+import fsp from 'node:fs/promises';
 import path from 'node:path';
 
 // Should not load @affine/native for unsupported platforms
@@ -240,7 +241,12 @@ function setupNewRunningAppGroup() {
   );
 }
 
-function createRecording(status: RecordingStatus) {
+export function createRecording(status: RecordingStatus) {
+  let recording = recordings.get(status.id);
+  if (recording) {
+    return recording;
+  }
+
   const bufferedFilePath = path.join(
     SAVED_RECORDINGS_DIR,
     `${status.appGroup?.bundleIdentifier ?? 'unknown'}-${status.id}-${status.startTime}.raw`
@@ -275,7 +281,7 @@ function createRecording(status: RecordingStatus) {
     ? status.app.rawInstance.tapAudio(tapAudioSamples)
     : ShareableContent.tapGlobalAudio(null, tapAudioSamples);
 
-  const recording: Recording = {
+  recording = {
     id: status.id,
     startTime: status.startTime,
     app: status.app,
@@ -283,6 +289,8 @@ function createRecording(status: RecordingStatus) {
     file,
     stream,
   };
+
+  recordings.set(status.id, recording);
 
   return recording;
 }
@@ -330,7 +338,6 @@ function setupRecordingListeners() {
           // create a recording if not exists
           if (!recording) {
             recording = createRecording(status);
-            recordings.set(status.id, recording);
           }
         } else if (status?.status === 'stopped') {
           const recording = recordings.get(status.id);
@@ -518,6 +525,10 @@ export function startRecording(
     appGroup: normalizeAppGroupInfo(appGroup),
   });
 
+  if (state?.status === 'recording') {
+    createRecording(state);
+  }
+
   // set a timeout to stop the recording after MAX_DURATION_FOR_TRANSCRIPTION
   setTimeout(() => {
     if (
@@ -544,7 +555,7 @@ export function resumeRecording(id: number) {
 export async function stopRecording(id: number) {
   const recording = recordings.get(id);
   if (!recording) {
-    logger.error(`Recording ${id} not found`);
+    logger.error(`stopRecording: Recording ${id} not found`);
     return;
   }
 
@@ -590,9 +601,6 @@ export async function stopRecording(id: number) {
     const recordingStatus = recordingStateMachine.dispatch({
       type: 'STOP_RECORDING',
       id,
-      filepath: String(recording.file.path),
-      sampleRate: recording.stream.sampleRate,
-      numberOfChannels: recording.stream.channels,
     });
 
     if (!recordingStatus) {
@@ -620,11 +628,35 @@ export async function stopRecording(id: number) {
   }
 }
 
+export async function getRawAudioBuffers(
+  id: number,
+  cursor?: number
+): Promise<{
+  buffer: Buffer;
+  nextCursor: number;
+}> {
+  const recording = recordings.get(id);
+  if (!recording) {
+    throw new Error(`getRawAudioBuffers: Recording ${id} not found`);
+  }
+  const start = cursor ?? 0;
+  const file = await fsp.open(recording.file.path, 'r');
+  const stats = await file.stat();
+  const buffer = Buffer.alloc(stats.size - start);
+  const result = await file.read(buffer, 0, buffer.length, start);
+  await file.close();
+
+  return {
+    buffer,
+    nextCursor: start + result.bytesRead,
+  };
+}
+
 export async function readyRecording(id: number, buffer: Buffer) {
   const recordingStatus = recordingStatus$.value;
   const recording = recordings.get(id);
   if (!recordingStatus || recordingStatus.id !== id || !recording) {
-    logger.error(`Recording ${id} not found`);
+    logger.error(`readyRecording: Recording ${id} not found`);
     return;
   }
 
@@ -635,6 +667,16 @@ export async function readyRecording(id: number, buffer: Buffer) {
 
   await fs.writeFile(filepath, buffer);
 
+  // can safely remove the raw file now
+  const rawFilePath = recording.file.path;
+  logger.info('remove raw file', rawFilePath);
+  if (rawFilePath) {
+    try {
+      await fs.unlink(rawFilePath);
+    } catch (err) {
+      logger.error('failed to remove raw file', err);
+    }
+  }
   // Update the status through the state machine
   recordingStateMachine.dispatch({
     type: 'SAVE_RECORDING',
@@ -689,7 +731,8 @@ export interface SerializedRecordingStatus {
 
 export function serializeRecordingStatus(
   status: RecordingStatus
-): SerializedRecordingStatus {
+): SerializedRecordingStatus | null {
+  const recording = recordings.get(status.id);
   return {
     id: status.id,
     status: status.status,
@@ -697,9 +740,10 @@ export function serializeRecordingStatus(
     appGroupId: status.appGroup?.processGroupId,
     icon: status.appGroup?.icon,
     startTime: status.startTime,
-    filepath: status.filepath,
-    sampleRate: status.sampleRate,
-    numberOfChannels: status.numberOfChannels,
+    filepath:
+      status.filepath ?? (recording ? String(recording.file.path) : undefined),
+    sampleRate: recording?.stream.sampleRate,
+    numberOfChannels: recording?.stream.channels,
   };
 }
 

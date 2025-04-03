@@ -9,15 +9,15 @@ import type { AppGroupInfo, RecordingStatus } from './types';
  */
 export type RecordingEvent =
   | { type: 'NEW_RECORDING'; appGroup?: AppGroupInfo }
-  | { type: 'START_RECORDING'; appGroup?: AppGroupInfo }
+  | {
+      type: 'START_RECORDING';
+      appGroup?: AppGroupInfo;
+    }
   | { type: 'PAUSE_RECORDING'; id: number }
   | { type: 'RESUME_RECORDING'; id: number }
   | {
       type: 'STOP_RECORDING';
       id: number;
-      filepath: string;
-      sampleRate: number;
-      numberOfChannels: number;
     }
   | {
       type: 'SAVE_RECORDING';
@@ -81,12 +81,7 @@ export class RecordingStateMachine {
         newStatus = this.handleResumeRecording();
         break;
       case 'STOP_RECORDING':
-        newStatus = this.handleStopRecording(
-          event.id,
-          event.filepath,
-          event.sampleRate,
-          event.numberOfChannels
-        );
+        newStatus = this.handleStopRecording(event.id);
         break;
       case 'SAVE_RECORDING':
         newStatus = this.handleSaveRecording(event.id, event.filepath);
@@ -208,12 +203,7 @@ export class RecordingStateMachine {
   /**
    * Handle the STOP_RECORDING event
    */
-  private handleStopRecording(
-    id: number,
-    filepath: string,
-    sampleRate: number,
-    numberOfChannels: number
-  ): RecordingStatus | null {
+  private handleStopRecording(id: number): RecordingStatus | null {
     const currentStatus = this.recordingStatus$.value;
 
     if (!currentStatus || currentStatus.id !== id) {
@@ -232,9 +222,6 @@ export class RecordingStateMachine {
     return {
       ...currentStatus,
       status: 'stopped',
-      filepath,
-      sampleRate,
-      numberOfChannels,
     };
   }
 

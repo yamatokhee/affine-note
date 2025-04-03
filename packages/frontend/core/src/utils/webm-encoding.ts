@@ -1,4 +1,5 @@
 import { DebugLogger } from '@affine/debug';
+import { apis } from '@affine/electron-api';
 import { ArrayBufferTarget, Muxer } from 'webm-muxer';
 
 interface AudioEncodingConfig {
@@ -12,10 +13,10 @@ const logger = new DebugLogger('webm-encoding');
 /**
  * Creates and configures an Opus encoder with the given settings
  */
-async function createOpusEncoder(config: AudioEncodingConfig): Promise<{
+export function createOpusEncoder(config: AudioEncodingConfig): {
   encoder: AudioEncoder;
   encodedChunks: EncodedAudioChunk[];
-}> {
+} {
   const encodedChunks: EncodedAudioChunk[] = [];
   const encoder = new AudioEncoder({
     output: chunk => {
@@ -81,7 +82,7 @@ async function encodeAudioFrames({
 /**
  * Creates a WebM container with the encoded audio chunks
  */
-function muxToWebM(
+export function muxToWebM(
   encodedChunks: EncodedAudioChunk[],
   config: AudioEncodingConfig
 ): Uint8Array {
@@ -121,7 +122,7 @@ export async function encodeRawBufferToOpus({
     throw new Error('Response body is null');
   }
 
-  const { encoder, encodedChunks } = await createOpusEncoder({
+  const { encoder, encodedChunks } = createOpusEncoder({
     sampleRate,
     numberOfChannels,
   });
@@ -193,7 +194,7 @@ export async function encodeAudioBlobToOpus(
       bitrate: targetBitrate,
     };
 
-    const { encoder, encodedChunks } = await createOpusEncoder(config);
+    const { encoder, encodedChunks } = createOpusEncoder(config);
 
     // Combine all channels into a single Float32Array
     const audioData = new Float32Array(
@@ -220,3 +221,95 @@ export async function encodeAudioBlobToOpus(
     await audioContext.close();
   }
 }
+
+export const createStreamEncoder = (
+  recordingId: number,
+  codecs: {
+    sampleRate: number;
+    numberOfChannels: number;
+    targetBitrate?: number;
+  }
+) => {
+  const { encoder, encodedChunks } = createOpusEncoder({
+    sampleRate: codecs.sampleRate,
+    numberOfChannels: codecs.numberOfChannels,
+    bitrate: codecs.targetBitrate,
+  });
+
+  const toAudioData = (buffer: Uint8Array) => {
+    // Each sample in f32 format is 4 bytes
+    const BYTES_PER_SAMPLE = 4;
+    return new AudioData({
+      format: 'f32',
+      sampleRate: codecs.sampleRate,
+      numberOfChannels: codecs.numberOfChannels,
+      numberOfFrames:
+        buffer.length / BYTES_PER_SAMPLE / codecs.numberOfChannels,
+      timestamp: 0,
+      data: buffer,
+    });
+  };
+
+  let cursor = 0;
+  let isClosed = false;
+
+  const next = async () => {
+    if (!apis || isClosed) {
+      throw new Error('Electron API is not available');
+    }
+    const { buffer, nextCursor } = await apis.recording.getRawAudioBuffers(
+      recordingId,
+      cursor
+    );
+    if (isClosed || cursor === nextCursor) {
+      return;
+    }
+    cursor = nextCursor;
+    logger.debug('Encoding next chunk', cursor, nextCursor);
+    encoder.encode(toAudioData(buffer));
+  };
+
+  const poll = async () => {
+    if (isClosed) {
+      return;
+    }
+    logger.debug('Polling next chunk');
+    await next();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await poll();
+  };
+
+  const close = () => {
+    if (isClosed) {
+      return;
+    }
+    isClosed = true;
+    return encoder.close();
+  };
+
+  return {
+    id: recordingId,
+    next,
+    poll,
+    flush: () => {
+      return encoder.flush();
+    },
+    close,
+    finish: async () => {
+      logger.debug('Finishing encoding');
+      await next();
+      close();
+      const buffer = muxToWebM(encodedChunks, {
+        sampleRate: codecs.sampleRate,
+        numberOfChannels: codecs.numberOfChannels,
+        bitrate: codecs.targetBitrate,
+      });
+      return buffer;
+    },
+    [Symbol.dispose]: () => {
+      close();
+    },
+  };
+};
+
+export type OpusStreamEncoder = ReturnType<typeof createStreamEncoder>;

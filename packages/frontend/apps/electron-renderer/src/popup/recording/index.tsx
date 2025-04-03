@@ -1,7 +1,11 @@
 import { Button } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { appIconMap } from '@affine/core/utils';
-import { encodeRawBufferToOpus } from '@affine/core/utils/webm-encoding';
+import {
+  createStreamEncoder,
+  encodeRawBufferToOpus,
+  type OpusStreamEncoder,
+} from '@affine/core/utils/webm-encoding';
 import { apis, events } from '@affine/electron-api';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
@@ -23,6 +27,8 @@ type Status = {
   appGroupId?: number;
   icon?: Buffer;
   filepath?: string;
+  sampleRate?: number;
+  numberOfChannels?: number;
 };
 
 export const useRecordingStatus = () => {
@@ -99,56 +105,100 @@ export function Recording() {
     await apis?.recording?.stopRecording(status.id);
   }, [status]);
 
-  const handleProcessStoppedRecording = useAsyncCallback(async () => {
-    let id: number | undefined;
-    try {
-      const result = await apis?.recording?.getCurrentRecording();
+  const handleProcessStoppedRecording = useAsyncCallback(
+    async (currentStreamEncoder?: OpusStreamEncoder) => {
+      let id: number | undefined;
+      try {
+        const result = await apis?.recording?.getCurrentRecording();
 
-      if (!result) {
-        return;
-      }
+        if (!result) {
+          return;
+        }
 
-      id = result.id;
+        id = result.id;
 
-      const { filepath, sampleRate, numberOfChannels } = result;
-      if (!filepath || !sampleRate || !numberOfChannels) {
-        return;
+        const { filepath, sampleRate, numberOfChannels } = result;
+        if (!filepath || !sampleRate || !numberOfChannels) {
+          return;
+        }
+        const [buffer] = await Promise.all([
+          currentStreamEncoder
+            ? currentStreamEncoder.finish()
+            : encodeRawBufferToOpus({
+                filepath,
+                sampleRate,
+                numberOfChannels,
+              }),
+          new Promise<void>(resolve => {
+            setTimeout(() => {
+              resolve();
+            }, 500); // wait at least 500ms for better user experience
+          }),
+        ]);
+        await apis?.recording.readyRecording(result.id, buffer);
+      } catch (error) {
+        console.error('Failed to stop recording', error);
+        await apis?.popup?.dismissCurrentRecording();
+        if (id) {
+          await apis?.recording.removeRecording(id);
+        }
       }
-      const [buffer] = await Promise.all([
-        encodeRawBufferToOpus({
-          filepath,
-          sampleRate,
-          numberOfChannels,
-        }),
-        new Promise<void>(resolve => {
-          setTimeout(() => {
-            resolve();
-          }, 500); // wait at least 500ms for better user experience
-        }),
-      ]);
-      await apis?.recording.readyRecording(result.id, buffer);
-    } catch (error) {
-      console.error('Failed to stop recording', error);
-      await apis?.popup?.dismissCurrentRecording();
-      if (id) {
-        await apis?.recording.removeRecording(id);
-      }
-    }
-  }, []);
+    },
+    []
+  );
 
   useEffect(() => {
-    // allow processing stopped event in tray menu as well:
-    return events?.recording.onRecordingStatusChanged(status => {
+    let currentStreamEncoder: OpusStreamEncoder | undefined;
+
+    apis?.recording
+      .getCurrentRecording()
+      .then(status => {
+        if (status) {
+          return handleRecordingStatusChanged(status);
+        }
+        return;
+      })
+      .catch(console.error);
+
+    const handleRecordingStatusChanged = async (status: Status) => {
       if (status?.status === 'new') {
         track.popup.$.recordingBar.toggleRecordingBar({
           type: 'Meeting record',
           appName: status.appName || 'System Audio',
         });
       }
+
+      if (
+        status?.status === 'recording' &&
+        status.sampleRate &&
+        status.numberOfChannels &&
+        (!currentStreamEncoder || currentStreamEncoder.id !== status.id)
+      ) {
+        currentStreamEncoder?.close();
+        currentStreamEncoder = createStreamEncoder(status.id, {
+          sampleRate: status.sampleRate,
+          numberOfChannels: status.numberOfChannels,
+        });
+        currentStreamEncoder.poll().catch(console.error);
+      }
+
       if (status?.status === 'stopped') {
-        handleProcessStoppedRecording();
+        handleProcessStoppedRecording(currentStreamEncoder);
+        currentStreamEncoder = undefined;
+      }
+    };
+
+    // allow processing stopped event in tray menu as well:
+    const unsubscribe = events?.recording.onRecordingStatusChanged(status => {
+      if (status) {
+        handleRecordingStatusChanged(status).catch(console.error);
       }
     });
+
+    return () => {
+      unsubscribe?.();
+      currentStreamEncoder?.close();
+    };
   }, [handleProcessStoppedRecording]);
 
   const handleStartRecording = useAsyncCallback(async () => {

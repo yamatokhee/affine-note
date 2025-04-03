@@ -29,6 +29,7 @@ export interface Recording {
   file: WriteStream;
   stream: AudioTapStream;
   startTime: number;
+  filepath?: string; // the filepath of the recording (only available when status is ready)
 }
 
 export interface RecordingStatus {
@@ -52,7 +53,5 @@ export interface RecordingStatus {
   app?: TappableAppInfo;
   appGroup?: AppGroupInfo;
   startTime: number; // 0 means not started yet
-  filepath?: string; // the filepath of the recording (only available when status is ready)
-  sampleRate?: number;
-  numberOfChannels?: number;
+  filepath?: string; // encoded file path
 }
