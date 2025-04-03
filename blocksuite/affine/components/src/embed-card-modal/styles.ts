@@ -2,6 +2,17 @@ import { fontXSStyle, panelBaseStyle } from '@blocksuite/affine-shared/styles';
 import { css } from 'lit';
 
 export const embedCardModalStyles = css`
+  .embed-card-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    height: 100%;
+    transition: height 0.3s ease-in-out;
+  }
+
   .embed-card-modal-mask {
     position: absolute;
     left: 0;

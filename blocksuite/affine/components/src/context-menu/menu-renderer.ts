@@ -490,6 +490,7 @@ export type MenuHandler = {
 
 const popMobileMenu = (options: MenuOptions): MenuHandler => {
   const model = createModal(document.body);
+  model.style.position = 'fixed';
   const menu = new Menu({
     ...options,
     onClose: () => {
