@@ -150,12 +150,10 @@ export class GeminiProvider
     messages,
     embeddings,
     model,
-    options = {},
   }: {
     messages?: PromptMessage[];
     embeddings?: string[];
     model: string;
-    options: CopilotChatOptions;
   }) {
     if (!(await this.isModelAvailable(model))) {
       throw new CopilotPromptInvalid(`Invalid model: ${model}`);
@@ -185,14 +183,6 @@ export class GeminiProvider
         )
       ) {
         throw new CopilotPromptInvalid('Invalid message role');
-      }
-      // json mode need 'json' keyword in content
-      // ref: https://platform.openai.com/docs/api-reference/chat/create#chat-create-response_format
-      if (
-        options.jsonMode &&
-        !messages.some(m => m.content.toLowerCase().includes('json'))
-      ) {
-        throw new CopilotPromptInvalid('Prompt not support json mode');
       }
     } else if (
       Array.isArray(embeddings) &&
@@ -227,7 +217,7 @@ export class GeminiProvider
     model: string = 'gemini-2.0-flash-001',
     options: CopilotChatOptions = {}
   ): Promise<string> {
-    await this.checkParams({ messages, model, options });
+    await this.checkParams({ messages, model });
 
     try {
       metrics.ai.counter('chat_text_calls').add(1, { model });
@@ -265,7 +255,7 @@ export class GeminiProvider
     model: string = 'gemini-2.0-flash-001',
     options: CopilotChatOptions = {}
   ): AsyncIterable<string> {
-    await this.checkParams({ messages, model, options });
+    await this.checkParams({ messages, model });
 
     try {
       metrics.ai.counter('chat_text_stream_calls').add(1, { model });
