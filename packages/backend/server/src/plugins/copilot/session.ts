@@ -713,7 +713,7 @@ export class ChatSessionService {
     });
   }
 
-  async createMessage(message: SubmittedMessage): Promise<string | undefined> {
+  async createMessage(message: SubmittedMessage): Promise<string> {
     return await this.messageCache.set(message);
   }
 

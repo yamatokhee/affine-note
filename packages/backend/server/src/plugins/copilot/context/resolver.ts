@@ -261,12 +261,12 @@ export class CopilotContextRootResolver {
     @CurrentUser() user: CurrentUser,
     @Args('sessionId', { nullable: true }) sessionId?: string,
     @Args('contextId', { nullable: true }) contextId?: string
-  ) {
+  ): Promise<CopilotContextType[]> {
     if (sessionId || contextId) {
       const lockFlag = `${COPILOT_LOCKER}:context:${sessionId || contextId}`;
       await using lock = await this.mutex.acquire(lockFlag);
       if (!lock) {
-        return new TooManyRequest('Server is busy');
+        throw new TooManyRequest('Server is busy');
       }
 
       if (contextId) {
@@ -294,11 +294,11 @@ export class CopilotContextRootResolver {
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId') workspaceId: string,
     @Args('sessionId') sessionId: string
-  ) {
+  ): Promise<string> {
     const lockFlag = `${COPILOT_LOCKER}:context:${sessionId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
     await this.checkChatSession(user, sessionId, workspaceId);
 
@@ -314,7 +314,7 @@ export class CopilotContextRootResolver {
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId') workspaceId: string,
     @Args('docId', { type: () => [String] }) docIds: string[]
-  ) {
+  ): Promise<boolean> {
     await this.ac
       .user(user.id)
       .workspace(workspaceId)
@@ -339,7 +339,7 @@ export class CopilotContextRootResolver {
   async queryWorkspaceEmbeddingStatus(
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId') workspaceId: string
-  ) {
+  ): Promise<ContextWorkspaceEmbeddingStatus> {
     await this.ac
       .user(user.id)
       .workspace(workspaceId)
@@ -386,7 +386,7 @@ export class CopilotContextResolver {
   @CallMetric('ai', 'context_file_list')
   async collections(
     @Parent() context: CopilotContextType
-  ): Promise<ContextCategory[]> {
+  ): Promise<CopilotContextCategory[]> {
     const session = await this.context.get(context.id);
     const collections = session.collections;
     await this.models.copilotContext.mergeDocStatus(
@@ -403,7 +403,7 @@ export class CopilotContextResolver {
   @CallMetric('ai', 'context_file_list')
   async tags(
     @Parent() context: CopilotContextType
-  ): Promise<ContextCategory[]> {
+  ): Promise<CopilotContextCategory[]> {
     const session = await this.context.get(context.id);
     const tags = session.tags;
     await this.models.copilotContext.mergeDocStatus(
@@ -485,11 +485,11 @@ export class CopilotContextResolver {
   async removeContextCategory(
     @Args({ name: 'options', type: () => RemoveContextCategoryInput })
     options: RemoveContextCategoryInput
-  ) {
+  ): Promise<boolean> {
     const lockFlag = `${COPILOT_LOCKER}:context:${options.contextId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
     const session = await this.context.get(options.contextId);
 
@@ -545,11 +545,11 @@ export class CopilotContextResolver {
   async removeContextDoc(
     @Args({ name: 'options', type: () => RemoveContextDocInput })
     options: RemoveContextDocInput
-  ) {
+  ): Promise<boolean> {
     const lockFlag = `${COPILOT_LOCKER}:context:${options.contextId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
     const session = await this.context.get(options.contextId);
 
@@ -574,7 +574,7 @@ export class CopilotContextResolver {
     options: AddContextFileInput,
     @Args({ name: 'content', type: () => GraphQLUpload })
     content: FileUpload
-  ) {
+  ): Promise<CopilotContextFile> {
     if (!this.context.canEmbedding) {
       throw new CopilotEmbeddingUnavailable();
     }
@@ -582,7 +582,7 @@ export class CopilotContextResolver {
     const lockFlag = `${COPILOT_LOCKER}:context:${options.contextId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
 
     const length = Number(ctx.req.headers['content-length']);
@@ -632,7 +632,7 @@ export class CopilotContextResolver {
   async removeContextFile(
     @Args({ name: 'options', type: () => RemoveContextFileInput })
     options: RemoveContextFileInput
-  ) {
+  ): Promise<boolean> {
     if (!this.context.canEmbedding) {
       throw new CopilotEmbeddingUnavailable();
     }
@@ -640,7 +640,7 @@ export class CopilotContextResolver {
     const lockFlag = `${COPILOT_LOCKER}:context:${options.contextId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
     const session = await this.context.get(options.contextId);
 

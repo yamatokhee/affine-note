@@ -443,13 +443,13 @@ test('should be able to process message id', async t => {
   });
   const s = (await session.get(sessionId))!;
 
-  const textMessage = (await session.createMessage({
+  const textMessage = await session.createMessage({
     sessionId,
     content: 'hello',
-  }))!;
-  const anotherSessionMessage = (await session.createMessage({
+  });
+  const anotherSessionMessage = await session.createMessage({
     sessionId: 'another-session-id',
-  }))!;
+  });
 
   await t.notThrowsAsync(
     s.pushByMessageId(textMessage),
@@ -486,10 +486,10 @@ test('should be able to generate with message id', async t => {
     });
     const s = (await session.get(sessionId))!;
 
-    const message = (await session.createMessage({
+    const message = await session.createMessage({
       sessionId,
       content: 'hello',
-    }))!;
+    });
 
     await s.pushByMessageId(message);
     const finalMessages = s
@@ -508,10 +508,10 @@ test('should be able to generate with message id', async t => {
     });
     const s = (await session.get(sessionId))!;
 
-    const message = (await session.createMessage({
+    const message = await session.createMessage({
       sessionId,
       attachments: ['https://affine.pro/example.jpg'],
-    }))!;
+    });
 
     await s.pushByMessageId(message);
     const finalMessages = s
@@ -535,9 +535,9 @@ test('should be able to generate with message id', async t => {
     });
     const s = (await session.get(sessionId))!;
 
-    const message = (await session.createMessage({
+    const message = await session.createMessage({
       sessionId,
-    }))!;
+    });
 
     await s.pushByMessageId(message);
     const finalMessages = s
@@ -563,10 +563,10 @@ test('should save message correctly', async t => {
   });
   const s = (await session.get(sessionId))!;
 
-  const message = (await session.createMessage({
+  const message = await session.createMessage({
     sessionId,
     content: 'hello',
-  }))!;
+  });
 
   await s.pushByMessageId(message);
   t.is(s.stashMessages.length, 1, 'should get stash messages');
@@ -592,10 +592,10 @@ test('should revert message correctly', async t => {
     });
     const s = (await session.get(sessionId))!;
 
-    const message = (await session.createMessage({
+    const message = await session.createMessage({
       sessionId,
       content: '1',
-    }))!;
+    });
 
     await s.pushByMessageId(message);
     await s.save();

@@ -169,7 +169,7 @@ class QueryChatHistoriesInput implements Partial<ListHistoriesOptions> {
 class ChatMessageType implements Partial<ChatMessage> {
   // id will be null if message is a prompt message
   @Field(() => ID, { nullable: true })
-  id!: string;
+  id!: string | undefined;
 
   @Field(() => String)
   role!: 'system' | 'assistant' | 'user';
@@ -310,7 +310,7 @@ export class CopilotResolver {
     description: 'Get the quota of the user in the workspace',
     complexity: 2,
   })
-  async getQuota(@CurrentUser() user: CurrentUser) {
+  async getQuota(@CurrentUser() user: CurrentUser): Promise<CopilotQuotaType> {
     return await this.chatSession.getQuota(user.id);
   }
 
@@ -324,8 +324,8 @@ export class CopilotResolver {
     @CurrentUser() user: CurrentUser,
     @Args('docId', { nullable: true }) docId?: string,
     @Args('options', { nullable: true }) options?: QueryChatSessionsInput
-  ) {
-    return await this.sessions(copilot, user, docId, options);
+  ): Promise<string[]> {
+    return (await this.sessions(copilot, user, docId, options)).map(s => s.id);
   }
 
   @ResolveField(() => [CopilotSessionType], {
@@ -337,7 +337,7 @@ export class CopilotResolver {
     @CurrentUser() user: CurrentUser,
     @Args('docId', { nullable: true }) docId?: string,
     @Args('options', { nullable: true }) options?: QueryChatSessionsInput
-  ) {
+  ): Promise<CopilotSessionType[]> {
     if (!copilot.workspaceId) return [];
     await this.ac
       .user(user.id)
@@ -359,7 +359,7 @@ export class CopilotResolver {
     @CurrentUser() user: CurrentUser,
     @Args('docId', { nullable: true }) docId?: string,
     @Args('options', { nullable: true }) options?: QueryChatHistoriesInput
-  ) {
+  ): Promise<CopilotHistoriesType[]> {
     const workspaceId = copilot.workspaceId;
     if (!workspaceId) {
       return [];
@@ -387,7 +387,9 @@ export class CopilotResolver {
     return histories.map(h => ({
       ...h,
       // filter out empty messages
-      messages: h.messages.filter(m => m.content || m.attachments?.length),
+      messages: h.messages.filter(
+        m => m.content || m.attachments?.length
+      ) as ChatMessageType[],
     }));
   }
 
@@ -399,12 +401,12 @@ export class CopilotResolver {
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => CreateChatSessionInput })
     options: CreateChatSessionInput
-  ) {
+  ): Promise<string> {
     await this.ac.user(user.id).doc(options).allowLocal().assert('Doc.Update');
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
 
     if (options.workspaceId === options.docId) {
@@ -428,7 +430,7 @@ export class CopilotResolver {
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => UpdateChatSessionInput })
     options: UpdateChatSessionInput
-  ) {
+  ): Promise<string> {
     const session = await this.chatSession.get(options.sessionId);
     if (!session) {
       throw new CopilotSessionNotFound();
@@ -442,7 +444,7 @@ export class CopilotResolver {
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${workspaceId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
 
     await this.chatSession.checkQuota(user.id);
@@ -460,12 +462,12 @@ export class CopilotResolver {
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => ForkChatSessionInput })
     options: ForkChatSessionInput
-  ) {
+  ): Promise<string> {
     await this.ac.user(user.id).doc(options).allowLocal().assert('Doc.Update');
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
 
     if (options.workspaceId === options.docId) {
@@ -489,15 +491,15 @@ export class CopilotResolver {
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => DeleteSessionInput })
     options: DeleteSessionInput
-  ) {
+  ): Promise<string[]> {
     await this.ac.user(user.id).doc(options).allowLocal().assert('Doc.Update');
     if (!options.sessionIds.length) {
-      return new NotFoundException('Session not found');
+      throw new NotFoundException('Session not found');
     }
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
 
     return await this.chatSession.cleanup({
@@ -514,15 +516,15 @@ export class CopilotResolver {
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => CreateChatMessageInput })
     options: CreateChatMessageInput
-  ) {
+  ): Promise<string> {
     const lockFlag = `${COPILOT_LOCKER}:message:${user?.id}:${options.sessionId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest('Server is busy');
+      throw new TooManyRequest('Server is busy');
     }
     const session = await this.chatSession.get(options.sessionId);
     if (!session || session.config.userId !== user.id) {
-      return new BadRequestException('Session not found');
+      throw new BadRequestException('Session not found');
     }
 
     if (options.blobs) {
@@ -564,7 +566,7 @@ export class UserCopilotResolver {
   async copilot(
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId', { nullable: true }) workspaceId?: string
-  ) {
+  ): Promise<CopilotType> {
     if (workspaceId) {
       await this.ac
         .user(user.id)
