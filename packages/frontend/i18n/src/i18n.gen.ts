@@ -7230,6 +7230,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.notification.empty"](): string;
     /**
+      * `Loading more...`
+      */
+    ["com.affine.notification.loading-more"](): string;
+    /**
       * `You'll be notified here for @mentions and workspace invites.`
       */
     ["com.affine.notification.empty.description"](): string;

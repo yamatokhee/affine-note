@@ -3,6 +3,7 @@ import {
   Button,
   IconButton,
   notify,
+  observeIntersection,
   Scrollable,
   Skeleton,
 } from '@affine/component';
@@ -35,47 +36,53 @@ import {
 } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { useNavigateHelper } from '../hooks/use-navigate-helper';
 import * as styles from './list.style.css';
 
 export const NotificationList = () => {
+  const t = useI18n();
   const notificationListService = useService(NotificationListService);
   const notifications = useLiveData(notificationListService.notifications$);
   const isLoading = useLiveData(notificationListService.isLoading$);
   const error = useLiveData(notificationListService.error$);
+  const hasMore = useLiveData(notificationListService.hasMore$);
+  const loadMoreIndicatorRef = useRef<HTMLDivElement>(null);
 
   const userFriendlyError = useMemo(() => {
     return error && UserFriendlyError.fromAny(error);
   }, [error]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // reset the notification list when the component is mounted
     notificationListService.reset();
     notificationListService.loadMore();
   }, [notificationListService]);
 
-  const handleScrollEnd = useCallback(() => {
-    notificationListService.loadMore();
-  }, [notificationListService]);
-
-  const handleScroll = useCallback(
-    (e: React.UIEvent<HTMLDivElement>) => {
-      const target = e.currentTarget;
-      if (target.scrollHeight - target.scrollTop <= target.clientHeight + 1) {
-        handleScrollEnd();
-      }
-    },
-    [handleScrollEnd]
-  );
+  useEffect(() => {
+    if (loadMoreIndicatorRef.current) {
+      let previousIsIntersecting = false;
+      return observeIntersection(loadMoreIndicatorRef.current, entity => {
+        if (entity.isIntersecting && !previousIsIntersecting && hasMore) {
+          notificationListService.loadMore();
+        }
+        previousIsIntersecting = entity.isIntersecting;
+      });
+    }
+    return;
+  }, [hasMore, notificationListService]);
 
   return (
     <Scrollable.Root>
-      <Scrollable.Viewport
-        className={styles.containerScrollViewport}
-        onScroll={handleScroll}
-      >
+      <Scrollable.Viewport className={styles.containerScrollViewport}>
         {notifications.length > 0 ? (
           <ul className={styles.itemList}>
             {notifications.map(notification => (
@@ -94,6 +101,13 @@ export const NotificationList = () => {
         ) : (
           <NotificationListEmpty />
         )}
+
+        <div
+          ref={loadMoreIndicatorRef}
+          className={hasMore ? styles.loadMoreIndicator : ''}
+        >
+          {hasMore ? t['com.affine.notification.loading-more']() : null}
+        </div>
       </Scrollable.Viewport>
       <Scrollable.Scrollbar />
     </Scrollable.Root>

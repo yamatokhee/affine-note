@@ -138,3 +138,11 @@ export const itemNameLabelIcon = style({
   marginRight: '4px',
   color: cssVarV2('icon/primary'),
 });
+
+export const loadMoreIndicator = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '24px',
+  color: cssVarV2('text/secondary'),
+});
