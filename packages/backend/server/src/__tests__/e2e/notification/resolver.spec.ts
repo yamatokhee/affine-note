@@ -625,24 +625,7 @@ e2e('should list and count notifications', async t => {
     t.is(body2.workspace!.name, 'test-workspace-name');
     t.falsy(body2.workspace!.avatarUrl);
 
-    await app.login(owner);
-    await app.gql({
-      query: mentionUserMutation,
-      variables: {
-        input: {
-          userId: member.id,
-          workspaceId: workspace.id,
-          doc: {
-            id: 'doc-id-5',
-            title: 'doc-title-5',
-            blockId: 'block-id-5',
-            mode: DocMode.page,
-          },
-        },
-      },
-    });
-
-    // get new notifications
+    // load more notifications
     await app.login(member);
     const result2 = await app.gql({
       query: listNotificationsQuery,
@@ -650,43 +633,43 @@ e2e('should list and count notifications', async t => {
         pagination: {
           first: 2,
           offset: 0,
-          after: result.currentUser!.notifications.pageInfo.startCursor,
+          after: result.currentUser!.notifications.pageInfo.endCursor,
         },
       },
     });
-    t.is(result2.currentUser!.notifications.totalCount, 5);
-    t.is(result2.currentUser!.notifications.pageInfo.hasNextPage, false);
+    t.is(result2.currentUser!.notifications.totalCount, 4);
+    t.is(result2.currentUser!.notifications.pageInfo.hasNextPage, true);
     t.is(result2.currentUser!.notifications.pageInfo.hasPreviousPage, true);
     const notifications2 = result2.currentUser!.notifications.edges.map(
       edge => edge.node
     ) as NotificationObjectType[];
-    t.is(notifications2.length, 1);
+    t.is(notifications2.length, 2);
 
     const notification3 = notifications2[0];
     t.is(notification3.read, false);
     const body3 = notification3.body as MentionNotificationBodyType;
     t.is(body3.workspace!.id, workspace.id);
-    t.is(body3.doc.id, 'doc-id-5');
-    t.is(body3.doc.title, 'doc-title-5');
-    t.is(body3.doc.blockId, 'block-id-5');
+    t.is(body3.doc.id, 'doc-id-2');
+    t.is(body3.doc.title, 'doc-title-2');
+    t.is(body3.doc.blockId, 'block-id-2');
     t.is(body3.createdByUser!.id, owner.id);
     t.is(body3.createdByUser!.name, owner.name);
     t.is(body3.workspace!.id, workspace.id);
     t.is(body3.workspace!.name, 'test-workspace-name');
     t.falsy(body3.workspace!.avatarUrl);
 
-    // no new notifications
+    // no notifications
     const result3 = await app.gql({
       query: listNotificationsQuery,
       variables: {
         pagination: {
           first: 2,
           offset: 0,
-          after: result2.currentUser!.notifications.pageInfo.startCursor,
+          after: result2.currentUser!.notifications.pageInfo.endCursor,
         },
       },
     });
-    t.is(result3.currentUser!.notifications.totalCount, 5);
+    t.is(result3.currentUser!.notifications.totalCount, 4);
     t.is(result3.currentUser!.notifications.pageInfo.hasNextPage, false);
     t.is(result3.currentUser!.notifications.pageInfo.hasPreviousPage, true);
     t.is(result3.currentUser!.notifications.pageInfo.startCursor, null);

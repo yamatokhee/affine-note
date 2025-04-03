@@ -209,7 +209,7 @@ export class NotificationModel extends BaseModel {
       where: {
         userId,
         ...(options?.includeRead ? {} : { read: false }),
-        ...(options?.after ? { createdAt: { gt: options.after } } : {}),
+        ...(options?.after ? { createdAt: { lt: options.after } } : {}),
       },
       orderBy: { createdAt: 'desc' },
       skip: options?.offset,
