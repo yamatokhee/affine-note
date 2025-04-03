@@ -607,7 +607,13 @@ export class ChatPanel extends SignalWatcher(
 
     return html`<div class="chat-panel-container" style=${style}>
       <div class="chat-panel-title">
-        <div>${isEmbedding ? `Embedding ${done}/${total}` : 'AFFiNE AI'}</div>
+        <div>
+          ${isEmbedding
+            ? html`<span data-testid="chat-panel-embedding-progress"
+                >Embedding ${done}/${total}</span
+              >`
+            : 'AFFiNE AI'}
+        </div>
         <div
           @click=${() => {
             AIProvider.toggleGeneralAIOnboarding?.(true);

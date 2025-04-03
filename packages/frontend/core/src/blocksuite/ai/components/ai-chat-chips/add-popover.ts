@@ -254,6 +254,9 @@ export class ChatPanelAddPopover extends SignalWatcher(
   @property({ attribute: false })
   accessor abortController!: AbortController;
 
+  @property({ attribute: 'data-testid', reflect: true })
+  accessor testId: string = 'ai-search-input';
+
   @query('.search-input')
   accessor searchInput!: HTMLInputElement;
 

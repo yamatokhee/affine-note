@@ -225,7 +225,6 @@ export class ChatPanelUtils {
       await expect(states.every(state => state === 'finished')).toBe(true);
     }).toPass({ timeout: 20000 });
 
-    await page.pause();
     await this.makeChat(page, text);
   }
 
@@ -247,6 +246,39 @@ export class ChatPanelUtils {
 
     await page.waitForSelector('chat-panel-input img');
     await this.makeChat(page, text);
+  }
+
+  public static async chatWithTags(page: Page, tags: string[]) {
+    for (const tag of tags) {
+      const withButton = await page.getByTestId('chat-panel-with-button');
+      await withButton.click();
+      const withMenu = await page.getByTestId('ai-add-popover');
+      await withMenu.getByTestId('ai-chat-with-tags').click();
+      await withMenu.getByText(tag).click();
+      await page.getByTestId('chat-panel-chips').getByText(tag);
+    }
+    await this.waitForEmbeddingProgress(page);
+  }
+
+  public static async chatWithCollections(page: Page, collections: string[]) {
+    for (const collection of collections) {
+      const withButton = await page.getByTestId('chat-panel-with-button');
+      await withButton.click();
+      const withMenu = await page.getByTestId('ai-add-popover');
+      await withMenu.getByTestId('ai-chat-with-collections').click();
+      await withMenu.getByText(collection).click();
+      await page.getByTestId('chat-panel-chips').getByText(collection);
+    }
+    await this.waitForEmbeddingProgress(page);
+  }
+
+  public static async waitForEmbeddingProgress(page: Page) {
+    await page.getByTestId('chat-panel-embedding-progress').waitFor({
+      state: 'visible',
+    });
+    await page.getByTestId('chat-panel-embedding-progress').waitFor({
+      state: 'hidden',
+    });
   }
 
   public static async enableNetworkSearch(page: Page) {

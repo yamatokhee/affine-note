@@ -209,6 +209,63 @@ export class EditorUtils {
     );
   }
 
+  public static async createCollectionAndDoc(
+    page: Page,
+    collectionName: string,
+    docContent: string
+  ) {
+    // Create collection
+    await page.getByTestId('explorer-bar-add-collection-button').click();
+    const input = await page.getByTestId('prompt-modal-input');
+    await input.focus();
+    await input.pressSequentially(collectionName);
+    await page.getByTestId('prompt-modal-confirm').click();
+    const collections = await page.getByTestId('collapsible-section-content');
+    const collection = await collections
+      .getByText(collectionName)
+      .locator('..');
+
+    // Create doc
+    await collection.hover();
+    await collection.getByTestId('collection-add-doc-button').click();
+    await page.getByTestId('confirm-modal-confirm').click();
+    await this.focusToEditor(page);
+    const texts = docContent.split('\n');
+    for (const [index, line] of texts.entries()) {
+      await page.keyboard.insertText(line);
+      if (index !== texts.length - 1) {
+        await page.keyboard.press('Enter');
+      }
+    }
+  }
+
+  public static async createTagAndDoc(
+    page: Page,
+    tagName: string,
+    docContent: string
+  ) {
+    // Create tag
+    const tags = await page.getByTestId('explorer-tags');
+    await tags.getByTestId('explorer-bar-add-favorite-button').click();
+    const input = await page.getByTestId('rename-modal-input');
+    await input.focus();
+    await input.pressSequentially(tagName);
+    await input.press('Enter');
+    const tag = await tags.getByText(tagName).locator('..');
+
+    // Create doc
+    await tag.hover();
+    await tag.getByTestId('tag-add-doc-button').click();
+    await this.focusToEditor(page);
+    const texts = docContent.split('\n');
+    for (const [index, line] of texts.entries()) {
+      await page.keyboard.insertText(line);
+      if (index !== texts.length - 1) {
+        await page.keyboard.press('Enter');
+      }
+    }
+  }
+
   public static async selectElementInEdgeless(page: Page, elements: string[]) {
     await page.evaluate(
       ({ elements }) => {

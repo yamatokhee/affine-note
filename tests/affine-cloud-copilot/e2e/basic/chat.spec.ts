@@ -256,7 +256,6 @@ test.describe('AIBasic/Chat', () => {
     ]);
 
     const { actions } = await utils.chatPanel.getLatestAssistantMessage(page);
-    await page.pause();
     await actions.retry();
 
     await utils.chatPanel.waitForHistory(page, [

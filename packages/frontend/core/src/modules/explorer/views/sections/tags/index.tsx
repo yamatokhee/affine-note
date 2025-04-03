@@ -43,6 +43,7 @@ export const ExplorerTags = () => {
   return (
     <CollapsibleSection
       name="tags"
+      testId="explorer-tags"
       headerClassName={styles.draggedOverHighlight}
       title={t['com.affine.rootAppSidebar.tags']()}
       actions={
