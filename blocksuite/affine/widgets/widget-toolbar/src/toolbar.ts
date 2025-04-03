@@ -57,6 +57,7 @@ export class AffineToolbarWidget extends WidgetComponent {
       opacity: 0;
       display: none;
       width: max-content;
+      touch-action: none;
       backface-visibility: hidden;
       z-index: var(--affine-z-index-popover);
 
