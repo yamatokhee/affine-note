@@ -57,6 +57,7 @@ import {
   type GfxModel,
   GfxPrimitiveElementModel,
   isGfxGroupCompatibleModel,
+  isPrimitiveModel,
   SURFACE_YMAP_UNIQ_IDENTIFIER,
   SurfaceBlockModel,
 } from '@blocksuite/std/gfx';
@@ -567,6 +568,7 @@ export class DragEventWatcher {
               let largestElem!: {
                 size: number;
                 id: string;
+                flavour: string;
               };
 
               idRemap.forEach(val => {
@@ -574,9 +576,13 @@ export class DragEventWatcher {
 
                 if (gfxElement?.elementBound) {
                   const elemBound = gfxElement.elementBound;
+                  const flavour = isPrimitiveModel(gfxElement)
+                    ? gfxElement.type
+                    : gfxElement.flavour;
+
                   largestElem =
                     (largestElem?.size ?? 0) < elemBound.w * elemBound.h
-                      ? { size: elemBound.w * elemBound.h, id: val }
+                      ? { size: elemBound.w * elemBound.h, id: val, flavour }
                       : largestElem;
                 }
               });
@@ -595,6 +601,7 @@ export class DragEventWatcher {
                   'affine:surface-ref',
                   {
                     reference: largestElem.id,
+                    refFlavour: largestElem.flavour,
                   },
                   parent.id,
                   index
@@ -608,6 +615,7 @@ export class DragEventWatcher {
           let largestElem!: {
             size: number;
             id: string;
+            flavour: string;
           };
 
           const walk = (block: BlockSnapshot) => {
@@ -615,14 +623,14 @@ export class DragEventWatcher {
               Object.values(
                 block.props.elements as Record<
                   string,
-                  { id: string; xywh: SerializedXYWH }
+                  { id: string; xywh: SerializedXYWH; type: string }
                 >
               ).forEach(elem => {
                 if (elem.xywh) {
                   const bound = Bound.deserialize(elem.xywh);
                   const size = bound.w * bound.h;
                   if ((largestElem?.size ?? 0) < size) {
-                    largestElem = { size, id: elem.id };
+                    largestElem = { size, id: elem.id, flavour: elem.type };
                   }
                 }
               });
@@ -634,7 +642,7 @@ export class DragEventWatcher {
                 );
                 const size = bound.w * bound.h;
                 if ((largestElem?.size ?? 0) < size) {
-                  largestElem = { size, id: block.id };
+                  largestElem = { size, id: block.id, flavour: block.flavour };
                 }
               }
             }
@@ -647,6 +655,7 @@ export class DragEventWatcher {
               'affine:surface-ref',
               {
                 reference: largestElem.id,
+                refFlavour: largestElem.flavour,
               },
               parent.id,
               index

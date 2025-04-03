@@ -57,6 +57,7 @@ describe('basic', () => {
       'affine:surface-ref',
       {
         reference: frameId,
+        refFlavour: 'affine:frame',
       },
       noteAId
     );
@@ -76,6 +77,7 @@ describe('basic', () => {
       'affine:surface-ref',
       {
         reference: frameId,
+        refFlavour: 'affine:frame',
       },
       noteAId
     );
@@ -113,6 +115,7 @@ describe('basic', () => {
       'affine:surface-ref',
       {
         reference: groupId,
+        refFlavour: 'group',
       },
       noteAId
     );
@@ -142,6 +145,7 @@ describe('basic', () => {
       'affine:surface-ref',
       {
         reference: frameId,
+        refFlavour: 'affine:frame',
       },
       noteAId
     );
@@ -177,6 +181,7 @@ describe('basic', () => {
       'affine:surface-ref',
       {
         reference: groupId,
+        refFlavour: 'group',
       },
       noteAId
     );
@@ -200,6 +205,7 @@ describe('basic', () => {
       'affine:surface-ref',
       {
         reference: frameId,
+        refFlavour: 'affine:frame',
       },
       noteAId
     );
@@ -238,6 +244,7 @@ describe('basic', () => {
       'affine:surface-ref',
       {
         reference: groupId,
+        refFlavour: 'group',
       },
       noteAId
     );
