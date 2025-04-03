@@ -1,15 +1,8 @@
 import { ChatPanel } from '@affine/core/blocksuite/ai';
 import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
 import { enableFootnoteConfigExtension } from '@affine/core/blocksuite/extensions';
-import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
-import { CollectionService } from '@affine/core/modules/collection';
-import { DocsService } from '@affine/core/modules/doc';
-import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
-import { DocsSearchService } from '@affine/core/modules/docs-search';
-import { SearchMenuService } from '@affine/core/modules/search-menu/services';
-import { TagService } from '@affine/core/modules/tag';
+import { useAIChatConfig } from '@affine/core/components/hooks/affine/use-ai-chat-config';
 import { WorkbenchService } from '@affine/core/modules/workbench';
-import { WorkspaceService } from '@affine/core/modules/workspace';
 import { RefNodeSlotsProvider } from '@blocksuite/affine/inlines/reference';
 import { DocModeProvider } from '@blocksuite/affine/shared/services';
 import {
@@ -51,6 +44,9 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
     }
   }, [onLoad, ref]);
 
+  const { docDisplayConfig, searchMenuConfig, networkSearchConfig } =
+    useAIChatConfig();
+
   useEffect(() => {
     if (!editor || !editor.host) return;
 
@@ -59,16 +55,7 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
       chatPanelRef.current.host = editor.host;
       chatPanelRef.current.doc = editor.doc;
 
-      const searchService = framework.get(AINetworkSearchService);
-      const docDisplayMetaService = framework.get(DocDisplayMetaService);
-      const workspaceService = framework.get(WorkspaceService);
-      const searchMenuService = framework.get(SearchMenuService);
       const workbench = framework.get(WorkbenchService).workbench;
-      const docsSearchService = framework.get(DocsSearchService);
-      const tagService = framework.get(TagService);
-      const collectionService = framework.get(CollectionService);
-      const docsService = framework.get(DocsService);
-
       chatPanelRef.current.appSidebarConfig = {
         getWidth: () => {
           const width$ = workbench.sidebarWidth$;
@@ -80,74 +67,9 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
         },
       };
 
-      chatPanelRef.current.networkSearchConfig = {
-        visible: searchService.visible,
-        enabled: searchService.enabled,
-        setEnabled: searchService.setEnabled,
-      };
-
-      chatPanelRef.current.docDisplayConfig = {
-        getIcon: (docId: string) => {
-          return docDisplayMetaService.icon$(docId, { type: 'lit' }).value;
-        },
-        getTitle: (docId: string) => {
-          return docDisplayMetaService.title$(docId).value;
-        },
-        getTitleSignal: (docId: string) => {
-          const title$ = docDisplayMetaService.title$(docId);
-          return createSignalFromObservable(title$, '');
-        },
-        getDocMeta: (docId: string) => {
-          const docRecord = docsService.list.doc$(docId).value;
-          return docRecord?.meta$.value ?? null;
-        },
-        getDocPrimaryMode: (docId: string) => {
-          const docRecord = docsService.list.doc$(docId).value;
-          return docRecord?.primaryMode$.value ?? 'page';
-        },
-        getDoc: (docId: string) => {
-          const doc = workspaceService.workspace.docCollection.getDoc(docId);
-          return doc?.getStore() ?? null;
-        },
-        getReferenceDocs: (docIds: string[]) => {
-          const docs$ = docsSearchService.watchRefsFrom(docIds);
-          return createSignalFromObservable(docs$, []);
-        },
-        getTags: () => {
-          const tagMetas$ = tagService.tagList.tagMetas$;
-          return createSignalFromObservable(tagMetas$, []);
-        },
-        getTagTitle: (tagId: string) => {
-          const tag$ = tagService.tagList.tagByTagId$(tagId);
-          return tag$.value?.value$.value ?? '';
-        },
-        getTagPageIds: (tagId: string) => {
-          const tag$ = tagService.tagList.tagByTagId$(tagId);
-          if (!tag$) return [];
-          return tag$.value?.pageIds$.value ?? [];
-        },
-        getCollections: () => {
-          const collections$ = collectionService.collections$;
-          return createSignalFromObservable(collections$, []);
-        },
-      };
-
-      chatPanelRef.current.searchMenuConfig = {
-        getDocMenuGroup: (query, action, abortSignal) => {
-          return searchMenuService.getDocMenuGroup(query, action, abortSignal);
-        },
-        getTagMenuGroup: (query, action, abortSignal) => {
-          return searchMenuService.getTagMenuGroup(query, action, abortSignal);
-        },
-        getCollectionMenuGroup: (query, action, abortSignal) => {
-          return searchMenuService.getCollectionMenuGroup(
-            query,
-            action,
-            abortSignal
-          );
-        },
-      };
-
+      chatPanelRef.current.docDisplayConfig = docDisplayConfig;
+      chatPanelRef.current.searchMenuConfig = searchMenuConfig;
+      chatPanelRef.current.networkSearchConfig = networkSearchConfig;
       chatPanelRef.current.previewSpecBuilder = enableFootnoteConfigExtension(
         SpecProvider._.getSpec('preview:page')
       );
@@ -173,7 +95,13 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
     ];
 
     return () => disposable.forEach(d => d?.unsubscribe());
-  }, [editor, framework]);
+  }, [
+    docDisplayConfig,
+    editor,
+    framework,
+    networkSearchConfig,
+    searchMenuConfig,
+  ]);
 
   return <div className={styles.root} ref={containerRef} />;
 });

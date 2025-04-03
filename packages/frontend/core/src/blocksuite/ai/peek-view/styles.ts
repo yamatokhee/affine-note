@@ -8,11 +8,9 @@ export const PeekViewStyles = css`
   }
 
   .ai-chat-block-peek-view-container {
-    gap: 8px;
     width: 100%;
     height: 100%;
     display: flex;
-    align-items: center;
     box-sizing: border-box;
     justify-content: start;
     flex-direction: column;
@@ -61,7 +59,7 @@ export const PeekViewStyles = css`
   }
 
   .peek-view-footer {
-    padding: 0 12px;
+    margin-top: 8px;
     width: 100%;
     height: 20px;
     display: flex;

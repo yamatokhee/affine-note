@@ -100,6 +100,9 @@ export class ChatPanelChips extends SignalWatcher(
   @property({ attribute: false })
   accessor searchMenuConfig!: SearchMenuConfig;
 
+  @property({ attribute: false })
+  accessor portalContainer: HTMLElement | null = null;
+
   @property({ attribute: 'data-testid', reflect: true })
   accessor testId = 'chat-panel-chips';
 
@@ -267,7 +270,7 @@ export class ChatPanelChips extends SignalWatcher(
       portalStyles: {
         zIndex: 'var(--affine-z-index-popover)',
       },
-      container: document.body,
+      container: this.portalContainer ?? document.body,
       computePosition: {
         referenceElement: this.addButton,
         placement: 'top-start',
@@ -306,7 +309,7 @@ export class ChatPanelChips extends SignalWatcher(
       portalStyles: {
         zIndex: 'var(--affine-z-index-popover)',
       },
-      container: document.body,
+      container: this.portalContainer ?? document.body,
       computePosition: {
         referenceElement: this.moreCandidateButton,
         placement: 'top-start',

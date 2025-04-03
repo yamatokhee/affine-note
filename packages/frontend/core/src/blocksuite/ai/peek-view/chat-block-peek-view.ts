@@ -23,6 +23,11 @@ import {
   queryHistoryMessages,
 } from '../_common/chat-actions-handle';
 import { type AIChatBlockModel } from '../blocks';
+import type {
+  ChatChip,
+  DocDisplayConfig,
+  SearchMenuConfig,
+} from '../components/ai-chat-chips';
 import type { AINetworkSearchConfig } from '../components/ai-chat-input';
 import type { ChatMessage } from '../components/ai-chat-messages';
 import { ChatMessagesSchema } from '../components/ai-chat-messages';
@@ -155,6 +160,16 @@ export class AIChatBlockPeekView extends LitElement {
   };
 
   private readonly _getContextId = async () => {
+    if (this._chatContextId) {
+      return this._chatContextId;
+    }
+    const sessionId = await this._getSessionId();
+    if (sessionId) {
+      this._chatContextId = await AIProvider.context?.createContext(
+        this.host.doc.workspace.id,
+        sessionId
+      );
+    }
     return this._chatContextId;
   };
 
@@ -271,6 +286,10 @@ export class AIChatBlockPeekView extends LitElement {
 
   updateContext = (context: Partial<ChatContext>) => {
     this.chatContext = { ...this.chatContext, ...context };
+  };
+
+  updateChips = (chips: ChatChip[]) => {
+    this.chips = chips;
   };
 
   /**
@@ -524,6 +543,7 @@ export class AIChatBlockPeekView extends LitElement {
       </div>
       <chat-block-input
         .host=${host}
+        .chips=${this.chips}
         .getSessionId=${this._getSessionId}
         .getContextId=${this._getContextId}
         .getBlockId=${this._getBlockId}
@@ -533,6 +553,7 @@ export class AIChatBlockPeekView extends LitElement {
         .chatContextValue=${chatContext}
         .updateContext=${updateContext}
         .networkSearchConfig=${networkSearchConfig}
+        .docDisplayConfig=${this.docDisplayConfig}
       ></chat-block-input>
       <div class="peek-view-footer">
         ${InformationIcon()}
@@ -556,6 +577,12 @@ export class AIChatBlockPeekView extends LitElement {
   @property({ attribute: false })
   accessor networkSearchConfig!: AINetworkSearchConfig;
 
+  @property({ attribute: false })
+  accessor docDisplayConfig!: DocDisplayConfig;
+
+  @property({ attribute: false })
+  accessor searchMenuConfig!: SearchMenuConfig;
+
   @state()
   accessor _historyMessages: ChatMessage[] = [];
 
@@ -567,6 +594,9 @@ export class AIChatBlockPeekView extends LitElement {
     abortController: null,
     messages: [],
   };
+
+  @state()
+  accessor chips: ChatChip[] = [];
 }
 
 declare global {
@@ -579,6 +609,8 @@ export const AIChatBlockPeekViewTemplate = (
   parentModel: AIChatBlockModel,
   host: EditorHost,
   previewSpecBuilder: SpecBuilder,
+  docDisplayConfig: DocDisplayConfig,
+  searchMenuConfig: SearchMenuConfig,
   networkSearchConfig: AINetworkSearchConfig
 ) => {
   return html`<ai-chat-block-peek-view
@@ -586,5 +618,7 @@ export const AIChatBlockPeekViewTemplate = (
     .host=${host}
     .previewSpecBuilder=${previewSpecBuilder}
     .networkSearchConfig=${networkSearchConfig}
+    .docDisplayConfig=${docDisplayConfig}
+    .searchMenuConfig=${searchMenuConfig}
   ></ai-chat-block-peek-view>`;
 };
