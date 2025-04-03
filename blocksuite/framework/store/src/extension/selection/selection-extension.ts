@@ -59,15 +59,6 @@ export class StoreSelectionExtension extends StoreExtension {
         const all = change.updated.concat(change.added).concat(change.removed);
         const localClientID = this.store.awarenessStore.awareness.clientID;
         const exceptLocal = all.filter(id => id !== localClientID);
-        const hasLocal = all.includes(localClientID);
-        if (hasLocal) {
-          const localSelectionJson =
-            this.store.awarenessStore.getLocalSelection(this._id);
-          const localSelection = localSelectionJson.map(json => {
-            return this._jsonToSelection(json);
-          });
-          this._selections.value = localSelection;
-        }
 
         // Only consider remote selections from other clients
         if (exceptLocal.length > 0) {
@@ -162,6 +153,7 @@ export class StoreSelectionExtension extends StoreExtension {
       this._id,
       selections.map(s => s.toJSON())
     );
+    this._selections.value = selections;
     this.slots.changed.next(selections);
   }
 

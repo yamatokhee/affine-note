@@ -132,6 +132,7 @@ test('can open peek view for embedded frames', async ({ page }) => {
   const peekView = page.locator('[data-testid="peek-view-modal"]');
 
   await expect(surfaceRef).toBeVisible();
+  await surfaceRef.click();
   await surfaceRef.hover();
   await page
     .locator('affine-toolbar-widget editor-menu-button[aria-label="Open"]')
