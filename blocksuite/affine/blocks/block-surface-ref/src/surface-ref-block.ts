@@ -376,7 +376,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       },
       { enterDelay: 500 }
     );
-    setReference(this);
+    setReference(this.hoverableContainer);
     this._disposables.add(dispose);
   }
 
@@ -437,6 +437,11 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     this._initViewport();
     this._initReferencedModel();
     this._initSelection();
+  }
+
+  override firstUpdated() {
+    if (!this._shouldRender) return;
+
     this._initHover();
   }
 
@@ -485,6 +490,9 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
   @state()
   private accessor _focused: boolean = false;
+
+  @query('.affine-surface-ref')
+  accessor hoverableContainer!: HTMLDivElement;
 
   @query('affine-surface-ref > block-caption-editor')
   accessor captionElement!: BlockCaptionEditor;

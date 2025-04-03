@@ -5,7 +5,12 @@ import {
   locateToolbar,
   setEdgelessTool,
 } from '@affine-test/kit/utils/editor';
-import { selectAllByKeyboard } from '@affine-test/kit/utils/keyboard';
+import { importImage } from '@affine-test/kit/utils/image';
+import {
+  pasteByKeyboard,
+  selectAllByKeyboard,
+  writeTextToClipboard,
+} from '@affine-test/kit/utils/keyboard';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
@@ -231,4 +236,40 @@ test('should not show inner toolbar of surface-ref in note under edgeless', asyn
   ).toHaveClass(/focused$/);
 
   await expect(toolbar).toBeHidden();
+});
+
+test('should show toolbar when inline link is preceded by image or surface-ref', async ({
+  page,
+}) => {
+  await page.keyboard.press('Enter');
+
+  await importImage(page, 'affine-preview.png');
+
+  const image = page.locator('affine-image');
+  await image.click();
+
+  await page.keyboard.press('Enter');
+
+  const url = new URL(page.url());
+
+  await writeTextToClipboard(page, url.toString());
+  await pasteByKeyboard(page);
+
+  const toolbar = locateToolbar(page);
+
+  const inlineLink = page.locator('affine-reference');
+
+  await inlineLink.hover();
+  await expect(toolbar).toBeVisible();
+
+  await toolbar.hover();
+  await expect(toolbar).toBeVisible();
+
+  await image.hover();
+  await expect(toolbar).toBeVisible();
+  await expect(toolbar).toHaveAttribute('data-placement', 'inner');
+
+  await inlineLink.hover();
+  await expect(toolbar).toBeVisible();
+  await expect(toolbar).not.toHaveAttribute('data-placement', 'inner');
 });

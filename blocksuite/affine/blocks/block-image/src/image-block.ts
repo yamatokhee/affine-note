@@ -75,14 +75,13 @@ export class ImageBlockComponent extends CaptionedBlockComponent<ImageBlockModel
       },
       { enterDelay: 500 }
     );
-    setReference(this);
+    setReference(this.hoverableContainer);
     this._disposables.add(dispose);
   }
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this._initHover();
     this.refreshData();
     this.contentEditable = 'false';
     this._disposables.add(
@@ -104,6 +103,7 @@ export class ImageBlockComponent extends CaptionedBlockComponent<ImageBlockModel
   override firstUpdated() {
     // lazy bindings
     this.disposables.addFromEvent(this, 'click', this._handleClick);
+    this._initHover();
   }
 
   override renderBlock() {
@@ -159,6 +159,9 @@ export class ImageBlockComponent extends CaptionedBlockComponent<ImageBlockModel
 
   @query('affine-page-image')
   private accessor pageImage: ImageBlockPageComponent | null = null;
+
+  @query('.affine-image-container')
+  accessor hoverableContainer!: HTMLDivElement;
 
   @property({ attribute: false })
   accessor retryCount = 0;
