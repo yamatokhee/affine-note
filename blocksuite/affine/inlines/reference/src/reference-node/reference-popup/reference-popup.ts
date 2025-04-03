@@ -40,8 +40,6 @@ export class ReferencePopup extends SignalWatcher(
     .popover-container {
       position: absolute;
       display: flex;
-      width: 321px;
-      height: 37px;
       gap: 8px;
       box-sizing: content-box;
       justify-content: space-between;

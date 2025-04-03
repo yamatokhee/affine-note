@@ -2,7 +2,6 @@ import { fontXSStyle, panelBaseStyle } from '@blocksuite/affine-shared/styles';
 import { css } from 'lit';
 
 const editLinkStyle = css`
-  ${panelBaseStyle('.affine-link-edit-popover')}
   .affine-link-edit-popover {
     display: grid;
     grid-template-columns: auto auto;
@@ -116,13 +115,18 @@ export const linkPopupStyle = css`
     }
   }
 
-  .overlay-mask {
+  .overlay-mask,
+  .mock-selection-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     z-index: var(--affine-z-index-popover);
+  }
+
+  .mock-selection-container {
+    pointer-events: none;
   }
 
   ${panelBaseStyle('.affine-link-popover.create')}
