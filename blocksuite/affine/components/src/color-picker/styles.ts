@@ -85,13 +85,28 @@ export const COLOR_PICKER_STYLE = css`
   .modes .mode.dark button {
     background: #141414;
   }
-  .modes .mode button .color {
-    background: var(--c);
+  .modes .mode button .color-wrapper {
+    display: flex;
+    position: relative;
+    z-index: 0;
     flex-shrink: 0;
     width: 22px;
     height: 22px;
     border-radius: 50%;
     overflow: hidden;
+  }
+  .modes .mode button .color-wrapper .color {
+    width: 100%;
+    height: 100%;
+    background: var(--c);
+  }
+  .modes .mode button .color-wrapper svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
   }
   .modes .mode button[active] {
     pointer-events: none;
