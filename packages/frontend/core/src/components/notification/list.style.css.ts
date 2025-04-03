@@ -3,7 +3,7 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { keyframes, style } from '@vanilla-extract/css';
 
 export const containerScrollViewport = style({
-  maxHeight: '272px',
+  maxHeight: '448px',
   width: '360px',
 });
 
