@@ -6,7 +6,10 @@ import {
   configureDesktopApiModule,
   DesktopApiService,
 } from '@affine/core/modules/desktop-api';
-import { configureSpellCheckSettingModule } from '@affine/core/modules/editor-setting';
+import {
+  configureSpellCheckSettingModule,
+  configureTraySettingModule,
+} from '@affine/core/modules/editor-setting';
 import { configureFindInPageModule } from '@affine/core/modules/find-in-page';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
 import {
@@ -27,6 +30,7 @@ export function setupModules() {
   configureFindInPageModule(framework);
   configureDesktopApiModule(framework);
   configureSpellCheckSettingModule(framework);
+  configureTraySettingModule(framework);
   configureDesktopBackupModule(framework);
 
   framework.impl(PopupWindowProvider, p => {

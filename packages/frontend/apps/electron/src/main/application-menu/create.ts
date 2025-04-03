@@ -39,7 +39,9 @@ export function createApplicationMenu() {
                 label: `About ${app.getName()}`,
                 click: async () => {
                   await showMainWindow();
-                  applicationMenuSubjects.openInSettingModal$.next('about');
+                  applicationMenuSubjects.openInSettingModal$.next({
+                    activeTab: 'about',
+                  });
                 },
               },
               { type: 'separator' },

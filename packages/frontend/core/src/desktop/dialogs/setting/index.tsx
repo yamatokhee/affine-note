@@ -26,6 +26,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { flushSync } from 'react-dom';
 
 import { AccountSetting } from './account-setting';
 import { GeneralSetting } from './general-setting';
@@ -39,6 +40,7 @@ import { WorkspaceSetting } from './workspace-setting';
 interface SettingProps extends ModalProps {
   activeTab?: SettingTab;
   onCloseSetting: () => void;
+  scrollAnchor?: string;
 }
 
 const isWorkspaceSetting = (key: string): boolean =>
@@ -55,10 +57,11 @@ const CenteredLoading = () => {
 const SettingModalInner = ({
   activeTab: initialActiveTab = 'appearance',
   onCloseSetting,
+  scrollAnchor: initialScrollAnchor,
 }: SettingProps) => {
   const [settingState, setSettingState] = useState<SettingState>({
     activeTab: initialActiveTab,
-    scrollAnchor: undefined,
+    scrollAnchor: initialScrollAnchor,
   });
   const globalContextService = useService(GlobalContextService);
 
@@ -150,6 +153,18 @@ const SettingModalInner = ({
     }
   }, [isSelfhosted, settingState.activeTab]);
 
+  useEffect(() => {
+    if (settingState.scrollAnchor) {
+      flushSync(() => {
+        const target = modalContentRef.current?.querySelector(
+          `#${settingState.scrollAnchor}`
+        );
+        if (target) {
+          target.scrollIntoView();
+        }
+      });
+    }
+  }, [settingState]);
   return (
     <FrameworkScope scope={currentServer.scope}>
       <SettingSidebar
@@ -165,7 +180,6 @@ const SettingModalInner = ({
           <div className={style.centerContainer}>
             <div ref={modalContentRef} className={style.content}>
               <Suspense fallback={<WorkspaceDetailSkeleton />}>
-                {}
                 {settingState.activeTab === 'account' &&
                 loginStatus === 'authenticated' ? (
                   <AccountSetting onChangeSettingState={setSettingState} />
@@ -178,7 +192,6 @@ const SettingModalInner = ({
                 ) : !isWorkspaceSetting(settingState.activeTab) ? (
                   <GeneralSetting
                     activeTab={settingState.activeTab}
-                    scrollAnchor={settingState.scrollAnchor}
                     onChangeSettingState={setSettingState}
                   />
                 ) : null}
@@ -223,6 +236,7 @@ const SettingModalInner = ({
 export const SettingDialog = ({
   close,
   activeTab,
+  scrollAnchor,
 }: DialogComponentProps<WORKSPACE_DIALOG_SCHEMA['setting']>) => {
   return (
     <Modal
@@ -242,7 +256,11 @@ export const SettingDialog = ({
       onOpenChange={() => close()}
     >
       <Suspense fallback={<CenteredLoading />}>
-        <SettingModalInner activeTab={activeTab} onCloseSetting={close} />
+        <SettingModalInner
+          activeTab={activeTab}
+          onCloseSetting={close}
+          scrollAnchor={scrollAnchor}
+        />
       </Suspense>
     </Modal>
   );

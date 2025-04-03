@@ -51,8 +51,16 @@ export const SpellCheckStateSchema = z.object({
 });
 
 export const SpellCheckStateKey = 'spellCheckState' as const;
-// eslint-disable-next-line no-redeclare
+// oxlint-disable-next-line no-redeclare
 export type SpellCheckStateSchema = z.infer<typeof SpellCheckStateSchema>;
+
+export const MenubarStateKey = 'menubarState' as const;
+export const MenubarStateSchema = z.object({
+  enabled: z.boolean().default(true),
+});
+
+// eslint-disable-next-line no-redeclare
+export type MenubarStateSchema = z.infer<typeof MenubarStateSchema>;
 
 export const MeetingSettingsKey = 'meetingSettings' as const;
 export const MeetingSettingsSchema = z.object({

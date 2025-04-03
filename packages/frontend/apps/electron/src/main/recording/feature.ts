@@ -342,18 +342,21 @@ function setupRecordingListeners() {
           status?.status === 'create-block-failed'
         ) {
           // show the popup for 10s
-          setTimeout(() => {
-            // check again if current status is still ready
-            if (
-              (recordingStatus$.value?.status === 'create-block-success' ||
-                recordingStatus$.value?.status === 'create-block-failed') &&
-              recordingStatus$.value.id === status.id
-            ) {
-              popup.hide().catch(err => {
-                logger.error('failed to hide recording popup', err);
-              });
-            }
-          }, 10_000);
+          setTimeout(
+            () => {
+              // check again if current status is still ready
+              if (
+                (recordingStatus$.value?.status === 'create-block-success' ||
+                  recordingStatus$.value?.status === 'create-block-failed') &&
+                recordingStatus$.value.id === status.id
+              ) {
+                popup.hide().catch(err => {
+                  logger.error('failed to hide recording popup', err);
+                });
+              }
+            },
+            status?.status === 'create-block-failed' ? 30_000 : 10_000
+          );
         } else if (!status) {
           // status is removed, we should hide the popup
           popupManager
@@ -550,22 +553,40 @@ export async function stopRecording(id: number) {
     return;
   }
 
-  const { file } = recording;
+  const { file, stream } = recording;
+
+  // First stop the audio stream to prevent more data coming in
+  try {
+    stream.stop();
+  } catch (err) {
+    logger.error('Failed to stop audio stream', err);
+  }
+
+  // End the file with a timeout
   file.end();
 
-  // Wait for file to finish writing
   try {
-    await new Promise<void>((resolve, reject) => {
-      file.on('finish', () => {
-        // check if the file is empty
-        const stats = fs.statSync(file.path);
-        if (stats.size === 0) {
-          logger.error(`Recording ${id} is empty`);
-          reject(new Error('Recording is empty'));
-        }
-        resolve();
-      });
-    });
+    await Promise.race([
+      new Promise<void>((resolve, reject) => {
+        file.on('finish', () => {
+          // check if the file is empty
+          const stats = fs.statSync(file.path);
+          if (stats.size === 0) {
+            reject(new Error('Recording is empty'));
+            return;
+          }
+          resolve();
+        });
+
+        file.on('error', err => {
+          reject(err);
+        });
+      }),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('File writing timeout')), 10000)
+      ),
+    ]);
+
     const recordingStatus = recordingStateMachine.dispatch({
       type: 'STOP_RECORDING',
       id,
@@ -591,6 +612,11 @@ export async function stopRecording(id: number) {
       return;
     }
     return serializeRecordingStatus(recordingStatus);
+  } finally {
+    // Clean up the file stream if it's still open
+    if (!file.closed) {
+      file.destroy();
+    }
   }
 }
 

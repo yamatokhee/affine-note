@@ -18,7 +18,9 @@ export const applicationMenuEvents = {
     };
   },
   // todo: properly define the active tab type
-  openInSettingModal: (fn: (activeTab: string) => void) => {
+  openInSettingModal: (
+    fn: (props: { activeTab: string; scrollAnchor?: string }) => void
+  ) => {
     const sub = applicationMenuSubjects.openInSettingModal$.subscribe(fn);
     return () => {
       sub.unsubscribe();

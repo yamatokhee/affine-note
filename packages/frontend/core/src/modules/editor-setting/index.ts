@@ -9,6 +9,7 @@ import { CurrentUserDBEditorSettingProvider } from './impls/user-db';
 import { EditorSettingProvider } from './provider/editor-setting-provider';
 import { EditorSettingService } from './services/editor-setting';
 import { SpellCheckSettingService } from './services/spell-check-setting';
+import { TraySettingService } from './services/tray-settings';
 export type { FontFamily } from './schema';
 export { EditorSettingSchema, fontStyleOptions } from './schema';
 export { EditorSettingService } from './services/editor-setting';
@@ -29,4 +30,8 @@ export function configureSpellCheckSettingModule(framework: Framework) {
     I18n,
     DesktopApiService,
   ]);
+}
+
+export function configureTraySettingModule(framework: Framework) {
+  framework.service(TraySettingService, [GlobalStateService]);
 }

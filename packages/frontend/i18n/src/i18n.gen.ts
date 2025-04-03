@@ -952,9 +952,21 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.appearanceSettings.sidebar.title"](): string;
     /**
-      * `Customise your AFFiNE appearance`
+      * `Customize your AFFiNE appearance`
       */
     ["com.affine.appearanceSettings.subtitle"](): string;
+    /**
+      * `Menubar`
+      */
+    ["com.affine.appearanceSettings.menubar.title"](): string;
+    /**
+      * `Enable menubar app`
+      */
+    ["com.affine.appearanceSettings.menubar.toggle"](): string;
+    /**
+      * `Display the menubar app in the tray for quick access to AFFiNE or meeting recordings.`
+      */
+    ["com.affine.appearanceSettings.menubar.description"](): string;
     /**
       * `Theme`
       */

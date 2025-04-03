@@ -25,14 +25,18 @@ export function setupEvents(frameworkProvider: FrameworkProvider) {
       .catch(console.error);
   });
 
-  events?.applicationMenu.openInSettingModal(activeTab => {
+  events?.applicationMenu.openInSettingModal(({ activeTab, scrollAnchor }) => {
     using currentWorkspace = getCurrentWorkspace(frameworkProvider);
     if (!currentWorkspace) {
       return;
     }
     const { workspace } = currentWorkspace;
-    workspace.scope.get(WorkspaceDialogService).open('setting', {
+    const workspaceDialogService = workspace.scope.get(WorkspaceDialogService);
+    // close all other dialogs first
+    workspaceDialogService.closeAll();
+    workspaceDialogService.open('setting', {
       activeTab: activeTab as unknown as SettingTab,
+      scrollAnchor,
     });
   });
 
