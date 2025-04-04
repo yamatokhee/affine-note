@@ -1,9 +1,9 @@
 /* oxlint-disable @typescript-eslint/no-non-null-assertion */
 import {
   CanvasRenderer,
-  fitContent,
   type SurfaceBlockModel,
 } from '@blocksuite/affine/blocks/surface';
+import { fitContent } from '@blocksuite/affine/gfx/shape';
 import type { Bound } from '@blocksuite/affine/global/gfx';
 import type { Color, ShapeElementModel } from '@blocksuite/affine/model';
 import { ThemeProvider } from '@blocksuite/affine/shared/services';

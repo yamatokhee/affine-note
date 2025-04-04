@@ -1,9 +1,9 @@
 import { uploadBlobForImage } from '@blocksuite/affine/blocks/image';
 import {
-  fitContent,
   getSurfaceBlock,
   SurfaceBlockModel,
 } from '@blocksuite/affine/blocks/surface';
+import { fitContent } from '@blocksuite/affine/gfx/shape';
 import { Bound, getCommonBound } from '@blocksuite/affine/global/gfx';
 import type {
   MindmapElementModel,

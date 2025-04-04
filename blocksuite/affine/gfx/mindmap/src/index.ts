@@ -1,3 +1,4 @@
+export * from './element-renderer';
 export * from './element-transform';
 export * from './indicator-overlay';
 export * from './toolbar/config';

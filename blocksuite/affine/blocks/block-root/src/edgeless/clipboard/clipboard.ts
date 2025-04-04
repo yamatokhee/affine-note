@@ -5,8 +5,8 @@ import {
   EdgelessCRUDIdentifier,
   ExportManager,
   getSurfaceComponent,
-  TextUtils,
 } from '@blocksuite/affine-block-surface';
+import { splitIntoLines } from '@blocksuite/affine-gfx-text';
 import type { ShapeElementModel } from '@blocksuite/affine-model';
 import {
   BookmarkStyles,
@@ -609,7 +609,7 @@ export class EdgelessClipboardController extends PageClipboard {
     });
 
     if (typeof content === 'string') {
-      TextUtils.splitIntoLines(content).forEach((line, idx) => {
+      splitIntoLines(content).forEach((line, idx) => {
         this.crud.addBlock(
           'affine:paragraph',
           { text: new Y.Text(line) },

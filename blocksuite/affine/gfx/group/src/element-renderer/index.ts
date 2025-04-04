@@ -1,15 +1,19 @@
+import {
+  type CanvasRenderer,
+  type ElementRenderer,
+  ElementRendererExtension,
+} from '@blocksuite/affine-block-surface';
 import type { GroupElementModel } from '@blocksuite/affine-model';
 import { Bound } from '@blocksuite/global/gfx';
 
-import type { CanvasRenderer } from '../../canvas-renderer.js';
 import { titleRenderParams } from './utils.js';
 
-export function group(
-  model: GroupElementModel,
-  ctx: CanvasRenderingContext2D,
-  matrix: DOMMatrix,
-  renderer: CanvasRenderer
-) {
+export const group: ElementRenderer<GroupElementModel> = (
+  model,
+  ctx,
+  matrix,
+  renderer
+) => {
   const { xywh } = model;
   const bound = Bound.deserialize(xywh);
   const elements = renderer.provider.selectedElements?.() || [];
@@ -34,7 +38,12 @@ export function group(
 
     if (model.showTitle) renderTitle(model, ctx, renderer, renderParams);
   }
-}
+};
+
+export const GroupElementRendererExtension = ElementRendererExtension(
+  'group',
+  group
+);
 
 function renderTitle(
   model: GroupElementModel,

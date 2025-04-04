@@ -1,9 +1,9 @@
+import { createTextActions } from '@blocksuite/affine-gfx-text';
 import { EdgelessTextBlockModel } from '@blocksuite/affine-model';
 import {
   type ToolbarModuleConfig,
   ToolbarModuleExtension,
 } from '@blocksuite/affine-shared/services';
-import { createTextActions } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { BlockFlavourIdentifier } from '@blocksuite/std';
 
 export const edgelessTextToolbarConfig = {

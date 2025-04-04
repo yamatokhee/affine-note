@@ -1,8 +1,3 @@
-import {
-  GROUP_TITLE_FONT_SIZE,
-  GROUP_TITLE_OFFSET,
-  GROUP_TITLE_PADDING,
-} from '@blocksuite/affine-block-surface';
 import type { GroupElementModel } from '@blocksuite/affine-model';
 import type { RichText } from '@blocksuite/affine-rich-text';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
@@ -20,6 +15,12 @@ import { consume } from '@lit/context';
 import { html, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+
+import {
+  GROUP_TITLE_FONT_SIZE,
+  GROUP_TITLE_OFFSET,
+  GROUP_TITLE_PADDING,
+} from '../element-renderer/consts';
 
 export function mountGroupTitleEditor(
   group: GroupElementModel,

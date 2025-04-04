@@ -1,3 +1,17 @@
+import {
+  type CanvasRenderer,
+  type ElementRenderer,
+  ElementRendererExtension,
+  type RoughCanvas,
+} from '@blocksuite/affine-block-surface';
+import {
+  getFontMetrics,
+  getFontString,
+  getLineWidth,
+  isRTL,
+  measureTextInDOM,
+  wrapTextDeltas,
+} from '@blocksuite/affine-gfx-text';
 import type {
   LocalShapeElementModel,
   ShapeElementModel,
@@ -8,16 +22,6 @@ import type { IBound } from '@blocksuite/global/gfx';
 import { Bound } from '@blocksuite/global/gfx';
 import { deltaInsertsToChunks } from '@blocksuite/std/inline';
 
-import type { RoughCanvas } from '../../../utils/rough/canvas.js';
-import type { CanvasRenderer } from '../../canvas-renderer.js';
-import {
-  getFontMetrics,
-  getFontString,
-  getLineWidth,
-  isRTL,
-  measureTextInDOM,
-  wrapTextDeltas,
-} from '../text/utils.js';
 import { diamond } from './diamond.js';
 import { ellipse } from './ellipse.js';
 import { rect } from './rect.js';
@@ -41,13 +45,13 @@ const shapeRenderers: Record<
   ellipse,
 };
 
-export function shape(
-  model: ShapeElementModel | LocalShapeElementModel,
-  ctx: CanvasRenderingContext2D,
-  matrix: DOMMatrix,
-  renderer: CanvasRenderer,
-  rc: RoughCanvas
-) {
+export const shape: ElementRenderer<ShapeElementModel> = (
+  model,
+  ctx,
+  matrix,
+  renderer,
+  rc
+) => {
   const color = renderer.getColorValue(
     model.color,
     DefaultTheme.shapeTextColor,
@@ -70,7 +74,14 @@ export function shape(
   if (model.textDisplay) {
     renderText(model, ctx, colors);
   }
-}
+};
+
+export const ShapeElementRendererExtension = ElementRendererExtension(
+  'shape',
+  shape
+);
+
+export * from './utils';
 
 function renderText(
   model: ShapeElementModel | LocalShapeElementModel,

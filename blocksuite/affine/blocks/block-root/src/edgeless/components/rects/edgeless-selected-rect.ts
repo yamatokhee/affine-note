@@ -1,5 +1,4 @@
 import type { EdgelessTextBlockComponent } from '@blocksuite/affine-block-edgeless-text';
-import { EDGELESS_TEXT_BLOCK_MIN_WIDTH } from '@blocksuite/affine-block-edgeless-text';
 import {
   EMBED_HTML_MIN_HEIGHT,
   EMBED_HTML_MIN_WIDTH,
@@ -14,14 +13,15 @@ import {
 import {
   CanvasElementType,
   isNoteBlock,
-  normalizeShapeBound,
   OverlayIdentifier,
-  TextUtils,
 } from '@blocksuite/affine-block-surface';
 import { isMindmapNode } from '@blocksuite/affine-gfx-mindmap';
+import { normalizeShapeBound } from '@blocksuite/affine-gfx-shape';
+import { normalizeTextBound } from '@blocksuite/affine-gfx-text';
 import {
   type BookmarkBlockModel,
   ConnectorElementModel,
+  EDGELESS_TEXT_BLOCK_MIN_WIDTH,
   type EdgelessTextBlockModel,
   type EmbedHtmlModel,
   type EmbedSyncedDocModel,
@@ -1278,7 +1278,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
       } = element;
       // If the width of the text element has been changed by dragging,
       // We need to set hasMaxWidth to true for wrapping the text
-      bound = TextUtils.normalizeTextBound(
+      bound = normalizeTextBound(
         {
           yText,
           fontFamily,

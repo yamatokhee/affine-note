@@ -173,6 +173,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
+      'blocksuite/affine/gfx/text',
       'blocksuite/affine/inlines/preset',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
@@ -475,6 +476,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
+      'blocksuite/affine/gfx/text',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
@@ -490,6 +492,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
+      'blocksuite/affine/gfx/text',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
@@ -508,6 +511,8 @@ export const PackageList = [
       'blocksuite/affine/blocks/block-image',
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
+      'blocksuite/affine/gfx/connector',
+      'blocksuite/affine/gfx/shape',
       'blocksuite/affine/gfx/text',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
@@ -542,7 +547,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
-      'blocksuite/affine/gfx/mindmap',
+      'blocksuite/affine/gfx/text',
       'blocksuite/affine/model',
       'blocksuite/affine/rich-text',
       'blocksuite/affine/shared',
@@ -556,7 +561,6 @@ export const PackageList = [
     location: 'blocksuite/affine/gfx/text',
     name: '@blocksuite/affine-gfx-text',
     workspaceDependencies: [
-      'blocksuite/affine/blocks/block-edgeless-text',
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
       'blocksuite/affine/model',

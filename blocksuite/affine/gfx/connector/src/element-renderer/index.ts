@@ -1,4 +1,19 @@
 import {
+  type CanvasRenderer,
+  ConnectorUtils,
+  type ElementRenderer,
+  ElementRendererExtension,
+  type RoughCanvas,
+} from '@blocksuite/affine-block-surface';
+import {
+  getFontString,
+  getLineHeight,
+  getTextWidth,
+  isRTL,
+  type TextDelta,
+  wrapTextDeltas,
+} from '@blocksuite/affine-gfx-text';
+import {
   type ConnectorElementModel,
   ConnectorMode,
   DefaultTheme,
@@ -11,17 +26,6 @@ import {
 } from '@blocksuite/global/gfx';
 import { deltaInsertsToChunks } from '@blocksuite/std/inline';
 
-import { isConnectorWithLabel } from '../../../managers/connector-manager.js';
-import type { RoughCanvas } from '../../../utils/rough/canvas.js';
-import type { CanvasRenderer } from '../../canvas-renderer.js';
-import {
-  getFontString,
-  getLineHeight,
-  getTextWidth,
-  isRTL,
-  type TextDelta,
-  wrapTextDeltas,
-} from '../text/utils.js';
 import {
   DEFAULT_ARROW_SIZE,
   getArrowOptions,
@@ -31,13 +35,9 @@ import {
   renderTriangle,
 } from './utils.js';
 
-export function connector(
-  model: ConnectorElementModel | LocalConnectorElementModel,
-  ctx: CanvasRenderingContext2D,
-  matrix: DOMMatrix,
-  renderer: CanvasRenderer,
-  rc: RoughCanvas
-) {
+export const connector: ElementRenderer<
+  ConnectorElementModel | LocalConnectorElementModel
+> = (model, ctx, matrix, renderer, rc) => {
   const {
     mode,
     path: points,
@@ -55,7 +55,7 @@ export function connector(
 
   ctx.setTransform(matrix);
 
-  const hasLabel = isConnectorWithLabel(model);
+  const hasLabel = ConnectorUtils.isConnectorWithLabel(model);
   let dx = 0;
   let dy = 0;
 
@@ -120,7 +120,12 @@ export function connector(
       renderer
     );
   }
-}
+};
+
+export const ConnectorElementRendererExtension = ElementRendererExtension(
+  'connector',
+  connector
+);
 
 function renderPoints(
   model: ConnectorElementModel | LocalConnectorElementModel,

@@ -1,17 +1,16 @@
-import {
-  EDGELESS_TEXT_BLOCK_MIN_HEIGHT,
-  EDGELESS_TEXT_BLOCK_MIN_WIDTH,
-} from '@blocksuite/affine/blocks/edgeless-text';
 import { addImages } from '@blocksuite/affine/blocks/image';
-import { fitContent, getSurfaceBlock } from '@blocksuite/affine/blocks/surface';
+import { getSurfaceBlock } from '@blocksuite/affine/blocks/surface';
 import { LightLoadingIcon } from '@blocksuite/affine/components/icons';
 import { addTree } from '@blocksuite/affine/gfx/mindmap';
+import { fitContent } from '@blocksuite/affine/gfx/shape';
 import { Bound } from '@blocksuite/affine/global/gfx';
 import type {
   MindmapElementModel,
   ShapeElementModel,
 } from '@blocksuite/affine/model';
 import {
+  EDGELESS_TEXT_BLOCK_MIN_HEIGHT,
+  EDGELESS_TEXT_BLOCK_MIN_WIDTH,
   EdgelessTextBlockModel,
   ImageBlockModel,
   NoteDisplayMode,

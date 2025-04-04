@@ -1,15 +1,14 @@
-import {
-  EdgelessCRUDIdentifier,
-  TextUtils,
-} from '@blocksuite/affine-block-surface';
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { TextElementModel } from '@blocksuite/affine-model';
 import {
   type ToolbarModuleConfig,
   ToolbarModuleExtension,
 } from '@blocksuite/affine-shared/services';
-import { createTextActions } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { Bound } from '@blocksuite/global/gfx';
 import { BlockFlavourIdentifier } from '@blocksuite/std';
+
+import { normalizeTextBound } from '../element-renderer/utils';
+import { createTextActions } from './actions';
 
 export const textToolbarConfig = {
   actions: createTextActions(TextElementModel, 'text', (ctx, model, props) => {
@@ -30,7 +29,7 @@ export const textToolbarConfig = {
 
     const { fontFamily, fontStyle, fontSize, fontWeight } = textStyle;
 
-    const bounds = TextUtils.normalizeTextBound(
+    const bounds = normalizeTextBound(
       {
         yText,
         fontFamily,

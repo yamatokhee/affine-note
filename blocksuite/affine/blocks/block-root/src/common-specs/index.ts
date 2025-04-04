@@ -1,9 +1,26 @@
 import { FileDropExtension } from '@blocksuite/affine-components/drop-indicator';
-import { ConnectorElementView } from '@blocksuite/affine-gfx-connector';
-import { GroupElementView } from '@blocksuite/affine-gfx-group';
-import { MindMapView } from '@blocksuite/affine-gfx-mindmap';
-import { ShapeElementView } from '@blocksuite/affine-gfx-shape';
-import { TextElementView } from '@blocksuite/affine-gfx-text';
+import { BrushElementRendererExtension } from '@blocksuite/affine-gfx-brush';
+import {
+  ConnectorElementRendererExtension,
+  ConnectorElementView,
+} from '@blocksuite/affine-gfx-connector';
+import {
+  GroupElementRendererExtension,
+  GroupElementView,
+} from '@blocksuite/affine-gfx-group';
+import {
+  MindmapElementRendererExtension,
+  MindMapView,
+} from '@blocksuite/affine-gfx-mindmap';
+import {
+  HighlighterElementRendererExtension,
+  ShapeElementRendererExtension,
+  ShapeElementView,
+} from '@blocksuite/affine-gfx-shape';
+import {
+  TextElementRendererExtension,
+  TextElementView,
+} from '@blocksuite/affine-gfx-text';
 import { NoteBlockSchema } from '@blocksuite/affine-model';
 import {
   DNDAPIExtension,
@@ -45,6 +62,16 @@ const EdgelessElementViews = [
   ShapeElementView,
 ];
 
+export const EdgelessElementRendererExtension: ExtensionType[] = [
+  BrushElementRendererExtension,
+  HighlighterElementRendererExtension,
+  ShapeElementRendererExtension,
+  TextElementRendererExtension,
+  ConnectorElementRendererExtension,
+  GroupElementRendererExtension,
+  MindmapElementRendererExtension,
+];
+
 export const CommonSpecs: ExtensionType[] = [
   FlavourExtension('affine:page'),
   DocModeService,
@@ -57,7 +84,7 @@ export const CommonSpecs: ExtensionType[] = [
   ...RootBlockAdapterExtensions,
   ...clipboardConfigs,
   ...EdgelessElementViews,
-
+  ...EdgelessElementRendererExtension,
   modalWidget,
   innerModalWidget,
   SlashMenuExtension,

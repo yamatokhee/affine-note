@@ -10,7 +10,6 @@
   "author": "toeverything",
   "license": "MIT",
   "dependencies": {
-    "@blocksuite/affine-block-edgeless-text": "workspace:*",
     "@blocksuite/affine-block-surface": "workspace:*",
     "@blocksuite/affine-components": "workspace:*",
     "@blocksuite/affine-model": "workspace:*",

@@ -1,3 +1,4 @@
+import type { RoughCanvas } from '@blocksuite/affine-block-surface';
 import {
   type ConnectorElementModel,
   ConnectorMode,
@@ -13,8 +14,6 @@ import {
   getBezierTangent,
   Vec,
 } from '@blocksuite/global/gfx';
-
-import type { RoughCanvas } from '../../../utils/rough/canvas.js';
 
 type ConnectorEnd = 'Front' | 'Rear';
 

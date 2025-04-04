@@ -1,7 +1,10 @@
+import {
+  type ElementRenderer,
+  ElementRendererExtension,
+} from '@blocksuite/affine-block-surface';
 import { DefaultTheme, type TextElementModel } from '@blocksuite/affine-model';
 import { deltaInsertsToChunks } from '@blocksuite/std/inline';
 
-import type { CanvasRenderer } from '../../canvas-renderer.js';
 import {
   getFontString,
   getLineHeight,
@@ -10,12 +13,12 @@ import {
   wrapTextDeltas,
 } from './utils.js';
 
-export function text(
-  model: TextElementModel,
-  ctx: CanvasRenderingContext2D,
-  matrix: DOMMatrix,
-  renderer: CanvasRenderer
-) {
+export const text: ElementRenderer<TextElementModel> = (
+  model,
+  ctx,
+  matrix,
+  renderer
+) => {
   const { fontSize, fontWeight, fontStyle, fontFamily, textAlign, rotate } =
     model;
   const [, , w, h] = model.deserializedXYWH;
@@ -81,4 +84,11 @@ export function text(
       }
     }
   }
-}
+};
+
+export const TextElementRendererExtension = ElementRendererExtension(
+  'text',
+  text
+);
+
+export * from './utils';

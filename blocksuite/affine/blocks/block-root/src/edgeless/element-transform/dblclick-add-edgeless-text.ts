@@ -1,5 +1,7 @@
-import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
-import { addText } from '@blocksuite/affine-gfx-text';
+import {
+  addText,
+  insertEdgelessTextCommand,
+} from '@blocksuite/affine-gfx-text';
 import {
   FeatureFlagService,
   TelemetryProvider,

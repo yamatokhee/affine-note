@@ -7,7 +7,6 @@
   },
   "include": ["./src"],
   "references": [
-    { "path": "../../blocks/block-edgeless-text" },
     { "path": "../../blocks/block-surface" },
     { "path": "../../components" },
     { "path": "../../model" },

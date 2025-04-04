@@ -26,6 +26,11 @@ import {
   getMostCommonValue,
 } from '@blocksuite/affine-shared/utils';
 import {
+  type MenuItem,
+  renderCurrentMenuItemWith,
+  renderMenu,
+} from '@blocksuite/affine-widget-edgeless-toolbar';
+import {
   TextAlignCenterIcon,
   TextAlignLeftIcon,
   TextAlignRightIcon,
@@ -35,8 +40,10 @@ import { signal } from '@preact/signals-core';
 import { html } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { MenuItem } from './types';
-import { renderCurrentMenuItemWith, renderMenu } from './utils';
+import {
+  isFontStyleSupported,
+  isFontWeightSupported,
+} from '../element-renderer/utils';
 
 const FONT_WEIGHT_LIST = [
   {
@@ -133,10 +140,10 @@ export function createTextActions<
             getMostCommonValue(models.map(mapInto), 'fontStyle') ??
             FontStyle.Normal;
 
-          if (!TextUtils.isFontWeightSupported(fontFamily, fontWeight)) {
+          if (!isFontWeightSupported(fontFamily, fontWeight)) {
             fontWeight = FontWeight.Regular;
           }
-          if (!TextUtils.isFontStyleSupported(fontFamily, fontStyle)) {
+          if (!isFontStyleSupported(fontFamily, fontStyle)) {
             fontStyle = FontStyle.Normal;
           }
 

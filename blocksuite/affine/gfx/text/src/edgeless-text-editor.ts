@@ -26,6 +26,8 @@ import { property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import * as Y from 'yjs';
 
+import { getCursorByCoord, getLineHeight } from './element-renderer/utils';
+
 export function mountTextElementEditor(
   textElement: TextElementModel,
   edgeless: BlockComponent,
@@ -34,7 +36,7 @@ export function mountTextElementEditor(
   let cursorIndex = textElement.text.length;
   if (focusCoord) {
     cursorIndex = Math.min(
-      TextUtils.getCursorByCoord(textElement, focusCoord),
+      getCursorByCoord(textElement, focusCoord),
       cursorIndex
     );
   }
@@ -413,11 +415,7 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
       hasMaxWidth,
       w,
     } = this.element;
-    const lineHeight = TextUtils.getLineHeight(
-      fontFamily,
-      fontSize,
-      fontWeight
-    );
+    const lineHeight = getLineHeight(fontFamily, fontSize, fontWeight);
     const rect = getSelectedRect([this.element]);
 
     const { translateX, translateY, zoom } = this.gfx.viewport;

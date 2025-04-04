@@ -2,16 +2,16 @@ import {
   EdgelessCRUDIdentifier,
   getSurfaceBlock,
 } from '@blocksuite/affine-block-surface';
-import { focusTextModel } from '@blocksuite/affine-rich-text';
-import { Bound } from '@blocksuite/global/gfx';
-import type { Command } from '@blocksuite/std';
-import { GfxControllerIdentifier } from '@blocksuite/std/gfx';
-
 import {
   EDGELESS_TEXT_BLOCK_MIN_HEIGHT,
   EDGELESS_TEXT_BLOCK_MIN_WIDTH,
-  EdgelessTextBlockComponent,
-} from '../edgeless-text-block.js';
+  EdgelessTextBlockModel,
+} from '@blocksuite/affine-model';
+import { focusTextModel } from '@blocksuite/affine-rich-text';
+import { matchModels } from '@blocksuite/affine-shared/utils';
+import { Bound } from '@blocksuite/global/gfx';
+import type { Command } from '@blocksuite/std';
+import { GfxControllerIdentifier } from '@blocksuite/std/gfx';
 
 export const insertEdgelessTextCommand: Command<
   {
@@ -59,8 +59,9 @@ export const insertEdgelessTextCommand: Command<
         const id = selection.selectedIds[0];
         if (!editing || id !== textId) {
           const textBlock = host.view.getBlock(textId);
-          if (textBlock instanceof EdgelessTextBlockComponent) {
-            textBlock.model.props.hasMaxWidth = true;
+          const model = textBlock?.model;
+          if (matchModels(model, [EdgelessTextBlockModel])) {
+            model.props.hasMaxWidth = true;
           }
 
           disposable.unsubscribe();

@@ -1,13 +1,15 @@
 import type {
+  CanvasRenderer,
+  RoughCanvas,
+} from '@blocksuite/affine-block-surface';
+import type {
   LocalShapeElementModel,
   ShapeElementModel,
 } from '@blocksuite/affine-model';
 
-import type { RoughCanvas } from '../../../utils/rough/canvas.js';
-import type { CanvasRenderer } from '../../canvas-renderer.js';
 import { type Colors, drawGeneralShape } from './utils.js';
 
-export function ellipse(
+export function triangle(
   model: ShapeElementModel | LocalShapeElementModel,
   ctx: CanvasRenderingContext2D,
   matrix: DOMMatrix,
@@ -26,8 +28,8 @@ export function ellipse(
   } = model;
   const [, , w, h] = model.deserializedXYWH;
   const renderOffset = Math.max(strokeWidth, 0) / 2;
-  const renderWidth = Math.max(1, w - renderOffset * 2);
-  const renderHeight = Math.max(1, h - renderOffset * 2);
+  const renderWidth = w - renderOffset * 2;
+  const renderHeight = h - renderOffset * 2;
   const cx = renderWidth / 2;
   const cy = renderHeight / 2;
 
@@ -44,14 +46,20 @@ export function ellipse(
   if (shapeStyle === 'General') {
     drawGeneralShape(ctx, model, renderer, filled, fillColor, strokeColor);
   } else {
-    rc.ellipse(cx, cy, renderWidth, renderHeight, {
-      seed,
-      roughness: shapeStyle === 'Scribbled' ? roughness : 0,
-      strokeLineDash: strokeStyle === 'dash' ? [12, 12] : undefined,
-      stroke: strokeStyle === 'none' ? 'none' : strokeColor,
-      strokeWidth,
-      fill: filled ? fillColor : undefined,
-      curveFitting: 1,
-    });
+    rc.polygon(
+      [
+        [renderWidth / 2, 0],
+        [renderWidth, renderHeight],
+        [0, renderHeight],
+      ],
+      {
+        seed,
+        roughness: shapeStyle === 'Scribbled' ? roughness : 0,
+        strokeLineDash: strokeStyle === 'dash' ? [12, 12] : undefined,
+        stroke: strokeStyle === 'none' ? 'none' : strokeColor,
+        strokeWidth,
+        fill: filled ? fillColor : undefined,
+      }
+    );
   }
 }

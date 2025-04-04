@@ -1,14 +1,4 @@
-import type {
-  LocalShapeElementModel,
-  ShapeElementModel,
-  TextAlign,
-  TextVerticalAlign,
-} from '@blocksuite/affine-model';
-import { FeatureFlagService } from '@blocksuite/affine-shared/services';
-import type { Bound, SerializedXYWH } from '@blocksuite/global/gfx';
-import { deltaInsertsToChunks } from '@blocksuite/std/inline';
-
-import type { CanvasRenderer } from '../../canvas-renderer.js';
+import type { CanvasRenderer } from '@blocksuite/affine-block-surface';
 import {
   getFontString,
   getLineHeight,
@@ -18,7 +8,16 @@ import {
   type TextDelta,
   wrapText,
   wrapTextDeltas,
-} from '../text/utils.js';
+} from '@blocksuite/affine-gfx-text';
+import type {
+  LocalShapeElementModel,
+  ShapeElementModel,
+  TextAlign,
+  TextVerticalAlign,
+} from '@blocksuite/affine-model';
+import { FeatureFlagService } from '@blocksuite/affine-shared/services';
+import type { Bound, SerializedXYWH } from '@blocksuite/global/gfx';
+import { deltaInsertsToChunks } from '@blocksuite/std/inline';
 
 export type Colors = {
   color: string;

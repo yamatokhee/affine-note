@@ -1,13 +1,13 @@
-import type { GroupElementModel } from '@blocksuite/affine-model';
-import { FontWeight } from '@blocksuite/affine-model';
-import { Bound } from '@blocksuite/global/gfx';
-
 import {
   getFontString,
   getLineHeight,
   getLineWidth,
   truncateTextByWidth,
-} from '../text/utils.js';
+} from '@blocksuite/affine-gfx-text';
+import type { GroupElementModel } from '@blocksuite/affine-model';
+import { FontWeight } from '@blocksuite/affine-model';
+import { Bound } from '@blocksuite/global/gfx';
+
 import {
   GROUP_TITLE_FONT,
   GROUP_TITLE_FONT_SIZE,

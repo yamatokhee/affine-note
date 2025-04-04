@@ -12,6 +12,8 @@
     { "path": "../../blocks/block-image" },
     { "path": "../../blocks/block-surface" },
     { "path": "../../components" },
+    { "path": "../connector" },
+    { "path": "../shape" },
     { "path": "../text" },
     { "path": "../../model" },
     { "path": "../../rich-text" },

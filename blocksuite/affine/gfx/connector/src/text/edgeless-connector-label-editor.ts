@@ -1,7 +1,5 @@
-import {
-  EdgelessCRUDIdentifier,
-  TextUtils,
-} from '@blocksuite/affine-block-surface';
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+import { getLineHeight } from '@blocksuite/affine-gfx-text';
 import type { ConnectorElementModel } from '@blocksuite/affine-model';
 import type { RichText } from '@blocksuite/affine-rich-text';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
@@ -319,11 +317,7 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
       labelConstraints: { hasMaxWidth, maxWidth },
     } = connector;
 
-    const lineHeight = TextUtils.getLineHeight(
-      fontFamily,
-      fontSize,
-      fontWeight
-    );
+    const lineHeight = getLineHeight(fontFamily, fontSize, fontWeight);
     const { translateX, translateY, zoom } = this.gfx.viewport;
     const [x, y] = Vec.mul(connector.getPointByOffsetDistance(distance), zoom);
     const transformOperation = [

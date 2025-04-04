@@ -1,4 +1,3 @@
-import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
 import {
   CanvasElementType,
@@ -13,7 +12,10 @@ import {
   SHAPE_OVERLAY_WIDTH,
   ShapeComponentConfig,
 } from '@blocksuite/affine-gfx-shape';
-import { mountTextElementEditor } from '@blocksuite/affine-gfx-text';
+import {
+  insertEdgelessTextCommand,
+  mountTextElementEditor,
+} from '@blocksuite/affine-gfx-text';
 import type {
   Connection,
   ConnectorElementModel,

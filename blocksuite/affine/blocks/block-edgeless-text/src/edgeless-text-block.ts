@@ -1,6 +1,8 @@
 import { TextUtils } from '@blocksuite/affine-block-surface';
 import { formatBlockCommand } from '@blocksuite/affine-inline-preset';
 import {
+  EDGELESS_TEXT_BLOCK_MIN_HEIGHT,
+  EDGELESS_TEXT_BLOCK_MIN_WIDTH,
   type EdgelessTextBlockModel,
   ListBlockModel,
   ParagraphBlockModel,
@@ -22,9 +24,6 @@ import type { SelectedContext } from '@blocksuite/std/gfx';
 import { css, html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
-
-export const EDGELESS_TEXT_BLOCK_MIN_WIDTH = 50;
-export const EDGELESS_TEXT_BLOCK_MIN_HEIGHT = 50;
 
 export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBlockModel> {
   static override styles = css`

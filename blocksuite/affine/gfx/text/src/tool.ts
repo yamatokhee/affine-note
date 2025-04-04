@@ -1,4 +1,3 @@
-import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import type { TextElementModel } from '@blocksuite/affine-model';
 import {
   FeatureFlagService,
@@ -9,6 +8,7 @@ import type { PointerEventState } from '@blocksuite/std';
 import { BaseTool, type GfxController } from '@blocksuite/std/gfx';
 import * as Y from 'yjs';
 
+import { insertEdgelessTextCommand } from './commands/insert-edgeless-text';
 import { mountTextElementEditor } from './mount-text-editor';
 
 function addText(gfx: GfxController, event: PointerEventState) {

@@ -1,3 +1,4 @@
+import { TextUtils } from '@blocksuite/affine-block-surface';
 import type {
   FontFamily,
   FontStyle,
@@ -12,10 +13,7 @@ import {
 import { deltaInsertsToChunks } from '@blocksuite/std/inline';
 import type * as Y from 'yjs';
 
-import {
-  getFontFacesByFontFamily,
-  wrapFontFamily,
-} from '../../../utils/font.js';
+const { getFontFacesByFontFamily, wrapFontFamily } = TextUtils;
 
 export type TextDelta = {
   insert: string;

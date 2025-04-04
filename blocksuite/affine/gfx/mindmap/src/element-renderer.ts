@@ -1,23 +1,23 @@
+import {
+  ConnectorPathGenerator,
+  type ElementRenderer,
+  ElementRendererExtension,
+} from '@blocksuite/affine-block-surface';
+import { connector as renderConnector } from '@blocksuite/affine-gfx-connector';
 import type {
   MindmapElementModel,
   MindmapNode,
 } from '@blocksuite/affine-model';
-import type { IBound } from '@blocksuite/global/gfx';
 import type { GfxModel } from '@blocksuite/std/gfx';
 
-import { ConnectorPathGenerator } from '../../managers/connector-manager.js';
-import type { RoughCanvas } from '../../utils/rough/canvas.js';
-import type { CanvasRenderer } from '../canvas-renderer.js';
-import { connector as renderConnector } from './connector/index.js';
-
-export function mindmap(
-  model: MindmapElementModel,
-  ctx: CanvasRenderingContext2D,
-  matrix: DOMMatrix,
-  renderer: CanvasRenderer,
-  rc: RoughCanvas,
-  bound: IBound
-) {
+export const mindmap: ElementRenderer<MindmapElementModel> = (
+  model,
+  ctx,
+  matrix,
+  renderer,
+  rc,
+  bound
+) => {
   const dx = model.x - bound.x;
   const dy = model.y - bound.y;
 
@@ -48,7 +48,15 @@ export function mindmap(
         ctx.globalAlpha = connector.opacity * mindmapOpacity;
       }
 
-      renderConnector(connector, ctx, matrix.translate(dx, dy), renderer, rc);
+      renderConnector(
+        connector,
+        ctx,
+        matrix.translate(dx, dy),
+        renderer,
+        rc,
+        // NOTE: should we add this?
+        bound
+      );
 
       if (shouldSetGlobalAlpha) {
         ctx.globalAlpha = origin;
@@ -63,4 +71,9 @@ export function mindmap(
   };
 
   model.tree && traverse(model.tree);
-}
+};
+
+export const MindmapElementRendererExtension = ElementRendererExtension(
+  'mindmap',
+  mindmap
+);

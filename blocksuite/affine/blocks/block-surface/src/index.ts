@@ -20,21 +20,10 @@ export {
   PathGenerator,
 } from './managers/connector-manager.js';
 export { CanvasRenderer } from './renderer/canvas-renderer.js';
-export * from './renderer/elements/group/consts.js';
 export type { ElementRenderer } from './renderer/elements/index.js';
-export { normalizeShapeBound } from './renderer/elements/index.js';
-export { fitContent } from './renderer/elements/shape/utils.js';
 export * from './renderer/elements/type.js';
 export { Overlay, OverlayIdentifier } from './renderer/overlay.js';
 export { ToolOverlay } from './renderer/tool-overlay.js';
-import {
-  getCursorByCoord,
-  getLineHeight,
-  isFontStyleSupported,
-  isFontWeightSupported,
-  normalizeTextBound,
-  splitIntoLines,
-} from './renderer/elements/text/utils.js';
 import {
   getFontFaces,
   getFontFacesByFontFamily,
@@ -80,12 +69,6 @@ export const ConnectorUtils = {
 };
 
 export const TextUtils = {
-  splitIntoLines,
-  normalizeTextBound,
-  getLineHeight,
-  getCursorByCoord,
-  isFontWeightSupported,
-  isFontStyleSupported,
   wrapFontFamily,
   getFontFaces,
   getFontFacesByFontFamily,

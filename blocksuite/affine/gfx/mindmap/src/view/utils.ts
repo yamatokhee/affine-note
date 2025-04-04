@@ -1,4 +1,4 @@
-import { fitContent } from '@blocksuite/affine-block-surface';
+import { fitContent } from '@blocksuite/affine-gfx-shape';
 import {
   applyNodeStyle,
   LayoutType,

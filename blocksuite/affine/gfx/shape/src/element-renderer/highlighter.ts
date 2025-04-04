@@ -1,16 +1,18 @@
 import {
+  type ElementRenderer,
+  ElementRendererExtension,
+} from '@blocksuite/affine-block-surface';
+import {
   DefaultTheme,
   type HighlighterElementModel,
 } from '@blocksuite/affine-model';
 
-import type { CanvasRenderer } from '../../canvas-renderer.js';
-
-export function highlighter(
-  model: HighlighterElementModel,
-  ctx: CanvasRenderingContext2D,
-  matrix: DOMMatrix,
-  renderer: CanvasRenderer
-) {
+export const highlighter: ElementRenderer<HighlighterElementModel> = (
+  model,
+  ctx,
+  matrix,
+  renderer
+) => {
   const {
     rotate,
     deserializedXYWH: [, , w, h],
@@ -31,4 +33,9 @@ export function highlighter(
   ctx.fillStyle = color;
 
   ctx.fill(new Path2D(model.commands));
-}
+};
+
+export const HighlighterElementRendererExtension = ElementRendererExtension(
+  'highlighter',
+  highlighter
+);

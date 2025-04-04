@@ -1,11 +1,13 @@
 import { addAttachments } from '@blocksuite/affine-block-attachment';
-import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import { addImages } from '@blocksuite/affine-block-image';
 import {
   CanvasElementType,
   EdgelessCRUDIdentifier,
 } from '@blocksuite/affine-block-surface';
-import { mountTextElementEditor } from '@blocksuite/affine-gfx-text';
+import {
+  insertEdgelessTextCommand,
+  mountTextElementEditor,
+} from '@blocksuite/affine-gfx-text';
 import {
   MAX_IMAGE_WIDTH,
   type MindmapStyle,

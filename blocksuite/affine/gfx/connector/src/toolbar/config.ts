@@ -1,13 +1,16 @@
 import {
   ConnectorUtils,
   EdgelessCRUDIdentifier,
-  TextUtils,
 } from '@blocksuite/affine-block-surface';
 import {
   packColor,
   type PickColorEvent,
 } from '@blocksuite/affine-components/color-picker';
 import type { LineDetailType } from '@blocksuite/affine-components/edgeless-line-styles-panel';
+import {
+  createTextActions,
+  normalizeTextBound,
+} from '@blocksuite/affine-gfx-text';
 import {
   ConnectorElementModel,
   type ConnectorElementProps,
@@ -33,7 +36,6 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import type { MenuItem } from '@blocksuite/affine-widget-edgeless-toolbar';
 import {
-  createTextActions,
   getRootBlock,
   LINE_STYLE_LIST,
   renderMenu,
@@ -368,7 +370,7 @@ export const connectorToolbarConfig = {
         } = model;
         const prevBounds = Bound.fromXYWH(labelXYWH || [0, 0, 16, 16]);
         const center = prevBounds.center;
-        const bounds = TextUtils.normalizeTextBound(
+        const bounds = normalizeTextBound(
           {
             yText: text!,
             fontFamily,
