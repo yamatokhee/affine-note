@@ -708,10 +708,7 @@ impl ShareableContent {
     }
 
     // Create an Application directly
-    match Application::new(process_id as i32) {
-      Ok(app) => Some(app),
-      Err(_) => None,
-    }
+    Application::new(process_id as i32).ok()
   }
 
   #[napi]

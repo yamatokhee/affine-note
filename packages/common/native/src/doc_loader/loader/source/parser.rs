@@ -79,7 +79,7 @@ impl Clone for LanguageParser {
 pub fn get_language_by_filename(name: &str) -> LoaderResult<Language> {
   let extension = name
     .split('.')
-    .last()
+    .next_back()
     .ok_or(LoaderError::UnsupportedLanguage)?;
   let language = match extension.to_lowercase().as_str() {
     "rs" => Language::Rust,
