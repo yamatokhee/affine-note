@@ -166,6 +166,9 @@ test('add mindmap into frame, then drag root node of mindmap out.', async ({
 
   const button = page.locator('edgeless-mindmap-tool-button');
   await button.click();
+  const mindMapMenu = page.locator('edgeless-mindmap-menu');
+  const mindMapItem = mindMapMenu.locator('.mindmap-item').first();
+  await mindMapItem.click();
   await toViewCoord(page, [100, 200]);
   await clickView(page, [100, 200]);
   const mindmapId = await getFirstContainerId(page, [frameId]);
@@ -198,6 +201,9 @@ test('add mindmap out of frame and add new node in frame then drag frame', async
 
   const button = page.locator('edgeless-mindmap-tool-button');
   await button.click();
+  const mindMapMenu = page.locator('edgeless-mindmap-menu');
+  const mindMapItem = mindMapMenu.locator('.mindmap-item').first();
+  await mindMapItem.click();
   await toViewCoord(page, [20, 200]);
   await clickView(page, [20, 200]);
   await waitNextFrame(page, 100);

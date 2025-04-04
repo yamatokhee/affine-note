@@ -389,6 +389,30 @@ export class EdgelessDraggableElementController<T>
     this.options.edgeless.host.dispatchEvent(mouseMoveEvent);
   }
 
+  dragAndMoveTo(target: HTMLElement, to: { x: number; y: number }) {
+    const targetRect = target.getBoundingClientRect();
+    const targetCenter = {
+      x: targetRect.left + targetRect.width / 2,
+      y: targetRect.top + targetRect.height / 2,
+    };
+
+    const mouseDownEvent = new MouseEvent('mousedown', {
+      clientX: targetCenter.x,
+      clientY: targetCenter.y,
+    });
+    const mouseMoveStartEvent = new MouseEvent('mousemove', {
+      clientX: targetCenter.x,
+      clientY: targetCenter.y,
+    });
+    const mouseMoveToEvent = new MouseEvent('mousemove', {
+      clientX: to.x,
+      clientY: to.y,
+    });
+    target.dispatchEvent(mouseDownEvent);
+    this.options.edgeless.host.dispatchEvent(mouseMoveStartEvent);
+    this.options.edgeless.host.dispatchEvent(mouseMoveToEvent);
+  }
+
   hostConnected() {
     this.host.disposables.add(
       this.gfx.viewport.viewportUpdated.subscribe(({ zoom }) => {

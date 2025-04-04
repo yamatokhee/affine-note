@@ -1212,6 +1212,9 @@ export async function triggerComponentToolbarAction(
     case 'addMindmap': {
       const button = page.locator('edgeless-mindmap-tool-button');
       await button.click();
+      const mindMapMenu = page.locator('edgeless-mindmap-menu');
+      const mindMapItem = mindMapMenu.locator('.mindmap-item').first();
+      await mindMapItem.click();
       await page.mouse.move(400, 400);
       await page.mouse.click(400, 400);
       break;

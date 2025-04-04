@@ -254,6 +254,20 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
         }
       },
     });
+
+    this.edgeless.bindHotKey(
+      {
+        m: () => {
+          const gfx = this.gfx;
+          const locked = gfx.viewport.locked;
+          if (locked) return;
+          if (gfx.selection.editing) return;
+          // toolbar mindmap button will capture the `m` key and create a new overlay
+          this.draggableController.cancelWithoutAnimation();
+        },
+      },
+      { global: true }
+    );
   }
 
   override render() {

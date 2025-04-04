@@ -231,7 +231,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
       edgeless: this.edgeless,
       scopeElement: this.toolbarContainer,
       standardWidth: 100,
-      clickToDrag: true,
+      clickToDrag: false,
       onOverlayCreated: (overlay, { data }) => {
         const tool = this.draggableTools.find(t => t.name === data.name);
         if (!tool) return;
@@ -321,7 +321,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
           const { viewport } = this.edgeless.std.get(ViewportElementProvider);
           const { left, top } = viewport;
           const clientPos = { x: x + left, y: y + top };
-          this.draggableController.clickToDrag(icon, clientPos);
+          this.draggableController.dragAndMoveTo(icon, clientPos);
         },
       },
       { global: true }
