@@ -11,17 +11,12 @@ import type { Subject } from 'rxjs';
 
 import { ConnectorElementModel } from './element-model/index.js';
 import { CanvasRenderer } from './renderer/canvas-renderer.js';
-import {
-  type ElementRenderer,
-  elementRenderers,
-} from './renderer/elements/index.js';
 import { OverlayIdentifier } from './renderer/overlay.js';
 import type { SurfaceBlockModel } from './surface-model.js';
 
 export interface SurfaceContext {
   viewport: Viewport;
   host: EditorHost;
-  elementRenderers: Record<string, ElementRenderer>;
   selection: {
     selectedIds: string[];
     slots: {
@@ -148,6 +143,7 @@ export class SurfaceBlockComponent extends BlockComponent<SurfaceBlockModel> {
     const themeService = this.std.get(ThemeProvider);
 
     this._renderer = new CanvasRenderer({
+      std: this.std,
       viewport: gfx.viewport,
       layerManager: gfx.layer,
       gridManager: gfx.grid,
@@ -177,7 +173,6 @@ export class SurfaceBlockComponent extends BlockComponent<SurfaceBlockModel> {
       onStackingCanvasCreated(canvas) {
         canvas.className = 'indexable-canvas';
       },
-      elementRenderers,
       surfaceModel: this.model,
     });
 

@@ -11,12 +11,14 @@ import {
   EdgelessLegacySlotExtension,
 } from './extensions';
 import { ExportManagerExtension } from './extensions/export-manager/export-manager';
+import { elementRendererExtensions } from './renderer/elements';
 
 const CommonSurfaceBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:surface'),
   EdgelessCRUDExtension,
   EdgelessLegacySlotExtension,
   ExportManagerExtension,
+  ...elementRendererExtensions,
 ];
 
 export const PageSurfaceBlockSpec: ExtensionType[] = [

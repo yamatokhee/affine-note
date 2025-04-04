@@ -1,6 +1,10 @@
 import type { IBound } from '@blocksuite/global/gfx';
-import type { GfxPrimitiveElementModel } from '@blocksuite/std/gfx';
+import type {
+  GfxLocalElementModel,
+  GfxPrimitiveElementModel,
+} from '@blocksuite/std/gfx';
 
+import { ElementRendererExtension } from '../../extensions/element-renderer.js';
 import type { RoughCanvas } from '../../index.js';
 import type { CanvasRenderer } from '../canvas-renderer.js';
 import { brush } from './brush/index.js';
@@ -13,7 +17,9 @@ import { text } from './text/index.js';
 export { normalizeShapeBound } from './shape/utils.js';
 
 export type ElementRenderer<
-  T extends GfxPrimitiveElementModel = GfxPrimitiveElementModel,
+  T extends
+    | GfxPrimitiveElementModel
+    | GfxLocalElementModel = GfxPrimitiveElementModel,
 > = (
   model: T,
   ctx: CanvasRenderingContext2D,
@@ -23,12 +29,47 @@ export type ElementRenderer<
   viewportBound: IBound
 ) => void;
 
-export const elementRenderers = {
-  brush,
-  highlighter,
-  connector,
-  group,
-  shape,
-  text,
-  mindmap,
-} as Record<string, ElementRenderer<any>>;
+export const BrushElementRendererExtension = ElementRendererExtension(
+  'brush',
+  brush
+);
+
+export const HighlighterElementRendererExtension = ElementRendererExtension(
+  'highlighter',
+  highlighter
+);
+
+export const ConnectorElementRendererExtension = ElementRendererExtension(
+  'connector',
+  connector
+);
+
+export const GroupElementRendererExtension = ElementRendererExtension(
+  'group',
+  group
+);
+
+export const ShapeElementRendererExtension = ElementRendererExtension(
+  'shape',
+  shape
+);
+
+export const TextElementRendererExtension = ElementRendererExtension(
+  'text',
+  text
+);
+
+export const MindmapElementRendererExtension = ElementRendererExtension(
+  'mindmap',
+  mindmap
+);
+
+export const elementRendererExtensions = [
+  BrushElementRendererExtension,
+  HighlighterElementRendererExtension,
+  ConnectorElementRendererExtension,
+  GroupElementRendererExtension,
+  ShapeElementRendererExtension,
+  TextElementRendererExtension,
+  MindmapElementRendererExtension,
+];

@@ -2,8 +2,6 @@ import { EdgelessFrameManagerIdentifier } from '@blocksuite/affine-block-frame';
 import {
   EdgelessCRUDIdentifier,
   EdgelessLegacySlotIdentifier,
-  type ElementRenderer,
-  elementRenderers,
   getSurfaceBlock,
   type SurfaceBlockModel,
   type SurfaceContext,
@@ -47,8 +45,6 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
   static override readonly flavour = RootBlockSchema.model.flavour;
 
   private readonly _surface: SurfaceBlockModel;
-
-  elementRenderers: Record<string, ElementRenderer> = elementRenderers;
 
   TemplateJob = TemplateJob;
 

@@ -1,7 +1,6 @@
 /* oxlint-disable @typescript-eslint/no-non-null-assertion */
 import {
   CanvasRenderer,
-  elementRenderers,
   fitContent,
   type SurfaceBlockModel,
 } from '@blocksuite/affine/blocks/surface';
@@ -98,6 +97,7 @@ export class MindmapSurfaceBlock extends BlockComponent<SurfaceBlockModel> {
 
     const themeService = this.std.get(ThemeProvider);
     this.renderer = new CanvasRenderer({
+      std: this.std,
       viewport: this.viewport,
       layerManager: this._layer,
       gridManager: this._grid,
@@ -124,7 +124,6 @@ export class MindmapSurfaceBlock extends BlockComponent<SurfaceBlockModel> {
             themeService.edgelessTheme
           ),
       },
-      elementRenderers,
       surfaceModel: this.model,
     });
     this._disposables.add(this.renderer);
