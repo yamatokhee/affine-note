@@ -18,6 +18,7 @@ import { CircleUser } from 'lucide-react';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 
+import { affineFetch } from '../../fetch-utils';
 import { useCurrentUser, useRevalidateCurrentUser } from '../common';
 
 interface UserDropdownProps {
@@ -63,7 +64,7 @@ export function UserDropdown({ isCollapsed }: UserDropdownProps) {
   const relative = useRevalidateCurrentUser();
 
   const handleLogout = useCallback(() => {
-    fetch('/api/auth/sign-out')
+    affineFetch('/api/auth/sign-out')
       .then(() => {
         toast.success('Logged out successfully');
         return relative();
