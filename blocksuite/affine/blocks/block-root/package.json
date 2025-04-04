@@ -51,7 +51,7 @@
     "@blocksuite/affine-widget-toolbar": "workspace:*",
     "@blocksuite/data-view": "workspace:*",
     "@blocksuite/global": "workspace:*",
-    "@blocksuite/icons": "^2.2.8",
+    "@blocksuite/icons": "^2.2.10",
     "@blocksuite/std": "workspace:*",
     "@blocksuite/store": "workspace:*",
     "@floating-ui/dom": "^1.6.13",

@@ -21,9 +21,9 @@ import type { DocMeta } from '@blocksuite/affine/store';
 import { Text } from '@blocksuite/affine/store';
 import {
   DateTimeIcon,
-  MainAvatarIcon,
   NewXxxEdgelessIcon,
   NewXxxPageIcon,
+  UserIcon,
 } from '@blocksuite/icons/lit';
 import { computed, Signal } from '@preact/signals-core';
 import { Service } from '@toeverything/infra';
@@ -348,7 +348,7 @@ export class AtMenuConfigService extends Service {
       });
       const icon = avatar
         ? html`<img style=${avatarStyle} src="${avatar}" />`
-        : MainAvatarIcon();
+        : UserIcon();
 
       return {
         key: id,
@@ -482,7 +482,7 @@ export class AtMenuConfigService extends Service {
     const inviteItem: LinkedMenuItem = {
       key: 'invite',
       name: 'Invite...',
-      icon: MainAvatarIcon(),
+      icon: UserIcon(),
       action: () => {
         close();
         this.dialogService.open('setting', {

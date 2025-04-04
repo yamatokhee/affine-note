@@ -1,7 +1,7 @@
 import {
-  AddThirtySecondIcon,
   CloseIcon,
-  ReduceFifteenSecondIcon,
+  ForwardThirtySecondsIcon,
+  RewindFifteenSecondsIcon,
   VoiceIcon,
 } from '@blocksuite/icons/rc';
 import bytes from 'bytes';
@@ -184,7 +184,7 @@ export const MiniAudioPlayer = ({
       <div className={styles.miniNameLabel}>{name}</div>
       <div className={styles.miniPlayerContainer}>
         <IconButton
-          icon={<ReduceFifteenSecondIcon />}
+          icon={<RewindFifteenSecondsIcon />}
           size={18}
           variant="plain"
           onClick={handleRewind}
@@ -196,7 +196,7 @@ export const MiniAudioPlayer = ({
         />
 
         <IconButton
-          icon={<AddThirtySecondIcon />}
+          icon={<ForwardThirtySecondsIcon />}
           size={18}
           variant="plain"
           onClick={handleForward}
