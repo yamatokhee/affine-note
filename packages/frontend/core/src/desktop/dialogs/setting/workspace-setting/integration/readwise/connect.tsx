@@ -4,7 +4,13 @@ import { IntegrationService } from '@affine/core/modules/integration';
 import { Trans, useI18n } from '@affine/i18n';
 import { ReadwiseLogoDuotoneIcon } from '@blocksuite/icons/rc';
 import { useService } from '@toeverything/infra';
-import { type FormEvent, useCallback, useState } from 'react';
+import {
+  type FormEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { IntegrationCardIcon } from '../card';
 import {
@@ -27,6 +33,7 @@ const ConnectDialog = ({
   onSuccess: (token: string) => void;
 }) => {
   const t = useI18n();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<'idle' | 'verifying' | 'error'>('idle');
   const [token, setToken] = useState('');
   const readwise = useService(IntegrationService).readwise;
@@ -82,6 +89,14 @@ const ConnectDialog = ({
     [handleResult, readwise]
   );
 
+  useEffect(() => {
+    const onFocus = () => inputRef.current?.focus();
+    window.addEventListener('focus', onFocus);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+    };
+  }, []);
+
   return (
     <Modal
       open={true}
@@ -111,6 +126,7 @@ const ConnectDialog = ({
         />
       </div>
       <Input
+        ref={inputRef}
         value={token}
         onInput={handleInput}
         placeholder={t['com.affine.integration.readwise.connect.placeholder']()}
