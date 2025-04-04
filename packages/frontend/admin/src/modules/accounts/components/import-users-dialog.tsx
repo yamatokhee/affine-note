@@ -200,7 +200,7 @@ export function ImportUsersDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={
-          isPreviewMode ? 'sm:max-w-[600px] flex-col gap-3' : 'sm:max-w-[425px]'
+          isPreviewMode ? 'sm:max-w-[600px] flex-col' : 'sm:max-w-[425px]'
         }
       >
         <DialogHeader>
@@ -214,7 +214,7 @@ export function ImportUsersDialog({
                 : 'Import'}
           </DialogTitle>
         </DialogHeader>
-        <DialogDescription className="text-[15px]">
+        <DialogDescription className="text-[15px] mt-3">
           {isFormatError ? (
             'You need to import the accounts by importing a CSV file in the correct format. Please download the CSV template.'
           ) : isPreviewMode ? (
@@ -242,7 +242,7 @@ export function ImportUsersDialog({
         </DialogDescription>
 
         <DialogFooter
-          className={`flex-col sm:flex-row sm:justify-between items-center ${isPreviewMode ? 'sm:justify-end' : 'sm:justify-between'}`}
+          className={`flex-col mt-6 sm:flex-row sm:justify-between items-center ${isPreviewMode ? 'sm:justify-end' : 'sm:justify-between'}`}
         >
           {isFormatError ? (
             <>

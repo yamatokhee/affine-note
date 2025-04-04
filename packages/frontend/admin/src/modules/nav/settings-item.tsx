@@ -141,7 +141,7 @@ export const SettingsItem = ({ isCollapsed }: { isCollapsed: boolean }) => {
           </AccordionTrigger>
         </NavLink>
 
-        <AccordionContent className="h-full overflow-hidden w-full">
+        <AccordionContent className="h-full overflow-hidden w-full pb-0">
           <ScrollAreaPrimitive.Root
             className={cn('relative overflow-hidden w-full h-full')}
           >

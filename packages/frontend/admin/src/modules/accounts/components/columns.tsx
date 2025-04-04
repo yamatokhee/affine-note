@@ -7,6 +7,7 @@ import { FeatureType } from '@affine/graphql';
 import {
   AccountIcon,
   EmailIcon,
+  EmailWarningIcon,
   LockIcon,
   UnlockIcon,
 } from '@blocksuite/icons/rc';
@@ -223,7 +224,7 @@ export const useColumns = ({
                     />
                   }
                   IconFalse={
-                    <EmailIcon
+                    <EmailWarningIcon
                       fontSize={16}
                       color={cssVarV2('toast/iconState/error')}
                     />

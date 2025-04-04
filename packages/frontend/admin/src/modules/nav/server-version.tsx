@@ -39,8 +39,11 @@ export const ServerVersion = () => {
       }}
     >
       <span>ServerVersion</span>
-      <span className="overflow-hidden text-ellipsis" title={version}>
-        v{version}
+      <span
+        className="overflow-hidden text-ellipsis whitespace-nowrap"
+        title={version}
+      >
+        {`v${version}`}
       </span>
     </div>
   );
