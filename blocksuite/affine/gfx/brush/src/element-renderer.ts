@@ -1,13 +1,15 @@
+import {
+  type ElementRenderer,
+  ElementRendererExtension,
+} from '@blocksuite/affine-block-surface';
 import { type BrushElementModel, DefaultTheme } from '@blocksuite/affine-model';
 
-import type { CanvasRenderer } from '../../canvas-renderer.js';
-
-export function brush(
-  model: BrushElementModel,
-  ctx: CanvasRenderingContext2D,
-  matrix: DOMMatrix,
-  renderer: CanvasRenderer
-) {
+export const brush: ElementRenderer<BrushElementModel> = (
+  model,
+  ctx,
+  matrix,
+  renderer
+) => {
   const { rotate } = model;
   const [, , w, h] = model.deserializedXYWH;
   const cx = w / 2;
@@ -22,4 +24,9 @@ export function brush(
   ctx.fillStyle = color;
 
   ctx.fill(new Path2D(model.commands));
-}
+};
+
+export const BrushElementRendererExtension = ElementRendererExtension(
+  'brush',
+  brush
+);

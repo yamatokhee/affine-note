@@ -5,6 +5,7 @@ import {
 } from '@blocksuite/affine-block-frame';
 import { ConnectionOverlay } from '@blocksuite/affine-block-surface';
 import {
+  BrushElementRendererExtension,
   BrushTool,
   EraserTool,
   HighlighterTool,
@@ -52,6 +53,10 @@ export const EdgelessToolExtension: ExtensionType[] = [
   HighlighterTool,
 ];
 
+export const EdgelessElementRendererExtension: ExtensionType[] = [
+  BrushElementRendererExtension,
+];
+
 export const EdgelessEditExtensions: ExtensionType[] = [
   ElementTransformManager,
   ConnectorFilter,
@@ -74,4 +79,5 @@ export const EdgelessBuiltInSpecs: ExtensionType[] = [
   EdgelessToolExtension,
   EdgelessBuiltInManager,
   EdgelessEditExtensions,
+  EdgelessElementRendererExtension,
 ].flat();

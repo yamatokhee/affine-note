@@ -7,7 +7,6 @@ import type {
 import { ElementRendererExtension } from '../../extensions/element-renderer.js';
 import type { RoughCanvas } from '../../index.js';
 import type { CanvasRenderer } from '../canvas-renderer.js';
-import { brush } from './brush/index.js';
 import { connector } from './connector/index.js';
 import { group } from './group/index.js';
 import { highlighter } from './highlighter/index.js';
@@ -28,11 +27,6 @@ export type ElementRenderer<
   rc: RoughCanvas,
   viewportBound: IBound
 ) => void;
-
-export const BrushElementRendererExtension = ElementRendererExtension(
-  'brush',
-  brush
-);
 
 export const HighlighterElementRendererExtension = ElementRendererExtension(
   'highlighter',
@@ -65,7 +59,6 @@ export const MindmapElementRendererExtension = ElementRendererExtension(
 );
 
 export const elementRendererExtensions = [
-  BrushElementRendererExtension,
   HighlighterElementRendererExtension,
   ConnectorElementRendererExtension,
   GroupElementRendererExtension,
