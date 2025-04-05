@@ -1,3 +1,19 @@
+import { EdgelessClipboardAttachmentConfig } from '@blocksuite/affine-block-attachment';
+import { EdgelessClipboardBookmarkConfig } from '@blocksuite/affine-block-bookmark';
+import { EdgelessClipboardEdgelessTextConfig } from '@blocksuite/affine-block-edgeless-text';
+import {
+  EdgelessClipboardEmbedFigmaConfig,
+  EdgelessClipboardEmbedGithubConfig,
+  EdgelessClipboardEmbedHtmlConfig,
+  EdgelessClipboardEmbedIframeConfig,
+  EdgelessClipboardEmbedLinkedDocConfig,
+  EdgelessClipboardEmbedLoomConfig,
+  EdgelessClipboardEmbedSyncedDocConfig,
+  EdgelessClipboardEmbedYoutubeConfig,
+} from '@blocksuite/affine-block-embed';
+import { EdgelessClipboardFrameConfig } from '@blocksuite/affine-block-frame';
+import { EdgelessClipboardImageConfig } from '@blocksuite/affine-block-image';
+import { EdgelessClipboardNoteConfig } from '@blocksuite/affine-block-note';
 import { ViewportElementExtension } from '@blocksuite/affine-shared/services';
 import { autoConnectWidget } from '@blocksuite/affine-widget-edgeless-auto-connect';
 import { edgelessToolbarWidget } from '@blocksuite/affine-widget-edgeless-toolbar';
@@ -16,22 +32,6 @@ import { CommonSpecs } from '../common-specs/index.js';
 import { edgelessNavigatorBgWidget } from '../widgets/edgeless-navigator-bg/index.js';
 import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from '../widgets/edgeless-zoom-toolbar/index.js';
 import { EdgelessClipboardController } from './clipboard/clipboard.js';
-import {
-  EdgelessClipboardAttachmentConfig,
-  EdgelessClipboardBookmarkConfig,
-  EdgelessClipboardEdgelessTextConfig,
-  EdgelessClipboardEmbedFigmaConfig,
-  EdgelessClipboardEmbedGithubConfig,
-  EdgelessClipboardEmbedHtmlConfig,
-  EdgelessClipboardEmbedIframeConfig,
-  EdgelessClipboardEmbedLinkedDocConfig,
-  EdgelessClipboardEmbedLoomConfig,
-  EdgelessClipboardEmbedSyncedDocConfig,
-  EdgelessClipboardEmbedYoutubeConfig,
-  EdgelessClipboardFrameConfig,
-  EdgelessClipboardImageConfig,
-  EdgelessClipboardNoteConfig,
-} from './clipboard/config.js';
 import { NOTE_SLICER_WIDGET } from './components/note-slicer/index.js';
 import { EDGELESS_DRAGGING_AREA_WIDGET } from './components/rects/edgeless-dragging-area-rect.js';
 import { EDGELESS_SELECTED_RECT_WIDGET } from './components/rects/edgeless-selected-rect.js';

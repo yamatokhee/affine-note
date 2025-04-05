@@ -1,6 +1,7 @@
 import type { FrameTool } from './frame-tool';
 import type { PresentTool, PresentToolOption } from './preset-tool';
 
+export * from './edgeless-clipboard-config';
 export * from './edgeless-toolbar';
 export * from './frame-block';
 export * from './frame-highlight-manager';
