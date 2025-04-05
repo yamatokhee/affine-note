@@ -1,3 +1,4 @@
+export * from './adapter';
 export * from './connector-tool';
 export * from './element-renderer';
 export * from './element-transform';

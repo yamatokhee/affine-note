@@ -1,5 +1,6 @@
-import { getGroupTitle } from '../../../utils/text.js';
-import { ElementToMarkdownAdapterExtension } from '../type.js';
+import { ElementToMarkdownAdapterExtension } from '@blocksuite/affine-block-surface';
+
+import { getGroupTitle } from '../text';
 
 export const groupToMarkdownAdapterMatcher = ElementToMarkdownAdapterExtension({
   name: 'group',

@@ -1,8 +1,4 @@
-import type {
-  MindMapElement,
-  MindMapJson,
-  MindMapTreeNode,
-} from '../types/mindmap.js';
+import type { MindMapElement, MindMapJson, MindMapTreeNode } from './types';
 
 function isMindMapElement(element: unknown): element is MindMapElement {
   return (
@@ -16,7 +12,7 @@ function isMindMapElement(element: unknown): element is MindMapElement {
   );
 }
 
-export function getMindMapChildrenJson(
+function getMindMapChildrenJson(
   element: Record<string, unknown>
 ): MindMapJson | null {
   if (!isMindMapElement(element)) {

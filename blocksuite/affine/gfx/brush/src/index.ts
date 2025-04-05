@@ -1,3 +1,4 @@
+export * from './adapter';
 export * from './brush-tool';
 export * from './element-renderer';
 export * from './eraser-tool';

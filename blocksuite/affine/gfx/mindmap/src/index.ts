@@ -1,3 +1,4 @@
+export * from './adapter';
 export * from './element-renderer';
 export * from './element-transform';
 export * from './indicator-overlay';

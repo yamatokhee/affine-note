@@ -1,4 +1,4 @@
-import { ElementToPlainTextAdapterExtension } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '@blocksuite/affine-block-surface';
 
 export const brushToPlainTextAdapterMatcher =
   ElementToPlainTextAdapterExtension({

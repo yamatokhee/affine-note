@@ -30,10 +30,7 @@ import {
   isSameFontFamily,
   wrapFontFamily,
 } from './utils/font.js';
-export {
-  EdgelessSurfaceBlockAdapterExtensions,
-  SurfaceBlockAdapterExtensions,
-} from './adapters/index.js';
+export * from './adapters/index.js';
 export * from './extensions';
 export type { SurfaceContext } from './surface-block.js';
 export { SurfaceBlockComponent } from './surface-block.js';

@@ -1,5 +1,6 @@
-import { getConnectorText } from '../../../utils/text.js';
-import { ElementToMarkdownAdapterExtension } from '../type.js';
+import { ElementToMarkdownAdapterExtension } from '@blocksuite/affine-block-surface';
+
+import { getConnectorText } from '../text';
 
 export const connectorToMarkdownAdapterMatcher =
   ElementToMarkdownAdapterExtension({

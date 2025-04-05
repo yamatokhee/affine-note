@@ -1,6 +1,7 @@
-import type { MindMapTreeNode } from '../../../types/mindmap.js';
-import { getShapeText, getShapeType } from '../../../utils/text.js';
-import { ElementToMarkdownAdapterExtension } from '../type.js';
+import { ElementToMarkdownAdapterExtension } from '@blocksuite/affine-block-surface';
+import type { MindMapTreeNode } from '@blocksuite/affine-model';
+
+import { getShapeText, getShapeType } from '../utils';
 
 export const shapeToMarkdownAdapterMatcher = ElementToMarkdownAdapterExtension({
   name: 'shape',

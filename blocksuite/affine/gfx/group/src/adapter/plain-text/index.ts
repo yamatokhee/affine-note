@@ -1,5 +1,6 @@
-import { getGroupTitle } from '../../../utils/text.js';
-import { ElementToPlainTextAdapterExtension } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '@blocksuite/affine-block-surface';
+
+import { getGroupTitle } from '../text';
 
 export const groupToPlainTextAdapterMatcher =
   ElementToPlainTextAdapterExtension({

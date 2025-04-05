@@ -1,5 +1,6 @@
-import { getConnectorText } from '../../../utils/text.js';
-import { ElementToPlainTextAdapterExtension } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '@blocksuite/affine-block-surface';
+
+import { getConnectorText } from '../text';
 
 export const connectorToPlainTextAdapterMatcher =
   ElementToPlainTextAdapterExtension({

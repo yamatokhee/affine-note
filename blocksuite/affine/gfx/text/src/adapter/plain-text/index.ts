@@ -1,5 +1,6 @@
-import { getTextElementText } from '../../../utils/text.js';
-import { ElementToPlainTextAdapterExtension } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '@blocksuite/affine-block-surface';
+
+import { getTextElementText } from '../text';
 
 export const textToPlainTextAdapterMatcher = ElementToPlainTextAdapterExtension(
   {

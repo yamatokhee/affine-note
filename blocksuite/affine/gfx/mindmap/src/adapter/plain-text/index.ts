@@ -1,5 +1,6 @@
-import { getMindMapTreeText } from '../../../utils/text.js';
-import { ElementToPlainTextAdapterExtension } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '@blocksuite/affine-block-surface';
+
+import { getMindMapTreeText } from '../utils';
 
 export const mindmapToPlainTextAdapterMatcher =
   ElementToPlainTextAdapterExtension({
