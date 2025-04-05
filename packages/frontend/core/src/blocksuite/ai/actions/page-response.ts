@@ -1,4 +1,5 @@
 import { uploadBlobForImage } from '@blocksuite/affine/blocks/image';
+import { createTemplateJob } from '@blocksuite/affine/blocks/root';
 import {
   getSurfaceBlock,
   SurfaceBlockModel,
@@ -25,7 +26,6 @@ import { insertAbove, insertBelow, replace } from '../utils/editor-actions';
 import { preprocessHtml } from '../utils/html';
 import { fetchImageToFile } from '../utils/image';
 import { getSelections } from '../utils/selection-utils';
-import { createTemplateJob } from '../utils/template-job';
 
 const PADDING = 100;
 
@@ -138,7 +138,7 @@ async function responseToCreateSlides(
     for (let i = 0; i < contents.length; i++) {
       const image = images[i];
       const content = contents[i];
-      const job = createTemplateJob(host);
+      const job = createTemplateJob(host.std, 'template');
       await Promise.all(
         image.map(({ id, url }) =>
           fetch(url)

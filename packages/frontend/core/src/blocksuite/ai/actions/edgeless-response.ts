@@ -1,4 +1,5 @@
 import { addImages } from '@blocksuite/affine/blocks/image';
+import { createTemplateJob } from '@blocksuite/affine/blocks/root';
 import { getSurfaceBlock } from '@blocksuite/affine/blocks/surface';
 import { LightLoadingIcon } from '@blocksuite/affine/components/icons';
 import { addTree } from '@blocksuite/affine/gfx/mindmap';
@@ -46,7 +47,6 @@ import {
   getEdgelessRootFromEditor,
   getSurfaceElementFromEditor,
 } from '../utils/selection-utils';
-import { createTemplateJob } from '../utils/template-job';
 import type { AffineAIPanelWidget } from '../widgets/ai-panel/ai-panel';
 import type { EdgelessCopilotWidget } from '../widgets/edgeless-copilot';
 import { EXCLUDING_INSERT_ACTIONS, generatingStages } from './consts';
@@ -514,7 +514,7 @@ async function responseToCreateSlides(host: EditorHost, ctx: AIContext) {
     for (let i = 0; i < contents.length; i++) {
       const image = images[i] || [];
       const content = contents[i];
-      const job = createTemplateJob(host);
+      const job = createTemplateJob(host.std, 'template');
 
       const imagePromises = image.map(async ({ id, url }) => {
         const response = await fetch(url);

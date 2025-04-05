@@ -1,10 +1,14 @@
-import type {
-  SurfaceBlockModel,
-  SurfaceBlockTransformer,
+import {
+  getSurfaceBlock,
+  type SurfaceBlockModel,
+  type SurfaceBlockTransformer,
 } from '@blocksuite/affine-block-surface';
 import type { ConnectorElementModel } from '@blocksuite/affine-model';
+import { BlockSuiteError } from '@blocksuite/global/exceptions';
 import { Bound, getCommonBound } from '@blocksuite/global/gfx';
 import { assertType } from '@blocksuite/global/utils';
+import type { BlockStdScope } from '@blocksuite/std';
+import { GfxControllerIdentifier } from '@blocksuite/std/gfx';
 import {
   type BlockModel,
   type BlockSnapshot,
@@ -15,6 +19,13 @@ import {
 } from '@blocksuite/store';
 import { Subject } from 'rxjs';
 import type * as Y from 'yjs';
+
+import {
+  createInsertPlaceMiddleware,
+  createRegenerateIndexMiddleware,
+  createStickerMiddleware,
+  replaceIdMiddleware,
+} from './template-middlewares';
 /**
  * Those block contains other block's id
  * should defer the loading
@@ -368,4 +379,54 @@ export class TemplateJob {
 
     iterate(this._template.blocks, this._template);
   }
+}
+
+export function createTemplateJob(
+  std: BlockStdScope,
+  type: 'template' | 'sticker',
+  center?: { x: number; y: number }
+) {
+  const surface = getSurfaceBlock(std.store);
+  if (!surface) {
+    throw new BlockSuiteError(
+      BlockSuiteError.ErrorCode.NoSurfaceModelError,
+      'This doc is missing surface block in edgeless.'
+    );
+  }
+
+  const gfx = std.get(GfxControllerIdentifier);
+  const middlewares: ((job: TemplateJob) => void)[] = [];
+  const { layer, viewport } = gfx;
+  const blocks = layer.blocks;
+  const elements = layer.canvasElements;
+
+  if (type === 'template') {
+    const bounds = [...blocks, ...elements].map(i => Bound.deserialize(i.xywh));
+    const currentContentBound = getCommonBound(bounds);
+
+    if (currentContentBound) {
+      currentContentBound.x += currentContentBound.w + 20 / viewport.zoom;
+      middlewares.push(createInsertPlaceMiddleware(currentContentBound));
+    }
+
+    const idxGenerator = layer.createIndexGenerator();
+
+    middlewares.push(createRegenerateIndexMiddleware(() => idxGenerator()));
+  }
+
+  if (type === 'sticker') {
+    middlewares.push(
+      createStickerMiddleware(center || viewport.center, () =>
+        layer.generateIndex()
+      )
+    );
+  }
+
+  middlewares.push(replaceIdMiddleware);
+
+  return TemplateJob.create({
+    model: surface,
+    type,
+    middlewares,
+  });
 }

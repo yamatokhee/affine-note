@@ -1,10 +1,10 @@
+import { createTemplateJob } from '@blocksuite/affine/blocks/root';
 import type { EditorHost } from '@blocksuite/affine/std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/std/gfx';
 import type { BlockSnapshot } from '@blocksuite/affine/store';
 
 import { markdownToSnapshot } from '../../utils';
 import { getSurfaceElementFromEditor } from '../utils/selection-utils';
-import { createTemplateJob } from '../utils/template-job';
 import {
   basicTheme,
   type PPTDoc,
@@ -36,7 +36,7 @@ export const PPTBuilder = (host: EditorHost) => {
     };
     docs.push(doc);
 
-    const job = createTemplateJob(host);
+    const job = createTemplateJob(host.std, 'template');
     const { images, content } = await basicTheme(doc);
     contents.push(content);
     allImages.push(images);

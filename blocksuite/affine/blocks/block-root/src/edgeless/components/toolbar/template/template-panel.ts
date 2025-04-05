@@ -23,6 +23,7 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 
 import { EdgelessRootService } from '../../../edgeless-root-service.js';
+import { createTemplateJob } from '../../../services/template.js';
 import { builtInTemplates } from './builtin-templates.js';
 import { defaultPreview, Triangle } from './cards.js';
 import type { Template } from './template-type.js';
@@ -287,7 +288,11 @@ export class EdgelessTemplatePanel extends WithDisposable(LitElement) {
       x: bound.x + bound.w / 2,
       y: bound.y + bound.h / 2,
     };
-    const templateJob = this.service.createTemplateJob(template.type, center);
+    const templateJob = createTemplateJob(
+      this.edgeless.std,
+      template.type,
+      center
+    );
 
     try {
       const { assets } = template;

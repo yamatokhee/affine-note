@@ -11,7 +11,6 @@ import {
   RootBlockSchema,
 } from '@blocksuite/affine-model';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import { Bound, getCommonBound } from '@blocksuite/global/gfx';
 import type { BlockStdScope } from '@blocksuite/std';
 import type {
   GfxController,
@@ -33,12 +32,6 @@ import clamp from 'lodash-es/clamp';
 
 import { RootService } from '../root-service.js';
 import { TemplateJob } from './services/template.js';
-import {
-  createInsertPlaceMiddleware,
-  createRegenerateIndexMiddleware,
-  createStickerMiddleware,
-  replaceIdMiddleware,
-} from './services/template-middlewares.js';
 import { getCursorMode } from './utils/query.js';
 
 export class EdgelessRootService extends RootService implements SurfaceContext {
@@ -158,46 +151,6 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
         this.gfx.cursor$.value = getCursorMode(value);
       })
     );
-  }
-
-  createTemplateJob(
-    type: 'template' | 'sticker',
-    center?: { x: number; y: number }
-  ) {
-    const middlewares: ((job: TemplateJob) => void)[] = [];
-
-    if (type === 'template') {
-      const bounds = [...this.blocks, ...this.elements].map(i =>
-        Bound.deserialize(i.xywh)
-      );
-      const currentContentBound = getCommonBound(bounds);
-
-      if (currentContentBound) {
-        currentContentBound.x +=
-          currentContentBound.w + 20 / this.viewport.zoom;
-        middlewares.push(createInsertPlaceMiddleware(currentContentBound));
-      }
-
-      const idxGenerator = this.layer.createIndexGenerator();
-
-      middlewares.push(createRegenerateIndexMiddleware(() => idxGenerator()));
-    }
-
-    if (type === 'sticker') {
-      middlewares.push(
-        createStickerMiddleware(center || this.viewport.center, () =>
-          this.layer.generateIndex()
-        )
-      );
-    }
-
-    middlewares.push(replaceIdMiddleware);
-
-    return TemplateJob.create({
-      model: this.surface,
-      type,
-      middlewares,
-    });
   }
 
   generateIndex() {
