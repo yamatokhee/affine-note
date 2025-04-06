@@ -34,6 +34,7 @@ export const PackageList = [
       'blocksuite/affine/gfx/mindmap',
       'blocksuite/affine/gfx/note',
       'blocksuite/affine/gfx/shape',
+      'blocksuite/affine/gfx/template',
       'blocksuite/affine/gfx/text',
       'blocksuite/affine/gfx/turbo-renderer',
       'blocksuite/affine/inlines/footnote',
@@ -321,6 +322,7 @@ export const PackageList = [
       'blocksuite/affine/gfx/mindmap',
       'blocksuite/affine/gfx/note',
       'blocksuite/affine/gfx/shape',
+      'blocksuite/affine/gfx/template',
       'blocksuite/affine/gfx/text',
       'blocksuite/affine/inlines/latex',
       'blocksuite/affine/inlines/link',
@@ -544,6 +546,22 @@ export const PackageList = [
   {
     location: 'blocksuite/affine/gfx/shape',
     name: '@blocksuite/affine-gfx-shape',
+    workspaceDependencies: [
+      'blocksuite/affine/blocks/block-surface',
+      'blocksuite/affine/components',
+      'blocksuite/affine/gfx/text',
+      'blocksuite/affine/model',
+      'blocksuite/affine/rich-text',
+      'blocksuite/affine/shared',
+      'blocksuite/affine/widgets/widget-edgeless-toolbar',
+      'blocksuite/framework/global',
+      'blocksuite/framework/std',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
+    location: 'blocksuite/affine/gfx/template',
+    name: '@blocksuite/affine-gfx-template',
     workspaceDependencies: [
       'blocksuite/affine/blocks/block-surface',
       'blocksuite/affine/components',
@@ -1184,6 +1202,7 @@ export type PackageName =
   | '@blocksuite/affine-gfx-mindmap'
   | '@blocksuite/affine-gfx-note'
   | '@blocksuite/affine-gfx-shape'
+  | '@blocksuite/affine-gfx-template'
   | '@blocksuite/affine-gfx-text'
   | '@blocksuite/affine-gfx-turbo-renderer'
   | '@blocksuite/affine-inline-footnote'

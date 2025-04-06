@@ -6,6 +6,7 @@ import {
   type SurfaceBlockModel,
   type SurfaceContext,
 } from '@blocksuite/affine-block-surface';
+import { TemplateJob } from '@blocksuite/affine-gfx-template';
 import {
   type ConnectorElementModel,
   RootBlockSchema,
@@ -31,7 +32,6 @@ import { effect } from '@preact/signals-core';
 import clamp from 'lodash-es/clamp';
 
 import { RootService } from '../root-service.js';
-import { TemplateJob } from './services/template.js';
 import { getCursorMode } from './utils/query.js';
 
 export class EdgelessRootService extends RootService implements SurfaceContext {

@@ -36,6 +36,7 @@
     { "path": "../gfx/mindmap" },
     { "path": "../gfx/note" },
     { "path": "../gfx/shape" },
+    { "path": "../gfx/template" },
     { "path": "../gfx/text" },
     { "path": "../gfx/turbo-renderer" },
     { "path": "../inlines/footnote" },

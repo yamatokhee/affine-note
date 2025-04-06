@@ -1,9 +1,9 @@
 import { addImages } from '@blocksuite/affine/blocks/image';
-import { createTemplateJob } from '@blocksuite/affine/blocks/root';
 import { getSurfaceBlock } from '@blocksuite/affine/blocks/surface';
 import { LightLoadingIcon } from '@blocksuite/affine/components/icons';
 import { addTree } from '@blocksuite/affine/gfx/mindmap';
 import { fitContent } from '@blocksuite/affine/gfx/shape';
+import { createTemplateJob } from '@blocksuite/affine/gfx/template';
 import { Bound } from '@blocksuite/affine/global/gfx';
 import type {
   MindmapElementModel,

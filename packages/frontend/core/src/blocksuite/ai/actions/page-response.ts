@@ -1,10 +1,10 @@
 import { uploadBlobForImage } from '@blocksuite/affine/blocks/image';
-import { createTemplateJob } from '@blocksuite/affine/blocks/root';
 import {
   getSurfaceBlock,
   SurfaceBlockModel,
 } from '@blocksuite/affine/blocks/surface';
 import { fitContent } from '@blocksuite/affine/gfx/shape';
+import { createTemplateJob } from '@blocksuite/affine/gfx/template';
 import { Bound, getCommonBound } from '@blocksuite/affine/global/gfx';
 import type {
   MindmapElementModel,

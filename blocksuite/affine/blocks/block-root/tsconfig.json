@@ -30,6 +30,7 @@
     { "path": "../../gfx/mindmap" },
     { "path": "../../gfx/note" },
     { "path": "../../gfx/shape" },
+    { "path": "../../gfx/template" },
     { "path": "../../gfx/text" },
     { "path": "../../inlines/latex" },
     { "path": "../../inlines/link" },

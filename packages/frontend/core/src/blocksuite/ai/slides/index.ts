@@ -1,4 +1,4 @@
-import { createTemplateJob } from '@blocksuite/affine/blocks/root';
+import { createTemplateJob } from '@blocksuite/affine/gfx/template';
 import type { EditorHost } from '@blocksuite/affine/std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/std/gfx';
 import type { BlockSnapshot } from '@blocksuite/affine/store';

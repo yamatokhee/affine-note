@@ -4,10 +4,8 @@ import { connectorQuickTool } from '@blocksuite/affine-gfx-connector';
 import { mindMapSeniorTool } from '@blocksuite/affine-gfx-mindmap';
 import { noteSeniorTool } from '@blocksuite/affine-gfx-note';
 import { shapeSeniorTool } from '@blocksuite/affine-gfx-shape';
-import {
-  QuickToolExtension,
-  SeniorToolExtension,
-} from '@blocksuite/affine-widget-edgeless-toolbar';
+import { templateSeniorTool } from '@blocksuite/affine-gfx-template';
+import { QuickToolExtension } from '@blocksuite/affine-widget-edgeless-toolbar';
 import { html } from 'lit';
 
 import { buildLinkDenseMenu } from './link/link-dense-menu.js';
@@ -27,14 +25,6 @@ const linkQuickTool = QuickToolExtension('link', ({ block, gfx }) => {
       .edgeless=${block}
     ></edgeless-link-tool-button>`,
     menu: buildLinkDenseMenu(block, gfx),
-  };
-});
-
-const templateSeniorTool = SeniorToolExtension('template', ({ block }) => {
-  return {
-    name: 'Template',
-    content: html`<edgeless-template-button .edgeless=${block}>
-    </edgeless-template-button>`,
   };
 });
 

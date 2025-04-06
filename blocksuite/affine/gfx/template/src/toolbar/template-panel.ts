@@ -22,8 +22,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 
-import { EdgelessRootService } from '../../../edgeless-root-service.js';
-import { createTemplateJob } from '../../../services/template.js';
+import { createTemplateJob } from '../services/template.js';
 import { builtInTemplates } from './builtin-templates.js';
 import { defaultPreview, Triangle } from './cards.js';
 import type { Template } from './template-type.js';
@@ -271,10 +270,6 @@ export class EdgelessTemplatePanel extends WithDisposable(LitElement) {
     });
   }
 
-  get service() {
-    return this.edgeless.std.get(EdgelessRootService);
-  }
-
   get gfx() {
     return this.edgeless.std.get(GfxControllerIdentifier);
   }
@@ -319,6 +314,7 @@ export class EdgelessTemplatePanel extends WithDisposable(LitElement) {
       }
     } finally {
       this._loadingTemplate = null;
+      // @ts-expect-error FIXME: resolve after gfx tool refactor
       this.gfx.tool.setTool('default');
     }
   }

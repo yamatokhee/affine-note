@@ -4,6 +4,7 @@ import { effects as gfxGroupEffects } from '@blocksuite/affine-gfx-group/effects
 import { effects as gfxMindmapEffects } from '@blocksuite/affine-gfx-mindmap/effects';
 import { effects as gfxNoteEffects } from '@blocksuite/affine-gfx-note/effects';
 import { effects as gfxShapeEffects } from '@blocksuite/affine-gfx-shape/effects';
+import { effects as gfxTemplateEffects } from '@blocksuite/affine-gfx-template/effects';
 import { effects as gfxCanvasTextEffects } from '@blocksuite/affine-gfx-text/effects';
 import { effects as widgetEdgelessToolbarEffects } from '@blocksuite/affine-widget-edgeless-toolbar/effects';
 
@@ -26,10 +27,6 @@ import { ToolbarArrowUpIcon } from './edgeless/components/toolbar/common/toolbar
 import { EdgelessDefaultToolButton } from './edgeless/components/toolbar/default/default-tool-button.js';
 import { EdgelessLassoToolButton } from './edgeless/components/toolbar/lasso/lasso-tool-button.js';
 import { EdgelessLinkToolButton } from './edgeless/components/toolbar/link/link-tool-button.js';
-import { OverlayScrollbar } from './edgeless/components/toolbar/template/overlay-scrollbar.js';
-import { AffineTemplateLoading } from './edgeless/components/toolbar/template/template-loading.js';
-import { EdgelessTemplatePanel } from './edgeless/components/toolbar/template/template-panel.js';
-import { EdgelessTemplateButton } from './edgeless/components/toolbar/template/template-tool-button.js';
 import {
   AffineModalWidget,
   EdgelessRootBlockComponent,
@@ -97,6 +94,7 @@ function registerGfxEffects() {
   gfxMindmapEffects();
   gfxGroupEffects();
   gfxBrushEffects();
+  gfxTemplateEffects();
 }
 
 function registerWidgets() {
@@ -124,7 +122,6 @@ function registerEdgelessToolbarComponents() {
   );
   customElements.define('edgeless-link-tool-button', EdgelessLinkToolButton);
   customElements.define('edgeless-lasso-tool-button', EdgelessLassoToolButton);
-  customElements.define('edgeless-template-button', EdgelessTemplateButton);
 
   // Menus
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
@@ -139,12 +136,10 @@ function registerMiscComponents() {
 
   // Loading and preview components
   customElements.define('loader-element', Loader);
-  customElements.define('affine-template-loading', AffineTemplateLoading);
 
   // Toolbar and UI components
   customElements.define('edgeless-zoom-toolbar', EdgelessZoomToolbar);
   customElements.define('zoom-bar-toggle-button', ZoomBarToggleButton);
-  customElements.define('overlay-scrollbar', OverlayScrollbar);
 
   // Auto-complete components
   customElements.define(
@@ -155,7 +150,6 @@ function registerMiscComponents() {
 
   // Note and template components
   customElements.define(NOTE_SLICER_WIDGET, NoteSlicer);
-  customElements.define('edgeless-templates-panel', EdgelessTemplatePanel);
 
   // Navigation components
   customElements.define(
@@ -189,9 +183,6 @@ declare global {
     'edgeless-default-tool-button': EdgelessDefaultToolButton;
     'edgeless-lasso-tool-button': EdgelessLassoToolButton;
     'edgeless-link-tool-button': EdgelessLinkToolButton;
-    'overlay-scrollbar': OverlayScrollbar;
-    'affine-template-loading': AffineTemplateLoading;
-    'edgeless-templates-panel': EdgelessTemplatePanel;
     'affine-page-root': PageRootBlockComponent;
     'zoom-bar-toggle-button': ZoomBarToggleButton;
     'edgeless-zoom-toolbar': EdgelessZoomToolbar;

@@ -138,6 +138,7 @@ export class EdgelessTemplateButton extends EdgelessToolbarToolMixin(
         this.setEdgelessTool(this._prevTool);
         this._prevTool = null;
       } else {
+        // @ts-expect-error FIXME: resolve after gfx tool refactor
         this.setEdgelessTool('default');
       }
     }
