@@ -273,3 +273,49 @@ test('should show toolbar when inline link is preceded by image or surface-ref',
   await expect(toolbar).toBeVisible();
   await expect(toolbar).not.toHaveAttribute('data-placement', 'inner');
 });
+
+test('should focus on input of popover on toolbar', async ({ page }) => {
+  await clickEdgelessModeButton(page);
+
+  const toolbar = locateToolbar(page);
+
+  await expect(toolbar).toBeHidden();
+
+  const note = page.locator('affine-edgeless-note').first();
+
+  await note.click();
+
+  await expect(toolbar).toBeVisible();
+
+  const scaleMenu = toolbar.locator('.scale-menu');
+  const scaleInput = scaleMenu.locator('input');
+  const scaleButton = scaleMenu.getByLabel('Scale');
+
+  await expect(scaleInput).toBeHidden();
+  await scaleButton.click();
+
+  await scaleInput.click();
+  await expect(scaleInput).toBeFocused();
+
+  await scaleInput.fill('150');
+  await expect(scaleInput).toBeFocused();
+
+  const scaleValue = await scaleInput.inputValue();
+  expect(scaleValue).toBe('150');
+
+  const cornersMenu = toolbar.locator('.corners-menu');
+  const cornersInput = cornersMenu.locator('input');
+  const cornersButton = cornersMenu.getByLabel('Corners');
+
+  await expect(cornersInput).toBeHidden();
+  await cornersButton.click();
+
+  await cornersInput.click();
+  await expect(cornersInput).toBeFocused();
+
+  await cornersInput.fill('36');
+  await expect(cornersInput).toBeFocused();
+
+  const cornersValue = await cornersInput.inputValue();
+  expect(cornersValue).toBe('36');
+});

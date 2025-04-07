@@ -37,6 +37,7 @@ import {
   type GfxModel,
   GfxPrimitiveElementModel,
 } from '@blocksuite/std/gfx';
+import { RANGE_SYNC_EXCLUDE_ATTR } from '@blocksuite/std/inline';
 import type { ReferenceElement, SideObject } from '@floating-ui/dom';
 import { batch, effect, signal } from '@preact/signals-core';
 import { css, unsafeCSS } from 'lit';
@@ -246,6 +247,8 @@ export class AffineToolbarWidget extends WidgetComponent {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.setAttribute(RANGE_SYNC_EXCLUDE_ATTR, 'true');
 
     const {
       sideOptions$,
