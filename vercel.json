@@ -2,15 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "packages/frontend/package.json",
-      "use": "@vercel/node",
-      "config": { "distDir": "dist" }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "packages/frontend/index.html"
+      "src": "packages/frontend/apps/web/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "yarn workspace @affine/web run build",
+        "outputDirectory": "packages/frontend/apps/web/dist"
+      }
     }
   ]
 }
