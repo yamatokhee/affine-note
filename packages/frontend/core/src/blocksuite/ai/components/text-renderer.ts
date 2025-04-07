@@ -1,5 +1,5 @@
 import { createReactComponentFromLit } from '@affine/component';
-import { defaultBlockMarkdownAdapterMatchers } from '@blocksuite/affine/adapters';
+import { MarkdownAdapterExtension } from '@blocksuite/affine/adapters';
 import {
   defaultImageProxyMiddleware,
   ImageProxyService,
@@ -7,10 +7,6 @@ import {
 import { PageEditorBlockSpecs } from '@blocksuite/affine/extensions';
 import { Container, type ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/lit';
-import {
-  InlineDeltaToMarkdownAdapterExtensions,
-  MarkdownInlineToDeltaAdapterExtensions,
-} from '@blocksuite/affine/inlines/preset';
 import { codeBlockWrapMiddleware } from '@blocksuite/affine/shared/adapters';
 import { LinkPreviewerService } from '@blocksuite/affine/shared/services';
 import {
@@ -215,11 +211,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
         provider = this.host.std.provider;
       } else {
         const container = new Container();
-        [
-          ...MarkdownInlineToDeltaAdapterExtensions,
-          ...defaultBlockMarkdownAdapterMatchers,
-          ...InlineDeltaToMarkdownAdapterExtensions,
-        ].forEach(ext => {
+        [...MarkdownAdapterExtension].forEach(ext => {
           ext.setup(container);
         });
 

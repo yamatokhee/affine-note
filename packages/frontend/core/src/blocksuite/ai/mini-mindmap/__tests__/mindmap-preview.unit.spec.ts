@@ -1,20 +1,12 @@
-import { defaultBlockMarkdownAdapterMatchers } from '@blocksuite/affine/adapters';
+import { MarkdownAdapterExtension } from '@blocksuite/affine/adapters';
 import { Container } from '@blocksuite/affine/global/di';
-import {
-  InlineDeltaToMarkdownAdapterExtensions,
-  MarkdownInlineToDeltaAdapterExtensions,
-} from '@blocksuite/affine/inlines/preset';
 import { TestWorkspace } from '@blocksuite/affine/store/test';
 import { describe, expect, test } from 'vitest';
 
 import { markdownToMindmap } from '../mindmap-preview.js';
 
 const container = new Container();
-[
-  ...MarkdownInlineToDeltaAdapterExtensions,
-  ...defaultBlockMarkdownAdapterMatchers,
-  ...InlineDeltaToMarkdownAdapterExtensions,
-].forEach(ext => {
+[...MarkdownAdapterExtension].forEach(ext => {
   ext.setup(container);
 });
 const provider = container.provider();

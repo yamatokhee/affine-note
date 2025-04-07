@@ -38,13 +38,9 @@ import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspac
 import { getWorkerUrl } from '@affine/env/worker';
 import { I18n } from '@affine/i18n';
 import { StoreManagerClient } from '@affine/nbstore/worker/client';
-import { defaultBlockMarkdownAdapterMatchers } from '@blocksuite/affine/adapters';
+import { MarkdownAdapterExtension } from '@blocksuite/affine/adapters';
 import { MarkdownTransformer } from '@blocksuite/affine/blocks/root';
 import { Container } from '@blocksuite/affine/global/di';
-import {
-  InlineDeltaToMarkdownAdapterExtensions,
-  MarkdownInlineToDeltaAdapterExtensions,
-} from '@blocksuite/affine/inlines/preset';
 import {
   docLinkBaseURLMiddleware,
   MarkdownAdapter,
@@ -266,11 +262,7 @@ const frameworkProvider = framework.provider();
     const snapshot = transformer.docToSnapshot(blockSuiteDoc);
 
     const container = new Container();
-    [
-      ...MarkdownInlineToDeltaAdapterExtensions,
-      ...defaultBlockMarkdownAdapterMatchers,
-      ...InlineDeltaToMarkdownAdapterExtensions,
-    ].forEach(ext => {
+    [...MarkdownAdapterExtension].forEach(ext => {
       ext.setup(container);
     });
     const provider = container.provider();

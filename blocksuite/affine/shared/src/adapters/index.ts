@@ -30,11 +30,14 @@ export {
   MarkdownAdapter,
   MarkdownAdapterFactoryExtension,
   MarkdownAdapterFactoryIdentifier,
+  type MarkdownAdapterPreprocessor,
   type MarkdownAST,
   MarkdownASTToDeltaExtension,
   type MarkdownASTToDeltaMatcher,
   MarkdownASTToDeltaMatcherIdentifier,
   MarkdownDeltaConverter,
+  MarkdownPreprocessorExtension,
+  MarkdownPreprocessorManager,
 } from './markdown';
 export * from './middlewares';
 export * from './mix-text';

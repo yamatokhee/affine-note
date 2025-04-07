@@ -1,9 +1,5 @@
-import { defaultBlockMarkdownAdapterMatchers } from '@blocksuite/affine/adapters';
+import { MarkdownAdapterExtension } from '@blocksuite/affine/adapters';
 import { Container } from '@blocksuite/affine/global/di';
-import {
-  InlineDeltaToMarkdownAdapterExtensions,
-  MarkdownInlineToDeltaAdapterExtensions,
-} from '@blocksuite/affine/inlines/preset';
 import type {
   AttachmentBlockModel,
   BookmarkBlockModel,
@@ -123,11 +119,7 @@ function generateMarkdownPreviewBuilder(
   };
 
   const container = new Container();
-  [
-    ...MarkdownInlineToDeltaAdapterExtensions,
-    ...defaultBlockMarkdownAdapterMatchers,
-    ...InlineDeltaToMarkdownAdapterExtensions,
-  ].forEach(ext => {
+  [...MarkdownAdapterExtension].forEach(ext => {
     ext.setup(container);
   });
 
