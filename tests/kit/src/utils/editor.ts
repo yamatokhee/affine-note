@@ -237,8 +237,7 @@ type EdgelessTool =
   | 'text'
   | 'connector'
   | 'frame'
-  | 'frameNavigator'
-  | 'lasso';
+  | 'frameNavigator';
 
 /**
  * @param type the type of the tool in the toolbar
@@ -265,7 +264,6 @@ export async function locateEdgelessToolButton(
     note: '.edgeless-note-button',
     frame: '.edgeless-frame-button',
     frameNavigator: '.edgeless-frame-navigator-button',
-    lasso: '.edgeless-lasso-button',
   }[type];
 
   let buttonType;
@@ -391,7 +389,6 @@ export async function setEdgelessTool(
 
       break;
     }
-    case 'lasso':
     case 'note':
     case 'eraser':
     case 'frame':

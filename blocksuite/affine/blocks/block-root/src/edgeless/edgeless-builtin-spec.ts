@@ -29,7 +29,6 @@ import { DblClickAddEdgelessText } from './element-transform/dblclick-add-edgele
 import { SnapExtension } from './element-transform/snap-manager.js';
 import { DefaultTool } from './gfx-tool/default-tool.js';
 import { EmptyTool } from './gfx-tool/empty-tool.js';
-import { LassoTool } from './gfx-tool/lasso-tool.js';
 import { PanTool } from './gfx-tool/pan-tool.js';
 import { TemplateTool } from './gfx-tool/template-tool.js';
 import { EditPropsMiddlewareBuilder } from './middlewares/base.js';
@@ -47,7 +46,6 @@ export const EdgelessToolExtension: ExtensionType[] = [
   TemplateTool,
   EmptyTool,
   FrameTool,
-  LassoTool,
   PresentTool,
   HighlighterTool,
 ];

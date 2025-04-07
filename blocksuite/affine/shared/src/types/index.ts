@@ -13,11 +13,6 @@ export interface EditingState {
   rect: DOMRect;
 }
 
-export enum LassoMode {
-  FreeHand,
-  Polygonal,
-}
-
 export type NoteChildrenFlavour =
   | 'affine:paragraph'
   | 'affine:list'

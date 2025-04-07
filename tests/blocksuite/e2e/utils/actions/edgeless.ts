@@ -52,11 +52,6 @@ export enum Shape {
   Triangle = 'Triangle',
 }
 
-export enum LassoMode {
-  FreeHand = 'freehand',
-  Polygonal = 'polygonal',
-}
-
 export enum ConnectorMode {
   Straight,
   Orthogonal,
@@ -166,8 +161,7 @@ type EdgelessTool =
   | 'text'
   | 'connector'
   | 'frame'
-  | 'frameNavigator'
-  | 'lasso';
+  | 'frameNavigator';
 type ZoomToolType = 'zoomIn' | 'zoomOut' | 'fitToScreen';
 type ComponentToolType = 'shape' | 'thin' | 'thick' | 'brush' | 'more';
 
@@ -211,7 +205,6 @@ export async function locatorEdgelessToolButton(
     note: '.edgeless-note-button',
     frame: '.edgeless-frame-button',
     frameNavigator: '.edgeless-frame-navigator-button',
-    lasso: '.edgeless-lasso-button',
   }[type];
 
   let buttonType;
@@ -362,7 +355,6 @@ export async function setEdgelessTool(
 
       break;
     }
-    case 'lasso':
     case 'note':
     case 'eraser':
     case 'frame':
@@ -436,20 +428,6 @@ export async function assertEdgelessConnectorToolMode(
     throw new Error('Expected connector tool');
   }
   expect(tool.mode).toEqual(mode);
-}
-
-export async function assertEdgelessLassoToolMode(page: Page, mode: LassoMode) {
-  const tool = await page.evaluate(() => {
-    const container = document.querySelector('affine-edgeless-root');
-    if (!container) {
-      throw new Error('Missing edgeless page');
-    }
-    return container.gfx.tool.currentToolOption$.peek();
-  });
-  if (tool.type !== 'lasso') {
-    throw new Error('Expected lasso tool');
-  }
-  expect(tool.mode).toEqual(mode === LassoMode.FreeHand ? 0 : 1);
 }
 
 export async function getEdgelessBlockChild(page: Page) {

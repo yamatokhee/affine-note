@@ -122,7 +122,7 @@ test.describe('lock', () => {
     expect(await getSelectedIds(page)).toHaveLength(1);
   });
 
-  test('locked element should not be selectable by dragging default tool or lasso tool. unlocking will recover', async ({
+  test('locked element should not be selectable by dragging default tool. unlocking will recover', async ({
     page,
   }) => {
     await edgelessCommonSetup(page);

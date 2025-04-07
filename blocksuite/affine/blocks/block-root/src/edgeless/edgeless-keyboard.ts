@@ -26,10 +26,8 @@ import {
 } from '@blocksuite/affine-model';
 import {
   EditPropsStore,
-  FeatureFlagService,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
-import { LassoMode } from '@blocksuite/affine-shared/types';
 import { matchModels } from '@blocksuite/affine-shared/utils';
 import { IS_MAC } from '@blocksuite/global/env';
 import { Bound, getCommonBound } from '@blocksuite/global/gfx';
@@ -44,7 +42,6 @@ import {
 
 import { PageKeyboardManager } from '../keyboard/keyboard-manager.js';
 import type { EdgelessRootBlockComponent } from './edgeless-root-block.js';
-import { LassoTool } from './gfx-tool/lasso-tool.js';
 import {
   DEFAULT_NOTE_CHILD_FLAVOUR,
   DEFAULT_NOTE_CHILD_TYPE,
@@ -75,40 +72,6 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
             mode,
           });
           this._setEdgelessTool('connector', { mode });
-        },
-        l: () => {
-          if (
-            !rootComponent.doc
-              .get(FeatureFlagService)
-              .getFlag('enable_lasso_tool')
-          ) {
-            return;
-          }
-
-          this._setEdgelessTool('lasso', {
-            mode: LassoMode.Polygonal,
-          });
-        },
-        'Shift-l': () => {
-          if (
-            !rootComponent.doc
-              .get(FeatureFlagService)
-              .getFlag('enable_lasso_tool')
-          ) {
-            return;
-          }
-          // toggle between lasso modes
-          const edgeless = rootComponent;
-          const cur = edgeless.gfx.tool.currentTool$.peek();
-
-          this._setEdgelessTool('lasso', {
-            mode:
-              cur?.toolName === 'lasso'
-                ? (cur as LassoTool).activatedOption.mode === LassoMode.FreeHand
-                  ? LassoMode.Polygonal
-                  : LassoMode.FreeHand
-                : LassoMode.FreeHand,
-          });
         },
         h: () => {
           this._setEdgelessTool('pan', {
@@ -324,11 +287,6 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
           this._delete();
         },
         Escape: () => {
-          const currentTool = this.rootComponent.gfx.tool.currentTool$.peek();
-          if (currentTool instanceof LassoTool && currentTool.isSelecting) {
-            currentTool.abort();
-          }
-
           if (!this.rootComponent.service.selection.empty) {
             rootComponent.selection.clear();
           }

@@ -25,7 +25,6 @@ import {
 import { EdgelessSlideMenu } from './edgeless/components/toolbar/common/slide-menu.js';
 import { ToolbarArrowUpIcon } from './edgeless/components/toolbar/common/toolbar-arrow-up-icon.js';
 import { EdgelessDefaultToolButton } from './edgeless/components/toolbar/default/default-tool-button.js';
-import { EdgelessLassoToolButton } from './edgeless/components/toolbar/lasso/lasso-tool-button.js';
 import { EdgelessLinkToolButton } from './edgeless/components/toolbar/link/link-tool-button.js';
 import {
   AffineModalWidget,
@@ -121,7 +120,6 @@ function registerEdgelessToolbarComponents() {
     EdgelessDefaultToolButton
   );
   customElements.define('edgeless-link-tool-button', EdgelessLinkToolButton);
-  customElements.define('edgeless-lasso-tool-button', EdgelessLassoToolButton);
 
   // Menus
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
@@ -181,7 +179,6 @@ declare global {
     'edgeless-slide-menu': EdgelessSlideMenu;
     'toolbar-arrow-up-icon': ToolbarArrowUpIcon;
     'edgeless-default-tool-button': EdgelessDefaultToolButton;
-    'edgeless-lasso-tool-button': EdgelessLassoToolButton;
     'edgeless-link-tool-button': EdgelessLinkToolButton;
     'affine-page-root': PageRootBlockComponent;
     'zoom-bar-toggle-button': ZoomBarToggleButton;

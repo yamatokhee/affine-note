@@ -65,33 +65,6 @@ test('shortcut', async ({ page }) => {
   await page.keyboard.press('c');
   const connectorButton = await locatorEdgelessToolButton(page, 'connector');
   await expect(connectorButton).toHaveAttribute('active', '');
-
-  // await page.keyboard.press('l');
-  // const lassoButton = await locatorEdgelessToolButton(page, 'lasso');
-  // await expect(lassoButton).toHaveAttribute('active', '');
-});
-
-test.skip('toggle lasso tool modes', async ({ page }) => {
-  await enterPlaygroundRoom(page);
-  await initEmptyEdgelessState(page);
-  await switchEditorMode(page);
-  await page.mouse.click(100, 100);
-
-  const lassoButton = await locatorEdgelessToolButton(page, 'lasso', false);
-
-  const isLassoMode = async (type: 'freehand' | 'polygonal') => {
-    const classes = (await lassoButton.getAttribute('class'))?.split(' ') ?? [];
-    return classes.includes(type);
-  };
-
-  await page.keyboard.press('Shift+l');
-  expect(await isLassoMode('freehand')).toBe(true);
-
-  await page.keyboard.press('Shift+l');
-  expect(await isLassoMode('polygonal')).toBe(true);
-
-  await page.keyboard.press('Shift+l');
-  expect(await isLassoMode('freehand')).toBe(true);
 });
 
 test('toggle shapes shortcut', async ({ page }) => {
